@@ -1,5 +1,5 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
+  <img alt="Solar Sedum logo" src="./assets/solar_logo.svg">
   <HelloWorld msg="Welcome to Your Vue.js App"/>
 </template>
 
@@ -15,12 +15,24 @@ export default {
 </script>
 
 <style>
+:root {
+  --color-primary: #c7d02c;
+  --color-secondary: #572700;
+  --color-text: #333;
+  --color-bg: #fff;
+  --color-subtitle: #bfbfbf;
+  --color-text-bg: #f8f8f8;
+}
+
+html, body {
+  font-family: 'Montserrat', sans-serif;
+  color: var(--color-text);
+}
+
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
   margin-top: 60px;
 }
 </style>
