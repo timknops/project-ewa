@@ -1,11 +1,15 @@
 <template>
   <img alt="Solar Sedum logo" src="./assets/solar_logo.svg">
+  <product-overview></product-overview>
 </template>
 
 <script>
 
+import ProductOverview from "@/components/productOverview.vue";
+
 export default {
   name: 'App',
+  components: {ProductOverview},
 }
 </script>
 
