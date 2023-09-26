@@ -1,16 +1,11 @@
 <template>
   <img alt="Solar Sedum logo" src="./assets/solar_logo.svg">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
 
 export default {
   name: 'App',
-  components: {
-    HelloWorld
-  }
 }
 </script>
 
@@ -27,12 +22,5 @@ export default {
 html, body {
   font-family: 'Montserrat', sans-serif;
   color: var(--color-text);
-}
-
-#app {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  margin-top: 60px;
 }
 </style>
