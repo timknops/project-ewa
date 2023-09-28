@@ -1,15 +1,24 @@
 <template>
-  <img alt="Solar Sedum logo" src="./assets/solar_logo.svg">
+  <sidebar/>
+  <router-view id="component"></router-view>
 </template>
 
 <script>
+import Sidebar from '@/components/Sidebar.vue'
 
 export default {
   name: 'App',
+  components: {
+    Sidebar
+  }
 }
 </script>
 
 <style>
+#component{
+  margin-left: 17rem;
+  max-width: 200px;
+}
 :root {
   --color-primary: #c7d02c;
   --color-secondary: #572700;
