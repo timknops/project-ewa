@@ -4,7 +4,6 @@
 </template>
 
 <script>
-
 import ProductOverview from "@/components/productOverview.vue";
 
 export default {
@@ -14,6 +13,7 @@ export default {
 </script>
 
 <style>
+/* Colors used by Solar Sedum*/
 :root {
   --color-primary: #c7d02c;
   --color-secondary: #572700;
@@ -24,7 +24,7 @@ export default {
 }
 
 html, body {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'Montserrat', sans-serif !important; /*important while bootstrap tries to overwrite it */
   color: var(--color-text);
 }
 </style>
