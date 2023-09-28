@@ -21,6 +21,7 @@ export class Product {
    * Constructor of a product
    *
    * @constructor
+   * @param {number} id
    * @param {String} productName
    * @param {String} description
    * @param {Number} quantity
@@ -41,10 +42,16 @@ export class Product {
   static createDummyProduct() {
     let id = 3000;
     const products = [];
+
+    /*
+     * Create a random stock for each product
+     */
     Product.productNames.forEach((productName) => {
       const description = "Lorem ipsum dolor sit amet, consectetur adipisicing elit. "
       const quantity = this.randomNumber(0, 40)
       products.push(new Product(id, productName, description, quantity));
+
+      //for each product increment the id
       id += 3;
     })
     return products;
