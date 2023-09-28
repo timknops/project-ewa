@@ -1,12 +1,13 @@
 export class Product {
 
-   static productNames =
+  static productNames =
     ["Enphase IQ8+ omvormer",
-    "Enphase Q kabel 1 fase ",
-    "Gateway / envoy",
-    "Enphase IQ8M  omvormer",
-    "Enphase Q Relay 1 fase ",
-    "Enphase Q Relay 3 fase "
+      "Enphase Q kabel 1 fase",
+      "Gateway / envoy",
+      "Enphase IQ8M  omvormer",
+      "Enphase Q Relay 1 fase ",
+      "Enphase Q Relay 3 fase ",
+      "MB glas/glas 380"
     ]
 
   /**
@@ -27,13 +28,14 @@ export class Product {
    */
   static createDummyProduct() {
     const products = [];
-    Product.productNames.forEach((productName)=> {
+    Product.productNames.forEach((productName) => {
       const description = "Lorem ipsum dolor sit amet, consectetur adipisicing elit. "
       const quantity = this.randomNumber(0, 40)
-      products.push(new Product(productName, description, quantity)) ;
+      products.push(new Product(productName, description, quantity));
     })
     return products;
   }
+
   static randomNumber(min, max) {
     return Math.floor(Math.random() * (max - min) + min)
   }

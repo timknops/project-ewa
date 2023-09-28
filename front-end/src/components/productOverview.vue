@@ -8,7 +8,9 @@ export default {
   name: "productOverview",
   data() {
     return {
-      products: []
+      products: [],
+      Warehouses: ["Solar", "Superzon", "EHES", "The switch"],
+      activeWarehouse: String
     }
   },
   created() {
