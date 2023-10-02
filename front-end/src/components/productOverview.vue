@@ -1,10 +1,26 @@
 <template>
   <!--    display the current warehouse which the user is assigned to-->
-  <div class="container" v-if="activeUser.role === 'viewer'">
+  <div class="container" >
     <h2 class="mb-4">Inventory</h2>
-    <div class="row bg-solar-grey rounded-top mx-0">
+    <div class="row bg-solar-grey rounded-top mx-0" v-if="activeUser.role === 'viewer'">
       <div class="col">
         <strong>{{ activeUser.team.warehouse }}</strong>
+      </div>
+    </div>
+
+    <!-- row containing all names of warehouses and total which the admin can pick    -->
+    <div class="row border border-2 border-bottom-0 border-black rounded-top mx-0 p-1 pb-0" v-else>
+      <div class="col-auto">
+        <strong tabindex="0" class="warehouse-select" :class="{active: activeWarehouse === 'Total'}"
+                @click="setActiveWarehouse('Total')">
+          Total inventory
+        </strong>
+      </div>
+      <div class="col-auto" v-for="warehouse in WAREHOUSES" :key="warehouse">
+        <strong tabindex="0" class="warehouse-select" :class="{active: warehouse === activeWarehouse}"
+                @click="setActiveWarehouse(warehouse)">
+          {{ warehouse }}
+        </strong>
       </div>
     </div>
 
@@ -22,40 +38,6 @@
       <div class="col">{{ product.quantity }}</div>
     </div>
   </div>
-
-  <!--  TODO display for admin with v-else-->
-  <div class="container" v-else>
-    <h2 class="mb-4">Inventory</h2>
-    <!-- display row for all warehouses if user is admin    -->
-    <div class="row border border-2 border-bottom-0 border-black rounded-top mx-0 p-1 pb-0">
-      <div class="col-auto">
-        <strong class="warehouse-select" :class="{active: activeWarehouse === 'Total'}"
-                @click="setActiveWarehouse('Total')">
-          Total inventory
-        </strong>
-      </div>
-      <div class="col-auto" v-for="warehouse in WAREHOUSES" :key="warehouse">
-        <strong class="warehouse-select" :class="{active: warehouse === activeWarehouse}"
-                @click="setActiveWarehouse(warehouse)">
-          {{ warehouse }}
-        </strong>
-      </div>
-    </div>
-
-    <div class="row mx-0 bg-solar-grey">
-      <div class="col">product</div>
-      <div class="col">description</div>
-      <div class="col">stock</div>
-    </div>
-    <div v-for="(product, index) in products" :key="product.id" class="row mx-0 bg-solar-grey"
-         :class="{'rounded-bottom': index === products.length -1}">
-      <div class="col">{{ product.productName }}</div>
-      <div class="col">{{ product.description }}</div>
-      <div class="col">{{ product.quantity }}</div>
-    </div>
-
-  </div>
-
 </template>
 
 <script>
