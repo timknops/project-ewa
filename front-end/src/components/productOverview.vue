@@ -8,21 +8,54 @@
       </div>
     </div>
 
-<!--    TODO display table with info waiting on component-->
-<!--    For now simple display shall be changed to table component when created -->
+    <!--    TODO display table with info waiting on component-->
+    <!--    For now simple display shall be changed to table component when created -->
     <div class="row mx-0 bg-solar-grey">
       <div class="col">product</div>
       <div class="col">description</div>
       <div class="col">stock</div>
     </div>
-    <div v-for="(product, index) in products" :key="product.id"  class="row mx-0 bg-solar-grey" :class="{'rounded-bottom': index === products.length -1}">
-      <div class="col">{{ product.productName}}</div>
-      <div class="col">{{ product.description}}</div>
-      <div class="col">{{product.quantity}}</div>
+    <div v-for="(product, index) in products" :key="product.id" class="row mx-0 bg-solar-grey"
+         :class="{'rounded-bottom': index === products.length -1}">
+      <div class="col">{{ product.productName }}</div>
+      <div class="col">{{ product.description }}</div>
+      <div class="col">{{ product.quantity }}</div>
     </div>
   </div>
 
-<!--  TODO display for admin with v-else-->
+  <!--  TODO display for admin with v-else-->
+  <div class="container" v-else>
+    <h2 class="mb-4">Inventory</h2>
+    <!-- display row for all warehouses if user is admin    -->
+    <div class="row border border-2 border-bottom-0 border-black rounded-top mx-0 p-1 pb-0">
+      <div class="col-auto">
+        <strong class="warehouse-select" :class="{active: activeWarehouse === 'Total'}"
+                @click="setActiveWarehouse('Total')">
+          Total inventory
+        </strong>
+      </div>
+      <div class="col-auto" v-for="warehouse in WAREHOUSES" :key="warehouse">
+        <strong class="warehouse-select" :class="{active: warehouse === activeWarehouse}"
+                @click="setActiveWarehouse(warehouse)">
+          {{ warehouse }}
+        </strong>
+      </div>
+    </div>
+
+    <div class="row mx-0 bg-solar-grey">
+      <div class="col">product</div>
+      <div class="col">description</div>
+      <div class="col">stock</div>
+    </div>
+    <div v-for="(product, index) in products" :key="product.id" class="row mx-0 bg-solar-grey"
+         :class="{'rounded-bottom': index === products.length -1}">
+      <div class="col">{{ product.productName }}</div>
+      <div class="col">{{ product.description }}</div>
+      <div class="col">{{ product.quantity }}</div>
+    </div>
+
+  </div>
+
 </template>
 
 <script>
@@ -32,8 +65,15 @@ export default {
   name: "product-overview",
   data() {
     return {
-      products: [],
+      totalProducts: [], //list of objects containing the warehouse and its products
+      products: [], // the product and stock of the current active view, i.e. total or a certain warehouse
+
       activeUser: {name: String, role: String, team: {name: String, warehouse: name}},
+
+      //for now only the name, could change to objects if needed.
+      WAREHOUSES: ["Solar Sedum", "Superzon", "EHES", "The switch"],
+      activeWarehouse: "Total", //total selected by default.
+
     }
   },
 
@@ -42,7 +82,7 @@ export default {
     getUser() {
       return {
         name: "Julian",
-        role: "viewer",
+        role: "admin",
         team: {
           name: "team1",
           warehouse: "Superzon"
@@ -50,22 +90,73 @@ export default {
       }
     },
 
-    //TODO use database to get products for certain warehouse
-    getProducts(warehouse = null) {
-      //if only get products from a certain warehouse
-      if (warehouse != null) {
-        return Product.createDummyProduct();
+    setActiveWarehouse(warehouse) {
+      this.activeWarehouse = warehouse;
+      //TODO push router with params
+    },
+
+    /**
+     * Get the products and stock information for a certain warehouse
+     * @param warehouse the warehouse which has been selected
+     * @return {[Product]} an array of product objects or empty array if an error has occurred
+     */
+    getWarehouseProductInfo(warehouse) {
+      const productsObjectArray = this.totalProducts.filter((totalList) => totalList.warehouse === warehouse)
+
+      // filter should return one element in the array, because there is only one warehouse active
+      if (productsObjectArray.length === 0 || productsObjectArray.length > 1) {
+        console.error("their were multiple or no warehouses trying to receive their products")
+        return [];
       }
-      //TODO get list of product for all warehouses
+      return productsObjectArray[0].products
+    },
+
+    getTotalProductInfo() {
+      const productObjects = {} // create an object where all products objects are stored in with accumulated stock
+      this.totalProducts.forEach((warehouseData) => {
+        warehouseData.products.forEach((product) => {
+            if (productObjects[product.productName]) {
+              productObjects[product.productName].quantity += product.quantity //add the quantity to the total stock
+            }
+            else {
+              //if product doesn't exist yet initiate the object to be put into the productsObject
+              productObjects[product.productName] = {
+                productName: product.productName,
+                description: product.description,
+                quantity: product.quantity
+              }
+            }
+        })
+      })
+      return Object.values(productObjects)
+    }
+  },
+
+
+  watch: {
+    activeWarehouse() {
+      if (this.activeWarehouse === "Total") {
+        this.products = this.getTotalProductInfo()
+      } else {
+        this.products = this.getWarehouseProductInfo(this.activeWarehouse)
+      }
+
     }
   },
 
   created() {
     this.activeUser = this.getUser()
-
     //get list of products depending on the users role i.e. the total inventory or inventory of the warehouse of the user
     if (this.activeUser.role === "viewer") {
-      this.products = this.getProducts(this.activeUser.team.warehouse)
+      this.products = Product.createDummyProduct();
+    } else {
+      const array = []
+      this.WAREHOUSES.forEach((warehouse) => {
+        const obj = {warehouse: warehouse, products: Product.createDummyProduct()}
+        array.push(obj)
+      })
+      this.totalProducts = array;
+      this.products = this.getTotalProductInfo()
     }
   }
 }
@@ -80,4 +171,41 @@ h2 {
 .bg-solar-grey {
   background-color: var(--color-text-bg);
 }
+
+.warehouse-select {
+  position: relative;
+  cursor: pointer;
+  transition: 200ms ease-out;
+}
+
+.warehouse-select:hover {
+  color: var(--color-secondary);
+}
+
+.warehouse-select.active {
+  color: var(--color-primary);
+}
+
+
+.warehouse-select::before {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 3px;
+  bottom: -0.25em;
+  border-radius: 10px 10px 0 0;
+  transition: 200ms ease-out;
+}
+
+.warehouse-select.active::before,
+.warehouse-select:hover::before {
+  width: 100%;
+  background-color: var(--color-primary);
+}
+
+.warehouse-select:not(.active):hover::before {
+  background-color: var(--color-secondary);
+}
+
+
 </style>
