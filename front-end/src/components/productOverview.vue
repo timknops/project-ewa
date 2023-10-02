@@ -11,16 +11,16 @@
     <!-- row containing all names of warehouses and total which the admin can pick    -->
     <div class="row border border-2 border-bottom-0 border-black rounded-top mx-0 p-1 pb-0" v-else>
       <div class="col-auto">
-        <strong tabindex="0" class="warehouse-select" :class="{active: activeWarehouse === 'Total'}"
+        <button type="button" class="warehouse-select btn btn-link p-0" :class="{active: activeWarehouse === 'Total'}"
                 @click="setActiveWarehouse('Total')">
           Total inventory
-        </strong>
+        </button>
       </div>
       <div class="col-auto" v-for="warehouse in WAREHOUSES" :key="warehouse">
-        <strong tabindex="0" class="warehouse-select" :class="{active: warehouse === activeWarehouse}"
+        <button type="button" class="warehouse-select btn btn-link p-0" :class="{active: warehouse === activeWarehouse}"
                 @click="setActiveWarehouse(warehouse)">
           {{ warehouse }}
-        </strong>
+        </button>
       </div>
     </div>
 
@@ -158,13 +158,20 @@ h2 {
   position: relative;
   cursor: pointer;
   transition: 200ms ease-out;
+  color: var(--color-text);
 }
 
-.warehouse-select:hover {
+.warehouse-select:hover,
+.warehouse-select:focus{
   color: var(--color-secondary);
+  outline: none;
 }
 
-.warehouse-select.active {
+/*
+Overwriting bootstrap active class
+ */
+.warehouse-select.active,
+.warehouse-select:first-child:active{
   color: var(--color-primary);
 }
 
@@ -180,12 +187,14 @@ h2 {
 }
 
 .warehouse-select.active::before,
-.warehouse-select:hover::before {
+.warehouse-select:hover::before,
+.warehouse-select:focus::before{
   width: 100%;
   background-color: var(--color-primary);
 }
 
-.warehouse-select:not(.active):hover::before {
+.warehouse-select:not(.active):hover::before,
+.warehouse-select:not(.active):focus::before{
   background-color: var(--color-secondary);
 }
 
