@@ -2,9 +2,9 @@
   <!--    display the current warehouse which the user is assigned to-->
   <div class="container" >
     <h2 class="mb-4">Inventory</h2>
-    <div class="row bg-solar-grey rounded-top mx-0" v-if="activeUser.role === 'viewer'">
+    <div class="row border border-2 border-bottom-0 border-black rounded-top mx-0 p-1 pb-0" v-if="activeUser.role === 'viewer'">
       <div class="col">
-        <strong>{{ activeUser.team.warehouse }}</strong>
+        <strong class="warehouse-select active">{{ activeUser.team.warehouse }}</strong>
       </div>
     </div>
 
@@ -74,7 +74,12 @@ export default {
 
     setActiveWarehouse(warehouse) {
       this.activeWarehouse = warehouse;
-      //TODO push router with params
+
+      if(warehouse === "Total") {
+        this.$router.push("/inventory")
+      } else {
+      this.$router.push('/inventory/' + warehouse)
+      }
     },
 
     /**
@@ -122,7 +127,14 @@ export default {
       } else {
         this.products = this.getWarehouseProductInfo(this.activeWarehouse)
       }
+    },
 
+    $route() {
+      if(this.$route.params.warehouse == null) {
+        this.activeWarehouse = "Total";
+      } else {
+        this.activeWarehouse = this.$route.params.warehouse;
+      }
     }
   },
 
@@ -156,7 +168,6 @@ h2 {
 
 .warehouse-select {
   position: relative;
-  cursor: pointer;
   transition: 200ms ease-out;
   color: var(--color-text);
   text-decoration: none;
