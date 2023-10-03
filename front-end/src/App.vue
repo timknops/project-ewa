@@ -1,12 +1,19 @@
 <template>
-  <img alt="Solar Sedum logo" src="./assets/solar_logo.svg">
+  <div
+    class="d-flex justify-content-center align-items-center"
+    id="temp-container"
+  >
+    <TableComponent table-width="50%" :highlight-first-row="true" />
+  </div>
 </template>
 
 <script>
+import TableComponent from "@/components/TableComponent.vue";
 
 export default {
-  name: 'App',
-}
+  name: "App",
+  components: { TableComponent },
+};
 </script>
 
 <style>
@@ -19,8 +26,16 @@ export default {
   --color-text-bg: #f8f8f8;
 }
 
-html, body {
-  font-family: 'Montserrat', sans-serif;
-  color: var(--color-text);
+html,
+body {
+  font-family: "Montserrat", sans-serif;
+  color: var(--color-text) !important;
+  background-color: var(--bs-gray-100) !important;
+  height: 100vh;
+  width: 100vw;
+}
+
+#temp-container {
+  height: 100vh;
 }
 </style>
