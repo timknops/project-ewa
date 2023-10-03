@@ -152,6 +152,11 @@ export default {
       this.totalProducts = array;
       this.products = this.getTotalProductInfo()
     }
+
+    //set active if there is a param in the url
+    if (this.$route.params.warehouse) {
+      this.activeWarehouse = this.$route.params.warehouse
+    }
   }
 }
 
