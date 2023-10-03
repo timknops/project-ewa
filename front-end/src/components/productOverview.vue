@@ -87,7 +87,7 @@ export default {
 
       // filter should return one element in the array, because there is only one warehouse active
       if (productsObjectArray.length === 0 || productsObjectArray.length > 1) {
-        console.error("their were multiple or no warehouses trying to receive their products")
+        console.error("There were multiple or no warehouses trying to receive their products")
         return [];
       }
       return productsObjectArray[0].products
@@ -159,6 +159,7 @@ h2 {
   cursor: pointer;
   transition: 200ms ease-out;
   color: var(--color-text);
+  text-decoration: none;
 }
 
 .warehouse-select:hover,
