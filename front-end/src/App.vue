@@ -4,8 +4,9 @@
     id="temp-container"
   >
     <TableComponent
-      table-width="80%"
-      :bold-first-row="false"
+      table-width="70vw"
+      table-max-height="60%"
+      :bold-first-column="true"
       :table-data="sampleData"
     />
   </div>
@@ -44,6 +45,36 @@ export default {
           description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
           quantity: 14212,
         },
+        {
+          id: 2,
+          name: "name4name2",
+          description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
+          quantity: 14212,
+        },
+        {
+          id: 2,
+          name: "name4name2",
+          description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
+          quantity: 14212,
+        },
+        {
+          id: 2,
+          name: "name4name2",
+          description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
+          quantity: 14212,
+        },
+        {
+          id: 2,
+          name: "name4name2",
+          description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
+          quantity: 14212,
+        },
+        {
+          id: 2,
+          name: "name4name2",
+          description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
+          quantity: 14212,
+        },
       ],
     };
   },
@@ -58,6 +89,9 @@ export default {
   --color-bg: #fff;
   --color-subtitle: #bfbfbf;
   --color-text-bg: #f8f8f8;
+
+  --custom-box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05),
+    0 4px 6px -4px rgb(0 0 0 / 0.05);
 }
 
 html,
