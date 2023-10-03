@@ -3,7 +3,11 @@
     class="d-flex justify-content-center align-items-center"
     id="temp-container"
   >
-    <TableComponent table-width="50%" :highlight-first-row="true" />
+    <TableComponent
+      table-width="80%"
+      :bold-first-row="false"
+      :table-data="sampleData"
+    />
   </div>
 </template>
 
@@ -13,6 +17,36 @@ import TableComponent from "@/components/TableComponent.vue";
 export default {
   name: "App",
   components: { TableComponent },
+  data() {
+    return {
+      sampleData: [
+        {
+          id: 1451,
+          name: "name1",
+          description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
+          quantity: 4343,
+        },
+        {
+          id: 222,
+          name: "name2name2name2",
+          description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
+          quantity: 22,
+        },
+        {
+          id: 123412,
+          name: "name3",
+          description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
+          quantity: 14,
+        },
+        {
+          id: 2,
+          name: "name4name2",
+          description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
+          quantity: 14212,
+        },
+      ],
+    };
+  },
 };
 </script>
 

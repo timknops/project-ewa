@@ -1,31 +1,31 @@
 <template>
   <div class="card border-0" :style="{ width: tableWidth }">
-    <div class="card-body">
+    <div class="card-body p-4">
       <div class="table-responsive">
         <table class="table table-hover mb-0">
           <thead>
             <tr>
               <th
-                v-for="columnName in Object.keys(tableData[0])"
-                :key="columnName"
+                v-for="name in tableColumnNames"
+                :key="name"
                 scope="col"
-                class="py-3"
+                class="py-3 table-header-text px-4"
               >
-                {{ columnName }}
+                {{ name.toUpperCase() }}
               </th>
             </tr>
           </thead>
 
           <!-- If first row is set to true, then use the first version of the tbody, else use the other. -->
-          <tbody v-if="highlightFirstRow">
+          <tbody v-if="boldFirstRow">
             <tr v-for="tableRow in tableData" :key="tableRow">
-              <th scope="row" class="py-3">
+              <th scope="row" class="py-3 table-text px-4">
                 {{ Object.values(tableRow)[0] }}
               </th>
               <td
                 v-for="i in Object.values(tableRow).length - 1"
                 :key="Object.values(tableRow)[i]"
-                class="py-3"
+                class="py-3 table-text px-4"
               >
                 {{ Object.values(tableRow)[i] }}
               </td>
@@ -37,7 +37,7 @@
               <td
                 v-for="fieldData in Object.values(tableRow)"
                 :key="fieldData"
-                class="py-3"
+                class="py-3 table-text px-4"
               >
                 {{ fieldData }}
               </td>
@@ -54,20 +54,16 @@ export default {
   name: "TableComponent",
   props: {
     tableWidth: String,
-    highlightFirstRow: Boolean,
+    boldFirstRow: Boolean,
+    tableData: Array,
   },
   data() {
     return {
-      tableData: [
-        { id: 1451, name: "name1", quantity: 4343 },
-        { id: 222, name: "name2", quantity: 22 },
-        { id: 123412, name: "name3", quantity: 14 },
-        { id: 2, name: "name4", quantity: 14212 },
-      ],
+      tableColumnNames: [],
     };
   },
   created() {
-    console.log(Object.values(this.tableData[0]).length);
+    this.tableColumnNames = Object.keys(this.tableData[0]);
   },
 };
 </script>
@@ -77,5 +73,20 @@ export default {
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05),
     0 4px 6px -4px rgb(0 0 0 / 0.05);
   border-radius: 0.5rem;
+}
+
+table td,
+table th {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.table-text {
+  color: var(--bs-gray-700);
+}
+
+.table-header-text {
+  color: var(--bs-gray-900);
 }
 </style>
