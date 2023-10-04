@@ -7,7 +7,7 @@
       table-width="80vw"
       :amount-to-display="6"
       :bold-first-column="false"
-      :table-data="sampleData"
+      :table-data="sampleData2"
       :array-amount-to-display="2"
     />
   </div>
@@ -21,7 +21,7 @@ export default {
   components: { TableComponent },
   data() {
     return {
-      sampleData: [
+      sampleData1: [
         {
           id: 1451,
           name: "name1",
@@ -77,6 +77,50 @@ export default {
           description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
           quantity: 14212,
           products: ["Product 1", "Product 2"],
+        },
+      ],
+      sampleData2: [
+        {
+          id: 1451,
+          name: "name1",
+          description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
+          quantity: 4343,
+        },
+        {
+          id: 222,
+          name: "name2name2name2",
+          description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
+          quantity: 22,
+        },
+        {
+          id: 123412,
+          name: "name3",
+          description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
+          quantity: 14,
+        },
+        {
+          id: 2,
+          name: "name4name2",
+          description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
+          quantity: 14212,
+        },
+        {
+          id: 2,
+          name: "name4name2",
+          description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
+          quantity: 14212,
+        },
+        {
+          id: 2,
+          name: "name4name2",
+          description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
+          quantity: 14212,
+        },
+        {
+          id: 2,
+          name: "name4name2",
+          description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
+          quantity: 14212,
         },
       ],
     };
