@@ -4,9 +4,9 @@
     id="temp-container"
   >
     <TableComponent
-      table-width="50vw"
+      table-width="80vw"
       :amount-to-display="6"
-      :bold-first-column="true"
+      :bold-first-column="false"
       :table-data="sampleData"
     />
   </div>
@@ -26,42 +26,56 @@ export default {
           name: "name1",
           description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
           quantity: 4343,
+          products: ["Product 1", "Product 2", "Product 3"],
         },
         {
           id: 222,
           name: "name2name2name2",
           description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
           quantity: 22,
+          products: [
+            "Product 1x",
+            "Product 2x",
+            "Product sdfsfsdfj 29x",
+            "Product 1x",
+            "Product 2x",
+            "Product sdfsfsdfj 29x",
+          ],
         },
         {
           id: 123412,
           name: "name3",
           description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
           quantity: 14,
+          products: ["Product 1", "Product 2", "Product 3"],
         },
         {
           id: 2,
           name: "name4name2",
           description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
           quantity: 14212,
+          products: ["Product 1", "Product 2", "Product 3"],
         },
         {
           id: 2,
           name: "name4name2",
           description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
           quantity: 14212,
+          products: ["Product 1", "Product 2", "Product 3"],
         },
         {
           id: 2,
           name: "name4name2",
           description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
           quantity: 14212,
+          products: ["Product 1", "Product 2", "Product 3"],
         },
         {
           id: 2,
           name: "name4name2",
           description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
           quantity: 14212,
+          products: ["Product 1", "Product 2", "Product 3"],
         },
       ],
     };

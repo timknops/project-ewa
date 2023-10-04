@@ -37,13 +37,28 @@
 
           <tbody v-else>
             <tr v-for="tableRow in currentlyDisplayedData" :key="tableRow">
-              <td
+              <template
                 v-for="fieldData in Object.values(tableRow)"
                 :key="fieldData"
-                class="py-lg-3 table-text px-3 px-lg-4"
               >
-                {{ fieldData }}
-              </td>
+                <td v-if="Array.isArray(fieldData)" class="px-3">
+                  <button
+                    type="button"
+                    class="btn btn-link custom-popover-btn ps-2 fw-medium"
+                    data-bs-toggle="popover"
+                    data-bs-title="Popover title"
+                    :data-bs-content="displayPopoverArrayItems(fieldData)"
+                  >
+                    See all {{ this.arrayColumnName }}
+                    <span class="badge text-bg-secondary ms-1">{{
+                      fieldData.length
+                    }}</span>
+                  </button>
+                </td>
+                <td v-else class="py-lg-3 table-text px-3 px-lg-4">
+                  {{ fieldData }}
+                </td>
+              </template>
             </tr>
           </tbody>
         </table>
@@ -56,6 +71,10 @@
           <span class="items-listing">Items of</span>
           {{ this.tableData.length }}
         </p>
+        <!-- If the amount that is currently displayed is not equal to the entire table data length
+        (meaning we're currently not in view all mode). And if the amount to be displayed that was passed as a prop
+        isn't more than the total table length (there's no 'view all' when the amount to be displayed exceeds the amount
+        in the table-data.) -->
         <button
           v-if="
             this.displayAmount !== this.tableData.length &&
@@ -159,6 +178,8 @@
 </template>
 
 <script>
+import { Popover } from "bootstrap";
+
 /**
  * Custom table component. Allows user to dynamically set the width, height, whether the first row should be bold and
  * allows for dynamic column creation depending on the array of object passed as tableData.
@@ -179,14 +200,19 @@ export default {
   },
   data() {
     return {
-      /** The names of the columns that are displayed in the table header */
+      /** The names of the columns that are displayed in the table header. */
       tableColumnNames: Object.keys(this.tableData[0]),
-      /** Height that the table rows height becomes smaller */
+      /** Height that the table rows height becomes smaller. */
       currentlyDisplayedData: [],
+      /** The current index of the starting item that is displayed. */
       currentStartIndex: 0,
+      /** The last index of the item that displayed */
       currentEndIndex: this.amountToDisplay,
-      savedAmountToDisplay: 0,
+      /** The amount that is to be displayed at once, saved in data because it is manipulated, unlike the other props. */
       displayAmount: this.amountToDisplay,
+      /** Saves the amount that is supposed to be displayed, used in the 'view all' and 'view less'. */
+      savedAmountToDisplay: 0,
+      arrayColumnName: "",
     };
   },
   methods: {
@@ -207,6 +233,10 @@ export default {
         this.currentStartIndex,
         this.currentEndIndex
       );
+
+      this.$nextTick(() => {
+        this.applyPopovers();
+      });
     },
 
     displayEndIndex() {
@@ -232,12 +262,35 @@ export default {
       this.updateDisplayedData();
     },
 
-    isActiveViewAll() {
-      return this.displayAmount === this.tableData.length;
+    findArrayColumnName() {
+      Object.values(this.currentlyDisplayedData[0]).forEach((value, index) => {
+        if (Array.isArray(value)) {
+          this.arrayColumnName = Object.keys(this.currentlyDisplayedData[0])[
+            index
+          ];
+        }
+      });
+    },
+
+    applyPopovers() {
+      const popoverTriggerList = document.querySelectorAll(
+        '[data-bs-toggle="popover"]'
+      );
+      [...popoverTriggerList].map(
+        (popoverTriggerEl) =>
+          new Popover(popoverTriggerEl, { trigger: "hover", placement: "left" })
+      );
+    },
+
+    displayPopoverArrayItems(arr) {
+      console.log(arr);
+
+      return 0;
     },
   },
   created() {
     this.updateDisplayedData();
+    this.findArrayColumnName();
   },
   computed: {
     calculateTableHeight() {
@@ -293,8 +346,23 @@ p {
 button {
   text-decoration: none;
   font-size: 0.875rem;
+  color: var(--bs-gray-900);
+  transition: none !important;
 }
 button:hover {
   text-decoration: underline;
+  color: var(--color-primary);
+}
+button:active {
+  color: var(--color-primary) !important;
+}
+
+.custom-popover-btn {
+  color: var(--color-primary);
+  cursor: default !important;
+}
+
+.badge {
+  background-color: var(--color-primary) !important;
 }
 </style>
