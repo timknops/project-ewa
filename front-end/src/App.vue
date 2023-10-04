@@ -4,8 +4,9 @@
     id="temp-container"
   >
     <TableComponent
-      table-width="70vw"
-      table-max-height="60%"
+      table-width="50vw"
+      table-height="40vh"
+      :amount-to-display="4"
       :bold-first-column="true"
       :table-data="sampleData"
     />
@@ -38,18 +39,6 @@ export default {
           name: "name3",
           description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
           quantity: 14,
-        },
-        {
-          id: 2,
-          name: "name4name2",
-          description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
-          quantity: 14212,
-        },
-        {
-          id: 2,
-          name: "name4name2",
-          description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
-          quantity: 14212,
         },
         {
           id: 2,
