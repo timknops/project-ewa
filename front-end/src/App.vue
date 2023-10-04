@@ -8,6 +8,7 @@
       :amount-to-display="6"
       :bold-first-column="false"
       :table-data="sampleData"
+      :array-amount-to-display="2"
     />
   </div>
 </template>
@@ -36,7 +37,7 @@ export default {
           products: [
             "Product 1x",
             "Product 2x",
-            "Product sdfsfsdfj 29x",
+            "Product sdfsfsdfj 29xProduct sdfsfsdfj 29x",
             "Product 1x",
             "Product 2x",
             "Product sdfsfsdfj 29x",
@@ -75,7 +76,7 @@ export default {
           name: "name4name2",
           description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
           quantity: 14212,
-          products: ["Product 1", "Product 2", "Product 3"],
+          products: ["Product 1", "Product 2"],
         },
       ],
     };

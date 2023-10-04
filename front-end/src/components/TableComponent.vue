@@ -9,7 +9,7 @@
                 v-for="name in tableColumnNames"
                 :key="name"
                 scope="col"
-                class="py-lg-3 pt-0 table-header-text px-3 px-lg-4"
+                class="py-3 pt-2 table-header-text px-3 px-lg-4"
               >
                 {{ name.toUpperCase() }}
               </th>
@@ -20,18 +20,32 @@
           <tbody v-if="boldFirstColumn">
             <tr v-for="tableRow in currentlyDisplayedData" :key="tableRow">
               <!-- Makes the first column of the row bold. -->
-              <th scope="row" class="py-lg-3 table-text px-3 px-lg-4">
+              <th scope="row" class="py-3 table-text px-3 px-lg-4">
                 {{ Object.values(tableRow)[0] }}
               </th>
 
-              <!-- Loops through the rest of the object values, except for the first value. -->
-              <td
+              <!-- Loops through the rest of the object values, except for the first. -->
+              <template
                 v-for="i in Object.values(tableRow).length - 1"
                 :key="Object.values(tableRow)[i]"
-                class="py-lg-3 table-text px-3 px-lg-4"
               >
-                {{ Object.values(tableRow)[i] }}
-              </td>
+                <!-- If the field data is of type array -->
+                <td
+                  v-if="Array.isArray(Object.values(tableRow)[i])"
+                  class="py-3 px-3 px-lg-4 array-display"
+                >
+                  <span
+                    v-for="j in this.arrayAmountToDisplay"
+                    :key="Object.values(tableRow)[i][j - 1]"
+                    class="badge me-1"
+                    >{{ Object.values(tableRow)[i][j - 1] }}</span
+                  >
+                </td>
+
+                <td v-else class="py-3 table-text px-3 px-lg-4">
+                  {{ Object.values(tableRow)[i] }}
+                </td>
+              </template>
             </tr>
           </tbody>
 
@@ -41,21 +55,20 @@
                 v-for="fieldData in Object.values(tableRow)"
                 :key="fieldData"
               >
-                <td v-if="Array.isArray(fieldData)" class="px-3">
-                  <button
-                    type="button"
-                    class="btn btn-link custom-popover-btn ps-2 fw-medium"
-                    data-bs-toggle="popover"
-                    data-bs-title="Popover title"
-                    :data-bs-content="displayPopoverArrayItems(fieldData)"
+                <!-- If the field data is of type array -->
+                <td
+                  v-if="Array.isArray(fieldData)"
+                  class="py-3 px-3 px-lg-4 array-display"
+                >
+                  <span
+                    v-for="i in this.arrayAmountToDisplay"
+                    :key="fieldData[i - 1]"
+                    class="badge me-1"
+                    >{{ fieldData[i - 1] }}</span
                   >
-                    See all {{ this.arrayColumnName }}
-                    <span class="badge text-bg-secondary ms-1">{{
-                      fieldData.length
-                    }}</span>
-                  </button>
                 </td>
-                <td v-else class="py-lg-3 table-text px-3 px-lg-4">
+
+                <td v-else class="py-3 table-text px-3 px-lg-4">
                   {{ fieldData }}
                 </td>
               </template>
@@ -178,8 +191,6 @@
 </template>
 
 <script>
-import { Popover } from "bootstrap";
-
 /**
  * Custom table component. Allows user to dynamically set the width, height, whether the first row should be bold and
  * allows for dynamic column creation depending on the array of object passed as tableData.
@@ -197,6 +208,8 @@ export default {
     amountToDisplay: Number,
     /** An array of objects which contain the data to be displayed in the table. */
     tableData: Array,
+    /** The amount of the array items you want to display whenever you want to have a td with array items. */
+    arrayAmountToDisplay: Number,
   },
   data() {
     return {
@@ -212,33 +225,34 @@ export default {
       displayAmount: this.amountToDisplay,
       /** Saves the amount that is supposed to be displayed, used in the 'view all' and 'view less'. */
       savedAmountToDisplay: 0,
-      arrayColumnName: "",
     };
   },
   methods: {
+    /** Whenever the next button is pressed, the data is updated to show the next items depending on the display amount. */
     handleNextButton() {
       this.currentStartIndex = this.currentEndIndex;
       this.currentEndIndex += this.displayAmount;
       this.updateDisplayedData();
     },
 
+    /** Whenever the previous button is pressed, the data is updated to show the previous items depending on the display
+     * amount and the indexes.
+     */
     handlePreviousButton() {
       this.currentEndIndex = this.currentStartIndex;
       this.currentStartIndex -= this.displayAmount;
       this.updateDisplayedData();
     },
 
+    /** Updates the currently displayed data by slicing the total table data which contain the start an ending index */
     updateDisplayedData() {
       this.currentlyDisplayedData = this.tableData.slice(
         this.currentStartIndex,
         this.currentEndIndex
       );
-
-      this.$nextTick(() => {
-        this.applyPopovers();
-      });
     },
 
+    /** Ensures that the ending index is the right number in the bottom left range display. */
     displayEndIndex() {
       if (this.currentEndIndex >= this.tableData.length) {
         return this.tableData.length;
@@ -247,6 +261,7 @@ export default {
       return this.currentEndIndex;
     },
 
+    /** Whenever the view all button is pressed, data gets changed and the view is updated to display all items. */
     viewAllItems() {
       this.savedAmountToDisplay = this.displayAmount;
       this.displayAmount = this.tableData.length;
@@ -255,54 +270,23 @@ export default {
       this.updateDisplayedData();
     },
 
+    /** The opposite of the view all, revert back to the original. */
     viewLessItems() {
       this.displayAmount = this.savedAmountToDisplay;
       this.currentStartIndex = 0;
       this.currentEndIndex = this.displayAmount;
       this.updateDisplayedData();
     },
-
-    findArrayColumnName() {
-      Object.values(this.currentlyDisplayedData[0]).forEach((value, index) => {
-        if (Array.isArray(value)) {
-          this.arrayColumnName = Object.keys(this.currentlyDisplayedData[0])[
-            index
-          ];
-        }
-      });
-    },
-
-    applyPopovers() {
-      const popoverTriggerList = document.querySelectorAll(
-        '[data-bs-toggle="popover"]'
-      );
-      [...popoverTriggerList].map(
-        (popoverTriggerEl) =>
-          new Popover(popoverTriggerEl, { trigger: "hover", placement: "left" })
-      );
-    },
-
-    displayPopoverArrayItems(arr) {
-      console.log(arr);
-
-      return 0;
-    },
   },
   created() {
     this.updateDisplayedData();
-    this.findArrayColumnName();
   },
   computed: {
+    /** Calculates the table height depending on the amount of items to be displayed at once. */
     calculateTableHeight() {
-      const TABLE_ROW_HEIGHT_BREAKPOINT_PX = 992;
       const rowHeightLarge = 57;
-      const rowHeightSmall = 41;
 
-      if (TABLE_ROW_HEIGHT_BREAKPOINT_PX < window.innerWidth) {
-        return rowHeightLarge * this.displayAmount + rowHeightLarge + "px";
-      }
-
-      return rowHeightSmall * this.displayAmount + rowHeightSmall + "px";
+      return rowHeightLarge * this.displayAmount + rowHeightLarge + "px";
     },
   },
 };
@@ -357,12 +341,12 @@ button:active {
   color: var(--color-primary) !important;
 }
 
-.custom-popover-btn {
-  color: var(--color-primary);
-  cursor: default !important;
-}
-
 .badge {
   background-color: var(--color-primary) !important;
+}
+
+.array-display {
+  width: 1%;
+  white-space: nowrap !important;
 }
 </style>
