@@ -64,7 +64,7 @@ export default {
     getUser() {
       return {
         name: "Julian",
-        role: "admin",
+        role: "viewer",
         team: {
           name: "team1",
           warehouse: "Superzon"
@@ -130,6 +130,10 @@ export default {
     },
 
     $route() {
+      //activeWarehouse should not change when user is a viewer
+      if (this.activeUser.role === "viewer") return
+
+
       if(this.$route.params.warehouse == null) {
         this.activeWarehouse = "Total";
       } else {
@@ -155,6 +159,9 @@ export default {
 
     //set active if there is a param in the url
     if (this.$route.params.warehouse) {
+      //activeWarehouse should not change when user is a viewer
+      if (this.activeUser.role === "viewer") return;
+
       this.activeWarehouse = this.$route.params.warehouse
     }
   }
