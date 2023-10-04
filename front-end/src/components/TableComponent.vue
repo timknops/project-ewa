@@ -1,6 +1,6 @@
 <template>
   <div class="card border-0 pt-4 pb-2 d-flex" :style="{ width: tableWidth }">
-    <div class="card-body px-4 py-0 overflow-y-scroll">
+    <div class="card-body px-4 py-0 overflow-hidden">
       <div class="table-responsive" :style="{ height: calculateTableHeight }">
         <table class="table table-hover mb-0">
           <thead>
@@ -18,7 +18,7 @@
 
           <!-- If bold first row is set to true, then use the first version of the tbody, else use the other. -->
           <tbody v-if="boldFirstColumn">
-            <tr v-for="tableRow in tableData" :key="tableRow">
+            <tr v-for="tableRow in currentlyDisplayedData" :key="tableRow">
               <!-- Makes the first column of the row bold. -->
               <th scope="row" class="py-lg-3 table-text px-3 px-lg-4">
                 {{ Object.values(tableRow)[0] }}
@@ -36,7 +36,7 @@
           </tbody>
 
           <tbody v-else>
-            <tr v-for="tableRow in tableData" :key="tableRow">
+            <tr v-for="tableRow in currentlyDisplayedData" :key="tableRow">
               <td
                 v-for="fieldData in Object.values(tableRow)"
                 :key="fieldData"
@@ -50,13 +50,20 @@
       </div>
     </div>
     <div class="row w-100 px-4 align-self-center align-items-center pt-2">
-      <div class="col d-flex">
+      <div class="col d-flex d-none d-md-block">
         <p class="mb-0">
-          1 to 6 <span class="items-listing">Items of</span> 15
+          {{ this.currentStartIndex + 1 }} to {{ this.displayEndIndex() }}
+          <span class="items-listing">Items of</span>
+          {{ this.tableData.length }}
         </p>
       </div>
-      <div class="col d-flex justify-content-end">
-        <button class="btn btn-link px-1 me-1 disabled" type="button">
+      <div class="col d-flex justify-content-center justify-content-md-end">
+        <button
+          @click="handlePreviousButton()"
+          class="btn btn-link px-1 me-1"
+          :class="{ disabled: this.currentStartIndex === 0 }"
+          type="button"
+        >
           <svg
             class="svg-inline--fa fa-chevron-left me-2"
             aria-hidden="true"
@@ -74,7 +81,12 @@
             ></path></svg
           >Previous
         </button>
-        <button class="btn btn-link px-1 ms-1" type="button">
+        <button
+          @click="handleNextButton()"
+          class="btn btn-link px-1 ms-1"
+          :class="{ disabled: this.currentEndIndex >= this.tableData.length }"
+          type="button"
+        >
           Next<svg
             class="svg-inline--fa fa-chevron-right ms-2"
             aria-hidden="true"
@@ -123,15 +135,49 @@ export default {
       /** The names of the columns that are displayed in the table header */
       tableColumnNames: Object.keys(this.tableData[0]),
       /** Height that the table rows height becomes smaller */
-      TABLE_ROW_HEIGHT_BREAKPOINT_PX: 992,
+      currentlyDisplayedData: [],
+      currentStartIndex: 0,
+      currentEndIndex: this.amountToDisplay,
     };
+  },
+  methods: {
+    handleNextButton() {
+      this.currentStartIndex = this.currentEndIndex;
+      this.currentEndIndex += this.amountToDisplay;
+      this.changeCurrentlyDisplayedData();
+    },
+
+    handlePreviousButton() {
+      this.currentEndIndex = this.currentStartIndex;
+      this.currentStartIndex -= this.amountToDisplay;
+      this.changeCurrentlyDisplayedData();
+    },
+
+    changeCurrentlyDisplayedData() {
+      this.currentlyDisplayedData = this.tableData.slice(
+        this.currentStartIndex,
+        this.currentEndIndex
+      );
+    },
+
+    displayEndIndex() {
+      if (this.currentEndIndex >= this.tableData.length) {
+        return this.tableData.length;
+      }
+
+      return this.currentEndIndex;
+    },
+  },
+  created() {
+    this.changeCurrentlyDisplayedData();
   },
   computed: {
     calculateTableHeight() {
+      const TABLE_ROW_HEIGHT_BREAKPOINT_PX = 992;
       const rowHeightLarge = 57;
       const rowHeightSmall = 41;
 
-      if (this.TABLE_ROW_HEIGHT_BREAKPOINT_PX < window.innerWidth) {
+      if (TABLE_ROW_HEIGHT_BREAKPOINT_PX < window.innerWidth) {
         return rowHeightLarge * this.amountToDisplay + rowHeightLarge + "px";
       }
 

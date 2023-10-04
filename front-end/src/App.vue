@@ -5,8 +5,7 @@
   >
     <TableComponent
       table-width="50vw"
-      table-height="40vh"
-      :amount-to-display="4"
+      :amount-to-display="2"
       :bold-first-column="true"
       :table-data="sampleData"
     />
