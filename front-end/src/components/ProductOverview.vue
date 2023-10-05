@@ -1,15 +1,16 @@
 <template>
   <!--    display the current warehouse which the user is assigned to-->
-  <div class="container" >
+  <div class="container">
     <h2 class="mb-4">Inventory</h2>
-    <div class="row border border-2 border-bottom-0 border-black rounded-top mx-0 p-1 pb-0" v-if="activeUser.role === 'viewer'">
+    <div class="row border border-2 border-bottom-0 border-black rounded-top mx-0 p-1 pb-0"
+         v-if="activeUser.role === 'viewer'">
       <div class="col">
         <strong class="warehouse-select active">{{ activeUser.team.warehouse }}</strong>
       </div>
     </div>
 
     <!-- row containing all names of warehouses and total which the admin can pick    -->
-    <div class="row border border-2 border-bottom-0 border-black rounded-top mx-0 p-1 pb-0" v-else>
+    <div class="row border border-2 border-bottom-0 border-black rounded-top mx-0 p-1 pb-0" v-else-if="activeUser.role === 'admin'">
       <div class="col-auto">
         <button type="button" class="warehouse-select btn btn-link p-0" :class="{active: activeWarehouse === 'Total'}"
                 @click="setActiveWarehouse('Total')">
@@ -47,8 +48,15 @@ export default {
   name: "product-overview",
   data() {
     return {
-      totalProducts: [], //list of objects containing the warehouse and its products
-      products: [], // the product and stock of the current active view, i.e. total or a certain warehouse
+      /* list of objects containing the warehouse and its products
+       * format of array is [{warehouse: String, products: Product[]}]
+       */
+      totalProducts: [],
+
+      /* The product and stock of the current active view, i.e. total or a certain warehouse.
+       * This is an array of products objects
+       */
+      products: [],
 
       activeUser: {name: String, role: String, team: {name: String, warehouse: name}},
 
@@ -64,7 +72,7 @@ export default {
     getUser() {
       return {
         name: "Julian",
-        role: "viewer",
+        role: "admin",
         team: {
           name: "team1",
           warehouse: "Superzon"
@@ -75,10 +83,10 @@ export default {
     setActiveWarehouse(warehouse) {
       this.activeWarehouse = warehouse;
 
-      if(warehouse === "Total") {
+      if (warehouse === "Total") {
         this.$router.push("/inventory")
       } else {
-      this.$router.push('/inventory/' + warehouse)
+        this.$router.push('/inventory/' + warehouse)
       }
     },
 
@@ -98,29 +106,42 @@ export default {
       return productsObjectArray[0].products
     },
 
+    /**
+     * Reformat the totalProduct array to a format accepted by the products array
+     * aggregating the quantity of all products in all warehouses.
+     *
+     * This function checks for all warehouses which products it has, for each of these products it gets the quantity.
+     * Of the product already exist in a warehouse that was checked, it adds the quantity to the already known stock
+     *
+     * @return {[Product]} array of product objects containing productName, description and quantity
+     */
     getTotalProductInfo() {
       const productObjects = {} // create an object where all products objects are stored in with accumulated stock
       this.totalProducts.forEach((warehouseData) => {
         warehouseData.products.forEach((product) => {
-            if (productObjects[product.productName]) {
-              productObjects[product.productName].quantity += product.quantity //add the quantity to the total stock
+          //if product already exists as key value pair in the object of product objects. increment the stock by the quantity of the current product
+          if (productObjects[product.productName]) {
+            productObjects[product.productName].quantity += product.quantity
+          } else {
+            //if product doesn't exist yet initiate the object to be put into the productsObject
+            productObjects[product.productName] = {
+              productName: product.productName,
+              description: product.description,
+              quantity: product.quantity
             }
-            else {
-              //if product doesn't exist yet initiate the object to be put into the productsObject
-              productObjects[product.productName] = {
-                productName: product.productName,
-                description: product.description,
-                quantity: product.quantity
-              }
-            }
+          }
         })
       })
+      //turn the object of product objects into an array of product objects
       return Object.values(productObjects)
     }
   },
 
 
   watch: {
+    /**
+     * If the active warehouse changes, the products array should update, so that the table gets re-rendered
+     */
     activeWarehouse() {
       if (this.activeWarehouse === "Total") {
         this.products = this.getTotalProductInfo()
@@ -133,8 +154,7 @@ export default {
       //activeWarehouse should not change when user is a viewer
       if (this.activeUser.role === "viewer") return
 
-
-      if(this.$route.params.warehouse == null) {
+      if (this.$route.params.warehouse == null) {
         this.activeWarehouse = "Total";
       } else {
         this.activeWarehouse = this.$route.params.warehouse;
@@ -143,18 +163,23 @@ export default {
   },
 
   created() {
+
     this.activeUser = this.getUser()
+
     //get list of products depending on the users role i.e. the total inventory or inventory of the warehouse of the user
-    if (this.activeUser.role === "viewer") {
-      this.products = Product.createDummyProduct();
-    } else {
+    if (this.activeUser.role === "admin") {
+      //build the totalProducts array to be manipulated by the admin, by choosing certain warehouses.
       const array = []
       this.WAREHOUSES.forEach((warehouse) => {
         const obj = {warehouse: warehouse, products: Product.createDummyProduct()}
         array.push(obj)
       })
       this.totalProducts = array;
+
+      //set the products to the products for all warehouses, i.e. when admin choses total as view.
       this.products = this.getTotalProductInfo()
+    } else {
+      this.products = Product.createDummyProduct();
     }
 
     //set active if there is a param in the url
@@ -186,7 +211,7 @@ h2 {
 }
 
 .warehouse-select:hover,
-.warehouse-select:focus{
+.warehouse-select:focus {
   color: var(--color-secondary);
   outline: none;
 }
@@ -195,7 +220,7 @@ h2 {
 Overwriting bootstrap active class
  */
 .warehouse-select.active,
-.warehouse-select:first-child:active{
+.warehouse-select:first-child:active {
   color: var(--color-primary);
 }
 
@@ -212,13 +237,13 @@ Overwriting bootstrap active class
 
 .warehouse-select.active::before,
 .warehouse-select:hover::before,
-.warehouse-select:focus::before{
+.warehouse-select:focus::before {
   width: 100%;
   background-color: var(--color-primary);
 }
 
 .warehouse-select:not(.active):hover::before,
-.warehouse-select:not(.active):focus::before{
+.warehouse-select:not(.active):focus::before {
   background-color: var(--color-secondary);
 }
 
