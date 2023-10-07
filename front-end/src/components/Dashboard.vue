@@ -1,17 +1,118 @@
 <template>
-  <p>
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec eget urna nibh. Nullam tincidunt est id sapien fringilla bibendum. Integer erat tortor, scelerisque sollicitudin vestibulum in, porttitor eu eros. Maecenas quis mauris at odio rutrum feugiat. Sed nulla magna, sodales vitae mi dignissim, fermentum porta sem. Mauris laoreet purus a odio consectetur feugiat. Vivamus a pharetra magna. Proin at neque pulvinar, tincidunt dui sit amet, semper ipsum.
+  <div>
+    <h2 class="mb-4">Dashboard</h2>
 
-    Aliquam sed est congue, vehicula massa id, facilisis massa. Quisque suscipit nec augue cursus consequat. Sed eget risus ut felis tincidunt ultricies. Duis commodo mi tincidunt augue tempus, quis tincidunt felis pharetra. Quisque ac felis consectetur, efficitur enim a, ultricies lectus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; In at aliquam erat. Ut id molestie turpis. Vestibulum molestie sit amet purus a elementum. Donec nec odio eu lectus lacinia mollis. Nam vitae fringilla nisi. Fusce lectus leo, consectetur eu nunc sit amet, congue scelerisque orci. Donec sit amet augue finibus, mollis est vel, malesuada lectus. Mauris eu lacus tincidunt, congue diam ut, iaculis ante.
-  </p>
+
+    <TableComponent
+        :tableWidth="'100%'"
+        :boldFirstColumn="true"
+        :amountToDisplay="2"
+        :tableData="tableData"
+        :arrayAmountToDisplay="10"
+    >
+    </TableComponent>
+
+    <div>
+      <canvas ref="myChart" class="my-chart" ></canvas>
+    </div>
+
+
+  </div>
 </template>
 
+
 <script>
+// Import the TableComponent
+import TableComponent from "@/components/TableComponent.vue";
+import Chart from "chart.js/auto";
+
 export default {
   // eslint-disable-next-line
-  name: "dashboard"
-}
+  name: "Dashboard",
+  components: {
+    TableComponent,
+
+  },
+  data() {
+    return {
+      tableData: [
+        {
+          Name: "enphase",
+          Quantity: 9,
+        },
+        {
+          Name: "Gateway",
+          Quantity: 18,
+        },
+
+      ],
+
+      chart: null,
+      chartWidth: 50,
+      chartHeight: 40,
+      xValues: ["This week", "Expected"],
+      yValues: [55, 49],
+      barColors: ["brown", "Yellow"],
+    };
+  },
+
+  mounted() {
+    this.createChart();
+  },
+  methods: {
+    createChart() {
+      if (this.chart) {
+        this.chart.destroy();
+      }
+
+
+      const chartWidth = this.chartWidth;
+      const chartHeight = this.chartHeight;
+
+      this.chart = new Chart(this.$refs.myChart, {
+        type: "bar",
+        data: {
+          labels: this.xValues,
+          datasets: [{
+            backgroundColor: this.barColors,
+            data: this.yValues,
+          },
+          ],
+        },
+        options: {
+          legend: {display: false},
+          title: {
+            display: true,
+            text: "World Wine Production 2018",
+          },
+          responsive: false,
+         // maintainAspectRatio: true,
+          width: chartWidth,
+          height: chartHeight,
+
+        },
+      });
+    },
+  },
+  watch: {
+    xValues: "createChart",
+    yValues: "createChart",
+  },
+
+
+};
 </script>
 
+
 <style scoped>
+h2 {
+  color: var(--color-primary);
+}
+
+.my-chart {
+  /*background-color: white;*/
+  box-shadow: var(--custom-box-shadow);
+
+}
+
 </style>
