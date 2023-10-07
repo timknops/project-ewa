@@ -28,10 +28,21 @@
   </div>
 </template>
 
+
 <script>
 import {Product} from "@/models/product";
 import TableComponent from "@/components/TableComponent.vue";
 
+/**
+ * Component handling the logic of displaying the inventory.
+ *
+ * if a user is an admin the user can view the total inventory of all warehouses,
+ * or the user can view the inventory of the selected warehouse
+ *
+ * if a user is a viewer the user can only view the inventory of the warehouse the user is associated to
+ *
+ * @author Julian Kruithof
+ */
 export default {
   name: "product-overview",
   components: {TableComponent},
