@@ -241,6 +241,9 @@ export default {
   },
   watch: {
     tableData() {
+      //reset display if tableData changes
+      this.currentStartIndex = 0;
+      this.currentEndIndex = this.amountToDisplay;
       this.updateDisplayedData()
     }
   }

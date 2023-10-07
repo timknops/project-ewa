@@ -24,7 +24,7 @@
         </button>
       </div>
     </div>
-    <table-component class="rounded-top-0 mt-0" :amount-to-display="7" :table-data="products"></table-component>
+    <table-component class="rounded-top-0 mt-0" :amount-to-display="6" :table-data="products"></table-component>
   </div>
 </template>
 
