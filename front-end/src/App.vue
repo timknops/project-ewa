@@ -1,130 +1,9 @@
-<template>
-  <div
-    class="d-flex justify-content-center align-items-center"
-    id="temp-container"
-  >
-    <TableComponent
-      table-width="80vw"
-      :amount-to-display="6"
-      :bold-first-column="true"
-      :table-data="sampleData1"
-      :array-amount-to-display="2"
-    />
-  </div>
-</template>
+<template></template>
 
 <script>
-import TableComponent from "@/components/TableComponent.vue";
-
 export default {
   name: "App",
-  components: { TableComponent },
-  data() {
-    return {
-      sampleData1: [
-        {
-          id: 1451,
-          name: "name1",
-          description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
-          quantity: 4343,
-          products: ["Product 1", "Product 2", "Product 3"],
-        },
-        {
-          id: 222,
-          name: "name2name2name2",
-          description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
-          quantity: 22,
-          products: [
-            "Product 1x",
-            "Product 2x",
-            "Product sdfsfsdfj 29xProduct sdfsfsdfj 29x",
-            "Product 1x",
-            "Product 2x",
-            "Product sdfsfsdfj 29x",
-          ],
-        },
-        {
-          id: 123412,
-          name: "name3",
-          description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
-          quantity: 14,
-          products: ["Product 1", "Product 2", "Product 3"],
-        },
-        {
-          id: 2,
-          name: "name4name2",
-          description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
-          quantity: 14212,
-          products: ["Product 1", "Product 2", "Product 3"],
-        },
-        {
-          id: 2,
-          name: "name4name2",
-          description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
-          quantity: 14212,
-          products: ["Product 1", "Product 2", "Product 3"],
-        },
-        {
-          id: 2,
-          name: "name4name2",
-          description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
-          quantity: 14212,
-          products: ["Product 1", "Product 2", "Product 3"],
-        },
-        {
-          id: 2,
-          name: "name4name2",
-          description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
-          quantity: 14212,
-          products: ["Product 1", "Product 2"],
-        },
-      ],
-      sampleData2: [
-        {
-          id: 1451,
-          name: "name1",
-          description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
-          quantity: 4343,
-        },
-        {
-          id: 222,
-          name: "name2name2name2",
-          description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
-          quantity: 22,
-        },
-        {
-          id: 123412,
-          name: "name3",
-          description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
-          quantity: 14,
-        },
-        {
-          id: 2,
-          name: "name4name2",
-          description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
-          quantity: 14212,
-        },
-        {
-          id: 2,
-          name: "name4name2",
-          description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
-          quantity: 14212,
-        },
-        {
-          id: 2,
-          name: "name4name2",
-          description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
-          quantity: 14212,
-        },
-        {
-          id: 2,
-          name: "name4name2",
-          description: "lorem impusmsdafsl;kdjf ;lksjdaf;lksdj",
-          quantity: 14212,
-        },
-      ],
-    };
-  },
+  components: {},
 };
 </script>
 
@@ -148,9 +27,5 @@ body {
   background-color: var(--bs-gray-100) !important;
   height: 100vh;
   width: 100vw;
-}
-
-#temp-container {
-  height: 100vh;
 }
 </style>
