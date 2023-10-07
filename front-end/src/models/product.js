@@ -49,7 +49,9 @@ export class Product {
     Product.productNames.forEach((productName) => {
       const description = "Lorem ipsum dolor sit amet, consectetur adipisicing elit. "
       const quantity = this.randomNumber(0, 40)
-      products.push(new Product(id, productName, description, quantity));
+      const product = new Product(id, productName, description, quantity)
+      delete product.id //remove id from display;
+      products.push(product);
 
       //for each product increment the id
       id += 3;

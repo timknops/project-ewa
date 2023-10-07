@@ -239,6 +239,11 @@ export default {
       return rowHeightLarge * this.displayAmount + rowHeightLarge + "px";
     },
   },
+  watch: {
+    tableData() {
+      this.updateDisplayedData()
+    }
+  }
 };
 </script>
 

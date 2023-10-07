@@ -2,7 +2,7 @@
   <!--    display the current warehouse which the user is assigned to-->
   <div class="container">
     <h2 class="mb-4">Inventory</h2>
-    <div class="row border border-2 border-bottom-0 border-black rounded-top mx-0 p-1 pb-0"
+    <div class="row warehouse-display rounded-top mx-0 p-1 pb-0"
          v-if="activeUser.role === 'viewer'">
       <div class="col">
         <strong class="warehouse-select active">{{ activeUser.team.warehouse }}</strong>
@@ -10,42 +10,31 @@
     </div>
 
     <!-- row containing all names of warehouses and total which the admin can pick    -->
-    <div class="row border border-2 border-bottom-0 border-black rounded-top mx-0 p-1 pb-0" v-else-if="activeUser.role === 'admin'">
+    <div class="row warehouse-display rounded-top mx-0 p-1 pb-0" v-else-if="activeUser.role === 'admin'">
       <div class="col-auto">
         <button type="button" class="warehouse-select btn btn-link p-0" :class="{active: activeWarehouse === 'Total'}"
                 @click="setActiveWarehouse('Total')">
-          Total inventory
+          <strong>Total inventory</strong>
         </button>
       </div>
       <div class="col-auto" v-for="warehouse in WAREHOUSES" :key="warehouse">
         <button type="button" class="warehouse-select btn btn-link p-0" :class="{active: warehouse === activeWarehouse}"
                 @click="setActiveWarehouse(warehouse)">
-          {{ warehouse }}
+          <strong>{{ warehouse }}</strong>
         </button>
       </div>
     </div>
-
-    <!--    TODO display table with info waiting on component-->
-    <!--    For now simple display shall be changed to table component when created -->
-    <div class="row mx-0 bg-solar-grey">
-      <div class="col">product</div>
-      <div class="col">description</div>
-      <div class="col">stock</div>
-    </div>
-    <div v-for="(product, index) in products" :key="product.id" class="row mx-0 bg-solar-grey"
-         :class="{'rounded-bottom': index === products.length -1}">
-      <div class="col">{{ product.productName }}</div>
-      <div class="col">{{ product.description }}</div>
-      <div class="col">{{ product.quantity }}</div>
-    </div>
+    <table-component class="rounded-top-0 mt-0" :amount-to-display="7" :table-data="products"></table-component>
   </div>
 </template>
 
 <script>
 import {Product} from "@/models/product";
+import TableComponent from "@/components/TableComponent.vue";
 
 export default {
   name: "product-overview",
+  components: {TableComponent},
   data() {
     return {
       /* list of objects containing the warehouse and its products
@@ -103,6 +92,7 @@ export default {
         console.error("There were multiple or no warehouses trying to receive their products")
         return [];
       }
+
       return productsObjectArray[0].products
     },
 
@@ -199,8 +189,8 @@ h2 {
   color: var(--color-primary);
 }
 
-.bg-solar-grey {
-  background-color: var(--color-text-bg);
+.warehouse-display {
+  background-color: var(--color-bg);
 }
 
 .warehouse-select {
@@ -208,6 +198,7 @@ h2 {
   transition: 200ms ease-out;
   color: var(--color-text);
   text-decoration: none;
+  z-index: 2;
 }
 
 .warehouse-select:hover,
