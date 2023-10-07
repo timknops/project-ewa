@@ -239,6 +239,14 @@ export default {
       return rowHeightLarge * this.displayAmount + rowHeightLarge + "px";
     },
   },
+  watch: {
+    tableData() {
+      //reset display if tableData changes
+      this.currentStartIndex = 0;
+      this.currentEndIndex = this.amountToDisplay;
+      this.updateDisplayedData()
+    }
+  }
 };
 </script>
 
