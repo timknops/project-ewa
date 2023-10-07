@@ -6,8 +6,8 @@
     <TableComponent
       table-width="80vw"
       :amount-to-display="6"
-      :bold-first-column="false"
-      :table-data="sampleData2"
+      :bold-first-column="true"
+      :table-data="sampleData1"
       :array-amount-to-display="2"
     />
   </div>
