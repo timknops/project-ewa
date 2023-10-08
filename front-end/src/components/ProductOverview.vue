@@ -1,7 +1,6 @@
 <template>
   <!--    display the current warehouse which the user is assigned to-->
   <div class="container">
-    <h2 class="mb-4">Inventory</h2>
     <div class="row warehouse-display rounded-top mx-0 p-1 pb-0"
          v-if="activeUser.role === 'viewer'">
       <div class="col">
