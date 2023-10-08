@@ -7,7 +7,7 @@ export const router = createRouter({
   routes: [
     {path: '/dashboard', component: Dashboard, meta: {icon: "fa-solid fa-house"}}, // path to the dashboard
     {
-      path: '/inventory', component: ProductOverview,
+      path: '/inventory', component: ProductOverview, meta: {icon: "fa-solid fa-boxes-stacked"},
       children: [{path: ':warehouse', component: ProductOverview}]
     },
     // add paths to other components here

@@ -3,8 +3,8 @@
   <header class="bg-white mb-3">
     <div class="row mx-0 px-3 justify-content-end border-bottom align-items-center">
       <div class="col-auto d-flex flex-column text-end">
-        <span>logged in as: user</span>
-        <span>role</span>
+        <span>Logged in as: <strong>{{activeUser.name}}</strong></span>
+        <span>Role: <strong>{{activeUser.role}} </strong></span>
       </div>
     </div>
     <div class="row mx-0 px-3 py-1 justify-content-start align-items-center">
@@ -19,14 +19,47 @@
 <script>
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 
+/**
+ * Header component to display the current page the user is on and the name and role of a user
+ *
+ * In the future it could contain a search bar
+ * @author Julian Kruithof
+ */
 export default {
   name: "HeaderComponent",
   components: {FontAwesomeIcon},
+  data() {
+    return {
+      activeUser: {name: String, role: String, team: {name: String, warehouse: name}}
+    }
+  },
   computed: {
+    /**
+     * Display the name of the route which is active, it removes the / and capitalizes the first letter.
+     * @return {string} the name of the page the user is currently on.
+     */
     displayCurrentPageName() {
+      //When vue initially loads header the route is / and matched is empty.
+      if (!this.$route.matched[0]) {
+        return
+      }
       const pageName = this.$route.matched[0].path
       return pageName.substring(1,2).toUpperCase().concat(pageName.substring(2))
     }
+  },
+  methods: {
+    getUser() {
+      return {
+        name: "Julian",
+        role: "admin",
+        team: {
+          name: "team1",
+          warehouse: "Superzon"
+        }
+      }
+    }
+  }, created() {
+    this.activeUser = this.getUser();
   }
 }
 </script>
