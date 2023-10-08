@@ -36,6 +36,7 @@
 </template>
 
 <script>
+import {user} from "@/models/user";
 export default {
   name: "LoginPage",
   data(){
@@ -44,19 +45,12 @@ export default {
       input: {
         username1: "",
         password1: ""
-      }
+      },
+
+      user1: {}
     }
   },
   methods:{
-    /*
-    Dummy data to check if the login information is correct
-     */
-    getUserInfo(){
-      return{
-        username: "Albert",
-        password: "konijn"
-      }
-    },
     /**
      * Login method that checks the entered userinfo
      *
@@ -69,14 +63,17 @@ export default {
       if (this.input.username1 === "" || this.input.password1 === ""){
         alert("One of the fields is empty")
         console.log("One of the fields is empty")
-      } else if (this.input.username1 === this.getUserInfo().username &&
-          this.input.password1 === this.getUserInfo().password){
+      } else if (this.input.username1 === this.user1.username &&
+          this.input.password1 === this.user1.password){
         this.$router.push("/dashboard")
       } else {
         alert("Your login details are incorrect")
         console.log("Your login details are incorrect")
       }
     }
+  },
+  created() {
+    this.user1 = user.dummyData()
   }
 }
 
