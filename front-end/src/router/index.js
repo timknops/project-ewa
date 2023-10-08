@@ -5,7 +5,7 @@ import ProductOverview from "@/components/ProductOverview.vue";
 export const router = createRouter({
   history: createWebHashHistory(),
   routes: [
-    {path: '/dashboard', component: Dashboard}, // path to the dashboard
+    {path: '/dashboard', component: Dashboard, meta: {icon: "fa-solid fa-house"}}, // path to the dashboard
     {
       path: '/inventory', component: ProductOverview,
       children: [{path: ':warehouse', component: ProductOverview}]
