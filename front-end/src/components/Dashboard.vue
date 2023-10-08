@@ -18,8 +18,7 @@
       <!--Forecast-->
       <div class="user-table-overview-left">
         <div class="table-container">
-<!--          <div v-for="(item, index) in tableData" :key="index" class="forecast-chart">-->
-<!--            <canvas  :ref="'myChart_' + index" style="width:600px; height:300px" class="my-chart"></canvas>-->
+
           <canvas  ref="combinedChart" style="width:600px; height:300px" class="my-chart"></canvas>
           </div>
         </div>
@@ -123,12 +122,12 @@ export default {
         datasets: [
           {
             label: "Quantity",
-            backgroundColor: this.barColors[0], // Use the first color for Quantity
+            backgroundColor: this.barColors[0],
             data: data,
           },
           {
             label: "Expected",
-            backgroundColor: "rgba(199, 208, 44, 1)", // Use the specified color for Expected
+            backgroundColor: "rgba(199, 208, 44, 1)",
             data: expectedData,
           },
         ],
