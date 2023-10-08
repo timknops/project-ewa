@@ -13,16 +13,20 @@
 <!--            username-->
             <div class="row form-group username">
               <label for="usernameInputLabel">Username:</label>
-              <input type="text" class="form-control" id="usernameInputLabel" placeholder="Enter username" required>
+              <input type="text" class="form-control" id="usernameInputLabel" placeholder="Enter username"
+                     v-model="input.username1" required>
             </div>
 <!--            password-->
             <div class="row form-group password mt-5">
               <label for="passwordInputLabel">Password:</label>
-              <input type="password" class="form-control" id="passwordInputLabel" placeholder="Enter password" required>
+              <input type="password" class="form-control" id="passwordInputLabel" placeholder="Enter password"
+                     v-model="input.password1" required>
               <small id="forgotPassword" class="form-text text-muted">Forgot password?</small>
             </div>
             <div class="text-center mt-3">
-            <button class="btn btn-primary login-button" type="submit">Login</button>
+<!--              <router-link to="/loginPage" class="nav-link" active-class="active">-->
+            <button class="btn btn-primary login-button" type="submit" v-on:click.prevent = "login()">Login</button>
+<!--              </router-link>-->
             </div>
           </form>
         </div>
@@ -33,7 +37,47 @@
 
 <script>
 export default {
-  name: "LoginPage"
+  name: "LoginPage",
+  data(){
+    return {
+      //input variables for the entered userdata
+      input: {
+        username1: "",
+        password1: ""
+      }
+    }
+  },
+  methods:{
+    /*
+    Dummy data to check if the login information is correct
+     */
+    getUserInfo(){
+      return{
+        username: "Albert",
+        password: "konijn"
+      }
+    },
+    /**
+     * Login method that checks the entered userinfo
+     *
+     * Checks if one of the fields is empty
+     *
+     * if the entered username and password are the same as the dummy data then redirect to the dashboard
+     * if not then notify the user with an alert that login details are incorrect
+     */
+    login(){
+      if (this.input.username1 === "" || this.input.password1 === ""){
+        alert("One of the fields is empty")
+        console.log("One of the fields is empty")
+      } else if (this.input.username1 === this.getUserInfo().username &&
+          this.input.password1 === this.getUserInfo().password){
+        this.$router.push("/dashboard")
+      } else {
+        alert("Your login details are incorrect")
+        console.log("Your login details are incorrect")
+      }
+    }
+  }
 }
 
 </script>
@@ -46,9 +90,9 @@ export default {
   background-color: #F9FAFB;
 }
 .logo-image-pic{
-  margin-top: -50px;
-  height: 250px;
-  width: 250px;
+  margin-top: -3rem;
+  height: 15rem;
+  width: 15rem;
 }
 /*normal state of button*/
 .login-button {
