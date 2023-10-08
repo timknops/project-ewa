@@ -7,7 +7,7 @@
         <span>Role: <strong>{{activeUser.role}} </strong></span>
       </div>
     </div>
-    <div class="row mx-0 px-3 py-1 justify-content-start align-items-center">
+    <div class="row mx-0 px-5 py-1 justify-content-start align-items-center">
       <div class="col-auto color-primary" v-if="$route.meta?.icon">
         <font-awesome-icon  :icon="$route.meta.icon"></font-awesome-icon>
       </div>
