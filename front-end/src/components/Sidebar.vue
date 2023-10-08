@@ -80,6 +80,7 @@ export default {
 }
 
 .sidebar{
+  background-color: var(--color-bg);
   text-align: center;
   min-width: 17rem;
   width: 17rem;
