@@ -65,7 +65,7 @@ export default {
           this.input.password1 === this.user1.password){
         localStorage.setItem('loggedIn', true)
         console.log("Login:" + localStorage.getItem('loggedIn'))
-        // this.$router.push("/dashboard")
+        this.$router.push("/dashboard")
       } else {
         alert("Your login details are incorrect")
         console.log("Your login details are incorrect")

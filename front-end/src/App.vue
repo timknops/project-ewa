@@ -9,7 +9,7 @@
 <script>
 import Sidebar from '@/components/Sidebar.vue'
 import LoginPage from "@/components/LoginPage.vue";
-
+// localStorage.setItem('loggedIn', false)
 console.log(localStorage.getItem('loggedIn'))
 export default {
   name: 'App',
@@ -23,7 +23,7 @@ export default {
     }
   },
   watch: {
-    name(){
+    $route(){
       this.loggedInActive = localStorage.getItem('loggedIn')
     }
   },
