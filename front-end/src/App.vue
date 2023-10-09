@@ -1,7 +1,8 @@
 <template>
   <loginPage @update-logged-in="updateLoggedIn()" v-if="loggedInActive === 'false'"></loginPage>
   <div v-else>
-    <sidebar></sidebar>
+    <sidebar/>
+    <header-component class="header"></header-component>
     <router-view id="component"></router-view>
   </div>
 </template>
@@ -9,12 +10,14 @@
 <script>
 import Sidebar from '@/components/Sidebar.vue'
 import LoginPage from "@/components/LoginPage.vue";
+import HeaderComponent from "@/components/HeaderComponent.vue";
 
 // localStorage.setItem('loggedIn', false)
 export default {
   name: 'App',
   components: {
     LoginPage,
+    HeaderComponent,
     Sidebar
   },
   data() {
@@ -38,6 +41,9 @@ export default {
 #component {
   margin-left: 20rem;
   max-width: calc(100vw - 23rem);
+}
+.header {
+  margin-left: 17rem;
 }
 
 /* Colors used by Solar Sedum*/
