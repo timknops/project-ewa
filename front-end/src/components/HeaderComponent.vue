@@ -1,6 +1,6 @@
 
 <template>
-  <header class="bg-white mb-3">
+  <header class="bg-white mb-5">
     <div class="row mx-0 px-3 py-1 justify-content-end border-bottom align-items-center">
       <div class="col-auto d-flex flex-column text-end">
         <span>Logged in as: <strong>{{activeUser.name}}</strong></span>
@@ -11,7 +11,7 @@
       <div class="col-auto color-primary mt-1 bg-body-secondary py-2 rounded-5" v-if="$route.meta?.icon">
         <font-awesome-icon  :icon="$route.meta.icon"></font-awesome-icon>
       </div>
-      <h2 class="col-auto fs-4 mb-0 color-primary"> {{displayCurrentPageName}} </h2>
+      <h2 class="col-auto fs-4 mb-0 color-primary fw-bold"> {{displayCurrentPageName}} </h2>
     </div>
   </header>
 </template>

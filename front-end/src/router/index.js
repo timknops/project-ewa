@@ -11,6 +11,6 @@ export const router = createRouter({
       children: [{path: ':warehouse', component: ProductOverview}]
     },
     // add paths to other components here
-    {path: '/:pathMatch(.*)', component: Dashboard} // redirect non-existing path to dashboard
+    {path: '/:pathMatch(.*)', redirect: '/dashboard'} // redirect non-existing path to dashboard
   ]
 })
