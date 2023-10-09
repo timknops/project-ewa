@@ -1,31 +1,27 @@
 <template>
-  <div class="d-flex justify-content-center align-items-center" id="temp-container">
-    <UserComponent
-        table-width="80vw"
-        :amount-to-display="6"
-        :bold-first-column="false"
-        :table-data="userData"
-        :array-amount-to-display="2"
-    />
-  </div>
+  <sidebar/>
+  <router-view id="component"></router-view>
 </template>
 
 <script>
-import UserComponent from "@/components/UserComponent.vue";
-import {userData} from "@/userData";
+import Sidebar from '@/components/Sidebar.vue'
 
 export default {
-  name: "App",
-  components: { UserComponent },
-  data() {
-    return {
-      userData: userData,
-    };
-  },
-};
+  name: 'App',
+  components: {
+    Sidebar
+  }
+}
 </script>
 
 <style>
+
+#component{
+  margin-left: 20rem;
+  max-width: calc(100vw - 23rem);
+}
+
+/* Colors used by Solar Sedum*/
 :root {
   --color-primary: #c7d02c;
   --color-secondary: #572700;
@@ -35,7 +31,7 @@ export default {
   --color-text-bg: #f8f8f8;
 
   --custom-box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05),
-  0 4px 6px -4px rgb(0 0 0 / 0.05);
+    0 4px 6px -4px rgb(0 0 0 / 0.05);
 }
 
 html,
@@ -45,9 +41,5 @@ body {
   background-color: var(--bs-gray-100) !important;
   height: 100vh;
   width: 100vw;
-}
-
-#temp-container {
-  height: 100vh;
 }
 </style>
