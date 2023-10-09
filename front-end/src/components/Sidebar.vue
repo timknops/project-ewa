@@ -80,10 +80,6 @@ export default {
   color: var(--color-primary) !important;
 }
 
-.active{
-  color: var(--color-primary) !important;
-}
-
 .sidebar{
   background-color: var(--color-bg);
   text-align: center;
