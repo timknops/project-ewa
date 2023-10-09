@@ -1,6 +1,7 @@
 import {createRouter, createWebHashHistory} from 'vue-router'
 import Dashboard from '@/components/Dashboard'
 import ProductOverview from "@/components/ProductOverview.vue";
+import loginPage from "@/components/LoginPage.vue";
 import UserOverview from "@/components/UserOverview";
 
 export const router = createRouter({
@@ -11,6 +12,7 @@ export const router = createRouter({
       path: '/inventory', component: ProductOverview, meta: {icon: "fa-solid fa-boxes-stacked"},
       children: [{path: ':warehouse', component: ProductOverview}]
     },
+    {path: '/loginPage', component: loginPage},
     {path: '/user', component: UserOverview, meta:{icon: "fa-solid fa-user"}},
     // add paths to other components here
     {path: '/:pathMatch(.*)', redirect: '/dashboard'} // redirect non-existing path to dashboard
