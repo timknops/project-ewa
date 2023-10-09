@@ -32,7 +32,7 @@
           <font-awesome-icon icon="fa-solid fa-user" class="sidebar-icons"/>Users
         </router-link>
       </li>
-      <li class="nav-item">
+      <li class="nav-item mt-5">
         <router-link to="#" class="nav-link">
           <font-awesome-icon icon="fa-solid fa-arrow-right-from-bracket" class="sidebar-icons"/>Sign out
         </router-link>
