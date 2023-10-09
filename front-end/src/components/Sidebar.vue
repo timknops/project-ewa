@@ -28,7 +28,7 @@
         </router-link>
       </li>
       <li class="nav-item">
-        <router-link to="#" class="nav-link">
+        <router-link to="/user" class="nav-link">
           <font-awesome-icon icon="fa-solid fa-user" class="sidebar-icons"/>Users
         </router-link>
       </li>
