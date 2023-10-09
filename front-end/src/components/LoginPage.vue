@@ -55,7 +55,6 @@ export default {
       errorMessage: ""
     }
   },
-  watch: {},
   methods: {
     /**
      * Login method that checks the entered userinfo
@@ -69,7 +68,6 @@ export default {
      */
     login() {
       if (this.input.username1 === "" || this.input.password1 === "") {
-        console.log("One of the fields is empty")
         this.errorMessage = "One of the fields is empty"
         this.correctLogin = true
       } else if (this.input.username1 === this.user1.username &&
@@ -93,14 +91,9 @@ export default {
     this.user1 = userLogin.dummyData()
   }
 }
-
 </script>
 
 <style scoped>
-.set-font {
-  font-family: 'Montserrat', sans-serif;
-}
-
 .card-color-grey {
   background-color: #F9FAFB;
 }
