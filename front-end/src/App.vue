@@ -42,7 +42,7 @@ export default {
 
 html,
 body {
-  font-family: "Montserrat", sans-serif;
+  font-family: "Montserrat", sans-serif !important;
   color: var(--color-text) !important;
   background-color: var(--bs-gray-100) !important;
   height: 100vh;
