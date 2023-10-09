@@ -1,47 +1,43 @@
 <template>
   <div>
-
-
     <!--Inventory-->
     <strong class="table-title">Current inventory of my warehouse</strong>
     <TableComponent
-        :tableWidth="'100%'"
-        :boldFirstColumn="true"
-        :amountToDisplay="3"
-        :tableData="tableData"
-        :arrayAmountToDisplay="10"
-
+      :tableWidth="'100%'"
+      :boldFirstColumn="true"
+      :amountToDisplay="3"
+      :tableData="tableData"
+      :arrayAmountToDisplay="10"
     >
     </TableComponent>
 
-    <div class="table-container">
+    <div class="table-container row mb-5 gap-5">
       <!--Forecast-->
-      <div class="user-table-overview-left">
+      <div class="col user-table-overview-left card border-0 p-4">
         <div class="table-container">
-
-          <canvas  ref="combinedChart" style="width:600px; height:300px" class="my-chart"></canvas>
-          </div>
+          <canvas
+            ref="combinedChart"
+            style="width: 600px; height: 300px"
+            class="my-chart"
+          ></canvas>
         </div>
-
+      </div>
 
       <!--User information-->
-      <TableComponent class="user-table-overview-right"
-                      :tableWidth="'40%'"
-                      :boldFirstColumn="true"
-                      :amountToDisplay="2"
-                      :tableData="userData"
-                      :arrayAmountToDisplay="10"
+      <TableComponent
+        class="col user-table-overview-right"
+        :tableWidth="'40%'"
+        :boldFirstColumn="true"
+        :amountToDisplay="2"
+        :tableData="userData"
+        :arrayAmountToDisplay="10"
       >
       </TableComponent>
     </div>
-
   </div>
-
 </template>
 
-
 <script>
-
 import TableComponent from "@/components/TableComponent.vue";
 import Chart from "chart.js/auto";
 
@@ -50,7 +46,6 @@ export default {
   name: "Dashboard",
   components: {
     TableComponent,
-
   },
   data() {
     return {
@@ -75,7 +70,6 @@ export default {
           Quantity: 18,
           Expected: 45,
         },
-
       ],
       userData: [
         {
@@ -86,25 +80,22 @@ export default {
       forecastData: [
         {
           Forecast: "",
-
         },
       ],
 
       chartDataList: [],
-  //    chart: null,
+      //    chart: null,
       chartWidth: 200,
       chartHeight: 80,
-     // xValues: ["This week", "Expected"],
+      // xValues: ["This week", "Expected"],
       //yValues: [0, 36],
       barColors: ["rgba(91, 46, 24, 1)"],
-
     };
   },
 
   mounted() {
     this.createChart();
   },
-
 
   methods: {
     createChart() {
@@ -168,22 +159,12 @@ export default {
     },
   },
 
-
-
-
-
-
-
   // watch: {
   //   xValues: "createChart",
   //   yValues: "createChart",
   // },
-
-
-
 };
 </script>
-
 
 <style scoped>
 h2 {
@@ -194,24 +175,19 @@ h2 {
   width: 100%;
   height: auto;
   /*box-shadow: var(--custom-box-shadow);*/
-
 }
 
 .table-container {
-  display: flex;
-  justify-content: space-between;
-
+  margin: 0 1px;
 }
 
 .user-table-overview-right {
-  margin: 5px;
   margin-top: 50px;
 }
 
 .user-table-overview-left {
-  margin: 5px;
   margin-top: 50px;
+  box-shadow: var(--custom-box-shadow);
+  border-radius: 0.5rem;
 }
-
-
 </style>
