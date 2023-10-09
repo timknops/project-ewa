@@ -21,10 +21,12 @@ import { faUsers } from '@fortawesome/free-solid-svg-icons'
 import { faUser } from '@fortawesome/free-solid-svg-icons'
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 
 
 /* add icons to the library */
-library.add(faXmark, faCheck, faHouse, faBoxesStacked, faDiagramProject, faWarehouse, faUsers, faUser, faChevronRight, faChevronLeft)
+library.add(faXmark, faCheck, faHouse, faBoxesStacked, faDiagramProject,
+    faWarehouse, faUsers, faUser, faChevronRight, faChevronLeft,faArrowRightFromBracket)
 
 
 /* import bootstrap */
