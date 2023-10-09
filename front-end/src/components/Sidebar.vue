@@ -23,7 +23,7 @@
         </router-link>
       </li>
       <li class="nav-item">
-        <router-link to="#" class="nav-link">
+        <router-link to="/team" class="nav-link">
           <font-awesome-icon icon="fa-solid fa-users" class="sidebar-icons"/>Teams
         </router-link>
       </li>
