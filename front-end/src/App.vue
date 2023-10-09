@@ -1,14 +1,17 @@
 <template>
   <sidebar/>
+  <header-component class="header"></header-component>
   <router-view id="component"></router-view>
 </template>
 
 <script>
 import Sidebar from '@/components/Sidebar.vue'
+import HeaderComponent from "@/components/HeaderComponent.vue";
 
 export default {
   name: 'App',
   components: {
+    HeaderComponent,
     Sidebar
   }
 }
@@ -19,6 +22,9 @@ export default {
 #component{
   margin-left: 20rem;
   max-width: calc(100vw - 23rem);
+}
+.header {
+  margin-left: 17rem;
 }
 
 /* Colors used by Solar Sedum*/
