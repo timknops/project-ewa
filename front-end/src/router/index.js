@@ -6,13 +6,13 @@ import UserOverview from "@/components/UserOverview";
 export const router = createRouter({
   history: createWebHashHistory(),
   routes: [
-    {path: '/dashboard', component: Dashboard}, // path to the dashboard
+    {path: '/dashboard', component: Dashboard, meta: {icon: "fa-solid fa-house"}}, // path to the dashboard
     {
-      path: '/inventory', component: ProductOverview,
+      path: '/inventory', component: ProductOverview, meta: {icon: "fa-solid fa-boxes-stacked"},
       children: [{path: ':warehouse', component: ProductOverview}]
     },
     {path: '/user', component: UserOverview},
     // add paths to other components here
-    {path: '/:pathMatch(.*)', component: Dashboard} // redirect non-existing path to dashboard
+    {path: '/:pathMatch(.*)', redirect: '/dashboard'} // redirect non-existing path to dashboard
   ]
 })

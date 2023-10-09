@@ -3,7 +3,7 @@
     <img alt="Solar Sedum logo" id="sidebar-logo" src="../assets/solar_logo.svg">
     <ul class="nav flex-column" id="sidebar-items-list">
       <li class="nav-item">
-        <router-link :to="dashboardRoute" :class="{'active': $route.path === dashboardRoute}" class="nav-link">
+        <router-link :to="dashboardRoute" active-class="active" class="nav-link">
           <font-awesome-icon icon="fa-solid fa-house" class="sidebar-icons"/>Dashboard
         </router-link>
       </li>
