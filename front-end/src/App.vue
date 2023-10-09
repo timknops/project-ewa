@@ -1,5 +1,5 @@
 <template>
-  <loginPage v-if="loggedInActive === 'false'"></loginPage>
+  <loginPage @update-logged-in="updateLoggedIn()" v-if="loggedInActive === 'false'"></loginPage>
   <div v-else>
     <sidebar></sidebar>
     <router-view id="component"></router-view>
@@ -9,7 +9,7 @@
 <script>
 import Sidebar from '@/components/Sidebar.vue'
 import LoginPage from "@/components/LoginPage.vue";
-// localStorage.setItem('loggedIn', false)
+localStorage.setItem('loggedIn', false)
 console.log(localStorage.getItem('loggedIn'))
 export default {
   name: 'App',
@@ -22,9 +22,9 @@ export default {
       loggedInActive: {},
     }
   },
-  watch: {
-    $route(){
-      this.loggedInActive = localStorage.getItem('loggedIn')
+  methods: {
+    updateLoggedIn() {
+      this.loggedInActive = localStorage.getItem('loggedIn');
     }
   },
   created() {
