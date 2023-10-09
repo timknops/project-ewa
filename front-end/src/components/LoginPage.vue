@@ -24,8 +24,10 @@
               <small style="cursor: pointer;" @click="forgotPassword" id="forgotPassword" class="form-text text-muted">Forgot
                 password?</small>
             </div>
-            <p v-if="correctLogin" class="error-message">Your login details are incorrect</p>
+            <!--            error message-->
+            <p v-if="correctLogin" class="error-message">{{ errorMessage }}</p>
             <div class="text-center mt-3">
+              <!--              button-->
               <button class="btn btn-primary login-button" type="button" v-on:click="login()">Login</button>
             </div>
           </form>
@@ -37,7 +39,7 @@
 
 <script>
 import {userLogin} from "@/models/userLogin";
-// localStorage.setItem('loggedIn', false)
+//localStorage.setItem('loggedIn', false)
 export default {
   name: "LoginPage",
   data() {
@@ -49,7 +51,8 @@ export default {
       },
       loggedInActive: {},
       user1: {},
-      correctLogin: null
+      correctLogin: null,
+      errorMessage: ""
     }
   },
   watch: {},
@@ -57,25 +60,31 @@ export default {
     /**
      * Login method that checks the entered userinfo
      *
-     * Checks if one of the fields is empty
+     * Checks if one of the fields is empty, if it is then change the error message and display it
      *
      * if the entered username and password are the same as the dummy data then change the localstorage item and
      * redirect to the dashboard
      *
-     * if not then notify the user with an alert that login details are incorrect
+     * if not then notify the user with an error message that login details are incorrect
      */
     login() {
       if (this.input.username1 === "" || this.input.password1 === "") {
         console.log("One of the fields is empty")
+        this.errorMessage = "One of the fields is empty"
+        this.correctLogin = true
       } else if (this.input.username1 === this.user1.username &&
           this.input.password1 === this.user1.password) {
         localStorage.setItem('loggedIn', true)
         this.$emit('updateLoggedIn', true)
         this.$router.push("/dashboard")
       } else {
+        this.errorMessage = "Your login details are incorrect"
         this.correctLogin = true
       }
     },
+    /**
+     * very simple method to give someone an alert if they request a password reset
+     */
     forgotPassword() {
       alert("A request to reset your password has beent sent your e-mail")
     }
