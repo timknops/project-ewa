@@ -14,19 +14,17 @@
             <div class="row form-group username">
               <label for="usernameInputLabel">Username:</label>
               <input type="text" class="form-control" id="usernameInputLabel" placeholder="Enter username"
-                     v-model="input.username1" required>
+                     v-model.trim.lazy="input.username1" required>
             </div>
 <!--            password-->
             <div class="row form-group password mt-5">
               <label for="passwordInputLabel">Password:</label>
               <input type="password" class="form-control" id="passwordInputLabel" placeholder="Enter password"
-                     v-model="input.password1" required>
+                     v-model.trim.lazy="input.password1" required>
               <small id="forgotPassword" class="form-text text-muted">Forgot password?</small>
             </div>
             <div class="text-center mt-3">
-<!--              <router-link to="/loginPage" class="nav-link" active-class="active">-->
-            <button class="btn btn-primary login-button" type="submit" v-on:click.prevent = "login()">Login</button>
-<!--              </router-link>-->
+            <button class="btn btn-primary login-button" type="button" v-on:click = "login()">Login</button>
             </div>
           </form>
         </div>
@@ -46,8 +44,9 @@ export default {
         username1: "",
         password1: ""
       },
-
+      loggedInActive: {},
       user1: {}
+
     }
   },
   methods:{
@@ -61,11 +60,12 @@ export default {
      */
     login(){
       if (this.input.username1 === "" || this.input.password1 === ""){
-        alert("One of the fields is empty")
         console.log("One of the fields is empty")
       } else if (this.input.username1 === this.user1.username &&
           this.input.password1 === this.user1.password){
-        this.$router.push("/dashboard")
+        localStorage.setItem('loggedIn', true)
+        console.log("Login:" + localStorage.getItem('loggedIn'))
+        // this.$router.push("/dashboard")
       } else {
         alert("Your login details are incorrect")
         console.log("Your login details are incorrect")
