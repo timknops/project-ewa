@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 class="mb-4">Dashboard</h2>
+
 
     <!--Inventory-->
     <strong class="table-title">Current inventory of my warehouse</strong>
