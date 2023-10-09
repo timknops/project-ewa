@@ -36,8 +36,8 @@
 </template>
 
 <script>
-import {user} from "@/models/user";
-
+import {userLogin} from "@/models/userLogin";
+// localStorage.setItem('loggedIn', false)
 export default {
   name: "LoginPage",
   data() {
@@ -81,7 +81,7 @@ export default {
     }
   },
   created() {
-    this.user1 = user.dummyData()
+    this.user1 = userLogin.dummyData()
   }
 }
 
