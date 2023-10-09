@@ -9,8 +9,8 @@
 <script>
 import Sidebar from '@/components/Sidebar.vue'
 import LoginPage from "@/components/LoginPage.vue";
-localStorage.setItem('loggedIn', false)
-console.log(localStorage.getItem('loggedIn'))
+
+// localStorage.setItem('loggedIn', false)
 export default {
   name: 'App',
   components: {
@@ -29,9 +29,6 @@ export default {
   },
   created() {
     this.loggedInActive = localStorage.getItem('loggedIn')
-    console.log("5")
-    console.log("mmmm" + this.loggedInActive)
-    console.log(this.loggedInActive === 'false')
   }
 }
 </script>
@@ -58,7 +55,7 @@ export default {
 
 html,
 body {
-  font-family: "Montserrat", sans-serif;
+  font-family: "Montserrat", sans-serif !important;
   color: var(--color-text) !important;
   background-color: var(--bs-gray-100) !important;
   height: 100vh;

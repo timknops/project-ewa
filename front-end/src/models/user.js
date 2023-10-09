@@ -4,7 +4,7 @@
  * @author Noa de Greef
  */
 
-export class user{
+export class user {
 
     /**
      * Constructor of a user
@@ -27,7 +27,7 @@ export class user{
 
     }
 
-    static dummyData(){
+    static dummyData() {
         return new user(
             1,
             1,
