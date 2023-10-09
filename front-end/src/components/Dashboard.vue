@@ -1,39 +1,41 @@
 <template>
   <div>
     <!--Inventory-->
-    <strong class="table-title">Current inventory of my warehouse</strong>
     <TableComponent
       :tableWidth="'100%'"
       :boldFirstColumn="true"
       :amountToDisplay="3"
       :tableData="tableData"
       :arrayAmountToDisplay="10"
+      table-title="Inventory"
+      sub-title="Current inventory of my warehouse"
     >
     </TableComponent>
 
-    <div class="table-container row mb-5 gap-5">
+    <div class="table-container mb-5 gap-5 d-flex w-100">
       <!--Forecast-->
-      <div class="col user-table-overview-left card border-0 p-4">
-        <div class="table-container">
+      <div class="user-table-overview-left card border-0">
+        <div class="table-container card-body align-items-center d-flex">
           <canvas
             ref="combinedChart"
-            style="width: 600px; height: 300px"
+            style="width: calc(50vw - 23rem); height: 100%"
             class="my-chart"
           ></canvas>
         </div>
       </div>
 
-      <!--User information-->
       <TableComponent
-        class="col user-table-overview-right"
-        :tableWidth="'40%'"
+        class="user-table-overview-right"
+        tableWidth="60%"
         :boldFirstColumn="true"
-        :amountToDisplay="2"
+        :amountToDisplay="4"
         :tableData="userData"
-        :arrayAmountToDisplay="10"
+        table-title="Users"
+        sub-title="Current active users"
       >
       </TableComponent>
     </div>
+    <!--User information-->
   </div>
 </template>
 
@@ -64,11 +66,6 @@ export default {
           Name: "MB 385 (white)",
           Quantity: 18,
           Expected: 30,
-        },
-        {
-          Name: "DENIM 405 black",
-          Quantity: 18,
-          Expected: 45,
         },
       ],
       userData: [
