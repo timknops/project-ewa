@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory } from "vue-router";
 import Dashboard from "@/components/Dashboard";
 import ProductOverview from "@/components/ProductOverview.vue";
 import loginPage from "@/components/LoginPage.vue";
+import TeamOverview from "@/components/TeamOverview";
 import UserOverview from "@/components/UserOverview";
 
 export const router = createRouter({
@@ -18,6 +19,7 @@ export const router = createRouter({
       meta: { icon: "fa-solid fa-boxes-stacked" },
       children: [{ path: ":warehouse", component: ProductOverview }],
     },
+    {path: "/team", component: TeamOverview,meta:{icon:"fa-solid fa-users"} },
     {
       path: "/users",
       component: UserOverview,
