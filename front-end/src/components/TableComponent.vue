@@ -1,6 +1,17 @@
 <template>
   <div class="card border-0 pt-4 pb-2 d-flex" :style="{ width: tableWidth }">
     <div class="card-body px-4 py-0 overflow-hidden">
+      <!-- Both the title and the subtitle are optional props! They will not be displayed when not specified -->
+      <h5
+        v-if="tableTitle !== undefined"
+        class="fw-bold table-title ps-lg-4 ps-3 mb-0"
+        :class="{ 'mb-2': subTitle === undefined }"
+      >
+        {{ tableTitle }}
+      </h5>
+      <p v-if="subTitle !== undefined" class="ps-lg-4 ps-3 subtitle mb-2">
+        {{ subTitle }}
+      </p>
       <div class="table-responsive" :style="{ height: calculateTableHeight }">
         <table class="table table-hover mb-0">
           <thead>
@@ -158,8 +169,12 @@ export default {
     amountToDisplay: Number,
     /** An array of objects which contain the data to be displayed in the table. */
     tableData: Array,
-    /** The amount of the array items you want to display whenever you want to have a td with array items. */
+    /** The amount of the array items you want to display whenever you want to have a td with array items. Can be unspecified. */
     arrayAmountToDisplay: Number,
+    /** The title that you want to display within the table. OPTIONAL! */
+    tableTitle: String,
+    /** The subtitle that you want to display within the table. OPTIONAL */
+    subTitle: String,
   },
   data() {
     return {
@@ -244,9 +259,9 @@ export default {
       //reset display if tableData changes
       this.currentStartIndex = 0;
       this.currentEndIndex = this.amountToDisplay;
-      this.updateDisplayedData()
-    }
-  }
+      this.updateDisplayedData();
+    },
+  },
 };
 </script>
 
@@ -269,6 +284,15 @@ table th {
 
 .table-header-text {
   color: var(--bs-gray-900);
+}
+
+.table-title {
+  color: var(--bs-gray-900);
+}
+
+.subtitle {
+  color: var(--bs-gray-600);
+  font-size: 1rem !important;
 }
 
 p {
