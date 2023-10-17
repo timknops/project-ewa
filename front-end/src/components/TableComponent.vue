@@ -401,10 +401,6 @@ button:active {
   white-space: nowrap !important;
 }
 
-.table-hover {
-  background-color: red !important;
-}
-
 .edit-btn {
   transition: all 0.1s ease-in-out !important;
   background-color: var(--bs-white);
