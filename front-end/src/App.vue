@@ -1,43 +1,45 @@
 <template>
-  <loginPage @update-logged-in="updateLoggedIn()" v-if="loggedInActive === 'false'"></loginPage>
+  <loginPage
+    @update-logged-in="updateLoggedIn()"
+    v-if="loggedInActive === 'false'"
+  ></loginPage>
   <div v-else>
-    <sidebar/>
+    <sidebar />
     <header-component class="header"></header-component>
     <router-view id="component"></router-view>
   </div>
 </template>
 
 <script>
-import Sidebar from '@/components/Sidebar.vue'
+import Sidebar from "@/components/Sidebar.vue";
 import LoginPage from "@/components/LoginPage.vue";
 import HeaderComponent from "@/components/HeaderComponent.vue";
 
-// localStorage.setItem('loggedIn', false)
+localStorage.setItem("loggedIn", false);
 export default {
-  name: 'App',
+  name: "App",
   components: {
     LoginPage,
     HeaderComponent,
-    Sidebar
+    Sidebar,
   },
   data() {
     return {
       loggedInActive: {},
-    }
+    };
   },
   methods: {
     updateLoggedIn() {
-      this.loggedInActive = localStorage.getItem('loggedIn');
-    }
+      this.loggedInActive = localStorage.getItem("loggedIn");
+    },
   },
   created() {
-    this.loggedInActive = localStorage.getItem('loggedIn')
-  }
-}
+    this.loggedInActive = localStorage.getItem("loggedIn");
+  },
+};
 </script>
 
 <style>
-
 #component {
   margin-left: 20rem;
   max-width: calc(100vw - 23rem);
@@ -56,7 +58,7 @@ export default {
   --color-text-bg: #f8f8f8;
 
   --custom-box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05),
-  0 4px 6px -4px rgb(0 0 0 / 0.05);
+    0 4px 6px -4px rgb(0 0 0 / 0.05);
 }
 
 html,
