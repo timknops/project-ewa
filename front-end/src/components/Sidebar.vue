@@ -27,7 +27,7 @@
         </router-link>
       </li>
       <li class="nav-item">
-        <router-link to="#" class="nav-link">
+        <router-link to="/projects" class="nav-link" active-class="active">
           <font-awesome-icon
             icon="fa-solid fa-diagram-project"
             class="sidebar-icons"
@@ -43,7 +43,7 @@
         </router-link>
       </li>
       <li class="nav-item">
-        <router-link to="/team" class="nav-link">
+        <router-link to="/team" class="nav-link" active-class="active">
           <font-awesome-icon
             icon="fa-solid fa-users"
             class="sidebar-icons"
@@ -107,10 +107,10 @@ export default {
 }
 
 .sidebar {
+  grid-area: sidebar;
   background-color: var(--color-bg);
   text-align: center;
-  min-width: 17rem;
-  width: 17rem;
+  width: var(--sidebar-width);
   height: 100vh;
   position: fixed;
   box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);

@@ -1,35 +1,53 @@
 <template>
   <!--    display the current warehouse which the user is assigned to-->
-  <div class="container">
-    <div class="row warehouse-display rounded-top mx-0 p-1 pb-0"
-         v-if="activeUser.role === 'viewer'">
+  <div>
+    <div
+      class="row warehouse-display rounded-top mx-0 p-1 pb-0"
+      v-if="activeUser.role === 'viewer'"
+    >
       <div class="col">
-        <strong class="warehouse-select active">{{ activeUser.team.warehouse }}</strong>
+        <strong class="warehouse-select active">{{
+          activeUser.team.warehouse
+        }}</strong>
       </div>
     </div>
 
     <!-- row containing all names of warehouses and total which the admin can pick    -->
-    <div class="row warehouse-display rounded-top mx-0 p-1 pb-0" v-else-if="activeUser.role === 'admin'">
+    <div
+      class="row warehouse-display rounded-top mx-0 p-1 pb-0"
+      v-else-if="activeUser.role === 'admin'"
+    >
       <div class="col-auto">
-        <button type="button" class="warehouse-select btn btn-link p-0" :class="{active: activeWarehouse === 'Total'}"
-                @click="setActiveWarehouse('Total')">
+        <button
+          type="button"
+          class="warehouse-select btn btn-link p-0"
+          :class="{ active: activeWarehouse === 'Total' }"
+          @click="setActiveWarehouse('Total')"
+        >
           <strong>Total inventory</strong>
         </button>
       </div>
       <div class="col-auto" v-for="warehouse in WAREHOUSES" :key="warehouse">
-        <button type="button" class="warehouse-select btn btn-link p-0" :class="{active: warehouse === activeWarehouse}"
-                @click="setActiveWarehouse(warehouse)">
+        <button
+          type="button"
+          class="warehouse-select btn btn-link p-0"
+          :class="{ active: warehouse === activeWarehouse }"
+          @click="setActiveWarehouse(warehouse)"
+        >
           <strong>{{ warehouse }}</strong>
         </button>
       </div>
     </div>
-    <table-component class="rounded-top-0 mt-0" :amount-to-display="6" :table-data="products"></table-component>
+    <table-component
+      class="rounded-top-0 mt-0"
+      :amount-to-display="6"
+      :table-data="products"
+    ></table-component>
   </div>
 </template>
 
-
 <script>
-import {Product} from "@/models/product";
+import { Product } from "@/models/product";
 import TableComponent from "@/components/TableComponent.vue";
 
 /**
@@ -44,7 +62,7 @@ import TableComponent from "@/components/TableComponent.vue";
  */
 export default {
   name: "product-overview",
-  components: {TableComponent},
+  components: { TableComponent },
   data() {
     return {
       /* list of objects containing the warehouse and its products
@@ -57,13 +75,16 @@ export default {
        */
       products: [],
 
-      activeUser: {name: String, role: String, team: {name: String, warehouse: name}},
+      activeUser: {
+        name: String,
+        role: String,
+        team: { name: String, warehouse: name },
+      },
 
       //for now only the name, could change to objects if needed.
       WAREHOUSES: ["Solar Sedum", "Superzon", "EHES", "The switch"],
       activeWarehouse: "Total", //total selected by default.
-
-    }
+    };
   },
 
   methods: {
@@ -74,18 +95,18 @@ export default {
         role: "admin",
         team: {
           name: "team1",
-          warehouse: "Superzon"
-        }
-      }
+          warehouse: "Superzon",
+        },
+      };
     },
 
     setActiveWarehouse(warehouse) {
       this.activeWarehouse = warehouse;
 
       if (warehouse === "Total") {
-        this.$router.push("/inventory")
+        this.$router.push("/inventory");
       } else {
-        this.$router.push('/inventory/' + warehouse)
+        this.$router.push("/inventory/" + warehouse);
       }
     },
 
@@ -95,15 +116,19 @@ export default {
      * @return {[Product]} an array of product objects or empty array if an error has occurred
      */
     getWarehouseProductInfo(warehouse) {
-      const productsObjectArray = this.totalProducts.filter((totalList) => totalList.warehouse === warehouse)
+      const productsObjectArray = this.totalProducts.filter(
+        (totalList) => totalList.warehouse === warehouse
+      );
 
       // filter should return one element in the array, because there is only one warehouse active
       if (productsObjectArray.length === 0 || productsObjectArray.length > 1) {
-        console.error("There were multiple or no warehouses trying to receive their products")
+        console.error(
+          "There were multiple or no warehouses trying to receive their products"
+        );
         return [];
       }
 
-      return productsObjectArray[0].products
+      return productsObjectArray[0].products;
     },
 
     /**
@@ -116,27 +141,26 @@ export default {
      * @return {[Product]} array of product objects containing productName, description and quantity
      */
     getTotalProductInfo() {
-      const productObjects = {} // create an object where all products objects are stored in with accumulated stock
+      const productObjects = {}; // create an object where all products objects are stored in with accumulated stock
       this.totalProducts.forEach((warehouseData) => {
         warehouseData.products.forEach((product) => {
           //if product already exists as key value pair in the object of product objects. increment the stock by the quantity of the current product
           if (productObjects[product.productName]) {
-            productObjects[product.productName].quantity += product.quantity
+            productObjects[product.productName].quantity += product.quantity;
           } else {
             //if product doesn't exist yet initiate the object to be put into the productsObject
             productObjects[product.productName] = {
               productName: product.productName,
               description: product.description,
-              quantity: product.quantity
-            }
+              quantity: product.quantity,
+            };
           }
-        })
-      })
+        });
+      });
       //turn the object of product objects into an array of product objects
-      return Object.values(productObjects)
-    }
+      return Object.values(productObjects);
+    },
   },
-
 
   watch: {
     /**
@@ -144,40 +168,42 @@ export default {
      */
     activeWarehouse() {
       if (this.activeWarehouse === "Total") {
-        this.products = this.getTotalProductInfo()
+        this.products = this.getTotalProductInfo();
       } else {
-        this.products = this.getWarehouseProductInfo(this.activeWarehouse)
+        this.products = this.getWarehouseProductInfo(this.activeWarehouse);
       }
     },
 
     $route() {
       //activeWarehouse should not change when user is a viewer
-      if (this.activeUser.role === "viewer") return
+      if (this.activeUser.role === "viewer") return;
 
       if (this.$route.params.warehouse == null) {
         this.activeWarehouse = "Total";
       } else {
         this.activeWarehouse = this.$route.params.warehouse;
       }
-    }
+    },
   },
 
   created() {
-
-    this.activeUser = this.getUser()
+    this.activeUser = this.getUser();
 
     //get list of products depending on the users role i.e. the total inventory or inventory of the warehouse of the user
     if (this.activeUser.role === "admin") {
       //build the totalProducts array to be manipulated by the admin, by choosing certain warehouses.
-      const array = []
+      const array = [];
       this.WAREHOUSES.forEach((warehouse) => {
-        const obj = {warehouse: warehouse, products: Product.createDummyProduct()}
-        array.push(obj)
-      })
+        const obj = {
+          warehouse: warehouse,
+          products: Product.createDummyProduct(),
+        };
+        array.push(obj);
+      });
       this.totalProducts = array;
 
       //set the products to the products for all warehouses, i.e. when admin choses total as view.
-      this.products = this.getTotalProductInfo()
+      this.products = this.getTotalProductInfo();
     } else {
       this.products = Product.createDummyProduct();
     }
@@ -187,11 +213,10 @@ export default {
       //activeWarehouse should not change when user is a viewer
       if (this.activeUser.role === "viewer") return;
 
-      this.activeWarehouse = this.$route.params.warehouse
+      this.activeWarehouse = this.$route.params.warehouse;
     }
-  }
-}
-
+  },
+};
 </script>
 
 <style scoped>
@@ -225,9 +250,8 @@ Overwriting bootstrap active class
   color: var(--color-primary);
 }
 
-
 .warehouse-select::before {
-  content: '';
+  content: "";
   position: absolute;
   width: 0;
   height: 3px;
@@ -247,6 +271,4 @@ Overwriting bootstrap active class
 .warehouse-select:not(.active):focus::before {
   background-color: var(--color-secondary);
 }
-
-
 </style>
