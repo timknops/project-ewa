@@ -14,7 +14,7 @@
     </div>
     <div class="row mx-0 px-5 py-2 justify-content-start align-items-center">
       <div
-        class="col-auto color-primary mt-1 bg-body-secondary py-2 rounded-5"
+        class="col-auto color-primary bg-body-secondary py-2 rounded-5"
         v-if="$route.meta?.icon"
       >
         <font-awesome-icon :icon="$route.meta.icon"></font-awesome-icon>

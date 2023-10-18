@@ -45,17 +45,8 @@ export default {
     "sidebar header"
     "sidebar component";
   grid-template-columns: var(--sidebar-width) 1fr;
-  grid-template-rows: 10.5rem 1fr;
+  grid-template-rows: var(--navbar-height) 1fr;
   display: grid;
-  width: 100%;
-}
-
-* {
-  outline: solid red 1px;
-}
-
-#app {
-  width: 100%;
 }
 
 #component {
@@ -75,17 +66,16 @@ export default {
   --color-bg: #fff;
   --color-subtitle: #bfbfbf;
   --color-text-bg: #f8f8f8;
-  --sidebar-width: 17rem;
 
+  --sidebar-width: 17rem;
+  --navbar-height: 10rem;
   --custom-box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05),
     0 4px 6px -4px rgb(0 0 0 / 0.05);
 }
 
-html,
 body {
   font-family: "Montserrat", sans-serif !important;
   color: var(--color-text) !important;
   background-color: var(--bs-gray-100) !important;
-  width: 100vw;
 }
 </style>
