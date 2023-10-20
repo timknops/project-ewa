@@ -53,8 +53,22 @@
                   <span
                     v-for="j in this.arrayAmountToDisplay"
                     :key="Object.values(tableRow)[i][j - 1]"
-                    class="badge me-1"
+                    class="badge array-badge me-1"
                     >{{ Object.values(tableRow)[i][j - 1] }}</span
+                  >
+                </td>
+
+                <!-- If the column name is 'status' -->
+                <td
+                  v-else-if="Object.keys(tableRow)[i] === 'status'"
+                  class="py-3 px-3 px-lg-4"
+                >
+                  <span
+                    class="badge"
+                    :class="
+                      STATUS_OPTIONS[Object.values(tableRow)[i].toUpperCase()]
+                    "
+                    >{{ Object.values(tableRow)[i].toUpperCase() }}</span
                   >
                 </td>
 
@@ -108,8 +122,24 @@
                   <span
                     v-for="i in this.arrayAmountToDisplay"
                     :key="fieldData[i - 1]"
-                    class="badge me-1"
+                    class="badge array-badge me-1"
                     >{{ fieldData[i - 1] }}</span
+                  >
+                </td>
+
+                <!-- If the column name is 'status' -->
+                <td
+                  v-else-if="
+                    fieldData === 'completed' ||
+                    fieldData === 'in progress' ||
+                    fieldData === 'upcoming'
+                  "
+                  class="py-3 px-3 px-lg-4"
+                >
+                  <span
+                    class="badge"
+                    :class="STATUS_OPTIONS[fieldData.toUpperCase()]"
+                    >{{ fieldData.toUpperCase() }}</span
                   >
                 </td>
 
@@ -252,6 +282,13 @@ export default {
       savedAmountToDisplay: 0,
       /** The height of a single row in the table. */
       ROW_HEIGHT_LARGE: 57,
+      /** The options for the status badge. This will be used if you have a column with the name "status".
+       * Feel free to add your own additional status's as needed. */
+      STATUS_OPTIONS: Object.freeze({
+        COMPLETED: "success-badge",
+        "IN PROGRESS": "in-progress-badge",
+        UPCOMING: "upcoming-badge",
+      }),
     };
   },
   methods: {
@@ -392,7 +429,7 @@ button:active {
   color: var(--color-primary) !important;
 }
 
-.badge {
+.array-badge {
   background-color: var(--color-primary) !important;
 }
 
@@ -419,5 +456,20 @@ button:active {
 
 .edit-btn-container {
   transition: all 0.1s ease-in-out !important;
+}
+
+.success-badge {
+  color: #15803d;
+  background-color: #bbf7d0;
+}
+
+.in-progress-badge {
+  color: #a16207;
+  background-color: #fef08a;
+}
+
+.upcoming-badge {
+  color: #1d4ed8;
+  background-color: #bfdbfe;
 }
 </style>

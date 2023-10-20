@@ -12,6 +12,11 @@
 import TableComponent from "@/components/TableComponent.vue";
 import { Project } from "@/models/project";
 
+/**
+ * Component to display all projects in a table.
+ *
+ * @author Tim Knops
+ */
 export default {
   name: "ProjectsOverview",
   components: { TableComponent },

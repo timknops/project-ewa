@@ -5,7 +5,7 @@
  */
 export class Project {
   static status = {
-    ANTICIPATION: "anticipation",
+    UPCOMING: "upcoming",
     IN_PROGRESS: "in progress",
     COMPLETED: "completed",
   };
@@ -56,7 +56,7 @@ export class Project {
     // Generates a random date between 2012-01-01 and 2024-02-29.
     const randomDueDate = this.randomDate(
       new Date(2022, 0, 1),
-      new Date(2025, 1, 0)
+      new Date(2026, 1, 0)
     );
 
     let randomStatus;
@@ -65,12 +65,12 @@ export class Project {
 
       randomStatus = Project.status.COMPLETED;
     } else {
-      // If the due date is in the future, the project is either in anticipation or in progress.
+      // If the due date is in the future, the project is either upcoming or in progress.
 
       const random = Math.random();
       if (random < 0.4) {
-        // 40% chance of being in anticipation.
-        randomStatus = Project.status.ANTICIPATION;
+        // 40% chance of being upcoming.
+        randomStatus = Project.status.UPCOMING;
       } else {
         randomStatus = Project.status.IN_PROGRESS;
       }
