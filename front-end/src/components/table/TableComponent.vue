@@ -21,8 +21,15 @@
                 :key="name"
                 scope="col"
                 class="py-3 pt-2 table-header-text px-3 px-lg-4"
+                @click="sortByColumn(name)"
               >
                 {{ name.toUpperCase() }}
+                <!-- icons for sorting -->
+                <TableSortingIcons
+                  :sort-direction="sortingIconStatus"
+                  :column-name="name"
+                  @ref="name"
+                />
               </th>
             </tr>
           </thead>
@@ -240,37 +247,44 @@
 </template>
 
 <script>
+import TableSortingIcons from "@/components/table/TableSortingIcons.vue";
+
 /**
  * Custom table component. Allows user to dynamically set the width, height, whether the first row should be bold and
  * allows for dynamic column creation depending on the array of object passed as tableData.
+ *
+ * @param {String} tableWdith The width of the table.
+ * @param {Boolean} boldFirstColumn Whether the first column should be bold or not.
+ * @param {Number} amountToDisplay The amount of rows you want to display at once.
+ * @param {Array} tableData The data that is to be displayed in the table.
+ * @param {Number} arrayAmountToDisplay When the table data contains an array, this is the amount of items that are displayed.
+ * @param {String} tableTitle The title of the table.
+ * @param {String} subTitle The subtitle of the table.
+ * @param {Boolean} hasEditDeleteButtons Whether the table has edit and delete buttons.
  *
  * @author Tim Knops
  */
 export default {
   name: "TableComponent",
+  components: { TableSortingIcons },
   props: {
-    /** Width of the table, can be any unit. */
     tableWidth: String,
-    /** Whether the first column should be text-bold or not. */
     boldFirstColumn: Boolean,
-    /** The amount of rows you want to display at once. */
     amountToDisplay: Number,
-    /** An array of objects which contain the data to be displayed in the table. */
-    tableData: Array,
-    /** The amount of the array items you want to display whenever you want to have a td with array items. Can be unspecified. */
+    tableData: {
+      type: Array,
+      required: true,
+    },
     arrayAmountToDisplay: Number,
-    /** The title that you want to display within the table. OPTIONAL! */
     tableTitle: String,
-    /** The subtitle that you want to display within the table. OPTIONAL */
     subTitle: String,
-    /** Whether the table should have edit and delete buttons. */
     hasEditDeleteButtons: Boolean,
   },
   data() {
     return {
       /** The names of the columns that are displayed in the table header. */
       tableColumnNames: Object.keys(this.tableData[0]),
-      /** Height that the table rows height becomes smaller. */
+      /** The data that is currently displayed in the table. */
       currentlyDisplayedData: [],
       /** The current index of the starting item that is displayed. */
       currentStartIndex: 0,
@@ -289,6 +303,12 @@ export default {
         "IN PROGRESS": "in-progress-badge",
         UPCOMING: "upcoming-badge",
       }),
+      /** Copy of the table data, used for sorting. */
+      tableDataSorted: this.tableData,
+      /** The name of the previous sorted column, used for sorting. */
+      previousSortedColumn: "",
+      /** The status of the sorting icon, used for sorting. */
+      sortingIconStatus: "default",
     };
   },
   methods: {
@@ -351,6 +371,36 @@ export default {
     mouseLeave(e) {
       e.target.lastElementChild.classList.remove("d-md-block");
     },
+
+    /** Sorts the table data by the column name that is passed as a parameter. */
+    sortByColumn(columnName) {
+      // If the previous sorted column is the same as the current one, reverse the array.
+      if (this.previousSortedColumn === columnName) {
+        this.tableDataSorted.reverse();
+        this.updateDisplayedData();
+
+        return;
+      }
+
+      // Sort the array by the column name.
+      this.tableDataSorted.sort((a, b) => {
+        if (a[columnName] < b[columnName]) {
+          return -1;
+        }
+
+        if (a[columnName] > b[columnName]) {
+          return 1;
+        }
+
+        return 0;
+      });
+
+      this.sortingIconStatus = "ascending";
+      console.log(this.$refs[columnName]);
+      // Update the displayed data and save the previous sorted column.
+      this.previousSortedColumn = columnName;
+      this.updateDisplayedData();
+    },
   },
   created() {
     this.updateDisplayedData();
@@ -371,6 +421,10 @@ export default {
       this.currentStartIndex = 0;
       this.currentEndIndex = this.amountToDisplay;
       this.updateDisplayedData();
+    },
+
+    tableDataSorted() {
+      // Display the sorting icon down if the previous sorted column is the same as the current one.
     },
   },
 };
@@ -395,6 +449,7 @@ table th {
 
 .table-header-text {
   color: var(--bs-gray-900);
+  cursor: pointer;
 }
 
 .table-title {

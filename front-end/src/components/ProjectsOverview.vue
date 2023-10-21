@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import TableComponent from "@/components/TableComponent.vue";
+import TableComponent from "@/components/table/TableComponent.vue";
 import { Project } from "@/models/project";
 
 /**

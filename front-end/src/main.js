@@ -22,6 +22,8 @@ import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faSortDown } from "@fortawesome/free-solid-svg-icons";
+import { faSortUp } from "@fortawesome/free-solid-svg-icons";
 
 /* add icons to the library */
 library.add(
@@ -36,7 +38,9 @@ library.add(
   faChevronRight,
   faChevronLeft,
   faPenToSquare,
-  faTrash
+  faTrash,
+  faSortDown,
+  faSortUp
 );
 
 /* import bootstrap */
