@@ -2,7 +2,7 @@
   <div class="row w-100 px-4 align-self-center align-items-center pt-2">
     <div class="col-auto d-none d-md-flex align-items-center gap-2">
       <p class="mb-0">
-        {{ currentStartIndex + 1 }} to {{ displayEndIndex() }}
+        {{ currentStartIndex + 1 }} to {{ displayEndIndex }}
         <span class="items-listing">Items of</span>
         {{ tableData.length }}
       </p>
@@ -11,10 +11,7 @@
       isn't more than the total table length (there's no 'view all' when the amount to be displayed exceeds the amount
       in the table-data.) -->
       <button
-        v-if="
-          displayAmount !== tableData.length &&
-          !(amountToDisplay >= tableData.length)
-        "
+        v-if="displayViewAllButton"
         @click="$emit('view-all')"
         class="btn btn-link px-1 ms-1"
         type="button"
@@ -64,7 +61,7 @@
  *
  * @param {Array} tableData The data of the table.
  * @param {Number} amountToDisplay The amount of rows to display.
- * @param {Number} displayAmount The amount of rows to display.
+ * @param {Number} displayAmount The amount of rows that is currently displayed.
  * @param {Number} currentStartIndex The current start index of the table data that is displayed.
  * @param {Number} currentEndIndex The current end index of the table data that is displayed.
  *
@@ -95,8 +92,7 @@ export default {
       required: true,
     },
   },
-
-  methods: {
+  computed: {
     /**
      * Calculates the end index of the table data that is currently displayed.
      * @returns {Number} The end index of the table data that is currently displayed.
@@ -107,6 +103,17 @@ export default {
       } else {
         return this.currentEndIndex;
       }
+    },
+
+    /**
+     * Checks if the view all button should be displayed.
+     * @returns {Boolean} True if the view all button should be displayed, false otherwise.
+     */
+    displayViewAllButton() {
+      return (
+        this.displayAmount !== this.tableData.length &&
+        !(this.amountToDisplay >= this.tableData.length)
+      );
     },
   },
 };

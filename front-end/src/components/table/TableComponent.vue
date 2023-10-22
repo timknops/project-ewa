@@ -26,7 +26,7 @@
                 {{ name.toUpperCase() }}
                 <!-- icons for sorting -->
                 <TableSortingIcons
-                  sort-direction="default"
+                  :sort-direction="sortDirectionAllColumns"
                   :column-name="name"
                   :ref="'sortingIcons' + name"
                 />
@@ -239,6 +239,8 @@ export default {
         ASCENDING: "ascending",
         DESCENDING: "descending",
       },
+      /** The current sort direction of all columns. */
+      sortDirectionAllColumns: "default",
     };
   },
   methods: {
@@ -370,6 +372,7 @@ export default {
   watch: {
     tableData() {
       // Reset display if tableData changes.
+      // TODO: Somehow reset sorting icons when tableData changes.
       this.currentStartIndex = 0;
       this.currentEndIndex = this.amountToDisplay;
       this.updateDisplayedData();
