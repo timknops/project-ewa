@@ -4,6 +4,8 @@
       :table-data="projects"
       :amount-to-display="10"
       :has-edit-delete-buttons="true"
+      @edit="editProject"
+      @delete="deleteProject"
     />
   </div>
 </template>
@@ -31,6 +33,14 @@ export default {
     for (let i = 0; i < AMOUNT_OF_PROJECTS; i++) {
       this.projects.push(Project.createDummyProject());
     }
+  },
+  methods: {
+    editProject(project) {
+      console.log("Edit project: " + project.name);
+    },
+    deleteProject(project) {
+      console.log("Delete project: " + project.name);
+    },
   },
 };
 </script>

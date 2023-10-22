@@ -26,9 +26,9 @@
                 {{ name.toUpperCase() }}
                 <!-- icons for sorting -->
                 <TableSortingIcons
-                  :sort-direction="sortingIconStatus"
+                  sort-direction="default"
                   :column-name="name"
-                  @ref="name"
+                  :ref="'sortingIcons' + name"
                 />
               </th>
             </tr>
@@ -85,28 +85,13 @@
               </template>
 
               <!-- If the table has edit and delete buttons -->
-              <div
-                class="d-none end-0 position-absolute me-3 me-lg-4 my-1 edit-btn-container"
-                :style="{ height: this.ROW_HEIGHT_LARGE - 8 + 'px' }"
+              <TableEditDeleteButtons
                 v-if="hasEditDeleteButtons"
-              >
-                <div class="d-flex align-items-center h-100 gap-1">
-                  <button
-                    class="btn border text-body edit-btn modify-btn"
-                    type="button"
-                    @click="$emit('edit', tableRow)"
-                  >
-                    <font-awesome-icon icon="fa-solid fa-pen-to-square" />
-                  </button>
-                  <button
-                    class="btn text-danger border edit-btn delete-btn"
-                    type="button"
-                    @click="$emit('delete', tableRow)"
-                  >
-                    <font-awesome-icon icon="fa-solid fa-trash" />
-                  </button>
-                </div>
-              </div>
+                :table-row="tableRow"
+                :row-height-large="ROW_HEIGHT_LARGE"
+                @edit="$emit('edit', tableRow)"
+                @delete="$emit('delete', tableRow)"
+              />
             </tr>
           </tbody>
 
@@ -156,98 +141,36 @@
               </template>
 
               <!-- If the table has edit and delete buttons -->
-              <div
-                class="d-none end-0 position-absolute me-3 me-lg-4 my-1 edit-btn-container"
-                :style="{ height: this.ROW_HEIGHT_LARGE - 8 + 'px' }"
+              <TableEditDeleteButtons
                 v-if="hasEditDeleteButtons"
-              >
-                <div class="d-flex align-items-center h-100 gap-1">
-                  <button
-                    class="btn border text-body edit-btn modify-btn"
-                    type="button"
-                    @click="$emit('edit', tableRow)"
-                  >
-                    <font-awesome-icon icon="fa-solid fa-pen-to-square" />
-                  </button>
-                  <button
-                    class="btn text-danger border edit-btn delete-btn"
-                    type="button"
-                    @click="$emit('delete', tableRow)"
-                  >
-                    <font-awesome-icon icon="fa-solid fa-trash" />
-                  </button>
-                </div>
-              </div>
+                :table-row="tableRow"
+                :row-height-large="ROW_HEIGHT_LARGE"
+                @edit="$emit('edit', tableRow)"
+                @delete="$emit('delete', tableRow)"
+              />
             </tr>
           </tbody>
         </table>
       </div>
     </div>
-    <div class="row w-100 px-4 align-self-center align-items-center pt-2">
-      <div class="col-auto d-none d-md-flex align-items-center gap-2">
-        <p class="mb-0">
-          {{ this.currentStartIndex + 1 }} to {{ this.displayEndIndex() }}
-          <span class="items-listing">Items of</span>
-          {{ this.tableData.length }}
-        </p>
-        <!-- If the amount that is currently displayed is not equal to the entire table data length
-        (meaning we're currently not in view all mode). And if the amount to be displayed that was passed as a prop
-        isn't more than the total table length (there's no 'view all' when the amount to be displayed exceeds the amount
-        in the table-data.) -->
-        <button
-          v-if="
-            this.displayAmount !== this.tableData.length &&
-            !(this.amountToDisplay >= this.tableData.length)
-          "
-          @click="viewAllItems()"
-          class="btn btn-link px-1 ms-1"
-          type="button"
-        >
-          View all<font-awesome-icon
-            icon="fa-solid fa-chevron-right"
-            class="ms-1"
-          />
-        </button>
-        <button
-          v-else-if="!(this.amountToDisplay >= this.tableData.length)"
-          @click="viewLessItems()"
-          class="btn btn-link px-1 ms-1"
-          type="button"
-        >
-          View less
-          <font-awesome-icon icon="fa-solid fa-chevron-right" class="ms-1" />
-        </button>
-      </div>
-      <div class="col d-flex justify-content-center justify-content-md-end">
-        <button
-          @click="handlePreviousButton()"
-          class="btn btn-link px-1 me-1"
-          :class="{ disabled: this.currentStartIndex === 0 }"
-          type="button"
-        >
-          <font-awesome-icon
-            icon="fa-solid fa-chevron-left"
-            class="me-1"
-          />Previous
-        </button>
-        <button
-          @click="handleNextButton()"
-          class="btn btn-link px-1 ms-1"
-          :class="{ disabled: this.currentEndIndex >= this.tableData.length }"
-          type="button"
-        >
-          Next<font-awesome-icon
-            icon="fa-solid fa-chevron-right"
-            class="ms-1"
-          />
-        </button>
-      </div>
-    </div>
+    <TableFooter
+      :table-data="tableData"
+      :amount-to-display="amountToDisplay"
+      :display-amount="displayAmount"
+      :current-start-index="currentStartIndex"
+      :current-end-index="displayEndIndex()"
+      @view-all="viewAllItems"
+      @view-less="viewLessItems"
+      @previous="handlePreviousButton"
+      @next="handleNextButton"
+    />
   </div>
 </template>
 
 <script>
 import TableSortingIcons from "@/components/table/TableSortingIcons.vue";
+import TableEditDeleteButtons from "@/components/table/TableEditDeleteButtons.vue";
+import TableFooter from "@/components/table/TableFooter.vue";
 
 /**
  * Custom table component. Allows user to dynamically set the width, height, whether the first row should be bold and
@@ -266,11 +189,14 @@ import TableSortingIcons from "@/components/table/TableSortingIcons.vue";
  */
 export default {
   name: "TableComponent",
-  components: { TableSortingIcons },
+  components: { TableFooter, TableEditDeleteButtons, TableSortingIcons },
   props: {
     tableWidth: String,
     boldFirstColumn: Boolean,
-    amountToDisplay: Number,
+    amountToDisplay: {
+      type: Number,
+      required: true,
+    },
     tableData: {
       type: Array,
       required: true,
@@ -307,8 +233,12 @@ export default {
       tableDataSorted: this.tableData,
       /** The name of the previous sorted column, used for sorting. */
       previousSortedColumn: "",
-      /** The status of the sorting icon, used for sorting. */
-      sortingIconStatus: "default",
+      /** The options for the sorting icons. */
+      SORT_DIRECTION_OPTIONS: {
+        DEFAULT: "default",
+        ASCENDING: "ascending",
+        DESCENDING: "descending",
+      },
     };
   },
   methods: {
@@ -376,6 +306,18 @@ export default {
     sortByColumn(columnName) {
       // If the previous sorted column is the same as the current one, reverse the array.
       if (this.previousSortedColumn === columnName) {
+        // If the current sort direction is descending, set it to ascending and vice versa.
+        if (
+          this.$refs["sortingIcons" + columnName][0].currentSortDirection ===
+          this.SORT_DIRECTION_OPTIONS.DESCENDING
+        ) {
+          this.$refs["sortingIcons" + columnName][0].currentSortDirection =
+            this.SORT_DIRECTION_OPTIONS.ASCENDING;
+        } else {
+          this.$refs["sortingIcons" + columnName][0].currentSortDirection =
+            this.SORT_DIRECTION_OPTIONS.DESCENDING;
+        }
+
         this.tableDataSorted.reverse();
         this.updateDisplayedData();
 
@@ -395,8 +337,18 @@ export default {
         return 0;
       });
 
-      this.sortingIconStatus = "ascending";
-      console.log(this.$refs[columnName]);
+      // Set the previous sorted column icons to default.
+      if (this.previousSortedColumn !== "") {
+        // If the previous sorted column is not empty.
+        this.$refs[
+          "sortingIcons" + this.previousSortedColumn
+        ][0].currentSortDirection = this.SORT_DIRECTION_OPTIONS.DEFAULT;
+      }
+
+      // Set the sorting icon for the column that was clicked to descending.
+      this.$refs["sortingIcons" + columnName][0].currentSortDirection =
+        this.SORT_DIRECTION_OPTIONS.DESCENDING;
+
       // Update the displayed data and save the previous sorted column.
       this.previousSortedColumn = columnName;
       this.updateDisplayedData();
@@ -417,14 +369,10 @@ export default {
   },
   watch: {
     tableData() {
-      //reset display if tableData changes
+      // Reset display if tableData changes.
       this.currentStartIndex = 0;
       this.currentEndIndex = this.amountToDisplay;
       this.updateDisplayedData();
-    },
-
-    tableDataSorted() {
-      // Display the sorting icon down if the previous sorted column is the same as the current one.
     },
   },
 };
@@ -466,10 +414,6 @@ p {
   color: var(--bs-gray-900);
 }
 
-.items-listing {
-  color: var(--bs-gray-600);
-}
-
 button {
   text-decoration: none;
   font-size: 0.875rem;
@@ -491,26 +435,6 @@ button:active {
 .array-display {
   width: 1%;
   white-space: nowrap !important;
-}
-
-.edit-btn {
-  transition: all 0.1s ease-in-out !important;
-  background-color: var(--bs-white);
-}
-.edit-btn:hover {
-  background-color: var(--bs-gray-100) !important;
-}
-
-.delete-btn:hover {
-  color: var(--color-secondary) !important;
-}
-
-.modify-btn:hover {
-  color: var(--color-primary) !important;
-}
-
-.edit-btn-container {
-  transition: all 0.1s ease-in-out !important;
 }
 
 .success-badge {
