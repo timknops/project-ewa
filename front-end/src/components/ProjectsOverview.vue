@@ -36,10 +36,10 @@ export default {
   },
   methods: {
     editProject(project) {
-      console.log("Edit project: " + project.name);
+      console.log(project);
     },
     deleteProject(project) {
-      console.log("Delete project: " + project.name);
+      this.projects = this.projects.filter((p) => p.id !== project.id);
     },
   },
 };

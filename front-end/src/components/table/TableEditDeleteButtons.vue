@@ -49,7 +49,6 @@ export default {
 
 <style scoped>
 .edit-btn {
-  transition: all 0.1s ease-in-out !important;
   background-color: var(--bs-white);
 }
 .edit-btn:hover {
@@ -62,9 +61,5 @@ export default {
 
 .modify-btn:hover {
   color: var(--color-primary) !important;
-}
-
-.edit-btn-container {
-  transition: all 0.1s ease-in-out !important;
 }
 </style>

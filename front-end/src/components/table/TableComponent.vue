@@ -154,7 +154,7 @@
       </div>
     </div>
     <TableFooter
-      :table-data="tableData"
+      :table-data="tableDataSorted"
       :amount-to-display="amountToDisplay"
       :display-amount="displayAmount"
       :current-start-index="currentStartIndex"
@@ -260,9 +260,10 @@ export default {
       this.updateDisplayedData();
     },
 
-    /** Updates the currently displayed data by slicing the total table data which contain the start an ending index */
+    /** Updates the displayed data depending on the current start and end index. */
     updateDisplayedData() {
-      this.currentlyDisplayedData = this.tableData.slice(
+      this.tableDataSorted = this.tableData;
+      this.currentlyDisplayedData = this.tableDataSorted.slice(
         this.currentStartIndex,
         this.currentEndIndex
       );
@@ -372,7 +373,13 @@ export default {
   watch: {
     tableData() {
       // Reset display if tableData changes.
-      // TODO: Somehow reset sorting icons when tableData changes.
+
+      // Reset the sorting icon of the previous sorted column.
+      if (this.previousSortedColumn !== "") {
+        this.$refs[
+          "sortingIcons" + this.previousSortedColumn
+        ][0].currentSortDirection = this.SORT_DIRECTION_OPTIONS.DEFAULT;
+      }
       this.currentStartIndex = 0;
       this.currentEndIndex = this.amountToDisplay;
       this.updateDisplayedData();
