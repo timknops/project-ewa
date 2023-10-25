@@ -1,5 +1,18 @@
 <template>
   <div>
+
+    <!--Dropdown-->
+    <div class="btn-group dropdown-color">
+      <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Choose warehouse
+      </button>
+
+      <div class="dropdown-menu">
+        <a class="dropdown-item" v-for="item in tableData" :key="item.Name">{{item.Name}}</a>
+
+    </div>
+    </div>
+
     <!--Inventory-->
     <TableComponent
       :tableWidth="'100%'"
@@ -24,6 +37,7 @@
         </div>
       </div>
 
+      <!--User information-->
       <TableComponent
         class="user-table-overview-right"
         tableWidth="60%"
@@ -35,7 +49,8 @@
       >
       </TableComponent>
     </div>
-    <!--User information-->
+
+
   </div>
 </template>
 
@@ -78,6 +93,8 @@ export default {
         {
           Forecast: "",
         },
+      ],
+      wareHouseNameData:[
       ],
 
       chartDataList: [],
@@ -166,6 +183,15 @@ export default {
 <style scoped>
 h2 {
   color: var(--color-primary);
+}
+
+.dropdown-color .dropdown-menu {
+  background-color: white;
+
+}
+
+.dropdown-color .dropdown-item {
+  color: black;
 }
 
 .my-chart {
