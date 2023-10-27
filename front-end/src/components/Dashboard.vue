@@ -8,7 +8,7 @@
       </button>
 
       <div class="dropdown-menu">
-        <a class="dropdown-item" v-for="item in tableData" :key="item.Name">{{item.Name}}</a>
+        <a class="dropdown-item" v-for="item in tableData" :key="item.Name" @click="warehouseSelect(item.Name)">{{item.Name}}</a>
 
     </div>
     </div>
@@ -18,7 +18,7 @@
       :tableWidth="'100%'"
       :boldFirstColumn="true"
       :amountToDisplay="3"
-      :tableData="tableData"
+      :tableData="selectedWarehouseData"
       :arrayAmountToDisplay="10"
       table-title="Inventory"
       sub-title="Current inventory of my warehouse"
@@ -96,6 +96,7 @@ export default {
       ],
       wareHouseNameData:[
       ],
+      selectedWarehouse: null,
 
       chartDataList: [],
       //    chart: null,
@@ -109,6 +110,15 @@ export default {
 
   mounted() {
     this.createChart();
+  },
+
+  computed: {
+    selectedWarehouseData(){
+      if(this.selectedWarehouse){
+        return this.tableData.filter((item) => item.Name === this.selectedWarehouse);
+      }
+      return this.tableData;
+    }
   },
 
   methods: {
@@ -171,7 +181,14 @@ export default {
         options: chartOptions,
       });
     },
+
+    warehouseSelect(nameOfTheWarehouse){
+      this.selectedWarehouse = nameOfTheWarehouse;
+    }
+
   },
+
+
 
   // watch: {
   //   xValues: "createChart",
