@@ -125,11 +125,7 @@ export default {
 
   methods: {
     createChart(data) {
-      // if (this.selectedWarehouseChart) {
-      //   const filterDataChart = this.tableData.filter((item) => item.Name === this.selectedWarehouseChart);
-      //   if (filterDataChart.length === 0) {
-      //     return;
-      //   }
+
       if (this.saveChart) {
         this.saveChart.destroy();
       }
@@ -200,9 +196,7 @@ export default {
       this.createChart(this.selectedWarehouseData);
 
     },
-    // warehouseSelectChart(nameOfTheWarehouse){
-    //   this.selectedWarehouseChart = nameOfTheWarehouse;
-    // }
+
 
   },
 
