@@ -4,31 +4,60 @@
       <div class="col-md-4 offset-md-4">
         <!--        grey card border-->
         <div class="card my-5">
-          <form class="card-body p-lg-5 card-color-grey set-font needs-validation">
+          <form
+            class="card-body p-lg-5 card-color-grey set-font needs-validation"
+          >
             <!--            logo-->
             <div class="text-center">
-              <img src="../assets/solar_logo.svg" class="logo-image-pic" alt="logo">
+              <img
+                src="../assets/solar_logo.svg"
+                class="logo-image-pic"
+                alt="logo"
+              />
             </div>
             <!--            username-->
             <div class="row form-group username">
               <label for="usernameInputLabel">Username:</label>
-              <input type="text" class="form-control" id="usernameInputLabel" placeholder="Enter username"
-                     v-model.trim.lazy="input.username1" required>
+              <input
+                type="text"
+                class="form-control"
+                id="usernameInputLabel"
+                placeholder="Enter username"
+                v-model.trim.lazy="input.username1"
+                required
+              />
             </div>
             <!--            password-->
             <div class="row form-group password mt-5">
               <label for="passwordInputLabel">Password:</label>
-              <input type="password" class="form-control" id="passwordInputLabel" placeholder="Enter password"
-                     v-model.trim.lazy="input.password1" required>
+              <input
+                type="password"
+                class="form-control"
+                id="passwordInputLabel"
+                placeholder="Enter password"
+                v-model.trim.lazy="input.password1"
+                required
+              />
               <!--              Forgot password-->
-              <small style="cursor: pointer;" @click="forgotPassword" id="forgotPassword" class="form-text text-muted">Forgot
-                password?</small>
+              <small
+                style="cursor: pointer"
+                @click="forgotPassword"
+                id="forgotPassword"
+                class="form-text text-muted"
+                >Forgot password?</small
+              >
             </div>
             <!--            error message-->
             <p v-if="correctLogin" class="error-message">{{ errorMessage }}</p>
             <div class="text-center mt-3">
               <!--              button-->
-              <button class="btn btn-primary login-button" type="button" v-on:click="login()">Login</button>
+              <button
+                class="btn btn-primary login-button"
+                type="button"
+                v-on:click="login()"
+              >
+                Login
+              </button>
             </div>
           </form>
         </div>
@@ -38,8 +67,8 @@
 </template>
 
 <script>
-import {userLogin} from "@/models/userLogin";
-localStorage.setItem('loggedIn', false)
+import { userLogin } from "@/models/userLogin";
+localStorage.setItem("loggedIn", true);
 export default {
   name: "LoginPage",
   data() {
@@ -47,13 +76,13 @@ export default {
       //input variables for the entered userdata
       input: {
         username1: "",
-        password1: ""
+        password1: "",
       },
       loggedInActive: {},
       user1: {},
       correctLogin: null,
-      errorMessage: ""
-    }
+      errorMessage: "",
+    };
   },
   methods: {
     /**
@@ -68,34 +97,36 @@ export default {
      */
     login() {
       if (this.input.username1 === "" || this.input.password1 === "") {
-        this.errorMessage = "One of the fields is empty"
-        this.correctLogin = true
-      } else if (this.input.username1 === this.user1.username &&
-          this.input.password1 === this.user1.password) {
-        localStorage.setItem('loggedIn', true)
-        this.$emit('updateLoggedIn', true)
-        this.$router.push("/dashboard")
+        this.errorMessage = "One of the fields is empty";
+        this.correctLogin = true;
+      } else if (
+        this.input.username1 === this.user1.username &&
+        this.input.password1 === this.user1.password
+      ) {
+        localStorage.setItem("loggedIn", true);
+        this.$emit("updateLoggedIn", true);
+        this.$router.push("/dashboard");
       } else {
-        this.errorMessage = "Your login details are incorrect"
-        this.correctLogin = true
+        this.errorMessage = "Your login details are incorrect";
+        this.correctLogin = true;
       }
     },
     /**
      * very simple method to give someone an alert if they request a password reset
      */
     forgotPassword() {
-      alert("A request to reset your password has beent sent your e-mail")
-    }
+      alert("A request to reset your password has beent sent your e-mail");
+    },
   },
   created() {
-    this.user1 = userLogin.dummyData()
-  }
-}
+    this.user1 = userLogin.dummyData();
+  },
+};
 </script>
 
 <style scoped>
 .card-color-grey {
-  background-color: #F9FAFB;
+  background-color: #f9fafb;
 }
 
 .logo-image-pic {
@@ -112,7 +143,8 @@ export default {
 }
 
 /*state when hover or focused*/
-.login-button:hover, .login-button:focus {
+.login-button:hover,
+.login-button:focus {
   border-color: white;
   background-color: var(--color-secondary) !important;
   color: var(--color-text-bg) !important;

@@ -1,49 +1,61 @@
 <template>
-  <loginPage @update-logged-in="updateLoggedIn()" v-if="loggedInActive === 'false'"></loginPage>
-  <div v-else>
-    <sidebar/>
+  <loginPage
+    @update-logged-in="updateLoggedIn()"
+    v-if="loggedInActive === 'false'"
+  ></loginPage>
+  <div v-else class="view">
+    <sidebar />
     <header-component class="header"></header-component>
     <router-view id="component"></router-view>
   </div>
 </template>
 
 <script>
-import Sidebar from '@/components/Sidebar.vue'
+import Sidebar from "@/components/Sidebar.vue";
 import LoginPage from "@/components/LoginPage.vue";
 import HeaderComponent from "@/components/HeaderComponent.vue";
 
-// localStorage.setItem('loggedIn', false)
+localStorage.setItem("loggedIn", true);
 export default {
-  name: 'App',
+  name: "App",
   components: {
     LoginPage,
     HeaderComponent,
-    Sidebar
+    Sidebar,
   },
   data() {
     return {
       loggedInActive: {},
-    }
+    };
   },
   methods: {
     updateLoggedIn() {
-      this.loggedInActive = localStorage.getItem('loggedIn');
-    }
+      this.loggedInActive = localStorage.getItem("loggedIn");
+    },
   },
   created() {
-    this.loggedInActive = localStorage.getItem('loggedIn')
-  }
-}
+    this.loggedInActive = localStorage.getItem("loggedIn");
+  },
+};
 </script>
 
 <style>
+.view {
+  grid-template-areas:
+    "sidebar header"
+    "sidebar component";
+  grid-template-columns: var(--sidebar-width) 1fr;
+  grid-template-rows: var(--navbar-height) 1fr;
+  display: grid;
+}
 
 #component {
-  margin-left: 20rem;
-  max-width: calc(100vw - 23rem);
+  grid-area: component;
+  margin: 0 48px;
 }
+
 .header {
-  margin-left: 17rem;
+  grid-area: header;
 }
 
 /* Colors used by Solar Sedum*/
@@ -55,16 +67,15 @@ export default {
   --color-subtitle: #bfbfbf;
   --color-text-bg: #f8f8f8;
 
+  --sidebar-width: 17rem;
+  --navbar-height: 10rem;
   --custom-box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05),
-  0 4px 6px -4px rgb(0 0 0 / 0.05);
+    0 4px 6px -4px rgb(0 0 0 / 0.05);
 }
 
-html,
 body {
   font-family: "Montserrat", sans-serif !important;
   color: var(--color-text) !important;
   background-color: var(--bs-gray-100) !important;
-  height: 100vh;
-  width: 100vw;
 }
 </style>
