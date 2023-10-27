@@ -97,9 +97,11 @@ export default {
       wareHouseNameData:[
       ],
       selectedWarehouse: null,
+      selectedWarehouseChart: null,
 
       chartDataList: [],
       //    chart: null,
+      saveChart: null,
       chartWidth: 200,
       chartHeight: 80,
       // xValues: ["This week", "Expected"],
@@ -109,7 +111,7 @@ export default {
   },
 
   mounted() {
-    this.createChart();
+    this.createChart(this.tableData);
   },
 
   computed: {
@@ -122,15 +124,25 @@ export default {
   },
 
   methods: {
-    createChart() {
+    createChart(data) {
+      // if (this.selectedWarehouseChart) {
+      //   const filterDataChart = this.tableData.filter((item) => item.Name === this.selectedWarehouseChart);
+      //   if (filterDataChart.length === 0) {
+      //     return;
+      //   }
+      if (this.saveChart) {
+        this.saveChart.destroy();
+      }
+
       const chartWidth = this.chartWidth;
       const chartHeight = this.chartHeight;
 
-      const labels = this.tableData.map((item) => item.Name);
-      const data = this.tableData.map((item) => item.Quantity);
-      const expectedData = this.tableData.map((item) => item.Expected);
 
-      data.push(50);
+      const labels = data.map((item) => item.Name);
+      const qdata = data.map((item) => item.Quantity);
+      const expectedData = data.map((item) => item.Expected);
+
+      qdata.push(50);
 
       const chartData = {
         labels: labels,
@@ -138,7 +150,7 @@ export default {
           {
             label: "Quantity",
             backgroundColor: this.barColors[0],
-            data: data,
+            data: qdata,
           },
           {
             label: "Expected",
@@ -149,7 +161,7 @@ export default {
       };
 
       const chartOptions = {
-        legend: { display: false },
+        legend: {display: false},
         title: {
           display: true,
           text: "Inventory Chart",
@@ -175,16 +187,22 @@ export default {
         },
       };
 
-      new Chart(this.$refs.combinedChart, {
+     this.saveChart = new Chart(this.$refs.combinedChart, {
         type: "bar",
         data: chartData,
         options: chartOptions,
       });
+
     },
 
     warehouseSelect(nameOfTheWarehouse){
       this.selectedWarehouse = nameOfTheWarehouse;
-    }
+      this.createChart(this.selectedWarehouseData);
+
+    },
+    // warehouseSelectChart(nameOfTheWarehouse){
+    //   this.selectedWarehouseChart = nameOfTheWarehouse;
+    // }
 
   },
 
