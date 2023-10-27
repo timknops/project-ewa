@@ -8,6 +8,7 @@
       </button>
 
       <div class="dropdown-menu">
+        <a class="dropdown-item" :key="null" @click="warehouseSelect(null)">All warehouses</a>
         <a class="dropdown-item" v-for="item in tableData" :key="item.Name" @click="warehouseSelect(item.Name)">{{item.Name}}</a>
 
     </div>
@@ -116,11 +117,15 @@ export default {
 
   computed: {
     selectedWarehouseData(){
-      if(this.selectedWarehouse){
-        return this.tableData.filter((item) => item.Name === this.selectedWarehouse);
+      if(this.selectedWarehouse) {
+        if (this.selectedWarehouse === null) {
+          return this.tableData;
+        } else {
+          return this.tableData.filter((item) => item.Name === this.selectedWarehouse);
+        }
       }
       return this.tableData;
-    }
+    },
   },
 
   methods: {
