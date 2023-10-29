@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository("PRODUCTS.INMEMORY")
-public class ProductRepositoryMock implements entityRepository<Product> {
+public class ProductRepositoryMock implements EntityRepository<Product> {
     private List<Product> products;
     private final long STARTING_ID = 3000;
     private long currentId = STARTING_ID;
