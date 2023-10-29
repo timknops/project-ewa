@@ -2,7 +2,7 @@ package nl.solar.app.repositories;
 
 import java.util.List;
 
-public interface entityRepository<E> {
+public interface EntityRepository<E> {
 
     List<E> findALL(); //find all entities
 
