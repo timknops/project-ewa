@@ -10,7 +10,5 @@ public interface entityRepository<E> {
 
     E delete(long id); // delete an entity via its id
 
-    E update(E object); //update an entity if it exists, check via object.id
-
-    E add(E object); //add a new entity to the list
+    E save(E item);
 }
