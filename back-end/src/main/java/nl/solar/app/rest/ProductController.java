@@ -1,5 +1,6 @@
 package nl.solar.app.rest;
 
+import nl.solar.app.exceptions.BadRequestException;
 import nl.solar.app.exceptions.PreConditionFailedException;
 import nl.solar.app.exceptions.ResourceNotFoundException;
 import nl.solar.app.models.Product;
@@ -14,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/products")
-public class productController {
+public class ProductController {
 
     @Autowired
     EntityRepository<Product> productRepo;
@@ -29,7 +30,7 @@ public class productController {
         Product product = this.productRepo.findById(id);
 
         if (product == null) {
-            throw new ResourceNotFoundException("Product with id: " + id +  " was not found");
+            throw new ResourceNotFoundException("Product with id: " + id + " was not found");
         }
         return ResponseEntity.ok(product);
     }
@@ -46,16 +47,20 @@ public class productController {
     }
 
     @PostMapping(produces = "application/json")
-    public ResponseEntity<Product> addProduct(@RequestBody Product product) {
+    public ResponseEntity<Product> addProduct(@RequestBody Product product) throws BadRequestException {
+        if (product.getProductName() == null || product.getProductName().isBlank()) throw new BadRequestException("Product name can't be empty");
         Product added = this.productRepo.save(product);
+
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(added.getId()).toUri();
         return ResponseEntity.created(location).body(product);
     }
 
     @PutMapping(path = "{id}", produces = "application/json")
-    public ResponseEntity<Product> updateProduct( @PathVariable long id, @RequestBody Product product) throws PreConditionFailedException {
+    public ResponseEntity<Product> updateProduct(@PathVariable long id, @RequestBody Product product)
+            throws PreConditionFailedException, BadRequestException {
         if (id != product.getId()) throw new PreConditionFailedException("Id of the body and path do not match");
+        if (product.getProductName() == null || product.getProductName().isBlank()) throw new BadRequestException("Product name can't be empty");
 
         Product updated = this.productRepo.save(product);
         return ResponseEntity.ok(updated);
