@@ -61,7 +61,7 @@ import TableComponent from "@/components/TableComponent.vue";
  * @author Julian Kruithof
  */
 export default {
-  name: "product-overview",
+  name: "InventoryOverview",
   components: { TableComponent },
   data() {
     return {
