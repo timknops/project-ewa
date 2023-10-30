@@ -14,6 +14,8 @@
 import Sidebar from "@/components/Sidebar.vue";
 import LoginPage from "@/components/LoginPage.vue";
 import HeaderComponent from "@/components/HeaderComponent.vue";
+import appConfig from "@/appConfig";
+import { ProductAdaptor } from "@/service/productAdaptor";
 
 localStorage.setItem("loggedIn", true);
 export default {
@@ -27,6 +29,11 @@ export default {
     return {
       loggedInActive: {},
     };
+  },
+  provide() {
+    return {
+      productService: new ProductAdaptor(`${appConfig.BACKEND_URL}/products`)
+    }
   },
   methods: {
     updateLoggedIn() {
