@@ -4,7 +4,15 @@
 <script>
 export default {
   name: "DeleteProductModal",
-  props: ["item"]
+  data() {
+    return {
+      itemCopy: {}
+    }
+  },
+  props: ["item"],
+  created() {
+    this.itemCopy = Object.assign({}, this.item)
+  }
 }
 </script>
 <style scoped>

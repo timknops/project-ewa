@@ -60,7 +60,7 @@ export default {
   methods: {
     /**
      * Handles the logic when the ok button is clicked
-     * get the itemCopy form the child modal, this is for example an updated product
+     * get the itemCopy from the child modal, this is for example an updated product or to be deleted or to be added.
      * and emit this data which can be undefined with the current modal which was active.
      */
     handleOk() {
