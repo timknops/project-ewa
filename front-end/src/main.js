@@ -45,6 +45,8 @@ library.add(
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap";
 
+import "./css/bootstrap-reset.css";
+
 createApp(App)
   .use(router)
   .component("font-awesome-icon", FontAwesomeIcon)

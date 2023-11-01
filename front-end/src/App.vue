@@ -46,7 +46,7 @@ export default {
 };
 </script>
 
-<style>
+<style >
 .view {
   grid-template-areas:
     "sidebar header"
@@ -74,8 +74,11 @@ export default {
   --color-subtitle: #bfbfbf;
   --color-text-bg: #f8f8f8;
 
+  --btn-secondary-shadow-color: 64, 29, 0; /*rgb because of the box-shadow*/
+
   --sidebar-width: 17rem;
   --navbar-height: 10rem;
+
   --custom-box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05),
     0 4px 6px -4px rgb(0 0 0 / 0.05);
 }

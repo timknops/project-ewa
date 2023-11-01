@@ -71,5 +71,11 @@ export default {
 </script>
 
 <style scoped>
-
+  .modal-header{
+    color: var(--bs-white);
+    background-color: var(--color-primary);
+  }
+  .modal-title {
+    font-weight: 700;
+  }
 </style>
