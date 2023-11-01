@@ -17,12 +17,21 @@
           <thead>
             <tr ref="headerRow">
               <th
-                v-for="name in tableColumnNames"
+                v-for="(name, index) in tableColumnNames"
                 :key="name"
                 scope="col"
-                class="py-3 pt-2 table-header-text px-3 px-lg-4"
+                class="py-3 pt-2 table-header-text px-3 px-lg-4 align-items-end justify-content-between"
+                :class="{'d-flex': hasEditDeleteButtons && index === tableColumnNames.length -1}"
               >
                 {{ name.toUpperCase() }}
+                <button
+                    v-if="hasEditDeleteButtons && index === tableColumnNames.length -1"
+                    class="btn btn-primary align-middle"
+                    @click="$emit('add')"
+                >
+                  <font-awesome-icon icon="fa-solid fa-plus"/>
+                  add
+                </button>
               </th>
             </tr>
           </thead>
@@ -251,7 +260,7 @@ export default {
       /** Saves the amount that is supposed to be displayed, used in the 'view all' and 'view less'. */
       savedAmountToDisplay: 0,
       /** The height of a single row in the table. */
-      ROW_HEIGHT_LARGE: 57,
+      ROW_HEIGHT_LARGE: 60,
     };
   },
   methods: {
@@ -378,18 +387,23 @@ p {
   color: var(--bs-gray-600);
 }
 
-button {
+button:not(.btn-primary) {
   text-decoration: none;
   font-size: 0.875rem;
   color: var(--bs-gray-900);
   transition: none !important;
 }
-button:hover {
+button:hover:not(.btn-primary) {
   text-decoration: underline;
   color: var(--color-primary);
 }
 button:active {
   color: var(--color-primary) !important;
+}
+
+.btn-primary {
+  font-size: 0.875rem;
+  padding-block: 0.4em;
 }
 
 .badge {

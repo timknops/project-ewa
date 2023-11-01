@@ -23,6 +23,7 @@ import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { faBoxOpen } from "@fortawesome/free-solid-svg-icons";
+import { faPlus} from "@fortawesome/free-solid-svg-icons";
 
 /* add icons to the library */
 library.add(
@@ -38,7 +39,8 @@ library.add(
   faChevronLeft,
   faPenToSquare,
   faTrash,
-  faBoxOpen
+  faBoxOpen,
+  faPlus
 );
 
 /* import bootstrap */
