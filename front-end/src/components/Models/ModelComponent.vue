@@ -42,10 +42,20 @@
 </template>
 
 <script>
-import DeleteProductModal from "@/components/Models/DeleteProductModal.vue";
-import UpdateProductModal from "@/components/Models/UpdateProductModal.vue";
-import AddProductModal from "@/components/Models/AddProductModal.vue";
+import DeleteProductModal from "@/components/Models/product/DeleteProductModal.vue";
+import UpdateProductModal from "@/components/Models/product/UpdateProductModal.vue";
+import AddProductModal from "@/components/Models/product/AddProductModal.vue";
 
+/**
+ * General modal component, for the styling of the header and footer,
+ * also creates a placeholder for custom modal bodies.
+ * Custom bodies should contain the <b>hasError</b> and <b>modalItem</b> in its data directive for the modals to work .
+ * correctly.
+ * Each custom body can receive the item from an overview, via the general modal. By passing an item to the modal with props
+ * This is not required i.e. for adding, you don't have an item yet, so you can't send it.
+ *
+ * @author Julian Kruithof
+ */
 export default {
   name: "ModelComponent",
   components: {DeleteProductModal, UpdateProductModal, AddProductModal},

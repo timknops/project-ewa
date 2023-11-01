@@ -26,6 +26,14 @@
 import TableComponent from "@/components/TableComponent.vue";
 import ModelComponent from "@/components/Models/ModelComponent.vue";
 
+/**
+ * Component for the product overview. This overview give info about the different products of solar sedum.
+ * The information include the id, name and description.
+ *
+ * Furthermore, the crud operation add, delete and update are handle by the overview, via the corresponding modals
+ *
+ * @author Julian Kruithof
+ */
 export default {
   name: "ProductOverview",
   components: {ModelComponent, TableComponent},
@@ -54,13 +62,22 @@ export default {
     }
   },
   methods: {
+    /**
+     * Show the delete modal with corresponding product info
+     * @param product product to be deleted
+     */
     showDeleteModal(product) {
       this.modalTitle = "Delete product"
       this.modalBodyComponent = this.MODAL_TYPES.DELETE
       this.modalProduct = product
-      this.okBtnText = "Ok"
+      this.okBtnText = "Delete"
       this.showModal = true;
     },
+
+    /**
+     * open the edit modal to update a product
+     * @param product the product to be updated
+     */
     showEditModal(product) {
       this.modalTitle = "Update product"
       this.modalBodyComponent = this.MODAL_TYPES.UPDATE
@@ -68,12 +85,23 @@ export default {
       this.okBtnText = "Save"
       this.showModal = true;
     },
+
+    /**
+     * open the add modal to add a new product
+     */
     showAddModal() {
       this.modalTitle = "Add product"
       this.modalBodyComponent = this.MODAL_TYPES.ADD
       this.okBtnText = "Add"
       this.showModal = true
     },
+
+    /**
+     * excute the correct method depending on which modal the ok button was clicked on
+     * For updating it is Save for delete it is Delete etc.
+     * @param product the product to be processed by the method, for example for the delete this is the product to be deleted
+     * @param modal the modal on which the ok button was pressed
+     */
     handleOk(product, modal) {
       switch (modal) {
         case this.MODAL_TYPES.DELETE:
@@ -88,6 +116,11 @@ export default {
       }
     },
 
+    /**
+     * Delete a product in the back-end and front-end
+     * @param product the product to be deleted
+     * @return {Promise<void>}
+     */
     async deleteProduct(product) {
       try {
         const deleted = await this.productService.delete(product.id)
@@ -98,6 +131,11 @@ export default {
       }
     },
 
+    /**
+     * Update a product in the back-end and front-end
+     * @param product the product to be updated
+     * @return {Promise<void>}
+     */
     async updateProduct(product) {
       try {
         const updated = await this.productService.update(product)
@@ -109,6 +147,11 @@ export default {
       }
     },
 
+    /**
+     * Add a product to the back-end and front-end
+     * @param product the product to be added
+     * @return {Promise<void>}
+     */
     async addProduct(product){
       try {
         const added = await this.productService.add(product)

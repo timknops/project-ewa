@@ -2,6 +2,11 @@
   <p>Are you sure you want to delete product {{modalItem.productName}}</p>
 </template>
 <script>
+/**
+ * Modal for deleting a product
+ *
+ * @author Julian Kruithof
+ */
 export default {
   name: "DeleteProductModal",
   data() {

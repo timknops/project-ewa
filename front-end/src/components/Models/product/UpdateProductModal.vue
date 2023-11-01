@@ -26,7 +26,13 @@
     </div>
   </form>
 </template>
+
 <script>
+/**
+ * Modal for updating a product
+ *
+ * @author Julian Kruithof
+ */
 export default {
   name: "UpdateProductModal",
   data() {
@@ -37,15 +43,24 @@ export default {
       descriptionEmpty: false
     }
   },
+
   props: ["item"],
   created() {
     this.modalItem = Object.assign({}, this.item)
   },
+
   methods: {
+    /**
+     * check if a name is empty
+     */
     validateName() {
       this.nameEmpty = this.modalItem.productName.length === 0;
       this.hasError = this.modalItem.productName.length === 0;
     },
+
+    /**
+     * check if description is empty
+     */
     validateDescription() {
       this.descriptionEmpty = this.modalItem.description.length === 0;
       this.hasError = this.modalItem.description.length === 0;

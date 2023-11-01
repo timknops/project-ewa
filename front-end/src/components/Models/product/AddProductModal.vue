@@ -23,6 +23,11 @@
   </form>
 </template>
 <script>
+/**
+ * The modal for adding a product
+ *
+ * @author Julian Kruithof
+ */
 export default {
   name: "AddProductModal",
   data() {
@@ -38,10 +43,17 @@ export default {
     }
   },
   methods: {
+    /**
+     * Check if name is not empty
+     */
     validateName() {
       this.nameEmpty = this.modalItem.productName.length === 0;
       this.hasError = this.modalItem.productName.length === 0;
     },
+
+    /**
+     * check if description is empty
+     */
     validateDescription() {
       this.descriptionEmpty = this.modalItem.description.length === 0;
       this.hasError = this.modalItem.description.length === 0;
