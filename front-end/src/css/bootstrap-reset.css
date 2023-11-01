@@ -7,4 +7,6 @@
   --bs-btn-hover-bg: var(--color-secondary);
   --bs-btn-hover-border-color: var(--color-secondary);
   --bs-btn-focus-shadow-rgb: var(--btn-secondary-shadow-color);
+  --bs-btn-active-bg: var(--color-secondary);
+  --bs-btn-active-border-color: var(--color-secondary);
 }

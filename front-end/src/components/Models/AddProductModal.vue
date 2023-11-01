@@ -1,10 +1,6 @@
 <template>
   <form>
     <div class="mb-3">
-      <label for="id" class="form-label fw-bold">ID</label>
-      <input id="id" type="text" class="form-control" :value="modalItem.id" disabled>
-    </div>
-    <div class="mb-3">
       <label for="product-name" class="form-label fw-bold">Product name</label>
       <input id="product-name"
              type="text"
@@ -28,18 +24,18 @@
 </template>
 <script>
 export default {
-  name: "UpdateProductModal",
+  name: "AddProductModal",
   data() {
     return {
-      modalItem: {},
-      hasError: false, //check for general error to stop submissions of modal
-      nameEmpty: false, //specific error check for correct response to user
-      descriptionEmpty: false
+      modalItem:{
+        id: 0,
+        productName: "",
+        description: "",
+      },
+      hasError: false,
+      nameEmpty: false,
+      descriptionEmpty: false,
     }
-  },
-  props: ["item"],
-  created() {
-    this.modalItem = Object.assign({}, this.item)
   },
   methods: {
     validateName() {
@@ -56,7 +52,5 @@ export default {
 
 
 <style scoped>
-.form-control:disabled {
-  background-color: var(--bs-body-bg);
-}
+
 </style>

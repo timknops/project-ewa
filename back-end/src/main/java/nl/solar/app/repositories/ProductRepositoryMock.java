@@ -16,8 +16,8 @@ public class ProductRepositoryMock implements EntityRepository<Product> {
             "Enphase Q kabel 1 fase",
             "Gateway / envoy",
             "Enphase IQ8M  omvormer",
-            "Enphase Q Relay 1 fase ",
-            "Enphase Q Relay 3 fase ",
+            "Enphase Q Relay 1 fase",
+            "Enphase Q Relay 3 fase",
             "MB glas/glas 380"
     };
 

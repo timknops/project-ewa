@@ -1,17 +1,18 @@
 <template>
-  <p>Are you sure you want to delete product {{item.productName}}</p>
+  <p>Are you sure you want to delete product {{modalItem.productName}}</p>
 </template>
 <script>
 export default {
   name: "DeleteProductModal",
   data() {
     return {
-      itemCopy: {}
+      modalItem: {},
+      hasError: false,
     }
   },
   props: ["item"],
   created() {
-    this.itemCopy = Object.assign({}, this.item)
+    this.modalItem = Object.assign({}, this.item)
   }
 }
 </script>

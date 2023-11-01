@@ -44,10 +44,11 @@
 <script>
 import DeleteProductModal from "@/components/Models/DeleteProductModal.vue";
 import UpdateProductModal from "@/components/Models/UpdateProductModal.vue";
+import AddProductModal from "@/components/Models/AddProductModal.vue";
 
 export default {
   name: "ModelComponent",
-  components: {DeleteProductModal, UpdateProductModal},
+  components: {DeleteProductModal, UpdateProductModal, AddProductModal},
   /**
    * props
    * {String} title - title of the modal. For example delete product or edit project.
@@ -64,7 +65,9 @@ export default {
      * and emit this data which can be undefined with the current modal which was active.
      */
     handleOk() {
-        this.$emit("okModalBtn", this.$refs.modalRef.itemCopy, this.activeModal)
+      if (!this.$refs.modalRef.hasError) {
+        this.$emit("okModalBtn", this.$refs.modalRef.modalItem, this.activeModal)
+      }
     }
   }
 }

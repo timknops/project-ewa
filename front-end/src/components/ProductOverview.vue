@@ -6,6 +6,7 @@
         :table-data="products"
         @edit="showEditModal"
         @delete="showDeleteModal"
+        @add="showAddModal"
     />
     <Transition>
       <model-component
@@ -47,7 +48,8 @@ export default {
       okBtnText: "",
       MODAL_TYPES: Object.freeze({
         DELETE: "delete-product-modal",
-        UPDATE: "update-product-modal"
+        UPDATE: "update-product-modal",
+        ADD: "add-product-modal"
       })
     }
   },
@@ -66,6 +68,12 @@ export default {
       this.okBtnText = "Save"
       this.showModal = true;
     },
+    showAddModal() {
+      this.modalTitle = "Add product"
+      this.modalBodyComponent = this.MODAL_TYPES.ADD
+      this.okBtnText = "Add"
+      this.showModal = true
+    },
     handleOk(product, modal) {
       switch (modal) {
         case this.MODAL_TYPES.DELETE:
@@ -74,8 +82,12 @@ export default {
         case this.MODAL_TYPES.UPDATE:
           this.updateProduct(product)
           break;
+        case this.MODAL_TYPES.ADD:
+          this.addProduct(product)
+          break;
       }
     },
+
     async deleteProduct(product) {
       try {
         const deleted = await this.productService.delete(product.id)
@@ -93,6 +105,17 @@ export default {
         this.showModal = false
       } catch (e) {
         //TODO give user error feedback
+        console.log(e)
+      }
+    },
+
+    async addProduct(product){
+      try {
+        const added = await this.productService.add(product)
+        this.products.push(added)
+        this.showModal =false;
+
+      } catch (e){
         console.log(e)
       }
     }
