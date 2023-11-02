@@ -5,6 +5,7 @@ import loginPage from "@/components/LoginPage.vue";
 import TeamOverview from "@/components/TeamOverview";
 import UserOverview from "@/components/UserOverview";
 import ProjectsOverview from "@/components/ProjectsOverview.vue";
+import InventoryOverview from "@/components/InventoryOverview.vue";
 
 export const router = createRouter({
   history: createWebHashHistory(),
@@ -16,9 +17,14 @@ export const router = createRouter({
     }, // path to the dashboard
     {
       path: "/inventory",
-      component: ProductOverview,
+      component: InventoryOverview,
       meta: { icon: "fa-solid fa-boxes-stacked" },
-      children: [{ path: ":warehouse", component: ProductOverview }],
+      children: [{ path: ":warehouse", component: InventoryOverview }],
+    },
+    {
+      path: "/products",
+      component: ProductOverview,
+      meta: {icon: "fa-solid fa-box-open"}
     },
     {
       path: "/team",

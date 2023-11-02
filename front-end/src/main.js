@@ -22,6 +22,8 @@ import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faBoxOpen } from "@fortawesome/free-solid-svg-icons";
+import { faPlus} from "@fortawesome/free-solid-svg-icons";
 
 /* add icons to the library */
 library.add(
@@ -36,12 +38,16 @@ library.add(
   faChevronRight,
   faChevronLeft,
   faPenToSquare,
-  faTrash
+  faTrash,
+  faBoxOpen,
+  faPlus
 );
 
 /* import bootstrap */
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap";
+
+import "./css/bootstrap-reset.css";
 
 createApp(App)
   .use(router)

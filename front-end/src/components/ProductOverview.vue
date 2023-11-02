@@ -1,274 +1,175 @@
 <template>
-  <!--    display the current warehouse which the user is assigned to-->
   <div>
-    <div
-      class="row warehouse-display rounded-top mx-0 p-1 pb-0"
-      v-if="activeUser.role === 'viewer'"
-    >
-      <div class="col">
-        <strong class="warehouse-select active">{{
-          activeUser.team.warehouse
-        }}</strong>
-      </div>
-    </div>
-
-    <!-- row containing all names of warehouses and total which the admin can pick    -->
-    <div
-      class="row warehouse-display rounded-top mx-0 p-1 pb-0"
-      v-else-if="activeUser.role === 'admin'"
-    >
-      <div class="col-auto">
-        <button
-          type="button"
-          class="warehouse-select btn btn-link p-0"
-          :class="{ active: activeWarehouse === 'Total' }"
-          @click="setActiveWarehouse('Total')"
-        >
-          <strong>Total inventory</strong>
-        </button>
-      </div>
-      <div class="col-auto" v-for="warehouse in WAREHOUSES" :key="warehouse">
-        <button
-          type="button"
-          class="warehouse-select btn btn-link p-0"
-          :class="{ active: warehouse === activeWarehouse }"
-          @click="setActiveWarehouse(warehouse)"
-        >
-          <strong>{{ warehouse }}</strong>
-        </button>
-      </div>
-    </div>
     <table-component
-      class="rounded-top-0 mt-0"
-      :amount-to-display="6"
-      :table-data="products"
-    ></table-component>
+        :amount-to-display="6"
+        :has-edit-delete-buttons="true"
+        :table-data="products"
+        @edit="showEditModal"
+        @delete="showDeleteModal"
+        @add="showAddModal"
+    />
+    <Transition>
+      <model-component
+          v-if="showModal"
+          :title="modalTitle"
+          :active-modal="modalBodyComponent"
+          :item="modalProduct"
+          :ok-btn-text="okBtnText"
+          @cancel-modal-btn="this.showModal = false"
+          @corner-close-modal-btn="this.showModal = false"
+          @ok-modal-btn="handleOk"
+      />
+    </Transition>
   </div>
 </template>
-
 <script>
-import { Product } from "@/models/product";
 import TableComponent from "@/components/TableComponent.vue";
+import ModelComponent from "@/components/Models/ModelComponent.vue";
 
 /**
- * Component handling the logic of displaying the inventory.
+ * Component for the product overview. This overview give info about the different products of solar sedum.
+ * The information include the id, name and description.
  *
- * if a user is an admin the user can view the total inventory of all warehouses,
- * or the user can view the inventory of the selected warehouse
- *
- * if a user is a viewer the user can only view the inventory of the warehouse the user is associated to
+ * Furthermore, the crud operation add, delete and update are handle by the overview, via the corresponding modals
  *
  * @author Julian Kruithof
  */
 export default {
-  name: "product-overview",
-  components: { TableComponent },
+  name: "ProductOverview",
+  components: {ModelComponent, TableComponent},
+  inject:["productService"],
   data() {
     return {
-      /* list of objects containing the warehouse and its products
-       * format of array is [{warehouse: String, products: Product[]}]
-       */
-      totalProducts: [],
-
-      /* The product and stock of the current active view, i.e. total or a certain warehouse.
-       * This is an array of products objects
-       */
-      products: [],
-
-      activeUser: {
-        name: String,
-        role: String,
-        team: { name: String, warehouse: name },
+      products: [{
+        id: Number,
+        productName: String,
+        description: String,
+      }],
+      showModal: false,
+      modalTitle: "",
+      modalBodyComponent: "",
+      modalProduct: {
+        id: Number,
+        productName: String,
+        description: String
       },
-
-      //for now only the name, could change to objects if needed.
-      WAREHOUSES: ["Solar Sedum", "Superzon", "EHES", "The switch"],
-      activeWarehouse: "Total", //total selected by default.
-    };
+      okBtnText: "",
+      MODAL_TYPES: Object.freeze({
+        DELETE: "delete-product-modal",
+        UPDATE: "update-product-modal",
+        ADD: "add-product-modal"
+      })
+    }
   },
-
   methods: {
-    // TODO should be available globally, and not stored directly in the component (comes with jwt)
-    getUser() {
-      return {
-        name: "Julian",
-        role: "admin",
-        team: {
-          name: "team1",
-          warehouse: "Superzon",
-        },
-      };
+    /**
+     * Show the delete modal with corresponding product info
+     * @param product product to be deleted
+     */
+    showDeleteModal(product) {
+      this.modalTitle = "Delete product"
+      this.modalBodyComponent = this.MODAL_TYPES.DELETE
+      this.modalProduct = product
+      this.okBtnText = "Delete"
+      this.showModal = true;
     },
 
-    setActiveWarehouse(warehouse) {
-      this.activeWarehouse = warehouse;
+    /**
+     * open the edit modal to update a product
+     * @param product the product to be updated
+     */
+    showEditModal(product) {
+      this.modalTitle = "Update product"
+      this.modalBodyComponent = this.MODAL_TYPES.UPDATE
+      this.modalProduct = product
+      this.okBtnText = "Save"
+      this.showModal = true;
+    },
 
-      if (warehouse === "Total") {
-        this.$router.push("/inventory");
-      } else {
-        this.$router.push("/inventory/" + warehouse);
+    /**
+     * open the add modal to add a new product
+     */
+    showAddModal() {
+      this.modalTitle = "Add product"
+      this.modalBodyComponent = this.MODAL_TYPES.ADD
+      this.okBtnText = "Add"
+      this.showModal = true
+    },
+
+    /**
+     * excute the correct method depending on which modal the ok button was clicked on
+     * For updating it is Save for delete it is Delete etc.
+     * @param product the product to be processed by the method, for example for the delete this is the product to be deleted
+     * @param modal the modal on which the ok button was pressed
+     */
+    handleOk(product, modal) {
+      switch (modal) {
+        case this.MODAL_TYPES.DELETE:
+          this.deleteProduct(product)
+          break;
+        case this.MODAL_TYPES.UPDATE:
+          this.updateProduct(product)
+          break;
+        case this.MODAL_TYPES.ADD:
+          this.addProduct(product)
+          break;
       }
     },
 
     /**
-     * Get the products and stock information for a certain warehouse
-     * @param warehouse the warehouse which has been selected
-     * @return {[Product]} an array of product objects or empty array if an error has occurred
+     * Delete a product in the back-end and front-end
+     * @param product the product to be deleted
+     * @return {Promise<void>}
      */
-    getWarehouseProductInfo(warehouse) {
-      const productsObjectArray = this.totalProducts.filter(
-        (totalList) => totalList.warehouse === warehouse
-      );
-
-      // filter should return one element in the array, because there is only one warehouse active
-      if (productsObjectArray.length === 0 || productsObjectArray.length > 1) {
-        console.error(
-          "There were multiple or no warehouses trying to receive their products"
-        );
-        return [];
+    async deleteProduct(product) {
+      try {
+        const deleted = await this.productService.delete(product.id)
+        this.products = this.products.filter((product) => product.id !== deleted.id)
+        this.showModal = false;
+      } catch (exception) {
+        console.log(exception)
       }
-
-      return productsObjectArray[0].products;
     },
 
     /**
-     * Reformat the totalProduct array to a format accepted by the products array
-     * aggregating the quantity of all products in all warehouses.
-     *
-     * This function checks for all warehouses which products it has, for each of these products it gets the quantity.
-     * Of the product already exist in a warehouse that was checked, it adds the quantity to the already known stock
-     *
-     * @return {[Product]} array of product objects containing productName, description and quantity
+     * Update a product in the back-end and front-end
+     * @param product the product to be updated
+     * @return {Promise<void>}
      */
-    getTotalProductInfo() {
-      const productObjects = {}; // create an object where all products objects are stored in with accumulated stock
-      this.totalProducts.forEach((warehouseData) => {
-        warehouseData.products.forEach((product) => {
-          //if product already exists as key value pair in the object of product objects. increment the stock by the quantity of the current product
-          if (productObjects[product.productName]) {
-            productObjects[product.productName].quantity += product.quantity;
-          } else {
-            //if product doesn't exist yet initiate the object to be put into the productsObject
-            productObjects[product.productName] = {
-              productName: product.productName,
-              description: product.description,
-              quantity: product.quantity,
-            };
-          }
-        });
-      });
-      //turn the object of product objects into an array of product objects
-      return Object.values(productObjects);
+    async updateProduct(product) {
+      try {
+        const updated = await this.productService.update(product)
+        this.products = this.products.map((product) => product.id === updated.id ? updated : product);
+        this.showModal = false
+      } catch (e) {
+        //TODO give user error feedback
+        console.log(e)
+      }
     },
-  },
 
-  watch: {
     /**
-     * If the active warehouse changes, the products array should update, so that the table gets re-rendered
+     * Add a product to the back-end and front-end
+     * @param product the product to be added
+     * @return {Promise<void>}
      */
-    activeWarehouse() {
-      if (this.activeWarehouse === "Total") {
-        this.products = this.getTotalProductInfo();
-      } else {
-        this.products = this.getWarehouseProductInfo(this.activeWarehouse);
+    async addProduct(product){
+      try {
+        const added = await this.productService.add(product)
+        this.products.push(added)
+        this.showModal =false;
+
+      } catch (e){
+        console.log(e)
       }
-    },
-
-    $route() {
-      //activeWarehouse should not change when user is a viewer
-      if (this.activeUser.role === "viewer") return;
-
-      if (this.$route.params.warehouse == null) {
-        this.activeWarehouse = "Total";
-      } else {
-        this.activeWarehouse = this.$route.params.warehouse;
-      }
-    },
-  },
-
-  created() {
-    this.activeUser = this.getUser();
-
-    //get list of products depending on the users role i.e. the total inventory or inventory of the warehouse of the user
-    if (this.activeUser.role === "admin") {
-      //build the totalProducts array to be manipulated by the admin, by choosing certain warehouses.
-      const array = [];
-      this.WAREHOUSES.forEach((warehouse) => {
-        const obj = {
-          warehouse: warehouse,
-          products: Product.createDummyProduct(),
-        };
-        array.push(obj);
-      });
-      this.totalProducts = array;
-
-      //set the products to the products for all warehouses, i.e. when admin choses total as view.
-      this.products = this.getTotalProductInfo();
-    } else {
-      this.products = Product.createDummyProduct();
-    }
-
-    //set active if there is a param in the url
-    if (this.$route.params.warehouse) {
-      //activeWarehouse should not change when user is a viewer
-      if (this.activeUser.role === "viewer") return;
-
-      this.activeWarehouse = this.$route.params.warehouse;
     }
   },
-};
+  async created() {
+    this.products = await this.productService.findAll();
+  }
+}
 </script>
 
+
 <style scoped>
-h2 {
-  color: var(--color-primary);
-}
 
-.warehouse-display {
-  background-color: var(--color-bg);
-}
-
-.warehouse-select {
-  position: relative;
-  transition: 200ms ease-out;
-  color: var(--color-text);
-  text-decoration: none;
-  z-index: 2;
-}
-
-.warehouse-select:hover,
-.warehouse-select:focus {
-  color: var(--color-secondary);
-  outline: none;
-}
-
-/*
-Overwriting bootstrap active class
- */
-.warehouse-select.active,
-.warehouse-select:first-child:active {
-  color: var(--color-primary);
-}
-
-.warehouse-select::before {
-  content: "";
-  position: absolute;
-  width: 0;
-  height: 3px;
-  bottom: -0.25em;
-  border-radius: 10px 10px 0 0;
-  transition: 200ms ease-out;
-}
-
-.warehouse-select.active::before,
-.warehouse-select:hover::before,
-.warehouse-select:focus::before {
-  width: 100%;
-  background-color: var(--color-primary);
-}
-
-.warehouse-select:not(.active):hover::before,
-.warehouse-select:not(.active):focus::before {
-  background-color: var(--color-secondary);
-}
 </style>
