@@ -12,7 +12,7 @@ public class Resource {
     private Product product;
     private int quantity;
 
-    public Resource createDummyResource(Warehouse warehouse, Product product) {
+    public static Resource createDummyResource(Warehouse warehouse, Product product) {
         Resource resource = new Resource();
 
         resource.setProduct(product);

@@ -11,4 +11,32 @@ public class Warehouse {
         this.id = id;
         WarehouseName = warehouseName;
     }
+
+    public Warehouse() {
+
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getWarehouseName() {
+        return WarehouseName;
+    }
+
+    public void setWarehouseName(String warehouseName) {
+        WarehouseName = warehouseName;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Warehouse warehouse) {
+            return warehouse.id == this.id;
+        }
+        return false;
+    }
 }
