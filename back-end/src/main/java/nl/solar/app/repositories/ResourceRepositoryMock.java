@@ -69,6 +69,8 @@ public class ResourceRepositoryMock implements ResourceRepository {
         int index = resources.indexOf(resource);
         if (index != -1) {
             resources.set(index, resource);
+        } else {
+            resources.add(resource);
         }
         return resource;
     }

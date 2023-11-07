@@ -1,6 +1,7 @@
 package nl.solar.app.models;
 
 
+import java.util.Objects;
 
 /**
  * Representation of a resource of a certain product for a certain warehouse
@@ -44,5 +45,19 @@ public class Resource {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Resource resource) {
+            return resource.getWarehouse().getId() == this.getWarehouse().getId() &&
+                    resource.getProduct().getId() == this.getProduct().getId();
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(product.getId(), warehouse.getId());
     }
 }
