@@ -14,11 +14,11 @@ export class Warehouse {
 
     static locations =
         [
-            "H.J.E. Wenckebachweg 47D, 1096 AK Amsterdam",
-            "Marconistraat 4A, 1704 RG Heerhugowaard",
-            "Barndegat 8, 1505 HN Zaandam",
-            "Philippusweg 2, 3125 AS Schiedam",
-            "Bolwerk 5, 3905 NH Veenendaal"
+            "H.J.E. Wenckebachweg 47D, 1096AK Amsterdam",
+            "Marconistraat 4A, 1704RG Heerhugowaard",
+            "Barndegat 8, 1505HN Zaandam",
+            "Philippusweg 2, 3125AS Schiedam",
+            "Bolwerk 5, 3905NH Veenendaal"
         ]
 
     constructor(id, name, location) {
