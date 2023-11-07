@@ -45,6 +45,10 @@
 import DeleteProductModal from "@/components/Models/product/DeleteProductModal.vue";
 import UpdateProductModal from "@/components/Models/product/UpdateProductModal.vue";
 import AddProductModal from "@/components/Models/product/AddProductModal.vue";
+import AddTeamModal from "@/components/Models/team/AddTeamModal";
+import UpdateTeamModal from "@/components/Models/team/UpdateTeamModal";
+import DeleteTeamModal from "@/components/Models/team/DeleteTeamModal";
+
 
 /**
  * General modal component, for the styling of the header and footer,
@@ -58,7 +62,7 @@ import AddProductModal from "@/components/Models/product/AddProductModal.vue";
  */
 export default {
   name: "ModelComponent",
-  components: {DeleteProductModal, UpdateProductModal, AddProductModal},
+  components: {DeleteProductModal, UpdateProductModal, AddProductModal, AddTeamModal, UpdateTeamModal, DeleteTeamModal},
   /**
    * props
    * {String} title - title of the modal. For example delete product or edit project.

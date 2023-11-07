@@ -9,10 +9,11 @@ import java.util.List;
 @Repository("TEAMS.INMEMORY")
 public class TeamRepositoryMock implements EntityRepository<Team> {
     private List<Team> teams;
-    private long currentId = 1;
+    private long currentId;
 
     public TeamRepositoryMock() {
         teams = new ArrayList<>();
+        currentId = 1;
         teams.add(new Team(currentId++, "Team 1", Team.Warehouse.SolarSedum, Team.TeamType.Internal));
         teams.add(new Team(currentId++, "Team 2", Team.Warehouse.SolarSedum, Team.TeamType.Internal));
         teams.add(new Team(currentId++, "Team 3", Team.Warehouse.SolarSedum, Team.TeamType.Internal));
@@ -54,6 +55,7 @@ public class TeamRepositoryMock implements EntityRepository<Team> {
         } else {
             if (item.getId() == 0) {
                 item.setId(currentId);
+                currentId += 1;
             }
             teams.add(item);
         }
