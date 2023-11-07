@@ -1,5 +1,7 @@
 package nl.solar.app.models;
 
+import java.util.Objects;
+
 /**
  * temporary
  */
@@ -38,5 +40,10 @@ public class Warehouse {
             return warehouse.id == this.id;
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

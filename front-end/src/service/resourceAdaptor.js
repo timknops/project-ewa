@@ -28,8 +28,8 @@ export class ResourceAdaptor {
     return await this.fetchJSON(`${this.resourceUrl}/warehouses/${wId}/products/${pId}`)
   }
 
-  async updateResource(wId, pId, resource) {
-    return await this.fetchJSON(`${this.resourceUrl}/warehouses/${wId}/products/${pId}`, {
+  async updateResource(resource) {
+    return await this.fetchJSON(`${this.resourceUrl}/warehouses/${resource.warehouse.id}/products/${resource.product.id}`, {
       method: "PUT",
       headers: {"content-type": "application/json"},
       body: JSON.stringify(resource)

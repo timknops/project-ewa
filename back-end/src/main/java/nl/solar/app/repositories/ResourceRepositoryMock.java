@@ -67,6 +67,7 @@ public class ResourceRepositoryMock implements ResourceRepository {
     @Override
     public Resource saveResource(Resource resource) {
         int index = resources.indexOf(resource);
+        System.out.println(index);
         if (index != -1) {
             resources.set(index, resource);
         } else {

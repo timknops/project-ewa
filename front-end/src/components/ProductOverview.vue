@@ -1,6 +1,7 @@
 <template>
   <div>
     <table-component
+        v-if="products.length > 0"
         :amount-to-display="6"
         :has-edit-delete-buttons="true"
         :table-data="products"
@@ -8,6 +9,12 @@
         @delete="showDeleteModal"
         @add="showAddModal"
     />
+    <!--    Templated doesn't wait for loading so show spinner for user information-->
+    <div v-else class="p-1 pb-0 bg-white w-auto">
+      <strong>Loading...</strong>
+      <div class="spinner-border spinner-border-sm"></div>
+    </div>
+
     <Transition>
       <model-component
           v-if="showModal"
@@ -164,6 +171,8 @@ export default {
     }
   },
   async created() {
+    //clear the product so that the native check is deleted.
+    this.products = [];
     this.products = await this.productService.findAll();
   }
 }

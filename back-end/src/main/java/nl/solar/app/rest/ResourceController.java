@@ -11,10 +11,7 @@ import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Controller for all end-points directly affecting the resources.
@@ -28,6 +25,10 @@ public class ResourceController {
     @Autowired
     ResourceRepository resourceRepo;
 
+    @GetMapping("/resources/test")
+    public List<Resource> resources() {
+        return resourceRepo.findAll();
+    }
     /**
      * Get a list of all resources and format it to the correct json string format
      * @return a json array of resources
@@ -35,6 +36,7 @@ public class ResourceController {
     @GetMapping(path = "/resources", produces = "application/json")
     public ResponseEntity<List<Map<String, Object>>> getResources() {
         List<Resource> resources = resourceRepo.findAll();
+        System.out.println(resources);
         List<Map<String, Object>> formattedResources = new ArrayList<>();
         Map<Warehouse, List<Map<String, Object>>> GroupedByWarehouse = new HashMap<>();
 
@@ -44,6 +46,7 @@ public class ResourceController {
             //add product to a list of the warehouse of the current resources.
             GroupedByWarehouse.computeIfAbsent(resource.getWarehouse(), k -> new ArrayList<>()).add(productFormat);
         }
+            System.out.println(GroupedByWarehouse);
 
         /*Loop over all warehouses in the GroupBy map and format it to
             [{
@@ -145,7 +148,7 @@ public class ResourceController {
      * @return return a Map (object) of a product containing the quantity
      */
     private Map<String, Object> formatProductObject(Resource resource) {
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new LinkedHashMap<>();
         map.put("id", resource.getProduct().getId());
         map.put("productName", resource.getProduct().getProductName());
         map.put("description", resource.getProduct().getDescription());
