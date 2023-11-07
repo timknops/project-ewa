@@ -133,12 +133,7 @@ public class ResourceController {
         }
 
         Resource update = this.resourceRepo.saveResource(resource);
-        Map<String, Object> formatted = new HashMap<>();
-
-        //store reference to warehouse so front-end knows for which warehouse a resource is updated.
-        formatted.put("warehouse", update.getWarehouse());
-        formatted.put("product", formatProductObject(update));
-        return ResponseEntity.ok().body(formatted);
+        return ResponseEntity.ok().body(update);
     }
 
     /**

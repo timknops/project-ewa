@@ -226,16 +226,43 @@ export default {
     },
 
     //   methods for modal
+    /**
+     * show the update modal
+     * @param {Product}resource the inventory object on which the edit button was clicked
+     *
+     *
+     */
     showUpdateModal(resource) {
+      /*format the resource to the format the back-end expect to receive which is:
+      {
+        product: {id, productName, description},
+        warehouse: {id, warehouseName},
+        quantity: Number,
+      }
+       */
       this.modalResource = {
         product: {id: resource.id, productName: resource.productName, description: resource.description},
         warehouse: this.activeWarehouse,
         quantity: resource.quantity
       }
+      // show the modal
       this.showModal = true;
     },
+
+    /**
+     *
+     * @param resource -  a resource object in the format of the back-end i,e
+     * {
+     *   product: {id, productName, description},
+     *   warehouse: {id, warehouseName},
+     *   quantity: Number,
+     * }
+     *
+     * @return {Promise<void>}
+     */
     async handleUpdate(resource) {
       try {
+        //returns the same format as the resource explained above
         const updated = await this.resourceService.updateResource(resource)
         //find the correct warehouse where a quantity is updated for
         const warehouseIndex = this.totalProducts.findIndex(resource => resource.warehouse.id === updated.warehouse.id)
@@ -245,7 +272,8 @@ export default {
           const productIndex = this.totalProducts[warehouseIndex].products.findIndex(product => product.id === updated.product.id)
 
           if (productIndex !== -1) {
-            this.totalProducts[warehouseIndex].products[productIndex].quantity = updated.product.quantity
+            //update the correct product
+            this.totalProducts[warehouseIndex].products[productIndex].quantity = updated.quantity
           }
         }
         this.showModal = false
