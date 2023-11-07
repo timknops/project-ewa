@@ -42,4 +42,17 @@ public class Warehouse {
     public String getLocation() {
         return location;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj){
+            return true;
+        }
+
+        if (obj instanceof Warehouse warehouse){
+            return this.getId() == warehouse.id;
+        }
+
+        return false;
+    }
 }
