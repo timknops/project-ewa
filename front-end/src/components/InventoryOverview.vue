@@ -27,14 +27,14 @@
           <strong>Total inventory</strong>
         </button>
       </div>
-      <div class="col-auto" v-for="warehouse in WAREHOUSES" :key="warehouse">
+      <div class="col-auto" v-for="warehouse in WAREHOUSES" :key="warehouse.id">
         <button
           type="button"
           class="warehouse-select btn btn-link p-0"
-          :class="{ active: warehouse === activeWarehouse }"
+          :class="{ active: warehouse.warehouseName === activeWarehouse }"
           @click="setActiveWarehouse(warehouse)"
         >
-          <strong>{{ warehouse }}</strong>
+          <strong>{{ warehouse.warehouseName }}</strong>
         </button>
       </div>
     </div>
@@ -47,7 +47,6 @@
 </template>
 
 <script>
-import { Product } from "@/models/product";
 import TableComponent from "@/components/TableComponent.vue";
 
 /**
@@ -82,10 +81,27 @@ export default {
       },
 
       //for now only the name, could change to objects if needed.
-      WAREHOUSES: ["Solar Sedum", "Superzon", "EHES", "The switch"],
+      WAREHOUSES: [
+        {
+          id: 3000,
+          warehouseName: "Solar Sedum"
+        },
+        {
+          id: 3003,
+          warehouseName: "Superzon"},
+        {
+          id: 3006,
+          warehouseName: "EHES"
+        },
+        {
+          id: 3009,
+          warehouseName: "The Switch"
+        }],
       activeWarehouse: "Total", //total selected by default.
     };
   },
+
+  inject: ["resourceService"],
 
   methods: {
     // TODO should be available globally, and not stored directly in the component (comes with jwt)
@@ -95,18 +111,31 @@ export default {
         role: "admin",
         team: {
           name: "team1",
-          warehouse: "Superzon",
+          warehouse: {
+            id: 3003,
+            warehouseName: "Superzon"
+          },
         },
       };
     },
 
+    findWarehouseByName(name) {
+      if (name === "Total") return "Total"
+      return this.WAREHOUSES.find((warehouse) => name === warehouse.warehouseName)
+    },
+
     setActiveWarehouse(warehouse) {
-      this.activeWarehouse = warehouse;
+      if (warehouse.id){
+        this.activeWarehouse = warehouse;
+      } else {
+        warehouse = this.findWarehouseByName(warehouse);
+        this.activeWarehouse = warehouse;
+      }
 
       if (warehouse === "Total") {
         this.$router.push("/inventory");
       } else {
-        this.$router.push("/inventory/" + warehouse);
+        this.$router.push("/inventory/" + warehouse.warehouseName);
       }
     },
 
@@ -117,7 +146,7 @@ export default {
      */
     getWarehouseProductInfo(warehouse) {
       const productsObjectArray = this.totalProducts.filter(
-        (totalList) => totalList.warehouse === warehouse
+        (totalList) => totalList.warehouse.id === warehouse.id
       );
 
       // filter should return one element in the array, because there is only one warehouse active
@@ -181,39 +210,29 @@ export default {
       if (this.$route.params.warehouse == null) {
         this.activeWarehouse = "Total";
       } else {
-        this.activeWarehouse = this.$route.params.warehouse;
+        this.setActiveWarehouse(this.$route.params.warehouse);
       }
     },
   },
 
-  created() {
+  async created() {
     this.activeUser = this.getUser();
 
     //get list of products depending on the users role i.e. the total inventory or inventory of the warehouse of the user
     if (this.activeUser.role === "admin") {
-      //build the totalProducts array to be manipulated by the admin, by choosing certain warehouses.
-      const array = [];
-      this.WAREHOUSES.forEach((warehouse) => {
-        const obj = {
-          warehouse: warehouse,
-          products: Product.createDummyProduct(),
-        };
-        array.push(obj);
-      });
-      this.totalProducts = array;
-
+      this.totalProducts = await this.resourceService.findAll();
+      console.log(this.totalProducts)
       //set the products to the products for all warehouses, i.e. when admin choses total as view.
       this.products = this.getTotalProductInfo();
     } else {
-      this.products = Product.createDummyProduct();
+      this.products = await this.resourceService.findAllForWarehouse(this.activeUser.team.warehouse.id);
     }
 
     //set active if there is a param in the url
     if (this.$route.params.warehouse) {
       //activeWarehouse should not change when user is a viewer
       if (this.activeUser.role === "viewer") return;
-
-      this.activeWarehouse = this.$route.params.warehouse;
+      this.setActiveWarehouse(this.$route.params.warehouse);
     }
   },
 };
