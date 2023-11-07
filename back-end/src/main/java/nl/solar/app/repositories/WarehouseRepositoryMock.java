@@ -9,7 +9,7 @@ import java.util.List;
 @Repository("WAREHOUSES.INMEMORY")
 public class WarehouseRepositoryMock implements EntityRepository<Warehouse>{
     private List<Warehouse> warehouses;
-    private final long ID = 3000;
+    private final long ID = 1000;
     private long currentId = ID;
 
     private final String[] names = {

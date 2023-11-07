@@ -29,7 +29,7 @@ public class WarehouseController {
         Warehouse warehouse = this.warehouseRepo.findById(id);
 
         if (warehouse == null){
-            throw new ResourceNotFoundException("Product with id: " + id + " was not found");
+            throw new ResourceNotFoundException("Warehouse with id: " + id + " was not found");
         }
 
         return ResponseEntity.ok(warehouse);
@@ -40,7 +40,7 @@ public class WarehouseController {
         Warehouse warehouseToDelete = this.warehouseRepo.delete(id);
 
         if (warehouseToDelete == null){
-            throw new ResourceNotFoundException("Cannot delete product with id: " + id + "\nProduct not found");
+            throw new ResourceNotFoundException("Cannot delete warehouse with id: " + id + "\nWarehouse not found");
         }
 
         return ResponseEntity.ok(warehouseToDelete);
