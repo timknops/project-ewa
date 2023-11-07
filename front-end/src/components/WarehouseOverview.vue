@@ -4,6 +4,9 @@
       :amount-to-display="5"
       :has-edit-delete-buttons="true"
       :table-data="warehouses"
+      @edit="showEditModal"
+      @delete="showDeleteModal"
+      @add="showAddModal"
     />
   </div>
 
@@ -11,18 +14,33 @@
 
 <script>
 import TableComponent from "@/components/TableComponent.vue";
-import {Warehouse} from "@/models/warehouse";
+import ModelComponent from "@/components/Models/ModelComponent.vue";
 
 export default {
   name: "WarehouseOverview",
-  components: {TableComponent},
+  components: {ModelComponent, TableComponent},
+  inject:["warehouseService"],
   data() {
     return {
-      warehouses: []
+      warehouses: [],
+      showModal: false,
+      modalTitle: "",
+      modalBodyComponent: "",
+      modalWarehouse: {
+        id: Number,
+        name: String,
+        location: String
+      },
+      okBtnText: "",
+      MODAL_TYPES: Object.freeze({
+        DELETE: "delete-warehouse-modal",
+        UPDATE: "update-warehouse-modal",
+        ADD: "add-warehouse-modal"
+      })
     };
   },
-  created() {
-    this.warehouses = Warehouse.createDummyWarehouses()
+  async created() {
+    this.warehouses = await this.warehouseService.findAll();
   },
 };
 </script>

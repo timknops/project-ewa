@@ -16,6 +16,7 @@ import LoginPage from "@/components/LoginPage.vue";
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import appConfig from "@/appConfig";
 import { ProductAdaptor } from "@/service/productAdaptor";
+import { WarehouseAdaptor } from "@/service/warehouseAdaptor";
 
 localStorage.setItem("loggedIn", true);
 export default {
@@ -32,7 +33,8 @@ export default {
   },
   provide() {
     return {
-      productService: new ProductAdaptor(`${appConfig.BACKEND_URL}/products`)
+      productService: new ProductAdaptor(`${appConfig.BACKEND_URL}/products`),
+      warehouseService: new WarehouseAdaptor(`${appConfig.BACKEND_URL}/warehouses`)
     }
   },
   methods: {
