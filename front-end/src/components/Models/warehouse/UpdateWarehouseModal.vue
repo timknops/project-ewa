@@ -18,11 +18,11 @@
       <label for="location" class="form-label fw-bold">location</label>
       <textarea id="location"
                 class="form-control"
-                :class="{'border-danger': locationEmpty}"
+                :class="{'border-danger': !locationCorrect}"
                 v-model.lazy.trim="modalItem.location"
                 @blur="validateLocation">
       </textarea>
-      <p v-if="locationEmpty" class="text-danger"> The location can't be empty!</p>
+      <p v-if="!locationCorrect" class="text-danger">The location does not match the format: [street name] [number], [postal code] [city]</p>
     </div>
   </form>
 
@@ -36,7 +36,7 @@ export default {
       modalItem: {},
       hasError: false,
       nameEmpty: false,
-      locationEmpty: false
+      locationCorrect: true
     }
   },
   props: ["item"],
@@ -49,8 +49,8 @@ export default {
       this.hasError = this.modalItem.name.length === 0;
     },
     validateLocation() {
-      this.locationEmpty = this.modalItem.location.length === 0;
-      this.hasError = this.modalItem.location.length === 0;
+      this.locationCorrect = this.modalItem.location.match('[A-Za-z ]+[ ][0-9]+([A-Za-z]?)+(([0-9]{1,2})?),[ ][0-9]{4}[A-Za-z]{2}[ ][A-Za-z]+')
+      this.hasError = !this.locationCorrect;
     }
   }
 }
