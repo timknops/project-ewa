@@ -3,7 +3,11 @@
     <TableComponent
       :table-data="projects"
       :amount-to-display="10"
-      :has-edit-delete-buttons="true"
+      :has-delete-button="true"
+      :has-edit-button="true"
+      :has-add-button="true"
+      :bold-first-column="true"
+      :hide-id-column="true"
       @edit="editProject"
       @delete="deleteProject"
     />

@@ -24,6 +24,7 @@ import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { faSortDown } from "@fortawesome/free-solid-svg-icons";
 import { faSortUp } from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 /* add icons to the library */
 library.add(
@@ -40,12 +41,14 @@ library.add(
   faPenToSquare,
   faTrash,
   faSortDown,
-  faSortUp
+  faSortUp,
+  faPlus
 );
 
 /* import bootstrap */
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap";
+import "./css/bootstrap-reset.css";
 
 createApp(App)
   .use(router)

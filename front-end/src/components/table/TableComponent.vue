@@ -15,43 +15,92 @@
       <div class="table-responsive" :style="{ height: calculateTableHeight }">
         <table class="table table-hover mb-0">
           <thead>
-            <tr ref="headerRow">
-              <th
-                v-for="(name, index) in tableColumnNames"
-                :key="name"
-                scope="col"
-                class="py-3 pt-2 table-header-text px-3 px-lg-4"
-                :class="{
-                  'pe-lg-0':
-                    hasEditDeleteButtons &&
-                    index === tableColumnNames.length - 1,
-                }"
-              >
-                <div class="d-flex justify-content-between align-items-end">
-                  <div @click="sortByColumn(name)">
-                    {{ name.toUpperCase() }}
-                    <!-- icons for sorting -->
-                    <TableSortingIcons
-                      :sort-direction="sortDirectionAllColumns"
-                      :column-name="name"
-                      :ref="'sortingIcons' + name"
-                    />
-                  </div>
+            <TableHeaderRow
+              :table-column-names="tableColumnNames"
+              :has-add-button="hasAddButton"
+              :hide-id-column="hideIdColumn"
+              :sort-direction-all-columns="sortDirectionAllColumns"
+              :previous-sorted-column="previousSortedColumn"
+              @sort="sortByColumn($event)"
+              @add="$emit('add')"
+            />
 
-                  <button
-                    v-if="
-                      hasEditDeleteButtons &&
-                      index === tableColumnNames.length - 1
-                    "
-                    class="btn btn-primary align-middle"
-                    @click="$emit('add')"
-                  >
-                    <font-awesome-icon icon="fa-solid fa-plus" />
-                    add
-                  </button>
-                </div>
-              </th>
-            </tr>
+            <!--            <tr ref="headerRow">-->
+            <!--              <template v-if="!hideIdColumn">-->
+            <!--                <th-->
+            <!--                  v-for="(name, index) in tableColumnNames"-->
+            <!--                  :key="name"-->
+            <!--                  scope="col"-->
+            <!--                  class="py-3 pt-2 table-header-text px-3 px-lg-4"-->
+            <!--                  :class="{-->
+            <!--                    'pe-lg-0':-->
+            <!--                      hasAddButton && index === tableColumnNames.length - 1,-->
+            <!--                  }"-->
+            <!--                >-->
+            <!--                  &lt;!&ndash; If the hideIdColumn prop is set to true, then the first column will be hidden. &ndash;&gt;-->
+            <!--                  <div class="d-flex justify-content-between align-items-end">-->
+            <!--                    <div @click="sortByColumn(name)">-->
+            <!--                      {{ name.toUpperCase() }}-->
+            <!--                      &lt;!&ndash; icons for sorting &ndash;&gt;-->
+            <!--                      <TableSortingIcons-->
+            <!--                        :sort-direction="sortDirectionAllColumns"-->
+            <!--                        :column-name="name"-->
+            <!--                        :ref="'sortingIcons' + name"-->
+            <!--                      />-->
+            <!--                    </div>-->
+
+            <!--                    <button-->
+            <!--                      v-if="-->
+            <!--                        hasAddButton && index === tableColumnNames.length - 1-->
+            <!--                      "-->
+            <!--                      class="btn btn-primary align-middle"-->
+            <!--                      @click="$emit('add')"-->
+            <!--                    >-->
+            <!--                      <font-awesome-icon icon="fa-solid fa-plus" />-->
+            <!--                      add-->
+            <!--                    </button>-->
+            <!--                  </div>-->
+            <!--                </th>-->
+            <!--              </template>-->
+            <!--              <template v-else-->
+            <!--                ><th-->
+            <!--                  v-for="(name, index) in tableColumnNames.slice(1)"-->
+            <!--                  :key="name"-->
+            <!--                  scope="col"-->
+            <!--                  class="py-3 pt-2 table-header-text px-3 px-lg-4"-->
+            <!--                  :class="{-->
+            <!--                    'pe-lg-0':-->
+            <!--                      hasAddButton &&-->
+            <!--                      index === tableColumnNames.slice(1).length - 1,-->
+            <!--                  }"-->
+            <!--                >-->
+            <!--                  &lt;!&ndash; If the hideIdColumn prop is set to true, then the first column will be hidden. &ndash;&gt;-->
+            <!--                  <div class="d-flex justify-content-between align-items-end">-->
+            <!--                    <div @click="sortByColumn(name)">-->
+            <!--                      {{ name.toUpperCase() }}-->
+            <!--                      &lt;!&ndash; icons for sorting &ndash;&gt;-->
+            <!--                      <TableSortingIcons-->
+            <!--                        :sort-direction="sortDirectionAllColumns"-->
+            <!--                        :column-name="name"-->
+            <!--                        :ref="'sortingIcons' + name"-->
+            <!--                      />-->
+            <!--                    </div>-->
+
+            <!--                    <button-->
+            <!--                      v-if="-->
+            <!--                        hasAddButton &&-->
+            <!--                        index === tableColumnNames.slice(1).length - 1-->
+            <!--                      "-->
+            <!--                      class="btn btn-primary align-middle"-->
+            <!--                      @click="$emit('add')"-->
+            <!--                    >-->
+            <!--                      <font-awesome-icon icon="fa-solid fa-plus" />-->
+            <!--                      add-->
+            <!--                    </button>-->
+            <!--                  </div>-->
+            <!--                </th>-->
+            <!--              </template>-->
+            <!--            </tr>-->
           </thead>
 
           <!-- If bold first row is set to true, then use the first version of the tbody, else use the other. -->
@@ -63,7 +112,11 @@
               @mouseleave="mouseLeave"
             >
               <!-- Makes the first column of the row bold. -->
-              <th scope="row" class="py-3 table-text px-3 px-lg-4">
+              <th
+                v-if="!hideIdColumn"
+                scope="row"
+                class="py-3 table-text px-3 px-lg-4"
+              >
                 {{ Object.values(tableRow)[0] }}
               </th>
 
@@ -106,9 +159,11 @@
 
               <!-- If the table has edit and delete buttons -->
               <TableEditDeleteButtons
-                v-if="hasEditDeleteButtons"
+                v-if="hasEditButton || hasDeleteButton"
                 :table-row="tableRow"
                 :row-height-large="ROW_HEIGHT_LARGE"
+                :has-edit-button="hasEditButton"
+                :has-delete-button="hasDeleteButton"
                 @edit="$emit('edit', tableRow)"
                 @delete="$emit('delete', tableRow)"
               />
@@ -155,16 +210,22 @@
                   >
                 </td>
 
-                <td v-else class="py-3 table-text px-3 px-lg-4">
+                <!-- If the column name is 'id' and the hideIdColumn prop is set to true, then hide the column. -->
+                <td
+                  v-else-if="!hideIdColumn || fieldData !== tableRow.id"
+                  class="py-3 table-text px-3 px-lg-4"
+                >
                   {{ fieldData }}
                 </td>
               </template>
 
               <!-- If the table has edit and delete buttons -->
               <TableEditDeleteButtons
-                v-if="hasEditDeleteButtons"
+                v-if="hasEditButton || hasDeleteButton"
                 :table-row="tableRow"
                 :row-height-large="ROW_HEIGHT_LARGE"
+                :has-edit-button="hasEditButton"
+                :has-delete-button="hasDeleteButton"
                 @edit="$emit('edit', tableRow)"
                 @delete="$emit('delete', tableRow)"
               />
@@ -188,9 +249,9 @@
 </template>
 
 <script>
-import TableSortingIcons from "@/components/table/TableSortingIcons.vue";
 import TableEditDeleteButtons from "@/components/table/TableEditDeleteButtons.vue";
 import TableFooter from "@/components/table/TableFooter.vue";
+import TableHeaderRow from "@/components/table/TableHeaderRow.vue";
 
 /**
  * Custom table component. Allows user to dynamically set the width, height, whether the first row should be bold and
@@ -203,13 +264,20 @@ import TableFooter from "@/components/table/TableFooter.vue";
  * @param {Number} arrayAmountToDisplay When the table data contains an array, this is the amount of items that are displayed.
  * @param {String} tableTitle The title of the table.
  * @param {String} subTitle The subtitle of the table.
- * @param {Boolean} hasEditDeleteButtons Whether the table has edit and delete buttons.
+ * @param {Boolean} hasEditButton Whether the table has an edit button or not.
+ * @param {Boolean} hasDeleteButton Whether the table has a delete button or not.
+ * @param {Boolean} hasAddButton Whether the table has an add button or not.
+ * @param {Boolean} hideIdColumn Whether the ID column should be hidden or not.
  *
  * @author Tim Knops
  */
 export default {
   name: "TableComponent",
-  components: { TableFooter, TableEditDeleteButtons, TableSortingIcons },
+  components: {
+    TableHeaderRow,
+    TableFooter,
+    TableEditDeleteButtons,
+  },
   props: {
     tableWidth: String,
     boldFirstColumn: Boolean,
@@ -224,7 +292,10 @@ export default {
     arrayAmountToDisplay: Number,
     tableTitle: String,
     subTitle: String,
-    hasEditDeleteButtons: Boolean,
+    hasEditButton: Boolean,
+    hasDeleteButton: Boolean,
+    hasAddButton: Boolean,
+    hideIdColumn: Boolean,
   },
   data() {
     return {
@@ -261,6 +332,8 @@ export default {
       },
       /** The current sort direction of all columns. */
       sortDirectionAllColumns: "default",
+      /** The reference to the previous column that was sorted. */
+      previousColumnRef: "",
     };
   },
   methods: {
@@ -326,18 +399,21 @@ export default {
     },
 
     /** Sorts the table data by the column name that is passed as a parameter. */
-    sortByColumn(columnName) {
+    sortByColumn(clickedColumnInfo) {
+      const columnName = clickedColumnInfo.columnName;
+      const columnIconRef = clickedColumnInfo.columnIconRef;
+
       // If the previous sorted column is the same as the current one, reverse the array.
       if (this.previousSortedColumn === columnName) {
         // If the current sort direction is descending, set it to ascending and vice versa.
         if (
-          this.$refs["sortingIcons" + columnName][0].currentSortDirection ===
+          columnIconRef.currentSortDirection ===
           this.SORT_DIRECTION_OPTIONS.DESCENDING
         ) {
-          this.$refs["sortingIcons" + columnName][0].currentSortDirection =
+          columnIconRef.currentSortDirection =
             this.SORT_DIRECTION_OPTIONS.ASCENDING;
         } else {
-          this.$refs["sortingIcons" + columnName][0].currentSortDirection =
+          columnIconRef.currentSortDirection =
             this.SORT_DIRECTION_OPTIONS.DESCENDING;
         }
 
@@ -363,17 +439,18 @@ export default {
       // Set the previous sorted column icons to default.
       if (this.previousSortedColumn !== "") {
         // If the previous sorted column is not empty.
-        this.$refs[
-          "sortingIcons" + this.previousSortedColumn
-        ][0].currentSortDirection = this.SORT_DIRECTION_OPTIONS.DEFAULT;
+
+        this.previousColumnRef.currentSortDirection =
+          this.SORT_DIRECTION_OPTIONS.DEFAULT;
       }
 
       // Set the sorting icon for the column that was clicked to descending.
-      this.$refs["sortingIcons" + columnName][0].currentSortDirection =
+      columnIconRef.currentSortDirection =
         this.SORT_DIRECTION_OPTIONS.DESCENDING;
 
       // Update the displayed data and save the previous sorted column.
       this.previousSortedColumn = columnName;
+      this.previousColumnRef = clickedColumnInfo.columnIconRef;
       this.updateDisplayedData();
     },
   },
@@ -391,13 +468,12 @@ export default {
   },
   watch: {
     tableData() {
-      // Reset display if tableData changes.
+      this.tableColumnNames = Object.keys(this.tableData[0]);
 
       // Reset the sorting icon of the previous sorted column.
       if (this.previousSortedColumn !== "") {
-        this.$refs[
-          "sortingIcons" + this.previousSortedColumn
-        ][0].currentSortDirection = this.SORT_DIRECTION_OPTIONS.DEFAULT;
+        this.previousColumnRef.currentSortDirection =
+          this.SORT_DIRECTION_OPTIONS.DEFAULT;
       }
       this.currentStartIndex = 0;
       this.currentEndIndex = this.amountToDisplay;
