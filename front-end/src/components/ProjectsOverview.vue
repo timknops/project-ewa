@@ -7,7 +7,6 @@
       :has-edit-button="true"
       :has-add-button="true"
       :bold-first-column="true"
-      :hide-id-column="true"
       @edit="editProject"
       @delete="deleteProject"
     />

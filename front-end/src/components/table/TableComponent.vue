@@ -24,83 +24,6 @@
               @sort="sortByColumn($event)"
               @add="$emit('add')"
             />
-
-            <!--            <tr ref="headerRow">-->
-            <!--              <template v-if="!hideIdColumn">-->
-            <!--                <th-->
-            <!--                  v-for="(name, index) in tableColumnNames"-->
-            <!--                  :key="name"-->
-            <!--                  scope="col"-->
-            <!--                  class="py-3 pt-2 table-header-text px-3 px-lg-4"-->
-            <!--                  :class="{-->
-            <!--                    'pe-lg-0':-->
-            <!--                      hasAddButton && index === tableColumnNames.length - 1,-->
-            <!--                  }"-->
-            <!--                >-->
-            <!--                  &lt;!&ndash; If the hideIdColumn prop is set to true, then the first column will be hidden. &ndash;&gt;-->
-            <!--                  <div class="d-flex justify-content-between align-items-end">-->
-            <!--                    <div @click="sortByColumn(name)">-->
-            <!--                      {{ name.toUpperCase() }}-->
-            <!--                      &lt;!&ndash; icons for sorting &ndash;&gt;-->
-            <!--                      <TableSortingIcons-->
-            <!--                        :sort-direction="sortDirectionAllColumns"-->
-            <!--                        :column-name="name"-->
-            <!--                        :ref="'sortingIcons' + name"-->
-            <!--                      />-->
-            <!--                    </div>-->
-
-            <!--                    <button-->
-            <!--                      v-if="-->
-            <!--                        hasAddButton && index === tableColumnNames.length - 1-->
-            <!--                      "-->
-            <!--                      class="btn btn-primary align-middle"-->
-            <!--                      @click="$emit('add')"-->
-            <!--                    >-->
-            <!--                      <font-awesome-icon icon="fa-solid fa-plus" />-->
-            <!--                      add-->
-            <!--                    </button>-->
-            <!--                  </div>-->
-            <!--                </th>-->
-            <!--              </template>-->
-            <!--              <template v-else-->
-            <!--                ><th-->
-            <!--                  v-for="(name, index) in tableColumnNames.slice(1)"-->
-            <!--                  :key="name"-->
-            <!--                  scope="col"-->
-            <!--                  class="py-3 pt-2 table-header-text px-3 px-lg-4"-->
-            <!--                  :class="{-->
-            <!--                    'pe-lg-0':-->
-            <!--                      hasAddButton &&-->
-            <!--                      index === tableColumnNames.slice(1).length - 1,-->
-            <!--                  }"-->
-            <!--                >-->
-            <!--                  &lt;!&ndash; If the hideIdColumn prop is set to true, then the first column will be hidden. &ndash;&gt;-->
-            <!--                  <div class="d-flex justify-content-between align-items-end">-->
-            <!--                    <div @click="sortByColumn(name)">-->
-            <!--                      {{ name.toUpperCase() }}-->
-            <!--                      &lt;!&ndash; icons for sorting &ndash;&gt;-->
-            <!--                      <TableSortingIcons-->
-            <!--                        :sort-direction="sortDirectionAllColumns"-->
-            <!--                        :column-name="name"-->
-            <!--                        :ref="'sortingIcons' + name"-->
-            <!--                      />-->
-            <!--                    </div>-->
-
-            <!--                    <button-->
-            <!--                      v-if="-->
-            <!--                        hasAddButton &&-->
-            <!--                        index === tableColumnNames.slice(1).length - 1-->
-            <!--                      "-->
-            <!--                      class="btn btn-primary align-middle"-->
-            <!--                      @click="$emit('add')"-->
-            <!--                    >-->
-            <!--                      <font-awesome-icon icon="fa-solid fa-plus" />-->
-            <!--                      add-->
-            <!--                    </button>-->
-            <!--                  </div>-->
-            <!--                </th>-->
-            <!--              </template>-->
-            <!--            </tr>-->
           </thead>
 
           <!-- If bold first row is set to true, then use the first version of the tbody, else use the other. -->
@@ -332,8 +255,8 @@ export default {
       },
       /** The current sort direction of all columns. */
       sortDirectionAllColumns: "default",
-      /** The reference to the previous column that was sorted. */
-      previousColumnRef: "",
+      /** The reference to the previous column icon that was sorted. */
+      previousColumnIconRef: "",
     };
   },
   methods: {
@@ -440,7 +363,7 @@ export default {
       if (this.previousSortedColumn !== "") {
         // If the previous sorted column is not empty.
 
-        this.previousColumnRef.currentSortDirection =
+        this.previousColumnIconRef.currentSortDirection =
           this.SORT_DIRECTION_OPTIONS.DEFAULT;
       }
 
@@ -450,7 +373,7 @@ export default {
 
       // Update the displayed data and save the previous sorted column.
       this.previousSortedColumn = columnName;
-      this.previousColumnRef = clickedColumnInfo.columnIconRef;
+      this.previousColumnIconRef = clickedColumnInfo.columnIconRef;
       this.updateDisplayedData();
     },
   },
@@ -472,7 +395,7 @@ export default {
 
       // Reset the sorting icon of the previous sorted column.
       if (this.previousSortedColumn !== "") {
-        this.previousColumnRef.currentSortDirection =
+        this.previousColumnIconRef.currentSortDirection =
           this.SORT_DIRECTION_OPTIONS.DEFAULT;
       }
       this.currentStartIndex = 0;
@@ -498,11 +421,6 @@ table th {
 
 .table-text {
   color: var(--bs-gray-700);
-}
-
-.table-header-text {
-  color: var(--bs-gray-900);
-  cursor: pointer;
 }
 
 .table-title {
