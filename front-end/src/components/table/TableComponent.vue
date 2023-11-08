@@ -17,19 +17,39 @@
           <thead>
             <tr ref="headerRow">
               <th
-                v-for="name in tableColumnNames"
+                v-for="(name, index) in tableColumnNames"
                 :key="name"
                 scope="col"
                 class="py-3 pt-2 table-header-text px-3 px-lg-4"
-                @click="sortByColumn(name)"
+                :class="{
+                  'pe-lg-0':
+                    hasEditDeleteButtons &&
+                    index === tableColumnNames.length - 1,
+                }"
               >
-                {{ name.toUpperCase() }}
-                <!-- icons for sorting -->
-                <TableSortingIcons
-                  :sort-direction="sortDirectionAllColumns"
-                  :column-name="name"
-                  :ref="'sortingIcons' + name"
-                />
+                <div class="d-flex justify-content-between align-items-end">
+                  <div @click="sortByColumn(name)">
+                    {{ name.toUpperCase() }}
+                    <!-- icons for sorting -->
+                    <TableSortingIcons
+                      :sort-direction="sortDirectionAllColumns"
+                      :column-name="name"
+                      :ref="'sortingIcons' + name"
+                    />
+                  </div>
+
+                  <button
+                    v-if="
+                      hasEditDeleteButtons &&
+                      index === tableColumnNames.length - 1
+                    "
+                    class="btn btn-primary align-middle"
+                    @click="$emit('add')"
+                  >
+                    <font-awesome-icon icon="fa-solid fa-plus" />
+                    add
+                  </button>
+                </div>
               </th>
             </tr>
           </thead>
@@ -363,10 +383,9 @@ export default {
   computed: {
     /** Calculates the table height depending on the amount of items to be displayed at once. */
     calculateTableHeight() {
+      const TABLE_HEADER_HEIGHT = 63;
       return (
-        this.ROW_HEIGHT_LARGE * this.displayAmount +
-        this.ROW_HEIGHT_LARGE +
-        "px"
+        this.ROW_HEIGHT_LARGE * this.displayAmount + TABLE_HEADER_HEIGHT + "px"
       );
     },
   },
@@ -424,13 +443,13 @@ p {
   color: var(--bs-gray-900);
 }
 
-button {
+button:not(.btn-primary) {
   text-decoration: none;
   font-size: 0.875rem;
   color: var(--bs-gray-900);
   transition: none !important;
 }
-button:hover {
+button:hover:not(.btn-primary) {
   text-decoration: underline;
   color: var(--color-primary);
 }
