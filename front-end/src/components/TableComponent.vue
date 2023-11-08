@@ -3,9 +3,9 @@
     <div class="card-body px-4 py-0 overflow-hidden">
       <!-- Both the title and the subtitle are optional props! They will not be displayed when not specified -->
       <h5
-        v-if="tableTitle !== undefined"
-        class="fw-bold table-title ps-lg-4 ps-3 mb-0"
-        :class="{ 'mb-2': subTitle === undefined }"
+          v-if="tableTitle !== undefined"
+          class="fw-bold table-title ps-lg-4 ps-3 mb-0"
+          :class="{ 'mb-2': subTitle === undefined }"
       >
         {{ tableTitle }}
       </h5>
@@ -15,142 +15,144 @@
       <div class="table-responsive" :style="{ height: calculateTableHeight }">
         <table class="table table-hover mb-0">
           <thead>
-            <tr ref="headerRow">
-              <th
+          <tr ref="headerRow">
+            <th
                 v-for="(name, index) in tableColumnNames"
                 :key="name"
                 scope="col"
-                class="py-3 pt-2 table-header-text px-3 px-lg-4 align-items-end justify-content-between"
-                :class="{'d-flex': hasEditDeleteButtons && index === tableColumnNames.length -1}"
-              >
+                class="py-3 pt-2 table-header-text px-3 px-lg-4"
+                :class="{'pe-lg-0': hasEditDeleteButtons && index === tableColumnNames.length -1}"
+            >
+              <div class="d-flex justify-content-between align-items-end">
                 {{ name.toUpperCase() }}
                 <button
                     v-if="hasEditDeleteButtons && index === tableColumnNames.length -1"
-                    class="btn btn-primary align-middle"
+                    class="ms-4 btn btn-primary"
                     @click="$emit('add')"
                 >
                   <font-awesome-icon icon="fa-solid fa-plus"/>
                   add
                 </button>
-              </th>
-            </tr>
+              </div>
+            </th>
+          </tr>
           </thead>
 
           <!-- If bold first row is set to true, then use the first version of the tbody, else use the other. -->
           <tbody v-if="boldFirstColumn">
-            <tr
+          <tr
               v-for="tableRow in currentlyDisplayedData"
               :key="tableRow"
               @mouseenter="mouseEnter"
               @mouseleave="mouseLeave"
-            >
-              <!-- Makes the first column of the row bold. -->
-              <th scope="row" class="py-3 table-text px-3 px-lg-4">
-                {{ Object.values(tableRow)[0] }}
-              </th>
+          >
+            <!-- Makes the first column of the row bold. -->
+            <th scope="row" class="py-3 table-text px-3 px-lg-4">
+              {{ Object.values(tableRow)[0] }}
+            </th>
 
-              <!-- Loops through the rest of the object values, except for the first. -->
-              <template
+            <!-- Loops through the rest of the object values, except for the first. -->
+            <template
                 v-for="i in Object.values(tableRow).length - 1"
                 :key="Object.values(tableRow)[i]"
-              >
-                <!-- If the field data is of type array -->
-                <td
+            >
+              <!-- If the field data is of type array -->
+              <td
                   v-if="Array.isArray(Object.values(tableRow)[i])"
                   class="py-3 px-3 px-lg-4 array-display"
-                >
+              >
                   <span
-                    v-for="j in this.arrayAmountToDisplay"
-                    :key="Object.values(tableRow)[i][j - 1]"
-                    class="badge me-1"
-                    >{{ Object.values(tableRow)[i][j - 1] }}</span
+                      v-for="j in this.arrayAmountToDisplay"
+                      :key="Object.values(tableRow)[i][j - 1]"
+                      class="badge me-1"
+                  >{{ Object.values(tableRow)[i][j - 1] }}</span
                   >
-                </td>
+              </td>
 
-                <td v-else class="py-3 table-text px-3 px-lg-4">
-                  {{ Object.values(tableRow)[i] }}
-                </td>
-              </template>
+              <td v-else class="py-3 table-text px-3 px-lg-4">
+                {{ Object.values(tableRow)[i] }}
+              </td>
+            </template>
 
-              <!-- If the table has edit and delete buttons -->
-              <div
+            <!-- If the table has edit and delete buttons -->
+            <div
                 class="d-none end-0 position-absolute me-3 me-lg-4 my-1 edit-btn-container"
                 :style="{ height: this.ROW_HEIGHT_LARGE - 8 + 'px' }"
                 v-if="hasEditDeleteButtons"
-              >
-                <div class="d-flex align-items-center h-100 gap-1">
-                  <button
+            >
+              <div class="d-flex align-items-center h-100 gap-1">
+                <button
                     class="btn border text-body edit-btn modify-btn"
                     type="button"
                     @click="$emit('edit', tableRow)"
-                  >
-                    <font-awesome-icon icon="fa-solid fa-pen-to-square" />
-                  </button>
-                  <button
+                >
+                  <font-awesome-icon icon="fa-solid fa-pen-to-square"/>
+                </button>
+                <button
                     class="btn text-danger border edit-btn delete-btn"
                     type="button"
                     @click="$emit('delete', tableRow)"
-                  >
-                    <font-awesome-icon icon="fa-solid fa-trash" />
-                  </button>
-                </div>
+                >
+                  <font-awesome-icon icon="fa-solid fa-trash"/>
+                </button>
               </div>
-            </tr>
+            </div>
+          </tr>
           </tbody>
 
           <tbody v-else>
-            <tr
+          <tr
               v-for="tableRow in currentlyDisplayedData"
               :key="tableRow"
               @mouseenter="mouseEnter"
               @mouseleave="mouseLeave"
-            >
-              <template
+          >
+            <template
                 v-for="fieldData in Object.values(tableRow)"
                 :key="fieldData"
-              >
-                <!-- If the field data is of type array -->
-                <td
+            >
+              <!-- If the field data is of type array -->
+              <td
                   v-if="Array.isArray(fieldData)"
                   class="py-3 px-3 px-lg-4 array-display"
-                >
+              >
                   <span
-                    v-for="i in this.arrayAmountToDisplay"
-                    :key="fieldData[i - 1]"
-                    class="badge me-1"
-                    >{{ fieldData[i - 1] }}</span
+                      v-for="i in this.arrayAmountToDisplay"
+                      :key="fieldData[i - 1]"
+                      class="badge me-1"
+                  >{{ fieldData[i - 1] }}</span
                   >
-                </td>
+              </td>
 
-                <td v-else class="py-3 table-text px-3 px-lg-4">
-                  {{ fieldData }}
-                </td>
-              </template>
+              <td v-else class="py-3 table-text px-3 px-lg-4">
+                {{ fieldData }}
+              </td>
+            </template>
 
-              <!-- If the table has edit and delete buttons -->
-              <div
+            <!-- If the table has edit and delete buttons -->
+            <div
                 class="d-none end-0 position-absolute me-3 me-lg-4 my-1 edit-btn-container"
                 :style="{ height: this.ROW_HEIGHT_LARGE - 8 + 'px' }"
                 v-if="hasEditDeleteButtons"
-              >
-                <div class="d-flex align-items-center h-100 gap-1">
-                  <button
+            >
+              <div class="d-flex align-items-center h-100 gap-1">
+                <button
                     class="btn border text-body edit-btn modify-btn"
                     type="button"
                     @click="$emit('edit', tableRow)"
-                  >
-                    <font-awesome-icon icon="fa-solid fa-pen-to-square" />
-                  </button>
-                  <button
+                >
+                  <font-awesome-icon icon="fa-solid fa-pen-to-square"/>
+                </button>
+                <button
                     class="btn text-danger border edit-btn delete-btn"
                     type="button"
                     @click="$emit('delete', tableRow)"
-                  >
-                    <font-awesome-icon icon="fa-solid fa-trash" />
-                  </button>
-                </div>
+                >
+                  <font-awesome-icon icon="fa-solid fa-trash"/>
+                </button>
               </div>
-            </tr>
+            </div>
+          </tr>
           </tbody>
         </table>
       </div>
@@ -167,50 +169,53 @@
         isn't more than the total table length (there's no 'view all' when the amount to be displayed exceeds the amount
         in the table-data.) -->
         <button
-          v-if="
+            v-if="
             this.displayAmount !== this.tableData.length &&
             !(this.amountToDisplay >= this.tableData.length)
           "
-          @click="viewAllItems()"
-          class="btn btn-link px-1 ms-1"
-          type="button"
+            @click="viewAllItems()"
+            class="btn btn-link px-1 ms-1"
+            type="button"
         >
-          View all<font-awesome-icon
-            icon="fa-solid fa-chevron-right"
-            class="ms-1"
+          View all
+          <font-awesome-icon
+              icon="fa-solid fa-chevron-right"
+              class="ms-1"
           />
         </button>
         <button
-          v-else-if="!(this.amountToDisplay >= this.tableData.length)"
-          @click="viewLessItems()"
-          class="btn btn-link px-1 ms-1"
-          type="button"
+            v-else-if="!(this.amountToDisplay >= this.tableData.length)"
+            @click="viewLessItems()"
+            class="btn btn-link px-1 ms-1"
+            type="button"
         >
           View less
-          <font-awesome-icon icon="fa-solid fa-chevron-right" class="ms-1" />
+          <font-awesome-icon icon="fa-solid fa-chevron-right" class="ms-1"/>
         </button>
       </div>
       <div class="col d-flex justify-content-center justify-content-md-end">
         <button
-          @click="handlePreviousButton()"
-          class="btn btn-link px-1 me-1"
-          :class="{ disabled: this.currentStartIndex === 0 }"
-          type="button"
+            @click="handlePreviousButton()"
+            class="btn btn-link px-1 me-1"
+            :class="{ disabled: this.currentStartIndex === 0 }"
+            type="button"
         >
           <font-awesome-icon
-            icon="fa-solid fa-chevron-left"
-            class="me-1"
-          />Previous
+              icon="fa-solid fa-chevron-left"
+              class="me-1"
+          />
+          Previous
         </button>
         <button
-          @click="handleNextButton()"
-          class="btn btn-link px-1 ms-1"
-          :class="{ disabled: this.currentEndIndex >= this.tableData.length }"
-          type="button"
+            @click="handleNextButton()"
+            class="btn btn-link px-1 ms-1"
+            :class="{ disabled: this.currentEndIndex >= this.tableData.length }"
+            type="button"
         >
-          Next<font-awesome-icon
-            icon="fa-solid fa-chevron-right"
-            class="ms-1"
+          Next
+          <font-awesome-icon
+              icon="fa-solid fa-chevron-right"
+              class="ms-1"
           />
         </button>
       </div>
@@ -283,8 +288,8 @@ export default {
     /** Updates the currently displayed data by slicing the total table data which contain the start an ending index */
     updateDisplayedData() {
       this.currentlyDisplayedData = this.tableData.slice(
-        this.currentStartIndex,
-        this.currentEndIndex
+          this.currentStartIndex,
+          this.currentEndIndex
       );
     },
 
@@ -331,9 +336,9 @@ export default {
     /** Calculates the table height depending on the amount of items to be displayed at once. */
     calculateTableHeight() {
       return (
-        this.ROW_HEIGHT_LARGE * this.displayAmount +
-        this.ROW_HEIGHT_LARGE +
-        "px"
+          this.ROW_HEIGHT_LARGE * this.displayAmount +
+          this.ROW_HEIGHT_LARGE +
+          "px"
       );
     },
   },
@@ -394,10 +399,12 @@ button:not(.btn-primary) {
   color: var(--bs-gray-900);
   transition: none !important;
 }
+
 button:hover:not(.btn-primary) {
   text-decoration: underline;
   color: var(--color-primary);
 }
+
 button:active {
   color: var(--color-primary) !important;
 }
@@ -420,6 +427,7 @@ button:active {
   transition: all 0.1s ease-in-out !important;
   background-color: var(--bs-white);
 }
+
 .edit-btn:hover {
   background-color: var(--bs-gray-100) !important;
 }
