@@ -43,7 +43,7 @@
         </router-link>
       </li>
       <li class="nav-item">
-        <router-link to="#" class="nav-link">
+        <router-link to="/warehouses" class="nav-link" active-class="active">
           <font-awesome-icon
             icon="fa-solid fa-warehouse"
             class="sidebar-icons"
