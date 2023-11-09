@@ -2,7 +2,7 @@
   <form>
     <div class="mb-3">
       <label for="warehouse" class="form-label fw-bold">Warehouse</label>
-      <input id="warehouse" type="text" class="form-control" :value="modalItem.warehouse.warehouseName" disabled>
+      <input id="warehouse" type="text" class="form-control" :value="modalItem.warehouse.name" disabled>
     </div>
     <div class="mb-3">
       <label for="product" class="form-label fw-bold">Product</label>

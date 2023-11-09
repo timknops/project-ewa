@@ -48,7 +48,7 @@ public class WarehouseController {
 
     @PostMapping(produces = "application/json")
     public ResponseEntity<Warehouse> addOneWarehouse(@RequestBody Warehouse warehouse) throws BadRequestException {
-        if (warehouse.getWarehouseName() == null || warehouse.getWarehouseName().isBlank()){
+        if (warehouse.getName() == null || warehouse.getName().isBlank()){
             throw new BadRequestException("Warehouse name can't be empty");
         }
 
@@ -64,7 +64,7 @@ public class WarehouseController {
         if (warehouse.getId() != id){
             throw new PreConditionFailedException("Id of the body and path do not match");
         }
-        if (warehouse.getWarehouseName() == null || warehouse.getWarehouseName().isBlank()){
+        if (warehouse.getName() == null || warehouse.getName().isBlank()){
             throw new BadRequestException("Warehouse name can't be empty");
         }
 

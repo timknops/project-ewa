@@ -11,13 +11,13 @@ public class Warehouse {
     private long id;
 
     @JsonView(ResourceView.Complete.class)
-    private String warehouseName;
+    private String name;
 
     private String location;
 
     public Warehouse(long id, String name, String location){
         this.id = id;
-        this.warehouseName = name;
+        this.name = name;
         this.location = location;
     }
 
@@ -38,12 +38,12 @@ public class Warehouse {
         return id;
     }
 
-    public void setWarehouseName(String warehouseName) {
-        this.warehouseName = warehouseName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getWarehouseName() {
-        return warehouseName;
+    public String getName() {
+        return name;
     }
 
     public void setLocation(String location) {

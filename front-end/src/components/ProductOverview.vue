@@ -12,10 +12,7 @@
       @add="showAddModal"
     />
     <!--    Templated doesn't wait for loading so show spinner for user information-->
-    <div v-else class="p-1 pb-0 bg-white w-auto">
-      <strong>Loading...</strong>
-      <div class="spinner-border spinner-border-sm"></div>
-    </div>
+    <spinner-component v-else></spinner-component>
 
     <Transition>
       <modal-component
@@ -34,6 +31,7 @@
 <script>
 import TableComponent from "@/components/table/TableComponent.vue";
 import ModalComponent from "@/components/modal/ModalComponent.vue";
+import SpinnerComponent from "@/components/util/SpinnerComponent.vue";
 
 /**
  * Component for the product overview. This overview give info about the different products of solar sedum.
@@ -45,7 +43,7 @@ import ModalComponent from "@/components/modal/ModalComponent.vue";
  */
 export default {
   name: "ProductOverview",
-  components: { ModalComponent, TableComponent },
+  components: {SpinnerComponent, ModalComponent, TableComponent },
   inject: ["productService"],
   data() {
     return {

@@ -2,19 +2,19 @@
   <!--    display the current warehouse which the user is assigned to-->
   <div>
     <div
-        class="row warehouse-display rounded-top mx-0 p-1 pb-0"
+        class="row warehouse-display rounded-top mx-0 p-3 pb-0"
         v-if="activeUser.role === 'viewer'"
     >
       <div class="col">
         <strong class="warehouse-select active">{{
-            activeUser.team.warehouse
+            activeUser.team.warehouse.name
           }}</strong>
       </div>
     </div>
 
     <!-- row containing all names of warehouses and total which the admin can pick    -->
     <div
-        class="row warehouse-display rounded-top mx-0 p-1 pb-0"
+        class="row warehouse-display rounded-top mx-0 p-3 pb-0"
         v-else-if="activeUser.role === 'admin'"
     >
       <div class="col-auto">
@@ -31,10 +31,10 @@
         <button
             type="button"
             class="warehouse-select btn btn-link p-0"
-            :class="{ active: warehouse.warehouseName === activeWarehouse.warehouseName }"
+            :class="{ active: warehouse.name === activeWarehouse.name }"
             @click="setActiveWarehouse(warehouse)"
         >
-          <strong>{{ warehouse.warehouseName }}</strong>
+          <strong>{{ warehouse.name }}</strong>
         </button>
       </div>
     </div>
@@ -50,10 +50,7 @@
     ></table-component>
 
     <!--    Templated doesn't wait for loading so show spinner for user information-->
-    <div v-else class="p-1 pb-0 bg-white">
-      <strong>Loading...</strong>
-      <div class="spinner-border spinner-border-sm"></div>
-    </div>
+    <spinner-component v-else></spinner-component>
 
     <transition>
       <modal-component
@@ -74,6 +71,7 @@
 
 import TableComponent from "@/components/table/TableComponent.vue";
 import ModalComponent from "@/components/modal/ModalComponent.vue";
+import SpinnerComponent from "@/components/util/SpinnerComponent.vue";
 
 
 /**
@@ -88,7 +86,7 @@ import ModalComponent from "@/components/modal/ModalComponent.vue";
  */
 export default {
   name: "InventoryOverview",
-  components: {ModalComponent, TableComponent},
+  components: {SpinnerComponent, ModalComponent, TableComponent},
   data() {
     return {
       /* list of objects containing the warehouse and its products
@@ -109,10 +107,7 @@ export default {
 
       //for now only the name, could change to objects if needed.
       warehouses: [
-        {
-          id: Number,
-          warehouseName: String,
-        }
+
       ],
       activeWarehouse: "Total", //total selected by default.
 
@@ -136,8 +131,8 @@ export default {
         team: {
           name: "team1",
           warehouse: {
-            id: 3003,
-            warehouseName: "Superzon"
+            id: 1003,
+            name: "Superzon"
           },
         },
       };
@@ -145,7 +140,7 @@ export default {
 
     findWarehouseByName(name) {
       if (name === "Total") return "Total"
-      return this.warehouses.find((warehouse) => name === warehouse.warehouseName)
+      return this.warehouses.find((warehouse) => name === warehouse.name)
     },
 
     setActiveWarehouse(warehouse) {
@@ -163,7 +158,7 @@ export default {
       if (warehouse === "Total") {
         this.$router.push("/inventory");
       } else {
-        this.$router.push("/inventory/" + warehouse.warehouseName);
+        this.$router.push("/inventory/" + warehouse.name);
       }
     },
 
@@ -229,7 +224,7 @@ export default {
       /*format the resource to the format the back-end expect to receive which is:
       {
         product: {id, productName, description},
-        warehouse: {id, warehouseName},
+        warehouse: {id, name},
         quantity: Number,
       }
        */
@@ -247,7 +242,7 @@ export default {
      * @param resource -  a resource object in the format of the back-end i,e
      * {
      *   product: {id, productName, description},
-     *   warehouse: {id, warehouseName},
+     *   warehouse: {id, name},
      *   quantity: Number,
      * }
      *
@@ -303,9 +298,9 @@ export default {
 
   async created() {
     this.activeUser = this.getUser();
-    this.warehouses = await this.warehouseService.findAll();
     //get list of products depending on the users role i.e. the total inventory or inventory of the warehouse of the user
     if (this.activeUser.role === "admin") {
+      this.warehouses = await this.warehouseService.findAll();
       this.totalProducts = await this.resourceService.findAll();
       //set the products to the products for all warehouses, i.e. when admin choses total as view.
       this.products = this.getTotalProductInfo();
