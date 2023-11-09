@@ -1,20 +1,20 @@
 <template>
   <div
-      class="modal fade bg-dark bg-opacity-25 show d-block"
-      id="static-modal"
-      data-bs-backdrop="static"
-      data-bs-keyboard="false"
-      tabindex="-1"
+    class="modal fade bg-dark bg-opacity-25 show d-block"
+    id="static-modal"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false"
+    tabindex="-1"
   >
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">{{ title }}</h5>
           <button
-              @click="$emit('cornerCloseModalBtn')"
-              type="button"
-              class="btn-close"
-              aria-label="Close"
+            @click="$emit('cornerCloseModalBtn')"
+            type="button"
+            class="btn-close"
+            aria-label="Close"
           ></button>
         </div>
         <div class="modal-body">
@@ -22,18 +22,14 @@
         </div>
         <div class="modal-footer">
           <button
-              @click="$emit('cancelModalBtn')"
-              type="button"
-              class="btn btn-secondary"
+            @click="$emit('cancelModalBtn')"
+            type="button"
+            class="btn btn-secondary"
           >
             Cancel
           </button>
-          <button
-              @click="handleOk()"
-              type="button"
-              class="btn btn-primary"
-          >
-            {{okBtnText}}
+          <button @click="handleOk()" type="button" class="btn btn-primary">
+            {{ okBtnText }}
           </button>
         </div>
       </div>
@@ -42,10 +38,13 @@
 </template>
 
 <script>
-import DeleteProductModal from "@/components/Models/product/DeleteProductModal.vue";
-import UpdateProductModal from "@/components/Models/product/UpdateProductModal.vue";
-import AddProductModal from "@/components/Models/product/AddProductModal.vue";
-import UpdateInventoryModal from "@/components/Models/inventory/UpdateInventoryModal.vue";
+import DeleteProductModal from "@/components/modal/product/DeleteProductModal.vue";
+import UpdateProductModal from "@/components/modal/product/UpdateProductModal.vue";
+import AddProductModal from "@/components/modal/product/AddProductModal.vue";
+import DeleteWarehouseModal from "@/components/modal/warehouse/DeleteWarehouseModal.vue";
+import AddWarehouseModal from "@/components/modal/warehouse/AddWarehouseModal.vue";
+import UpdateWarehouseModal from "@/components/modal/warehouse/UpdateWarehouseModal.vue";
+import UpdateInventoryModal from "@/components/modal/inventory/UpdateInventoryModal.vue";
 
 /**
  * General modal component, for the styling of the header and footer,
@@ -58,8 +57,16 @@ import UpdateInventoryModal from "@/components/Models/inventory/UpdateInventoryM
  * @author Julian Kruithof
  */
 export default {
-  name: "ModelComponent",
-  components: {DeleteProductModal, UpdateProductModal, AddProductModal, UpdateInventoryModal},
+  name: "ModalComponent",
+  components: {
+    DeleteProductModal,
+    UpdateProductModal,
+    AddProductModal,
+    DeleteWarehouseModal,
+    UpdateWarehouseModal,
+    AddWarehouseModal,
+    UpdateInventoryModal
+  },
   /**
    * props
    * {String} title - title of the modal. For example delete product or edit project.
@@ -77,19 +84,23 @@ export default {
      */
     handleOk() {
       if (!this.$refs.modalRef.hasError) {
-        this.$emit("okModalBtn", this.$refs.modalRef.modalItem, this.activeModal)
+        this.$emit(
+          "okModalBtn",
+          this.$refs.modalRef.modalItem,
+          this.activeModal
+        );
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped>
-  .modal-header{
-    color: var(--bs-white);
-    background-color: var(--color-primary);
-  }
-  .modal-title {
-    font-weight: 700;
-  }
+.modal-header {
+  color: var(--bs-white);
+  background-color: var(--color-primary);
+}
+.modal-title {
+  font-weight: 700;
+}
 </style>

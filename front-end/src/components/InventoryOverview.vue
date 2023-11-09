@@ -54,7 +54,7 @@
     </div>
 
     <transition>
-      <model-component
+      <modal-component
           v-if="showModal"
           :title="modalTitle"
           :active-modal="modalBodyComponent"
@@ -63,14 +63,16 @@
           @cancel-modal-btn="this.showModal = false"
           @corner-close-modal-btn="this.showModal = false"
           @ok-modal-btn="handleUpdate"
-      ></model-component>
+      ></modal-component>
     </transition>
   </div>
 </template>
 
 <script>
-import TableComponent from "@/components/TableComponent.vue";
-import ModelComponent from "@/components/Models/ModelComponent.vue";
+
+import TableComponent from "@/components/table/TableComponent.vue";
+import ModalComponent from "@/components/modal/ModalComponent.vue";
+
 
 /**
  * Component handling the logic of displaying the inventory.
@@ -84,7 +86,7 @@ import ModelComponent from "@/components/Models/ModelComponent.vue";
  */
 export default {
   name: "InventoryOverview",
-  components: {ModelComponent, TableComponent},
+  components: {ModalComponent, TableComponent},
   data() {
     return {
       /* list of objects containing the warehouse and its products

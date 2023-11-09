@@ -15,10 +15,10 @@ public class ResourceRepositoryMock implements ResourceRepository {
 
     //To be changed to the corresponding repository
     private final List<Warehouse> warehouses = List.of(
-            new Warehouse(3000, "Solar Sedum"),
-            new Warehouse(3003, "Superzon"),
-            new Warehouse(3006, "EHES"),
-            new Warehouse(3009, "The Switch"));
+            new Warehouse(3000, "Solar Sedum", ""),
+            new Warehouse(3003, "Superzon", ""),
+            new Warehouse(3006, "EHES", ""),
+            new Warehouse(3009, "The Switch", ""));
 
     private final EntityRepository<Product> productRepo;
 

@@ -17,6 +17,8 @@ import HeaderComponent from "@/components/HeaderComponent.vue";
 import appConfig from "@/appConfig";
 import { ProductAdaptor } from "@/service/productAdaptor";
 import {ResourceAdaptor} from "@/service/resourceAdaptor";
+import { WarehouseAdaptor } from "@/service/warehouseAdaptor";
+
 
 localStorage.setItem("loggedIn", true);
 export default {
@@ -34,7 +36,8 @@ export default {
   provide() {
     return {
       productService: new ProductAdaptor(`${appConfig.BACKEND_URL}/products`),
-      resourceService: new ResourceAdaptor(appConfig.BACKEND_URL)
+      resourceService: new ResourceAdaptor(appConfig.BACKEND_URL),
+      warehouseService: new WarehouseAdaptor(`${appConfig.BACKEND_URL}/warehouses`)
     }
   },
   methods: {
@@ -60,7 +63,7 @@ export default {
 
 #component {
   grid-area: component;
-  margin: 0 48px;
+  margin: 0 48px 48px 48px;
 }
 
 .header {

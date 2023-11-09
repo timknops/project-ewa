@@ -1,17 +1,19 @@
 <template>
   <div>
-    <table-component :amount-to-display="5" :table-data="teams"></table-component>
+    <table-component
+      :amount-to-display="5"
+      :table-data="teams"
+    ></table-component>
   </div>
 </template>
 
 <script>
-import TableComponent from "@/components/TableComponent";
-import { teams } from '@/models/team.js';
+import TableComponent from "@/components/table/TableComponent.vue";
+import { teams } from "@/models/team.js";
 
 export default {
   components: {
     TableComponent,
-
   },
   data() {
     return {
@@ -21,6 +23,4 @@ export default {
 };
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

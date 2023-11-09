@@ -1,49 +1,60 @@
 package nl.solar.app.models;
 
-import java.util.Objects;
 
-/**
- * temporary
- */
 public class Warehouse {
     private long id;
-    private String WarehouseName;
+    private String name;
+    private String location;
 
-    public Warehouse(long id, String warehouseName) {
+    public Warehouse(long id, String name, String location){
         this.id = id;
-        WarehouseName = warehouseName;
+        this.name = name;
+        this.location = location;
     }
 
-    public Warehouse() {
-
-    }
-
-    public long getId() {
-        return id;
+    public static Warehouse createDummyWarehouses(long id, String name, String location){
+        return new Warehouse(
+                id,
+                name,
+                location
+        );
     }
 
     public void setId(long id) {
         this.id = id;
     }
 
-    public String getWarehouseName() {
-        return WarehouseName;
+
+    public long getId() {
+        return id;
     }
 
-    public void setWarehouseName(String warehouseName) {
-        WarehouseName = warehouseName;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getLocation() {
+        return location;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Warehouse warehouse) {
-            return warehouse.id == this.id;
+        if (this == obj){
+            return true;
         }
-        return false;
-    }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
+        if (obj instanceof Warehouse warehouse){
+            return this.getId() == warehouse.id;
+        }
+
+        return false;
     }
 }
