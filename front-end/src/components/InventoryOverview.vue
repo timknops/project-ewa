@@ -27,7 +27,7 @@
           <strong>Total inventory</strong>
         </button>
       </div>
-      <div class="col-auto" v-for="warehouse in WAREHOUSES" :key="warehouse.id">
+      <div class="col-auto" v-for="warehouse in warehouses" :key="warehouse.id">
         <button
             type="button"
             class="warehouse-select btn btn-link p-0"
@@ -43,7 +43,9 @@
         class="rounded-top-0 mt-0"
         :amount-to-display="6"
         :table-data="products"
-        :has-edit-delete-buttons="activeWarehouse != null && activeWarehouse !== 'Total'"
+        :has-edit-button="activeWarehouse != null && activeWarehouse !== 'Total'"
+        :hide-id-column="true"
+
         @edit="showUpdateModal"
     ></table-component>
 
@@ -106,23 +108,12 @@ export default {
       },
 
       //for now only the name, could change to objects if needed.
-      WAREHOUSES: [
+      warehouses: [
         {
-          id: 3000,
-          warehouseName: "Solar Sedum"
-        },
-        {
-          id: 3003,
-          warehouseName: "Superzon"
-        },
-        {
-          id: 3006,
-          warehouseName: "EHES"
-        },
-        {
-          id: 3009,
-          warehouseName: "The Switch"
-        }],
+          id: Number,
+          warehouseName: String,
+        }
+      ],
       activeWarehouse: "Total", //total selected by default.
 
       //modal variables only update
@@ -134,7 +125,7 @@ export default {
     };
   },
 
-  inject: ["resourceService"],
+  inject: ["resourceService", "warehouseService"],
 
   methods: {
     // TODO should be available globally, and not stored directly in the component (comes with jwt)
@@ -154,7 +145,7 @@ export default {
 
     findWarehouseByName(name) {
       if (name === "Total") return "Total"
-      return this.WAREHOUSES.find((warehouse) => name === warehouse.warehouseName)
+      return this.warehouses.find((warehouse) => name === warehouse.warehouseName)
     },
 
     setActiveWarehouse(warehouse) {
@@ -312,7 +303,7 @@ export default {
 
   async created() {
     this.activeUser = this.getUser();
-
+    this.warehouses = await this.warehouseService.findAll();
     //get list of products depending on the users role i.e. the total inventory or inventory of the warehouse of the user
     if (this.activeUser.role === "admin") {
       this.totalProducts = await this.resourceService.findAll();
