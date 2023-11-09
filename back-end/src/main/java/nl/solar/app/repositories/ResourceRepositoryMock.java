@@ -52,6 +52,24 @@ public class ResourceRepositoryMock implements ResourceRepository {
     }
 
     @Override
+    public void addResourcesForProduct(Product product) {
+        for (Warehouse warehouse: warehouseRepo.findAll()) {
+            Resource resource = Resource.createDummyResource(warehouse, product);
+            resource.setQuantity(0);
+            resources.add(resource);
+        }
+    }
+
+    @Override
+    public void addResourcesForWarehouse(Warehouse warehouse) {
+        for (Product product: productRepo.findAll()) {
+            Resource resource = Resource.createDummyResource(warehouse, product);
+            resource.setQuantity(0);
+            resources.add(resource);
+        }
+    }
+
+    @Override
     public Resource deleteResource(long warehouseId, long productId) {
         Resource resource = findResource(warehouseId, productId);
 
@@ -59,6 +77,20 @@ public class ResourceRepositoryMock implements ResourceRepository {
             resources.remove(resource);
         }
         return resource;
+    }
+
+    @Override
+    public void deleteResourcesForProduct(Product product) {
+        for (Warehouse warehouse : warehouseRepo.findAll()) {
+            deleteResource(warehouse.getId(), product.getId());
+        }
+    }
+
+    @Override
+    public void deleteResourcesForWarehouse(Warehouse warehouse) {
+        for (Product product : productRepo.findAll()) {
+            deleteResource(warehouse.getId(), product.getId());
+        }
     }
 
     @Override

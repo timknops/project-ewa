@@ -67,13 +67,4 @@ public class Resource {
     public int hashCode() {
         return Objects.hash(product.getId(), warehouse.getId());
     }
-
-    @Override
-    public String toString() {
-        return "Resource{" +
-                "warehouse=" + warehouse.getId() +
-                ", product=" + product.getId() +
-                ", quantity=" + quantity +
-                '}';
-    }
 }

@@ -1,6 +1,8 @@
 package nl.solar.app.repositories;
 
+import nl.solar.app.models.Product;
 import nl.solar.app.models.Resource;
+import nl.solar.app.models.Warehouse;
 
 import java.util.List;
 
@@ -17,7 +19,15 @@ public interface ResourceRepository {
 
     List<Resource> findResourceForWarehouse(long warehouseId);
 
+    void addResourcesForProduct(Product product);
+
+    void addResourcesForWarehouse(Warehouse warehouse);
+
     Resource deleteResource(long warehouseId, long productId);
+
+    void deleteResourcesForProduct(Product product);
+
+    void deleteResourcesForWarehouse(Warehouse warehouse);
 
     Resource saveResource(Resource resource);
 }
