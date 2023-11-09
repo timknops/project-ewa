@@ -14,6 +14,9 @@
 import Sidebar from "@/components/Sidebar.vue";
 import LoginPage from "@/components/LoginPage.vue";
 import HeaderComponent from "@/components/HeaderComponent.vue";
+import appConfig from "@/appConfig";
+import { ProductAdaptor } from "@/service/productAdaptor";
+import { WarehouseAdaptor } from "@/service/warehouseAdaptor";
 
 localStorage.setItem("loggedIn", true);
 export default {
@@ -28,6 +31,12 @@ export default {
       loggedInActive: {},
     };
   },
+  provide() {
+    return {
+      productService: new ProductAdaptor(`${appConfig.BACKEND_URL}/products`),
+      warehouseService: new WarehouseAdaptor(`${appConfig.BACKEND_URL}/warehouses`)
+    }
+  },
   methods: {
     updateLoggedIn() {
       this.loggedInActive = localStorage.getItem("loggedIn");
@@ -39,7 +48,7 @@ export default {
 };
 </script>
 
-<style>
+<style >
 .view {
   grid-template-areas:
     "sidebar header"
@@ -71,6 +80,7 @@ export default {
 
   --sidebar-width: 17rem;
   --navbar-height: 10rem;
+
   --custom-box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05),
     0 4px 6px -4px rgb(0 0 0 / 0.05);
 }

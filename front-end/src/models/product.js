@@ -70,4 +70,10 @@ export class Product {
   static randomNumber(min, max) {
     return Math.floor(Math.random() * (max - min) + min)
   }
+
+  static copyConstructor(product) {
+    if (product == null) return null;
+    return Object.assign(new Product(), product);
+
+  }
 }

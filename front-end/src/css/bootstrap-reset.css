@@ -1,12 +1,12 @@
 /*reset bootstrap button*/
 .btn-primary {
-    --bs-btn-color: var(--bs-white);
-    --bs-btn-bg: var(--color-primary);
-    --bs-btn-border-color: var(--color-primary);
-    --bs-btn-hover-color: var(--bs-white);
-    --bs-btn-hover-bg: var(--color-secondary);
-    --bs-btn-hover-border-color: var(--color-secondary);
-    --bs-btn-focus-shadow-rgb: var(--btn-secondary-shadow-color);
-    --bs-btn-active-bg: var(--color-secondary);
-    --bs-btn-active-border-color: var(--color-secondary);
+  --bs-btn-color: var(--bs-white);
+  --bs-btn-bg: var(--color-primary);
+  --bs-btn-border-color: var(--color-primary);
+  --bs-btn-hover-color: var(--bs-white);
+  --bs-btn-hover-bg: var(--color-secondary);
+  --bs-btn-hover-border-color: var(--color-secondary);
+  --bs-btn-focus-shadow-rgb: var(--btn-secondary-shadow-color);
+  --bs-btn-active-bg: var(--color-secondary);
+  --bs-btn-active-border-color: var(--color-secondary);
 }
