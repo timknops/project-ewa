@@ -1,11 +1,25 @@
 <template>
   <div>
+
+    <!--Dropdown-->
+    <div class="btn-group dropdown-color">
+      <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Choose warehouse
+      </button>
+
+      <div class="dropdown-menu">
+        <a class="dropdown-item" :key="null" @click="warehouseSelect(null)">All warehouses</a>
+        <a class="dropdown-item" v-for="item in tableData" :key="item.Name" @click="warehouseSelect(item.Name)">{{item.Name}}</a>
+
+    </div>
+    </div>
+
     <!--Inventory-->
     <TableComponent
       :tableWidth="'100%'"
       :boldFirstColumn="true"
       :amountToDisplay="3"
-      :tableData="tableData"
+      :tableData="selectedWarehouseData"
       :arrayAmountToDisplay="10"
       table-title="Inventory"
       sub-title="Current inventory of my warehouse"
@@ -24,6 +38,7 @@
         </div>
       </div>
 
+      <!--User information-->
       <TableComponent
         class="user-table-overview-right"
         tableWidth="60%"
@@ -35,7 +50,8 @@
       >
       </TableComponent>
     </div>
-    <!--User information-->
+
+
   </div>
 </template>
 
@@ -79,9 +95,14 @@ export default {
           Forecast: "",
         },
       ],
+      wareHouseNameData:[
+      ],
+      selectedWarehouse: null,
+      selectedWarehouseChart: null,
 
       chartDataList: [],
       //    chart: null,
+      saveChart: null,
       chartWidth: 200,
       chartHeight: 80,
       // xValues: ["This week", "Expected"],
@@ -91,19 +112,38 @@ export default {
   },
 
   mounted() {
-    this.createChart();
+    this.createChart(this.tableData);
+  },
+
+  computed: {
+    selectedWarehouseData(){
+      if(this.selectedWarehouse) {
+        if (this.selectedWarehouse === null) {
+          return this.tableData;
+        } else {
+          return this.tableData.filter((item) => item.Name === this.selectedWarehouse);
+        }
+      }
+      return this.tableData;
+    },
   },
 
   methods: {
-    createChart() {
+    createChart(data) {
+
+      if (this.saveChart) {
+        this.saveChart.destroy();
+      }
+
       const chartWidth = this.chartWidth;
       const chartHeight = this.chartHeight;
 
-      const labels = this.tableData.map((item) => item.Name);
-      const data = this.tableData.map((item) => item.Quantity);
-      const expectedData = this.tableData.map((item) => item.Expected);
 
-      data.push(50);
+      const labels = data.map((item) => item.Name);
+      const qdata = data.map((item) => item.Quantity);
+      const expectedData = data.map((item) => item.Expected);
+
+      qdata.push(50);
 
       const chartData = {
         labels: labels,
@@ -111,7 +151,7 @@ export default {
           {
             label: "Quantity",
             backgroundColor: this.barColors[0],
-            data: data,
+            data: qdata,
           },
           {
             label: "Expected",
@@ -122,7 +162,7 @@ export default {
       };
 
       const chartOptions = {
-        legend: { display: false },
+        legend: {display: false},
         title: {
           display: true,
           text: "Inventory Chart",
@@ -148,13 +188,24 @@ export default {
         },
       };
 
-      new Chart(this.$refs.combinedChart, {
+     this.saveChart = new Chart(this.$refs.combinedChart, {
         type: "bar",
         data: chartData,
         options: chartOptions,
       });
+
     },
+
+    warehouseSelect(nameOfTheWarehouse){
+      this.selectedWarehouse = nameOfTheWarehouse;
+      this.createChart(this.selectedWarehouseData);
+
+    },
+
+
   },
+
+
 
   // watch: {
   //   xValues: "createChart",
@@ -166,6 +217,15 @@ export default {
 <style scoped>
 h2 {
   color: var(--color-primary);
+}
+
+.dropdown-color .dropdown-menu {
+  background-color: white;
+
+}
+
+.dropdown-color .dropdown-item {
+  color: black;
 }
 
 .my-chart {
