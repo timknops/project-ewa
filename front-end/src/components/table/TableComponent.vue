@@ -101,7 +101,7 @@
               @mouseleave="mouseLeave"
             >
               <template
-                v-for="fieldData in Object.values(tableRow)"
+                v-for="(fieldData, index) in Object.values(tableRow)"
                 :key="fieldData"
               >
                 <!-- If the field data is of type array -->
@@ -135,7 +135,7 @@
 
                 <!-- If the column name is 'id' and the hideIdColumn prop is set to true, then hide the column. -->
                 <td
-                  v-else-if="!hideIdColumn || fieldData !== tableRow.id"
+                  v-else-if="!hideIdColumn || Object.keys(tableRow)[index] !== 'id'"
                   class="py-3 table-text px-3 px-lg-4"
                 >
                   {{ fieldData }}
