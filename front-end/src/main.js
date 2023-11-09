@@ -22,8 +22,10 @@ import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faSortDown } from "@fortawesome/free-solid-svg-icons";
+import { faSortUp } from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { faBoxOpen } from "@fortawesome/free-solid-svg-icons";
-import { faPlus} from "@fortawesome/free-solid-svg-icons";
 
 /* add icons to the library */
 library.add(
@@ -39,6 +41,8 @@ library.add(
   faChevronLeft,
   faPenToSquare,
   faTrash,
+  faSortDown,
+  faSortUp,
   faBoxOpen,
   faPlus
 );
@@ -46,6 +50,7 @@ library.add(
 /* import bootstrap */
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap";
+import "./css/bootstrap-reset.css";
 
 import "./css/bootstrap-reset.css";
 

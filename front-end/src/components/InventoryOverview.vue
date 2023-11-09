@@ -48,7 +48,7 @@
 
 <script>
 import { Product } from "@/models/product";
-import TableComponent from "@/components/TableComponent.vue";
+import TableComponent from "@/components/table/TableComponent.vue";
 
 /**
  * Component handling the logic of displaying the inventory.

@@ -60,7 +60,7 @@ export default {
 
 #component {
   grid-area: component;
-  margin: 0 48px;
+  margin: 0 48px 48px 48px;
 }
 
 .header {
