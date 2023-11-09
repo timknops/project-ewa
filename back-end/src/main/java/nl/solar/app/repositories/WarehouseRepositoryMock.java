@@ -44,7 +44,7 @@ public class WarehouseRepositoryMock implements EntityRepository<Warehouse>{
     }
 
     @Override
-    public List<Warehouse> findALL() {
+    public List<Warehouse> findAll() {
         return warehouses;
     }
 

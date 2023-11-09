@@ -1,6 +1,7 @@
 package nl.solar.app.rest;
 
-import nl.solar.app.exceptions.BadRequestException;
+import com.fasterxml.jackson.annotation.JsonView;
+import nl.solar.app.Views.ResourceView;
 import nl.solar.app.exceptions.PreConditionFailedException;
 import nl.solar.app.exceptions.ResourceNotFoundException;
 import nl.solar.app.models.Resource;
@@ -25,14 +26,17 @@ public class ResourceController {
     @Autowired
     ResourceRepository resourceRepo;
 
+    @JsonView(ResourceView.Complete.class)
     @GetMapping("/resources/test")
     public List<Resource> resources() {
         return resourceRepo.findAll();
     }
+
     /**
      * Get a list of all resources and format it to the correct json string format
      * @return a json array of resources
      */
+    @JsonView(ResourceView.Complete.class)
     @GetMapping(path = "/resources", produces = "application/json")
     public ResponseEntity<List<Map<String, Object>>> getResources() {
         List<Resource> resources = resourceRepo.findAll();
@@ -123,6 +127,7 @@ public class ResourceController {
      * @return a resource in the correct format
      * @throws PreConditionFailedException throw error if the warehouse id and product id in the body don't match the ids in the path
      */
+    @JsonView(ResourceView.Complete.class)
     @PutMapping(path = "/warehouses/{wId}/products/{pId}", produces = "application/json")
     public ResponseEntity<Object> updateResource(@PathVariable long wId, @PathVariable long pId, @RequestBody Resource resource)
     throws PreConditionFailedException {

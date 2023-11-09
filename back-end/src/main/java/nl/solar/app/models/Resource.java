@@ -1,6 +1,9 @@
 package nl.solar.app.models;
 
 
+import com.fasterxml.jackson.annotation.JsonView;
+import nl.solar.app.Views.ResourceView;
+
 import java.util.Objects;
 
 /**
@@ -9,8 +12,12 @@ import java.util.Objects;
  * @author Julian
  */
 public class Resource {
+
+    @JsonView(ResourceView.Complete.class)
     private Warehouse warehouse;
+    @JsonView(ResourceView.Complete.class)
     private Product product;
+    @JsonView(ResourceView.Complete.class)
     private int quantity;
 
     public static Resource createDummyResource(Warehouse warehouse, Product product) {

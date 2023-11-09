@@ -13,20 +13,17 @@ import java.util.List;
 public class ResourceRepositoryMock implements ResourceRepository {
     private List<Resource> resources;
 
-    //To be changed to the corresponding repository
-    private final List<Warehouse> warehouses = List.of(
-            new Warehouse(3000, "Solar Sedum", ""),
-            new Warehouse(3003, "Superzon", ""),
-            new Warehouse(3006, "EHES", ""),
-            new Warehouse(3009, "The Switch", ""));
 
     private final EntityRepository<Product> productRepo;
+    private final EntityRepository<Warehouse> warehouseRepo;
 
     @Autowired
-    public ResourceRepositoryMock(EntityRepository<Product> productRepo) {
+    public ResourceRepositoryMock(EntityRepository<Product> productRepo, EntityRepository<Warehouse> warehouseRepo) {
         this.productRepo = productRepo;
+        this.warehouseRepo = warehouseRepo;
         this.resources = new ArrayList<>();
-        List<Product> products = this.productRepo.findALL();
+        List<Product> products = this.productRepo.findAll();
+        List<Warehouse> warehouses = this.warehouseRepo.findAll();
 
         for (Warehouse warehouse: warehouses) {
             for (Product product: products) {

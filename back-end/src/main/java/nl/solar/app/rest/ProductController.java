@@ -31,7 +31,7 @@ public class ProductController {
      */
     @GetMapping(produces = "application/json")
     public List<Product> getAll() {
-        return this.productRepo.findALL();
+        return this.productRepo.findAll();
     }
 
     /**

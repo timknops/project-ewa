@@ -21,7 +21,7 @@ public class WarehouseController {
 
     @GetMapping(produces = "application/json")
     public List<Warehouse> getAll(){
-        return this.warehouseRepo.findALL();
+        return this.warehouseRepo.findAll();
     }
 
     @GetMapping(path = "{id}", produces = "application/json")
@@ -48,7 +48,7 @@ public class WarehouseController {
 
     @PostMapping(produces = "application/json")
     public ResponseEntity<Warehouse> addOneWarehouse(@RequestBody Warehouse warehouse) throws BadRequestException {
-        if (warehouse.getName() == null || warehouse.getName().isBlank()){
+        if (warehouse.getWarehouseName() == null || warehouse.getWarehouseName().isBlank()){
             throw new BadRequestException("Warehouse name can't be empty");
         }
 
@@ -64,7 +64,7 @@ public class WarehouseController {
         if (warehouse.getId() != id){
             throw new PreConditionFailedException("Id of the body and path do not match");
         }
-        if (warehouse.getName() == null || warehouse.getName().isBlank()){
+        if (warehouse.getWarehouseName() == null || warehouse.getWarehouseName().isBlank()){
             throw new BadRequestException("Warehouse name can't be empty");
         }
 

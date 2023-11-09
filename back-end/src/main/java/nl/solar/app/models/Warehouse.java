@@ -1,14 +1,23 @@
 package nl.solar.app.models;
 
 
+import com.fasterxml.jackson.annotation.JsonView;
+import nl.solar.app.Views.ResourceView;
+
+import java.util.Objects;
+
 public class Warehouse {
+    @JsonView(ResourceView.Complete.class)
     private long id;
-    private String name;
+
+    @JsonView(ResourceView.Complete.class)
+    private String warehouseName;
+
     private String location;
 
     public Warehouse(long id, String name, String location){
         this.id = id;
-        this.name = name;
+        this.warehouseName = name;
         this.location = location;
     }
 
@@ -29,12 +38,12 @@ public class Warehouse {
         return id;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setWarehouseName(String warehouseName) {
+        this.warehouseName = warehouseName;
     }
 
-    public String getName() {
-        return name;
+    public String getWarehouseName() {
+        return warehouseName;
     }
 
     public void setLocation(String location) {
@@ -56,5 +65,10 @@ public class Warehouse {
         }
 
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
