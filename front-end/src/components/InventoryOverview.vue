@@ -24,7 +24,7 @@
             :class="{ active: activeWarehouse === 'Total' }"
             @click="setActiveWarehouse('Total')"
         >
-          <strong>Total inventory</strong>
+          <strong>Total Inventory</strong>
         </button>
       </div>
       <div class="col-auto" v-for="warehouse in warehouses" :key="warehouse.id">
@@ -138,16 +138,30 @@ export default {
       };
     },
 
+    /**
+     * Get a warehouse object with name and id, from the name in the url
+     * @param name the name of a warehouse
+     * @return {Warehouse|string} a warehouse or total if the name is total
+     */
     findWarehouseByName(name) {
       if (name === "Total") return "Total"
       return this.warehouses.find((warehouse) => name === warehouse.name)
     },
 
+    /**
+     * Set the active warehouse
+     * @param warehouse a warehouse object
+     */
     setActiveWarehouse(warehouse) {
+
+      //if warehouse doesn't have a id it means the method was called by the route watcher this means only the name was sent.
       if (warehouse.id) {
         this.activeWarehouse = warehouse;
       } else {
+        //find the correct warehouse
         warehouse = this.findWarehouseByName(warehouse);
+
+        //if the warehouse wasn't found sent the route back to the Total view
         if (warehouse === undefined) {
           this.$router.push("/inventory");
           return;
@@ -221,7 +235,7 @@ export default {
      *
      */
     showUpdateModal(resource) {
-      /*format the resource to the format the back-end expect to receive which is:
+      /*format the resource to the format the back-end expect to receive, which is:
       {
         product: {id, productName, description},
         warehouse: {id, name},
@@ -298,6 +312,7 @@ export default {
 
   async created() {
     this.activeUser = this.getUser();
+
     //get list of products depending on the users role i.e. the total inventory or inventory of the warehouse of the user
     if (this.activeUser.role === "admin") {
       this.warehouses = await this.warehouseService.findAll();

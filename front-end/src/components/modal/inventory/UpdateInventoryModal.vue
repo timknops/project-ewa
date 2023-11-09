@@ -22,6 +22,12 @@
   </form>
 </template>
 <script>
+
+/**
+ * Modal for updating the quantity in the inventory overview
+ *
+ * @author Julian Kruithof
+ */
 export default {
   name: "UpdateInventoryModal",
   data() {
@@ -36,6 +42,13 @@ export default {
     this.modalItem = Object.assign({}, this.item)
   },
   methods: {
+
+    /**
+     * Validate the quantity input
+     *
+     * A quantity can't be a decimal number and can't contain any letters or symbols
+     * input type number, in vue sets the value to empty so only check on empty string
+     */
     validateQuantity() {
       if (this.modalItem.quantity !== "" && !Number.isInteger(this.modalItem.quantity)) {
         this.decimalError = true

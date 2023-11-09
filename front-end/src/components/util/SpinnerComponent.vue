@@ -6,6 +6,12 @@
 </template>
 
 <script>
+
+/**
+ * Simple component to create a loading spinner.
+ *
+ * @author Julian Kruithof
+ */
 export default {
   name: "SpinnerComponent"
 }
