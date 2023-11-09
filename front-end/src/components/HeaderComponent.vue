@@ -1,23 +1,33 @@
-
 <template>
   <header class="bg-white mb-5">
-    <div class="row mx-0 px-3 py-1 justify-content-end border-bottom align-items-center">
+    <div
+      class="row mx-0 px-3 py-1 justify-content-end border-bottom align-items-center"
+    >
       <div class="col-auto d-flex flex-column text-end">
-        <span>Logged in as: <strong>{{activeUser.name}}</strong></span>
-        <span>Role: <strong>{{activeUser.role}} </strong></span>
+        <span
+          >Logged in as: <strong>{{ activeUser.name }}</strong></span
+        >
+        <span
+          >Role: <strong>{{ activeUser.role }} </strong></span
+        >
       </div>
     </div>
     <div class="row mx-0 px-5 py-2 justify-content-start align-items-center">
-      <div class="col-auto color-primary mt-1 bg-body-secondary py-2 rounded-5" v-if="$route.meta?.icon">
-        <font-awesome-icon  :icon="$route.meta.icon"></font-awesome-icon>
+      <div
+        class="col-auto color-primary bg-body-secondary py-2 rounded-5"
+        v-if="$route.meta?.icon"
+      >
+        <font-awesome-icon :icon="$route.meta.icon"></font-awesome-icon>
       </div>
-      <h2 class="col-auto fs-4 mb-0 color-primary fw-bold"> {{displayCurrentPageName}} </h2>
+      <h2 class="col-auto fs-4 mb-0 color-primary fw-bold">
+        {{ displayCurrentPageName }}
+      </h2>
     </div>
   </header>
 </template>
 
 <script>
-import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 /**
  * Header component to display the current page the user is on and the name and role of a user
@@ -27,11 +37,15 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
  */
 export default {
   name: "HeaderComponent",
-  components: {FontAwesomeIcon},
+  components: { FontAwesomeIcon },
   data() {
     return {
-      activeUser: {name: String, role: String, team: {name: String, warehouse: name}}
-    }
+      activeUser: {
+        name: String,
+        role: String,
+        team: { name: String, warehouse: name },
+      },
+    };
   },
   computed: {
     /**
@@ -41,11 +55,14 @@ export default {
     displayCurrentPageName() {
       //When vue initially loads header the route is / and matched is empty.
       if (!this.$route.matched[0]) {
-        return
+        return;
       }
-      const pageName = this.$route.matched[0].path
-      return pageName.substring(1,2).toUpperCase().concat(pageName.substring(2))
-    }
+      const pageName = this.$route.matched[0].path;
+      return pageName
+        .substring(1, 2)
+        .toUpperCase()
+        .concat(pageName.substring(2));
+    },
   },
   methods: {
     getUser() {
@@ -54,14 +71,15 @@ export default {
         role: "admin",
         team: {
           name: "team1",
-          warehouse: "Superzon"
-        }
-      }
-    }
-  }, created() {
+          warehouse: "Superzon",
+        },
+      };
+    },
+  },
+  created() {
     this.activeUser = this.getUser();
-  }
-}
+  },
+};
 </script>
 <style scoped>
 .bg-white {

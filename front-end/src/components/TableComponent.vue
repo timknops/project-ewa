@@ -17,19 +17,33 @@
           <thead>
             <tr ref="headerRow">
               <th
-                v-for="name in tableColumnNames"
+                v-for="(name, index) in tableColumnNames"
                 :key="name"
                 scope="col"
-                class="py-3 pt-2 table-header-text px-3 px-lg-4"
+                class="py-3 pt-2 table-header-text px-3 px-lg-4 align-items-end justify-content-between"
+                :class="{'d-flex': hasEditDeleteButtons && index === tableColumnNames.length -1}"
               >
                 {{ name.toUpperCase() }}
+                <button
+                    v-if="hasEditDeleteButtons && index === tableColumnNames.length -1"
+                    class="btn btn-primary align-middle"
+                    @click="$emit('add')"
+                >
+                  <font-awesome-icon icon="fa-solid fa-plus"/>
+                  add
+                </button>
               </th>
             </tr>
           </thead>
 
           <!-- If bold first row is set to true, then use the first version of the tbody, else use the other. -->
           <tbody v-if="boldFirstColumn">
-            <tr v-for="tableRow in currentlyDisplayedData" :key="tableRow">
+            <tr
+              v-for="tableRow in currentlyDisplayedData"
+              :key="tableRow"
+              @mouseenter="mouseEnter"
+              @mouseleave="mouseLeave"
+            >
               <!-- Makes the first column of the row bold. -->
               <th scope="row" class="py-3 table-text px-3 px-lg-4">
                 {{ Object.values(tableRow)[0] }}
@@ -57,11 +71,40 @@
                   {{ Object.values(tableRow)[i] }}
                 </td>
               </template>
+
+              <!-- If the table has edit and delete buttons -->
+              <div
+                class="d-none end-0 position-absolute me-3 me-lg-4 my-1 edit-btn-container"
+                :style="{ height: this.ROW_HEIGHT_LARGE - 8 + 'px' }"
+                v-if="hasEditDeleteButtons"
+              >
+                <div class="d-flex align-items-center h-100 gap-1">
+                  <button
+                    class="btn border text-body edit-btn modify-btn"
+                    type="button"
+                    @click="$emit('edit', tableRow)"
+                  >
+                    <font-awesome-icon icon="fa-solid fa-pen-to-square" />
+                  </button>
+                  <button
+                    class="btn text-danger border edit-btn delete-btn"
+                    type="button"
+                    @click="$emit('delete', tableRow)"
+                  >
+                    <font-awesome-icon icon="fa-solid fa-trash" />
+                  </button>
+                </div>
+              </div>
             </tr>
           </tbody>
 
           <tbody v-else>
-            <tr v-for="tableRow in currentlyDisplayedData" :key="tableRow">
+            <tr
+              v-for="tableRow in currentlyDisplayedData"
+              :key="tableRow"
+              @mouseenter="mouseEnter"
+              @mouseleave="mouseLeave"
+            >
               <template
                 v-for="fieldData in Object.values(tableRow)"
                 :key="fieldData"
@@ -83,6 +126,30 @@
                   {{ fieldData }}
                 </td>
               </template>
+
+              <!-- If the table has edit and delete buttons -->
+              <div
+                class="d-none end-0 position-absolute me-3 me-lg-4 my-1 edit-btn-container"
+                :style="{ height: this.ROW_HEIGHT_LARGE - 8 + 'px' }"
+                v-if="hasEditDeleteButtons"
+              >
+                <div class="d-flex align-items-center h-100 gap-1">
+                  <button
+                    class="btn border text-body edit-btn modify-btn"
+                    type="button"
+                    @click="$emit('edit', tableRow)"
+                  >
+                    <font-awesome-icon icon="fa-solid fa-pen-to-square" />
+                  </button>
+                  <button
+                    class="btn text-danger border edit-btn delete-btn"
+                    type="button"
+                    @click="$emit('delete', tableRow)"
+                  >
+                    <font-awesome-icon icon="fa-solid fa-trash" />
+                  </button>
+                </div>
+              </div>
             </tr>
           </tbody>
         </table>
@@ -175,6 +242,8 @@ export default {
     tableTitle: String,
     /** The subtitle that you want to display within the table. OPTIONAL */
     subTitle: String,
+    /** Whether the table should have edit and delete buttons. */
+    hasEditDeleteButtons: Boolean,
   },
   data() {
     return {
@@ -190,6 +259,8 @@ export default {
       displayAmount: this.amountToDisplay,
       /** Saves the amount that is supposed to be displayed, used in the 'view all' and 'view less'. */
       savedAmountToDisplay: 0,
+      /** The height of a single row in the table. */
+      ROW_HEIGHT_LARGE: 60,
     };
   },
   methods: {
@@ -242,6 +313,16 @@ export default {
       this.currentEndIndex = this.displayAmount;
       this.updateDisplayedData();
     },
+
+    /** Whenever the mouse enters a row, the edit and delete buttons are displayed. */
+    mouseEnter(e) {
+      e.target.lastElementChild.classList.add("d-md-block");
+    },
+
+    /** Whenever the mouse leaves a row, the edit and delete buttons are hidden. */
+    mouseLeave(e) {
+      e.target.lastElementChild.classList.remove("d-md-block");
+    },
   },
   created() {
     this.updateDisplayedData();
@@ -249,9 +330,11 @@ export default {
   computed: {
     /** Calculates the table height depending on the amount of items to be displayed at once. */
     calculateTableHeight() {
-      const rowHeightLarge = 57;
-
-      return rowHeightLarge * this.displayAmount + rowHeightLarge + "px";
+      return (
+        this.ROW_HEIGHT_LARGE * this.displayAmount +
+        this.ROW_HEIGHT_LARGE +
+        "px"
+      );
     },
   },
   watch: {
@@ -304,18 +387,23 @@ p {
   color: var(--bs-gray-600);
 }
 
-button {
+button:not(.btn-primary) {
   text-decoration: none;
   font-size: 0.875rem;
   color: var(--bs-gray-900);
   transition: none !important;
 }
-button:hover {
+button:hover:not(.btn-primary) {
   text-decoration: underline;
   color: var(--color-primary);
 }
 button:active {
   color: var(--color-primary) !important;
+}
+
+.btn-primary {
+  font-size: 0.875rem;
+  padding-block: 0.4em;
 }
 
 .badge {
@@ -325,5 +413,25 @@ button:active {
 .array-display {
   width: 1%;
   white-space: nowrap !important;
+}
+
+.edit-btn {
+  transition: all 0.1s ease-in-out !important;
+  background-color: var(--bs-white);
+}
+.edit-btn:hover {
+  background-color: var(--bs-gray-100) !important;
+}
+
+.delete-btn:hover {
+  color: var(--color-secondary) !important;
+}
+
+.modify-btn:hover {
+  color: var(--color-primary) !important;
+}
+
+.edit-btn-container {
+  transition: all 0.1s ease-in-out !important;
 }
 </style>
