@@ -84,7 +84,7 @@ import TableSortingIcons from "@/components/table/TableSortingIcons.vue";
  * @param {String} sortDirectionAllColumns The sort direction of all columns.
  * @param {String} previousSortedColumn The name of the previous sorted column.
  *
- * @auhtor Tim Knops
+ * @author Tim Knops
  */
 export default {
   name: "TableHeaderRow",
