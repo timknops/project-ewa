@@ -38,7 +38,7 @@ public class UserController {
 
     @PostMapping(produces = "application/json")
     public ResponseEntity<User> saveScooter(@RequestBody User userParameter){
-        if (userParameter.getFirstName() == null || userParameter.getFirstName().isBlank())
+        if (userParameter.getName() == null || userParameter.getName().isBlank())
             throw new BadRequestException("Name cannot be empty");
         User user = this.userRepo.save(userParameter);
 
@@ -48,11 +48,11 @@ public class UserController {
         return ResponseEntity.created(location).body(user);
     }
 
-    @PutMapping(path = "{id", produces = "application/json")
+    @PutMapping(path = "{id}", produces = "application/json")
     public ResponseEntity<User> updateUser(@PathVariable long id, @RequestBody User userParameter){
         if (id != userParameter.getId())
             throw new PreConditionFailedException("The id of the user is not the same as the id of the url");
-        if (userParameter.getFirstName() == null || userParameter.getFirstName().isBlank())
+        if (userParameter.getName() == null || userParameter.getName().isBlank())
             throw new BadRequestException("Name can't be empty");
 
         User user = this.userRepo.save(userParameter);

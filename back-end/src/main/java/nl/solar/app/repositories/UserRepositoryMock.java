@@ -13,9 +13,9 @@ public class UserRepositoryMock implements EntityRepository<User> {
     //amount of users being created
     private final int START_USERS_AMOUNT = 6;
     //starting ids of the teams and user
-    private final long START_USER_ID = 500;
+    private final long START_USER_ID = 2000;
 
-    private final long START_TEAM_ID = 500;
+    private final long START_TEAM_ID = 350;
     private long nextUserId = START_USER_ID;
     private long nextTeamId = START_TEAM_ID;
 
@@ -63,6 +63,8 @@ public class UserRepositoryMock implements EntityRepository<User> {
         } else {
             if (item.getId() == 0){
                 item.setId(randomUserId());
+            }
+            if (item.getTeamId() == 0){
                 item.setTeamId(randomTeamId());
             }
             userArrayList.add(item);

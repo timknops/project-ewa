@@ -10,8 +10,7 @@ import java.util.Objects;
 public class User {
     private long id;
     private long teamId;
-    private String firstName;
-    private String surName;
+    private String name;
     private String email;
     private String password;
     private enum userType {
@@ -19,32 +18,42 @@ public class User {
     }
     private userType type;
 
-    public User(long id, long teamId, String firstName, String surName, String email, String password, userType type) {
+    public User(long id, long teamId, String name, String email, String password, userType type) {
         this.id = id;
         this.teamId = teamId;
-        this.firstName = firstName;
-        this.surName = surName;
+        this.name = name;
         this.email = email;
         this.password = password;
         this.type = type;
     }
-    //todo make stuff final like the arrays
 
+    /**
+     * Creates dummy users to populate the table. The data for the dummy users is random generated
+     * @param userId id of the user
+     * @param teamId id of the team
+     * @return a dummy user
+     */
     public static User creatyDummyUser(long userId, long teamId){
-        String[] firstNameArray = {"Paola", "Drew", "Adrianna", "Evan", "Henk", "Abel", "Muhammad", "Mara", "Clair",
+        final String[] FIRST_NAME_ARRAY = {"Paola", "Drew", "Adrianna", "Evan", "Henk", "Abel", "Muhammad", "Mara", "Clair",
                 "Amar"};
-        String[] surnameArray = {"de Groot", "Smits", "Mulder", "Visser", "Pacheco", "Dalal", "Ahssini", "Imen",
+        final String[] SURNAME_ARRAY = {"de Groot", "Smits", "Mulder", "Visser", "Pacheco", "Dalal", "Ahssini", "Imen",
         "Ferguson", "Costa"};
-        String randomFirstName = firstNameArray[(int) Math.floor(Math.random() * firstNameArray.length)];
-        String randomSurname = surnameArray[(int) Math.floor(Math.random() * surnameArray.length)];
+        String randomFirstName = FIRST_NAME_ARRAY[(int) Math.floor(Math.random() * FIRST_NAME_ARRAY.length)];
+        String randomSurname = SURNAME_ARRAY[(int) Math.floor(Math.random() * SURNAME_ARRAY.length)];
+        String fullRandomName = randomFirstName + " " + randomSurname;
         String randomEmail = randomFirstName + randomSurname + "@gmail.com";
         String randomPassword = randomPasswordGen((int) (8 + Math.floor(Math.random() * 20)));
-        userType[] userTypeArray = userType.values();
-        userType randomUserType = userTypeArray[(int) Math.floor(Math.random() * userTypeArray.length)];
+        final userType[] USER_TYPE_ARRAY = userType.values();
+        userType randomUserType = USER_TYPE_ARRAY[(int) Math.floor(Math.random() * USER_TYPE_ARRAY.length)];
 
-        return new User(userId, teamId, randomFirstName, randomSurname, randomEmail, randomPassword, randomUserType);
+        return new User(userId, teamId, fullRandomName, randomEmail, randomPassword, randomUserType);
     }
 
+    /**
+     * Creates a random generated password
+     * @param length length of the password
+     * @return a random password
+     */
     private static String randomPasswordGen(int length){
         StringBuilder stringBuilder = new StringBuilder(length);
         final String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -87,20 +96,12 @@ public class User {
         this.teamId = teamId;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getName() {
+        return name;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getSurName() {
-        return surName;
-    }
-
-    public void setSurName(String surName) {
-        this.surName = surName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getEmail() {

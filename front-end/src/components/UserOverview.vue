@@ -15,6 +15,7 @@ export default {
   components: {
     TableComponent,
   },
+  inject: ['userService'],
   data() {
     return {
       users,

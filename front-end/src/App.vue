@@ -17,6 +17,7 @@ import HeaderComponent from "@/components/HeaderComponent.vue";
 import appConfig from "@/appConfig";
 import { ProductAdaptor } from "@/service/productAdaptor";
 import { WarehouseAdaptor } from "@/service/warehouseAdaptor";
+import { UserAdaptor } from "@/service/userAdaptor";
 
 localStorage.setItem("loggedIn", true);
 export default {
@@ -34,7 +35,8 @@ export default {
   provide() {
     return {
       productService: new ProductAdaptor(`${appConfig.BACKEND_URL}/products`),
-      warehouseService: new WarehouseAdaptor(`${appConfig.BACKEND_URL}/warehouses`)
+      warehouseService: new WarehouseAdaptor(`${appConfig.BACKEND_URL}/warehouses`),
+      userService: new UserAdaptor(`${appConfig.BACKEND_URL}/users`)
     }
   },
   methods: {
