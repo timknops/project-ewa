@@ -31,7 +31,7 @@ public class ProductRepositoryMock implements EntityRepository<Product> {
     }
 
     @Override
-    public List<Product> findALL() {
+    public List<Product> findAll() {
         return products;
     }
 
