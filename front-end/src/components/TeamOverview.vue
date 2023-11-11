@@ -9,7 +9,7 @@
         @add="showAddModal"
     />
     <Transition>
-      <model-component
+      <modal-component
           v-if="showModal"
           :title="modalTitle"
           :active-modal="modalBodyComponent"
@@ -24,13 +24,13 @@
 </template>
 
 <script>
-import TableComponent from "@/components/TableComponent.vue";
-import ModelComponent from "@/components/Models/ModelComponent.vue";
+import TableComponent from "@/components/table/TableComponent";
+import ModalComponent from "@/components/modal/ModalComponent";
 
 
 export default {
   name: "TeamOverview",
-  components: {TableComponent, ModelComponent},
+  components: {TableComponent, ModalComponent},
   inject: ['teamsService'],
 
   data() {

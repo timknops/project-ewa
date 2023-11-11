@@ -22,7 +22,7 @@ public class TeamRepositoryMock implements EntityRepository<Team> {
     }
 
     @Override
-    public List<Team> findALL() {
+    public List<Team> findAll() {
         return teams;
     }
 

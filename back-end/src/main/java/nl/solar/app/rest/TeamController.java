@@ -22,7 +22,7 @@ public class TeamController {
 
     @GetMapping(produces = "application/json")
     public List<Team> getAll() {
-        return this.teamRepo.findALL();
+        return this.teamRepo.findAll();
     }
 
     @GetMapping(path = "{id}", produces = "application/json")
