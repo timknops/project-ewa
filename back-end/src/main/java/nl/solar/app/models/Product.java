@@ -1,5 +1,8 @@
 package nl.solar.app.models;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import nl.solar.app.Views.ResourceView;
+
 import java.util.Objects;
 
 /**
@@ -8,8 +11,14 @@ import java.util.Objects;
  * @author Julian Kruithof
  */
 public class Product {
+
+    @JsonView(ResourceView.Complete.class)
     private long id;
+
+    @JsonView(ResourceView.Complete.class)
     private String productName;
+
+    @JsonView(ResourceView.Complete.class)
     private String description;
 
     /**

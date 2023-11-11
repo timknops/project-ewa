@@ -44,6 +44,7 @@ import AddProductModal from "@/components/modal/product/AddProductModal.vue";
 import DeleteWarehouseModal from "@/components/modal/warehouse/DeleteWarehouseModal.vue";
 import AddWarehouseModal from "@/components/modal/warehouse/AddWarehouseModal.vue";
 import UpdateWarehouseModal from "@/components/modal/warehouse/UpdateWarehouseModal.vue";
+import UpdateInventoryModal from "@/components/modal/inventory/UpdateInventoryModal.vue";
 
 /**
  * General modal component, for the styling of the header and footer,
@@ -64,6 +65,7 @@ export default {
     DeleteWarehouseModal,
     UpdateWarehouseModal,
     AddWarehouseModal,
+    UpdateInventoryModal
   },
   /**
    * props
