@@ -19,6 +19,7 @@ export class UserAdaptor {
     }
 
     async asyncFindAll(){
+        console.log("finding...")
         return await this.fetchJson(this.resourceUrl);
     }
 

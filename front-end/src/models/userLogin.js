@@ -27,6 +27,11 @@ export class userLogin {
 
     }
 
+    static copyConstructor(user){
+        if (user == null || user.isUndefined()) return null;
+        return Object.assign(new userLogin(), user);
+    }
+
     static dummyData() {
         return new userLogin(
             1,
