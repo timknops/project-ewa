@@ -19,8 +19,11 @@ export class UserAdaptor {
     }
 
     async asyncFindAll(){
-        console.log("finding...")
         return await this.fetchJson(this.resourceUrl);
+    }
+
+    async asyncFindAdmin(){
+        return await this.fetchJson(this.resourceUrl + "/admin")
     }
 
     async asyncFindById(id){
@@ -37,7 +40,7 @@ export class UserAdaptor {
 
     async asyncSave(user){
         try {
-            return await this.fetchJson(this.resourceUrl, {
+            return await this.fetchJson(`${this.resourceUrl}/${user.id}`, {
                 method: "PUT",
                 headers: {"content-type": "application/json"},
                 body: JSON.stringify(user)
@@ -47,7 +50,7 @@ export class UserAdaptor {
         }
     }
 
-    async asyncUpdate(id){
+    async asyncDelete(id){
         try {
             return await this.fetchJson(`${this.resourceUrl}/${id}`,{
                 method: "DELETE"

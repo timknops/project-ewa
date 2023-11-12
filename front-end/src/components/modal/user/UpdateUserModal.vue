@@ -7,8 +7,8 @@
     </div>
     <!--    team id-->
     <div class="mb-3">
-      <label for="id" class="form-label fw-bold">ID</label>
-      <input id="id" type="text" class="form-control" :value="modalItem.id" disabled>
+      <label for="teamId" class="form-label fw-bold">ID</label>
+      <input id="teamId" type="text" class="form-control" :value="modalItem.teamId" disabled>
     </div>
     <!--    name of the user-->
     <div class="mb-3">
@@ -33,16 +33,9 @@
       <p v-if="emailEmpty" class="text-danger"> The e-mail can't be empty!</p>
       <p v-if="emailValid" class="text-danger"> The e-mail isn't valid!</p>
     </div>
-    <!--    password of the user-->
     <div class="mb-3">
-      <label for="password" class="form-label fw-bold">password</label>
-      <input id="user-name"
-             type="password"
-             class="form-control"
-             :class="{'border-danger': passwordEmpty}"
-             v-model.lazy.trim="modalItem.password"
-             @blur="validatePassword">
-      <p v-if="passwordEmpty" class="text-danger"> The password can't be empty!</p>
+      <label for="userType" class="form-label fw-bold">Type</label>
+      <input id="userType" type="text" class="form-control" :value="modalItem.type" disabled>
     </div>
   </form>
 </template>

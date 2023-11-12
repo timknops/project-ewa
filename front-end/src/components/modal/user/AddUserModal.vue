@@ -2,7 +2,7 @@
   <form>
     <!--    name of the user-->
     <div class="mb-3">
-      <label for="user-name" class="form-label fw-bold">User name</label>
+      <label for="user-name" class="form-label fw-bold">Name</label>
       <input id="user-name"
              type="text"
              class="form-control"
@@ -13,7 +13,7 @@
     </div>
     <!--    email of the user-->
     <div class="mb-3">
-      <label for="email" class="form-label fw-bold">e-mail</label>
+      <label for="email" class="form-label fw-bold">E-mail</label>
       <input id="email"
                 type="email"
                 class="form-control"
@@ -25,8 +25,8 @@
     </div>
     <!--    password of the user-->
     <div class="mb-3">
-      <label for="password" class="form-label fw-bold">password</label>
-      <input id="user-name"
+      <label for="password" class="form-label fw-bold">Password</label>
+      <input id="password"
              type="password"
              class="form-control"
              :class="{'border-danger': passwordEmpty}"
@@ -49,7 +49,7 @@ export default {
         name: "",
         email: "",
         password: "",
-        type: ""
+        type: "VIEWER"
       },
       hasError: false,
       nameEmpty: false,
@@ -67,9 +67,9 @@ export default {
     validateEmail(){
       this.emailEmpty = this.modalItem.email.length === 0;
       const regex = /^[^s@]+@[^\s@]+\.[^\s@]+$/;
-      this.emailValid = this.modalItem.email.match(regex);
-      //this.emailValid = regex.test(this.modalItem.email)
-      this.hasError = !this.emailValid;
+      // this.emailValid = this.modalItem.email.match(regex);
+      this.emailValid = !regex.test(this.modalItem.email)
+      this.hasError = this.emailValid;
     },
 
     validatePassword(){

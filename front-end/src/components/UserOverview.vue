@@ -1,12 +1,12 @@
 <template>
   <div>
     <table-component
-        v-if="users.length > 0"
+        v-if="usersAdmin.length > 0"
         :amount-to-display="5"
         :has-add-button="true"
         :has-delete-button="true"
         :has-edit-button="true"
-        :table-data="users"
+        :table-data="usersAdmin"
         @edit="showEditModal"
         @delete="showDeleteModal"
         @add="showAddModal"
@@ -38,6 +38,7 @@ export default {
   data() {
     return {
       users: [],
+      usersAdmin: [],
       showModal: false,
       modalTitle: "",
       modalBodyComponent: "",
@@ -52,6 +53,7 @@ export default {
   },
   async created() {
     this.users = await this.userService.asyncFindAll();
+    this.usersAdmin = await this.userService.asyncFindAdmin();
   },
   methods: {
     showDeleteModal(user) {
@@ -113,7 +115,7 @@ export default {
 
     async onUserDelete(user) {
       try {
-        const deletedUser = await this.userService.asyncAdd(user);
+        const deletedUser = await this.userService.asyncDelete(user.id);
         this.users = this.users.filter((user) => user.id !== deletedUser.id)
         this.showModal = false;
       } catch (e) {

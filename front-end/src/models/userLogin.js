@@ -15,7 +15,7 @@ export class userLogin {
      * @param {String} username
      * @param {String} email
      * @param {String} password
-     * @param type
+     * @param {String} type
      */
     constructor(id, teamId, username, email, password, type) {
         this.id = id;
@@ -23,8 +23,7 @@ export class userLogin {
         this.username = username;
         this.email = email;
         this.password = password;
-        this.type = type
-
+        this.userType = type;
     }
 
     static copyConstructor(user){

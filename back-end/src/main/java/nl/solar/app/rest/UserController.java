@@ -1,9 +1,11 @@
 package nl.solar.app.rest;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import nl.solar.app.exceptions.BadRequestException;
 import nl.solar.app.exceptions.PreConditionFailedException;
 import nl.solar.app.exceptions.ResourceNotFoundException;
 import nl.solar.app.models.User;
+import nl.solar.app.models.views.UserView;
 import nl.solar.app.repositories.EntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,10 +28,13 @@ public class UserController {
     @GetMapping(produces = "application/json")
     public List<User> getTestUsers(){ return userRepo.findALL(); }
 
+    @JsonView(UserView.userAdmin.class)
+    @GetMapping("/admin")
+    public List<User> getAdminUsers(){ return userRepo.findALL();}
+
     @GetMapping(path = "{id}", produces = "application/json")
     public ResponseEntity<User> getUserById(@PathVariable long id){
         User user = userRepo.findById(id);
-
         if (user == null){
             throw new ResourceNotFoundException("Cannot find a user with id = " + id);
         }

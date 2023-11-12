@@ -1,5 +1,8 @@
 package nl.solar.app.models;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import nl.solar.app.models.views.UserView;
+
 import java.util.Objects;
 
 /**
@@ -8,23 +11,29 @@ import java.util.Objects;
  * @author Noa de Greef
  */
 public class User {
+    @JsonView(UserView.userAdmin.class)
     private long id;
+    @JsonView(UserView.userAdmin.class)
     private long teamId;
+    @JsonView(UserView.userAdmin.class)
     private String name;
+    @JsonView(UserView.userAdmin.class)
     private String email;
+    @JsonView(UserView.userFull.class)
     private String password;
     private enum userType {
         ADMIN, VIEWER
     }
-    private userType type;
+    @JsonView(UserView.userAdmin.class)
+    private String type;
 
-    public User(long id, long teamId, String name, String email, String password, userType type) {
+    public User(long id, long teamId, String name, String email, String password, String Type) {
         this.id = id;
         this.teamId = teamId;
         this.name = name;
         this.email = email;
         this.password = password;
-        this.type = type;
+        this.type = Type;
     }
 
     /**
@@ -46,7 +55,7 @@ public class User {
         final userType[] USER_TYPE_ARRAY = userType.values();
         userType randomUserType = USER_TYPE_ARRAY[(int) Math.floor(Math.random() * USER_TYPE_ARRAY.length)];
 
-        return new User(userId, teamId, fullRandomName, randomEmail, randomPassword, randomUserType);
+        return new User(userId, teamId, fullRandomName, randomEmail, randomPassword, randomUserType.toString());
     }
 
     /**
@@ -112,19 +121,17 @@ public class User {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
-    }
+    public String getPassword() {return password;}
 
     public void setPassword(String password) {
         this.password = password;
     }
 
-    public userType getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(userType type) {
+    public void setType(String type) {
         this.type = type;
     }
 }
