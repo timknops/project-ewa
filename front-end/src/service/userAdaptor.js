@@ -18,10 +18,18 @@ export class UserAdaptor {
         }
     }
 
+    /**
+     * Finds the full view of users
+     * @returns {Promise<any>}
+     */
     async asyncFindAll(){
         return await this.fetchJson(this.resourceUrl);
     }
 
+    /**
+     * Finds the admin view of users, this will exclude passwords
+     * @returns {Promise<any>}
+     */
     async asyncFindAdmin(){
         return await this.fetchJson(this.resourceUrl + "/admin")
     }

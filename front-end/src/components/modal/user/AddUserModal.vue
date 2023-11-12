@@ -15,11 +15,11 @@
     <div class="mb-3">
       <label for="email" class="form-label fw-bold">E-mail</label>
       <input id="email"
-                type="email"
-                class="form-control"
-                :class="{'border-danger': emailValid}"
-                v-model.lazy.trim="modalItem.email"
-                @blur="validateEmail">
+             type="email"
+             class="form-control"
+             :class="{'border-danger': emailValid}"
+             v-model.lazy.trim="modalItem.email"
+             @blur="validateEmail">
       <p v-if="emailEmpty" class="text-danger"> The e-mail can't be empty!</p>
       <p v-if="emailValid" class="text-danger"> The e-mail isn't valid!</p>
     </div>
@@ -38,6 +38,9 @@
 </template>
 
 <script>
+/**
+ * The modal for adding a user
+ */
 export default {
   //TODO maybe edit button for team?
   name: "AddUserModal",
@@ -59,12 +62,12 @@ export default {
     };
   },
   methods: {
-    validateName(){
+    validateName() {
       this.nameEmpty = this.modalItem.name.length === 0;
       this.hasError = this.modalItem.name.length === 0;
     },
 
-    validateEmail(){
+    validateEmail() {
       this.emailEmpty = this.modalItem.email.length === 0;
       const regex = /^[^s@]+@[^\s@]+\.[^\s@]+$/;
       // this.emailValid = this.modalItem.email.match(regex);
@@ -72,7 +75,7 @@ export default {
       this.hasError = this.emailValid;
     },
 
-    validatePassword(){
+    validatePassword() {
       this.passwordEmpty = this.modalItem.password.length === 0;
       this.hasError = this.modalItem.password.length === 0;
     }

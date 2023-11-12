@@ -3,6 +3,9 @@
 </template>
 
 <script>
+/**
+ * Modal for deleting a user
+ */
 export default {
   name: "DeleteUserModal",
   data() {

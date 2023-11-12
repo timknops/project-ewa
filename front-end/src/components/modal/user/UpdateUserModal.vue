@@ -33,6 +33,7 @@
       <p v-if="emailEmpty" class="text-danger"> The e-mail can't be empty!</p>
       <p v-if="emailValid" class="text-danger"> The e-mail isn't valid!</p>
     </div>
+    <!--    type of user-->
     <div class="mb-3">
       <label for="userType" class="form-label fw-bold">Type</label>
       <input id="userType" type="text" class="form-control" :value="modalItem.type" disabled>
@@ -41,6 +42,9 @@
 </template>
 
 <script>
+/**
+ * Modal for editing a user
+ */
 export default {
   name: "UpdateUserModal",
   props: ['item'],

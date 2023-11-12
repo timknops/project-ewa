@@ -10,12 +10,12 @@ export class userLogin {
      * Constructor of a user
      *
      * @constructor
-     * @param {number} id
-     * @param {number} teamId
-     * @param {String} username
-     * @param {String} email
-     * @param {String} password
-     * @param {String} type
+     * @param {number} id        id of the user
+     * @param {number} teamId    id of the team
+     * @param {String} username  name of the user
+     * @param {String} email     email of the user
+     * @param {String} password  password of the user
+     * @param {String} type      type of user, either admin or viewer
      */
     constructor(id, teamId, username, email, password, type) {
         this.id = id;
