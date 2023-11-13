@@ -13,11 +13,9 @@ import java.util.List;
 public class ResourceRepositoryMock implements ResourceRepository {
     private List<Resource> resources;
 
-
     private final EntityRepository<Product> productRepo;
     private final EntityRepository<Warehouse> warehouseRepo;
 
-    @Autowired
     public ResourceRepositoryMock(EntityRepository<Product> productRepo, EntityRepository<Warehouse> warehouseRepo) {
         this.productRepo = productRepo;
         this.warehouseRepo = warehouseRepo;
@@ -25,8 +23,8 @@ public class ResourceRepositoryMock implements ResourceRepository {
         List<Product> products = this.productRepo.findAll();
         List<Warehouse> warehouses = this.warehouseRepo.findAll();
 
-        for (Warehouse warehouse: warehouses) {
-            for (Product product: products) {
+        for (Warehouse warehouse : warehouses) {
+            for (Product product : products) {
                 Resource resource = Resource.createDummyResource(warehouse, product);
                 resources.add(resource);
             }
@@ -47,13 +45,14 @@ public class ResourceRepositoryMock implements ResourceRepository {
     @Override
     public Resource findResource(long warehouseId, long productId) {
         return resources.stream()
-                .filter(resource -> resource.getWarehouse().getId() == warehouseId && resource.getProduct().getId() == productId)
+                .filter(resource -> resource.getWarehouse().getId() == warehouseId
+                        && resource.getProduct().getId() == productId)
                 .findFirst().orElse(null);
     }
 
     @Override
     public void addResourcesForProduct(Product product) {
-        for (Warehouse warehouse: warehouseRepo.findAll()) {
+        for (Warehouse warehouse : warehouseRepo.findAll()) {
             Resource resource = Resource.createDummyResource(warehouse, product);
             resource.setQuantity(0);
             resources.add(resource);
@@ -62,7 +61,7 @@ public class ResourceRepositoryMock implements ResourceRepository {
 
     @Override
     public void addResourcesForWarehouse(Warehouse warehouse) {
-        for (Product product: productRepo.findAll()) {
+        for (Product product : productRepo.findAll()) {
             Resource resource = Resource.createDummyResource(warehouse, product);
             resource.setQuantity(0);
             resources.add(resource);

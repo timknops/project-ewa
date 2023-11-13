@@ -180,7 +180,7 @@ import TableHeaderRow from "@/components/table/TableHeaderRow.vue";
  * Custom table component. Allows user to dynamically set the width, height, whether the first row should be bold and
  * allows for dynamic column creation depending on the array of object passed as tableData.
  *
- * @param {String} tableWdith The width of the table.
+ * @param {String} tableWidth The width of the table.
  * @param {Boolean} boldFirstColumn Whether the first column should be bold or not.
  * @param {Number} amountToDisplay The amount of rows you want to display at once.
  * @param {Array} tableData The data that is to be displayed in the table.
