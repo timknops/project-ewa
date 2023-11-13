@@ -16,10 +16,10 @@ import LoginPage from "@/components/LoginPage.vue";
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import appConfig from "@/appConfig";
 import { ProductAdaptor } from "@/service/productAdaptor";
-import {ResourceAdaptor} from "@/service/resourceAdaptor";
+import { ResourceAdaptor } from "@/service/resourceAdaptor";
 import { WarehouseAdaptor } from "@/service/warehouseAdaptor";
 import { TeamAdaptor } from "@/service/teamAdaptor";
-
+import { ProjectAdaptor } from "./service/projectAdaptor";
 
 localStorage.setItem("loggedIn", true);
 export default {
@@ -38,9 +38,12 @@ export default {
     return {
       productService: new ProductAdaptor(`${appConfig.BACKEND_URL}/products`),
       resourceService: new ResourceAdaptor(appConfig.BACKEND_URL),
-      warehouseService: new WarehouseAdaptor(`${appConfig.BACKEND_URL}/warehouses`),
+      warehouseService: new WarehouseAdaptor(
+        `${appConfig.BACKEND_URL}/warehouses`
+      ),
       teamsService: new TeamAdaptor(`${appConfig.BACKEND_URL}/teams`),
-    }
+      projectService: new ProjectAdaptor(`${appConfig.BACKEND_URL}/projects`),
+    };
   },
   methods: {
     updateLoggedIn() {
@@ -53,7 +56,7 @@ export default {
 };
 </script>
 
-<style >
+<style>
 .view {
   grid-template-areas:
     "sidebar header"

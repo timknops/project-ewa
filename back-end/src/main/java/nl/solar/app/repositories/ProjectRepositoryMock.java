@@ -1,10 +1,16 @@
 package nl.solar.app.repositories;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Repository;
 import nl.solar.app.models.Project;
 import nl.solar.app.models.Team;
 
+/**
+ * This class is a mock repository for the Project model.
+ * 
+ * @author Tim Knops
+ */
 @Repository("PROJECTS.INMEMORY")
 public class ProjectRepositoryMock implements ProjectRepository {
 
@@ -15,6 +21,7 @@ public class ProjectRepositoryMock implements ProjectRepository {
 
     public ProjectRepositoryMock(EntityRepository<Team> teamRepo) {
         this.teamRepo = teamRepo;
+        this.projects = new ArrayList<>();
         List<Team> teams = this.teamRepo.findAll();
 
         int amountOfProjects = 15;
@@ -22,7 +29,7 @@ public class ProjectRepositoryMock implements ProjectRepository {
         for (int i = 0; i < amountOfProjects; i++) {
             Team randomTeam = teams.get((int) (Math.random() * teams.size()));
 
-            projects.add(Project.createDummyProject(++currentId, "Project " + (i + 1), randomTeam,
+            this.projects.add(Project.createDummyProject(++currentId, "Project " + (i + 1), randomTeam,
                     "Client " + (i + 1)));
         }
     }

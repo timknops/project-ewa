@@ -120,22 +120,24 @@
                 <!-- If the column name is 'status' -->
                 <td
                   v-else-if="
-                    fieldData === 'completed' ||
-                    fieldData === 'in progress' ||
-                    fieldData === 'upcoming'
+                    fieldData === 'COMPLETED' ||
+                    fieldData === 'IN_PROGRESS' ||
+                    fieldData === 'UPCOMING'
                   "
                   class="py-3 px-3 px-lg-4"
                 >
                   <span
                     class="badge"
                     :class="STATUS_OPTIONS[fieldData.toUpperCase()]"
-                    >{{ fieldData.toUpperCase() }}</span
+                    >{{ fieldData.toUpperCase().replace("_", " ") }}</span
                   >
                 </td>
 
                 <!-- If the column name is 'id' and the hideIdColumn prop is set to true, then hide the column. -->
                 <td
-                  v-else-if="!hideIdColumn || Object.keys(tableRow)[index] !== 'id'"
+                  v-else-if="
+                    !hideIdColumn || Object.keys(tableRow)[index] !== 'id'
+                  "
                   class="py-3 table-text px-3 px-lg-4"
                 >
                   {{ fieldData }}
@@ -240,7 +242,7 @@ export default {
        * Feel free to add your own additional status's as needed. */
       STATUS_OPTIONS: Object.freeze({
         COMPLETED: "success-badge",
-        "IN PROGRESS": "in-progress-badge",
+        IN_PROGRESS: "in-progress-badge",
         UPCOMING: "upcoming-badge",
       }),
       /** Copy of the table data, used for sorting. */
