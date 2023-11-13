@@ -86,7 +86,7 @@ export default {
      * When clicked on the edit button in the table, it will show the modal for editing an existing user
      * @param user that's being selected for editing
      */
-    async showEditModal(user) {
+    showEditModal(user) {
       this.modalTitle = "Update user"
       this.modalBodyComponent = this.MODAL_TYPES.UPDATE
       this.modalUser = user
