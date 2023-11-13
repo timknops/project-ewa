@@ -3,11 +3,9 @@ package nl.solar.app.repositories;
 import nl.solar.app.models.Product;
 import nl.solar.app.models.Resource;
 import nl.solar.app.models.Warehouse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Repository;
 
 @Repository("RESOURCES.INMEMORY")
 public class ResourceRepositoryMock implements ResourceRepository {

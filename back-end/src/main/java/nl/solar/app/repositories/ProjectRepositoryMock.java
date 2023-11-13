@@ -15,16 +15,16 @@ public class ProjectRepositoryMock implements ProjectRepository {
 
     public ProjectRepositoryMock(EntityRepository<Team> teamRepo) {
         this.teamRepo = teamRepo;
-
-        int amountOfProjects = 15;
         List<Team> teams = this.teamRepo.findAll();
 
+        int amountOfProjects = 15;
+
         for (int i = 0; i < amountOfProjects; i++) {
-            // Get random team.
-            Team team = teams.get((int) (Math.random() * teams.size()));
+            Team randomTeam = teams.get((int) (Math.random() * teams.size()));
 
+            projects.add(Project.createDummyProject(++currentId, "Project " + (i + 1), randomTeam,
+                    "Client " + (i + 1)));
         }
-
     }
 
     @Override

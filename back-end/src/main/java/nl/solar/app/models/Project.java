@@ -35,13 +35,35 @@ public class Project {
      * @param projectName the name of the project
      * @param team        the team of the project
      * @param client      the client of the project
-     * @param dueDate     the due date of the project
-     * @param status      the status of the project
      * @return a dummy project
      */
-    public static Project createDummyProject(long id, String projectName, Team team, String client, Date dueDate,
-            ProjectStatus status) {
-        return new Project(id, projectName, team, client, dueDate, status);
+    public static Project createDummyProject(long id, String projectName, Team team, String client) {
+        // Generates a random date between 2022-01-01 and 2026-01-01.
+        Date randomDueDate = randomDate(new Date(1640995200000L), new Date(1789568000000L));
+
+        ProjectStatus randomStatus;
+        if (randomDueDate.before(new Date())) { // If the due date is in the past, the project is completed.
+            randomStatus = ProjectStatus.COMPLETED;
+        } else { // If the due date is in the future, the project is either upcoming or in
+                 // progress.
+            double random = Math.random();
+
+            // 40% chance of being upcoming.
+            randomStatus = random < 0.4 ? ProjectStatus.UPCOMING : ProjectStatus.IN_PROGRESS;
+        }
+
+        return new Project(id, projectName, team, client, randomDueDate, randomStatus);
+    }
+
+    /**
+     * Generates a random date between the given start and end date.
+     * 
+     * @param start the start date
+     * @param end   the end date
+     * @return a random date between the given start and end date
+     */
+    public static Date randomDate(Date start, Date end) {
+        return new Date(start.getTime() + (long) (Math.random() * (end.getTime() - start.getTime())));
     }
 
     public long getId() {
