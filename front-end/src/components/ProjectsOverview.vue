@@ -70,6 +70,7 @@ export default {
   async created() {
     const data = await this.projectService.getAll();
 
+    // If there are no projects, add the table header row titles.
     if (data.length === 0) {
       this.projects = [this.formatEmptyTableData()];
 
@@ -220,13 +221,6 @@ export default {
           break;
         default:
           break;
-      }
-    },
-  },
-  watch: {
-    showModal: function (val) {
-      if (!val) {
-        this.modalProject = this.formatEmptyTableData();
       }
     },
   },
