@@ -27,7 +27,7 @@
           </thead>
 
           <!-- If bold first row is set to true, then use the first version of the tbody, else use the other. -->
-          <tbody v-if="boldFirstColumn">
+          <tbody v-if="boldFirstColumn && !showEmptyTable">
             <tr
               v-for="tableRow in currentlyDisplayedData"
               :key="tableRow"
@@ -93,7 +93,7 @@
             </tr>
           </tbody>
 
-          <tbody v-else>
+          <tbody v-else-if="!showEmptyTable">
             <tr
               v-for="tableRow in currentlyDisplayedData"
               :key="tableRow"
@@ -259,6 +259,8 @@ export default {
       sortDirectionAllColumns: "default",
       /** The reference to the previous column icon that was sorted. */
       previousColumnIconRef: "",
+      /** Whether the table should show an empty table or not. */
+      showEmptyTable: false,
     };
   },
   methods: {
@@ -280,6 +282,13 @@ export default {
 
     /** Updates the displayed data depending on the current start and end index. */
     updateDisplayedData() {
+      // If the tableData has empty object values, show an empty table.
+      if (this.tableData[0].id === undefined) {
+        this.showEmptyTable = true;
+
+        return;
+      }
+
       this.tableDataSorted = this.tableData;
       this.currentlyDisplayedData = this.tableDataSorted.slice(
         this.currentStartIndex,
@@ -393,6 +402,13 @@ export default {
   },
   watch: {
     tableData() {
+      if (this.tableData.length === 0) {
+        // If the table data is empty, show an empty table.
+        this.showEmptyTable = true;
+
+        return;
+      }
+
       this.tableColumnNames = Object.keys(this.tableData[0]);
 
       // Reset the sorting icon of the previous sorted column.

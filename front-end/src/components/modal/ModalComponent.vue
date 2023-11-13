@@ -48,6 +48,7 @@ import UpdateInventoryModal from "@/components/modal/inventory/UpdateInventoryMo
 import AddTeamModal from "@/components/modal/team/AddTeamModal";
 import UpdateTeamModal from "@/components/modal/team/UpdateTeamModal";
 import DeleteTeamModal from "@/components/modal/team/DeleteTeamModal";
+import DeleteProjectModal from "@/components/modal/project/DeleteProjectModal.vue";
 
 /**
  * General modal component, for the styling of the header and footer,
@@ -72,6 +73,7 @@ export default {
     DeleteTeamModal,
     UpdateTeamModal,
     AddTeamModal,
+    DeleteProjectModal,
   },
   /**
    * props

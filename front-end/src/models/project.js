@@ -75,7 +75,6 @@ export class Project {
         randomStatus = Project.status.IN_PROGRESS;
       }
     }
-
     return new Project(
       randomId,
       randomTeam,
@@ -84,5 +83,9 @@ export class Project {
       randomDueDate.toISOString().split("T")[0], // Convert date to string in format YYYY-MM-DD.
       randomStatus
     );
+  }
+
+  static getProjectPropertyNames() {
+    return Object.keys(new Project());
   }
 }
