@@ -26,7 +26,7 @@ export class userLogin {
         this.userType = type;
     }
 
-    static copyConstructor(user){
+    static copyConstructor(user) {
         if (user == null || user.isUndefined()) return null;
         return Object.assign(new userLogin(), user);
     }

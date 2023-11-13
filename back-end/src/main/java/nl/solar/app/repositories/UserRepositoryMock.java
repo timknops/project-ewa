@@ -26,12 +26,12 @@ public class UserRepositoryMock implements EntityRepository<User> {
         }
     }
 
-    public long randomUserId(){
+    public long randomUserId() {
         nextUserId = (long) (nextUserId + Math.floor(Math.random() * 3) + 1);
         return nextUserId;
     }
 
-    public long randomTeamId(){
+    public long randomTeamId() {
         nextTeamId = (long) (nextTeamId + Math.floor(Math.random() * 3) + 1);
         return nextTeamId;
     }
@@ -58,13 +58,13 @@ public class UserRepositoryMock implements EntityRepository<User> {
     @Override
     public User save(User item) {
         int index = userArrayList.indexOf(item);
-        if (index != -1){
+        if (index != -1) {
             userArrayList.set(index, item);
         } else {
-            if (item.getId() == 0){
+            if (item.getId() == 0) {
                 item.setId(randomUserId());
             }
-            if (item.getTeamId() == 0){
+            if (item.getTeamId() == 0) {
                 item.setTeamId(randomTeamId());
             }
             userArrayList.add(item);

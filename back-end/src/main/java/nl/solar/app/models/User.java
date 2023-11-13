@@ -21,9 +21,11 @@ public class User {
     private String email;
     @JsonView(UserView.userFull.class)
     private String password;
+
     private enum userType {
         ADMIN, VIEWER
     }
+
     @JsonView(UserView.userAdmin.class)
     private String type;
 
@@ -38,15 +40,16 @@ public class User {
 
     /**
      * Creates dummy users to populate the table. The data for the dummy users is random generated
+     *
      * @param userId id of the user
      * @param teamId id of the team
      * @return a dummy user
      */
-    public static User creatyDummyUser(long userId, long teamId){
+    public static User creatyDummyUser(long userId, long teamId) {
         final String[] FIRST_NAME_ARRAY = {"Paola", "Drew", "Adrianna", "Evan", "Henk", "Abel", "Muhammad",
                 "Mara", "Clair", "Amar", "Braden", "Anwar", "Amelia", "Dax", "Ayan", "Ava", "Kim"};
         final String[] SURNAME_ARRAY = {"de Groot", "Smits", "Mulder", "Visser", "Pacheco", "Dalal", "Ahssini", "Imen",
-        "Ferguson", "Costa", "Herrera", "Dalal", "Case", "de Vries", "Santana", "Nguyen"};
+                "Ferguson", "Costa", "Herrera", "Dalal", "Case", "de Vries", "Santana", "Nguyen"};
         String randomFirstName = FIRST_NAME_ARRAY[(int) Math.floor(Math.random() * FIRST_NAME_ARRAY.length)];
         String randomSurname = SURNAME_ARRAY[(int) Math.floor(Math.random() * SURNAME_ARRAY.length)];
         String fullRandomName = randomFirstName + " " + randomSurname;
@@ -60,10 +63,11 @@ public class User {
 
     /**
      * Creates a random generated password
+     *
      * @param length length of the password
      * @return a random password
      */
-    private static String randomPasswordGen(int length){
+    private static String randomPasswordGen(int length) {
         StringBuilder stringBuilder = new StringBuilder(length);
         final String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
@@ -74,18 +78,18 @@ public class User {
     }
 
     @Override
-    public boolean equals(Object obj){
-        if (this == obj){
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (obj instanceof User user){
+        if (obj instanceof User user) {
             return this.getId() == user.id;
         }
         return false;
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return Objects.hashCode(id);
     }
 
@@ -121,7 +125,9 @@ public class User {
         this.email = email;
     }
 
-    public String getPassword() {return password;}
+    public String getPassword() {
+        return password;
+    }
 
     public void setPassword(String password) {
         this.password = password;

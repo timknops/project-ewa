@@ -22,7 +22,7 @@ export class UserAdaptor {
      * Finds the full view of users
      * @returns {Promise<any>}
      */
-    async asyncFindAll(){
+    async asyncFindAll() {
         return await this.fetchJson(this.resourceUrl);
     }
 
@@ -30,7 +30,7 @@ export class UserAdaptor {
      * Finds the admin view of users, this will exclude passwords
      * @returns {Promise<any>}
      */
-    async asyncFindAdmin(){
+    async asyncFindAdmin() {
         return await this.fetchJson(this.resourceUrl + "/admin")
     }
 
@@ -39,7 +39,7 @@ export class UserAdaptor {
      * @param id id of the user being searched for
      * @returns {Promise<any>}
      */
-    async asyncFindById(id){
+    async asyncFindById(id) {
         return await this.fetchJson(`${this.resourceUrl}/${id}`)
     }
 
@@ -48,7 +48,7 @@ export class UserAdaptor {
      * @param user the given user that needs to be added
      * @returns {Promise<any>}
      */
-    async asyncAdd(user){
+    async asyncAdd(user) {
         return await this.fetchJson(this.resourceUrl, {
             method: "POST",
             headers: {"content-type": "application/json",},
@@ -61,14 +61,14 @@ export class UserAdaptor {
      * @param user the given user that needs to be updated
      * @returns {Promise<any>}
      */
-    async asyncSave(user){
+    async asyncSave(user) {
         try {
             return await this.fetchJson(`${this.resourceUrl}/${user.id}`, {
                 method: "PUT",
                 headers: {"content-type": "application/json"},
                 body: JSON.stringify(user)
             })
-        } catch (e){
+        } catch (e) {
             Promise.reject(e)
         }
     }
@@ -78,12 +78,12 @@ export class UserAdaptor {
      * @param id the given user that needs to be deleted
      * @returns {Promise<any>}
      */
-    async asyncDelete(id){
+    async asyncDelete(id) {
         try {
-            return await this.fetchJson(`${this.resourceUrl}/${id}`,{
+            return await this.fetchJson(`${this.resourceUrl}/${id}`, {
                 method: "DELETE"
             })
-        } catch (e){
+        } catch (e) {
             Promise.reject(e)
         }
     }

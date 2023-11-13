@@ -1,5 +1,5 @@
 <template>
-  <p>Are you sure you want to delete user {{modalItem.name}}</p>
+  <p>Are you sure you want to delete user {{ modalItem.name }}</p>
 </template>
 
 <script>
