@@ -1,8 +1,18 @@
 package nl.solar.app.models;
 
+
+import com.fasterxml.jackson.annotation.JsonView;
+import nl.solar.app.Views.ResourceView;
+
+import java.util.Objects;
+
 public class Warehouse {
+    @JsonView(ResourceView.Complete.class)
     private long id;
+
+    @JsonView(ResourceView.Complete.class)
     private String name;
+
     private String location;
 
     public Warehouse(long id, String name, String location){
@@ -22,6 +32,7 @@ public class Warehouse {
     public void setId(long id) {
         this.id = id;
     }
+
 
     public long getId() {
         return id;
@@ -54,5 +65,10 @@ public class Warehouse {
         }
 
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

@@ -1,6 +1,7 @@
 <template>
   <div>
     <table-component
+      v-if="products.length > 0"
       :amount-to-display="6"
       :has-add-button="true"
       :has-delete-button="true"
@@ -10,6 +11,9 @@
       @delete="showDeleteModal"
       @add="showAddModal"
     />
+    <!--    Templated doesn't wait for loading so show spinner for user information-->
+    <spinner-component v-else></spinner-component>
+
     <Transition>
       <modal-component
         v-if="showModal"
@@ -27,6 +31,7 @@
 <script>
 import TableComponent from "@/components/table/TableComponent.vue";
 import ModalComponent from "@/components/modal/ModalComponent.vue";
+import SpinnerComponent from "@/components/util/SpinnerComponent.vue";
 
 /**
  * Component for the product overview. This overview give info about the different products of solar sedum.
@@ -38,7 +43,7 @@ import ModalComponent from "@/components/modal/ModalComponent.vue";
  */
 export default {
   name: "ProductOverview",
-  components: { ModalComponent, TableComponent },
+  components: {SpinnerComponent, ModalComponent, TableComponent },
   inject: ["productService"],
   data() {
     return {
@@ -171,6 +176,8 @@ export default {
     },
   },
   async created() {
+    //clear the product so that the native check is deleted.
+    this.products = [];
     this.products = await this.productService.findAll();
   },
 };

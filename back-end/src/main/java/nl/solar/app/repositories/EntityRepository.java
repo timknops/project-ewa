@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface EntityRepository<E> {
 
-    List<E> findALL(); //find all entities
+    List<E> findAll(); //find all entities
 
     E findById(long id); //find an entity via its id
 
