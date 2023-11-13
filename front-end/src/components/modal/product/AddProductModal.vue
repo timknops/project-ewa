@@ -37,9 +37,13 @@ export default {
         productName: "",
         description: "",
       },
-      hasError: false,
       nameEmpty: false,
       descriptionEmpty: false,
+    }
+  },
+  computed: {
+    hasError() {
+      return this.nameEmpty || this.descriptionEmpty
     }
   },
   methods: {

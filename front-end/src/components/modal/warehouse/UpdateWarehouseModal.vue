@@ -34,7 +34,6 @@ export default {
   data() {
     return {
       modalItem: {},
-      hasError: false,
       nameEmpty: false,
       locationCorrect: true
     }
@@ -42,6 +41,11 @@ export default {
   props: ["item"],
   created() {
     this.modalItem = Object.assign({}, this.item)
+  },
+  computed: {
+    hasError() {
+      return this.nameEmpty || !this.locationCorrect;
+    }
   },
   methods: {
     validateName() {
