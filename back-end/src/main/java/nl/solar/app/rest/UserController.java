@@ -22,18 +22,18 @@ public class UserController {
     @Autowired
     EntityRepository<User> userRepo;
 
-    /**
-     *
-     */
     @GetMapping(produces = "application/json")
     public List<User> getTestUsers(){ return userRepo.findALL(); }
 
+    /**
+     * Custom view for the admin, which excludes passwords
+     */
     @JsonView(UserView.userAdmin.class)
     @GetMapping("/admin")
     public List<User> getAdminUsers(){ return userRepo.findALL();}
 
     @GetMapping(path = "{id}", produces = "application/json")
-    public ResponseEntity<User> getUserById(@PathVariable long id){
+    public ResponseEntity<User> getUserById(@PathVariable long id) throws ResourceNotFoundException{
         User user = userRepo.findById(id);
         if (user == null){
             throw new ResourceNotFoundException("Cannot find a user with id = " + id);
@@ -42,7 +42,7 @@ public class UserController {
     }
 
     @PostMapping(produces = "application/json")
-    public ResponseEntity<User> saveScooter(@RequestBody User userParameter){
+    public ResponseEntity<User> saveScooter(@RequestBody User userParameter) throws BadRequestException{
         if (userParameter.getName() == null || userParameter.getName().isBlank())
             throw new BadRequestException("Name cannot be empty");
         User user = this.userRepo.save(userParameter);
@@ -54,23 +54,23 @@ public class UserController {
     }
 
     @PutMapping(path = "{id}", produces = "application/json")
-    public ResponseEntity<User> updateUser(@PathVariable long id, @RequestBody User userParameter){
+    public ResponseEntity<User> updateUser(@PathVariable long id, @RequestBody User userParameter)
+    throws PreConditionFailedException, BadRequestException{
         if (id != userParameter.getId())
             throw new PreConditionFailedException("The id of the user is not the same as the id of the url");
         if (userParameter.getName() == null || userParameter.getName().isBlank())
             throw new BadRequestException("Name can't be empty");
 
         User user = this.userRepo.save(userParameter);
-
-        return ResponseEntity.ok(userParameter);
+        return ResponseEntity.ok(user);
     }
 
     @DeleteMapping(path = "{id}", produces = "application/json")
-    public ResponseEntity<User> deleteUser(@PathVariable long id){
+    public ResponseEntity<User> deleteUser(@PathVariable long id) throws ResourceNotFoundException{
         User deletedUser = this.userRepo.delete(id);
 
         if (deletedUser == null){
-            throw new BadRequestException("The user for this id doesn't exist");
+            throw new ResourceNotFoundException("The user for this id doesn't exist");
         }
 
         return ResponseEntity.ok(deletedUser);

@@ -46,7 +46,11 @@ export default {
   inject: ['userService'],
   data() {
     return {
-      //array of the full view including the passwords
+      /**
+       * Array of the full view including the passwords
+       * Currently not used however can probably be used to change the password temporarily or crud from there instead
+       * sending a whole new request
+       */
       users: [],
       //array of the admin view excluding the password
       usersAdmin: [],
@@ -82,7 +86,7 @@ export default {
      * When clicked on the edit button in the table, it will show the modal for editing an existing user
      * @param user that's being selected for editing
      */
-    showEditModal(user) {
+    async showEditModal(user) {
       this.modalTitle = "Update user"
       this.modalBodyComponent = this.MODAL_TYPES.UPDATE
       this.modalUser = user
@@ -115,7 +119,6 @@ export default {
           break;
         case this.MODAL_TYPES.ADD:
           this.onUserAdd(user);
-          location.reload();
           break;
       }
     },
@@ -127,8 +130,10 @@ export default {
     async onUserAdd(user) {
       try {
         const addedUser = await this.userService.asyncAdd(user);
-        this.users.push(addedUser);
+        //remove the user password, so it doesn't bug out the table
+        delete addedUser.password;
         this.usersAdmin.push(addedUser);
+        this.users.push(addedUser);
         this.showModal = false;
       } catch (e) {
         console.log(e)
@@ -141,9 +146,15 @@ export default {
      */
     async onUserUpdate(user) {
       try {
+        //get the full current user
+        const userFromBack = await this.userService.asyncFindById(user.id);
+        //temporarily add the password to save it with the user
+        user.password = userFromBack.password
         const updatedUser = await this.userService.asyncSave(user)
-        this.users = this.users.map((user) => user.id === updatedUser.id ? updatedUser : user);
+        //delete the password so that the table doesn't break
+        delete updatedUser.password;
         this.usersAdmin = this.usersAdmin.map((user) => user.id === updatedUser.id ? updatedUser : user);
+        this.users = this.users.map((user) => user.id === updatedUser.id ? updatedUser : user);
         this.showModal = false;
       } catch (e) {
         console.log(e)
@@ -157,8 +168,8 @@ export default {
     async onUserDelete(user) {
       try {
         const deletedUser = await this.userService.asyncDelete(user.id);
-        this.users = this.users.filter((user) => user.id !== deletedUser.id);
         this.usersAdmin = this.usersAdmin.filter((user) => user.id !== deletedUser.id);
+        this.users = this.users.filter((user) => user.id !== deletedUser.id);
         this.showModal = false;
       } catch (e) {
         console.log(e)

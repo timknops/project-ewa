@@ -36,17 +36,27 @@
     <!--    type of user-->
     <div class="mb-3">
       <label for="userType" class="form-label fw-bold">Type</label>
-      <input id="userType" type="text" class="form-control" :value="modalItem.type" disabled>
+      <select v-model="modalItem.type">
+        <option>{{"VIEWER"}}</option>
+        <option>{{"ADMIN"}}</option>
+      </select>
     </div>
   </form>
 </template>
 
 <script>
+import modal from "bootstrap/js/src/modal";
+
 /**
  * Modal for editing a user
  */
 export default {
   name: "UpdateUserModal",
+  computed: {
+    modal() {
+      return modal
+    }
+  },
   props: ['item'],
   data() {
     return {

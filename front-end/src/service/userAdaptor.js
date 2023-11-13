@@ -34,10 +34,20 @@ export class UserAdaptor {
         return await this.fetchJson(this.resourceUrl + "/admin")
     }
 
+    /**
+     * Finds the user based on the id
+     * @param id id of the user being searched for
+     * @returns {Promise<any>}
+     */
     async asyncFindById(id){
         return await this.fetchJson(`${this.resourceUrl}/${id}`)
     }
 
+    /**
+     * Adds the given user to the back-end
+     * @param user the given user that needs to be added
+     * @returns {Promise<any>}
+     */
     async asyncAdd(user){
         return await this.fetchJson(this.resourceUrl, {
             method: "POST",
@@ -46,6 +56,11 @@ export class UserAdaptor {
         })
     }
 
+    /**
+     * Updates the given user to the back-end
+     * @param user the given user that needs to be updated
+     * @returns {Promise<any>}
+     */
     async asyncSave(user){
         try {
             return await this.fetchJson(`${this.resourceUrl}/${user.id}`, {
@@ -58,6 +73,11 @@ export class UserAdaptor {
         }
     }
 
+    /**
+     * Deletes the given user from the user list in the back-end
+     * @param id the given user that needs to be deleted
+     * @returns {Promise<any>}
+     */
     async asyncDelete(id){
         try {
             return await this.fetchJson(`${this.resourceUrl}/${id}`,{
