@@ -45,27 +45,23 @@
 </template>
 
 <script>
-import modal from "bootstrap/js/src/modal";
-
 /**
  * Modal for editing a user
  */
 export default {
   name: "UpdateUserModal",
   computed: {
-    modal() {
-      return modal
+    hasError() {
+      return this.nameEmpty || this.emailEmpty || this.emailValid;
     }
   },
   props: ['item'],
   data() {
     return {
       modalItem: {},
-      hasError: false,
       nameEmpty: false,
       emailEmpty: false,
       emailValid: false,
-      passwordEmpty: false,
     };
   },
   created() {
@@ -74,19 +70,12 @@ export default {
   methods: {
     validateName() {
       this.nameEmpty = this.modalItem.name.length === 0;
-      this.hasError = this.modalItem.name.length === 0;
     },
 
     validateEmail() {
       this.emailEmpty = this.modalItem.email.length === 0;
       const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       this.emailValid = !this.modalItem.email.match(regex);
-      this.hasError = this.emailValid;
-    },
-
-    validatePassword() {
-      this.passwordEmpty = this.modalItem.password.length === 0;
-      this.hasError = this.modalItem.password.length === 0;
     }
   }
 

@@ -50,7 +50,6 @@
  * The modal for adding a user
  */
 export default {
-  //TODO maybe edit button for team?
   name: "AddUserModal",
   data() {
     return {
@@ -62,29 +61,30 @@ export default {
         password: "",
         type: "VIEWER"
       },
-      hasError: false,
       nameEmpty: false,
       emailEmpty: false,
       emailValid: false,
       passwordEmpty: false,
     };
   },
+  computed: {
+    hasError() {
+      return this.nameEmpty || this.emailEmpty || this.emailValid || this.passwordEmpty
+    }
+  },
   methods: {
     validateName() {
       this.nameEmpty = this.modalItem.name.length === 0;
-      this.hasError = this.modalItem.name.length === 0;
     },
 
     validateEmail() {
       this.emailEmpty = this.modalItem.email.length === 0;
       const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       this.emailValid = !this.modalItem.email.match(regex);
-      this.hasError = this.emailValid;
     },
 
     validatePassword() {
       this.passwordEmpty = this.modalItem.password.length === 0;
-      this.hasError = this.modalItem.password.length === 0;
     }
   }
 }
