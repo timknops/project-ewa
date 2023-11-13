@@ -43,10 +43,10 @@ public class User {
      * @return a dummy user
      */
     public static User creatyDummyUser(long userId, long teamId){
-        final String[] FIRST_NAME_ARRAY = {"Paola", "Drew", "Adrianna", "Evan", "Henk", "Abel", "Muhammad", "Mara", "Clair",
-                "Amar"};
+        final String[] FIRST_NAME_ARRAY = {"Paola", "Drew", "Adrianna", "Evan", "Henk", "Abel", "Muhammad",
+                "Mara", "Clair", "Amar", "Braden", "Anwar", "Amelia", "Dax", "Ayan", "Ava", "Kim"};
         final String[] SURNAME_ARRAY = {"de Groot", "Smits", "Mulder", "Visser", "Pacheco", "Dalal", "Ahssini", "Imen",
-        "Ferguson", "Costa"};
+        "Ferguson", "Costa", "Herrera", "Dalal", "Case", "de Vries", "Santana", "Nguyen"};
         String randomFirstName = FIRST_NAME_ARRAY[(int) Math.floor(Math.random() * FIRST_NAME_ARRAY.length)];
         String randomSurname = SURNAME_ARRAY[(int) Math.floor(Math.random() * SURNAME_ARRAY.length)];
         String fullRandomName = randomFirstName + " " + randomSurname;

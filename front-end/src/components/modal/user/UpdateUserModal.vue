@@ -36,7 +36,7 @@
     <!--    type of user-->
     <div class="mb-3">
       <label for="userType" class="form-label fw-bold">Type</label>
-      <select v-model="modalItem.type">
+      <select class="form-select" v-model="modalItem.type">
         <option>{{"VIEWER"}}</option>
         <option>{{"ADMIN"}}</option>
       </select>
@@ -79,10 +79,9 @@ export default {
 
     validateEmail() {
       this.emailEmpty = this.modalItem.email.length === 0;
-      const regex = /^[^s@]+@[^\s@]+\.[^\s@]+$/;
-      this.emailValid = this.modalItem.email.match(regex);
-      //this.emailValid = regex.test(this.modalItem.email)
-      this.hasError = !this.emailValid;
+      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      this.emailValid = !this.modalItem.email.match(regex);
+      this.hasError = this.emailValid;
     },
 
     validatePassword() {

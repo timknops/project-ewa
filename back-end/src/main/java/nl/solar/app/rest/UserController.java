@@ -23,14 +23,14 @@ public class UserController {
     EntityRepository<User> userRepo;
 
     @GetMapping(produces = "application/json")
-    public List<User> getTestUsers(){ return userRepo.findALL(); }
+    public List<User> getTestUsers(){ return userRepo.findAll(); }
 
     /**
      * Custom view for the admin, which excludes passwords
      */
     @JsonView(UserView.userAdmin.class)
     @GetMapping("/admin")
-    public List<User> getAdminUsers(){ return userRepo.findALL();}
+    public List<User> getAdminUsers(){ return userRepo.findAll();}
 
     @GetMapping(path = "{id}", produces = "application/json")
     public ResponseEntity<User> getUserById(@PathVariable long id) throws ResourceNotFoundException{

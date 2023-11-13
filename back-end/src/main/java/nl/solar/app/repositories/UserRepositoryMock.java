@@ -6,12 +6,12 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 
-@Repository
+@Repository("USERS.INMEMORY")
 public class UserRepositoryMock implements EntityRepository<User> {
     //TODO add comments
     private List<User> userArrayList = new ArrayList<>();
     //amount of users being created
-    private final int START_USERS_AMOUNT = 6;
+    private final int START_USERS_AMOUNT = 5;
     //starting ids of the teams and user
     private final long START_USER_ID = 2000;
 
@@ -38,7 +38,7 @@ public class UserRepositoryMock implements EntityRepository<User> {
 
 
     @Override
-    public List<User> findALL() {
+    public List<User> findAll() {
         return userArrayList;
     }
 

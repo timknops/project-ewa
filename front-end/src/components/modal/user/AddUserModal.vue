@@ -34,6 +34,14 @@
              @blur="validatePassword">
       <p v-if="passwordEmpty" class="text-danger"> The password can't be empty!</p>
     </div>
+    <!--    type of user-->
+    <div class="mb-3">
+      <label for="userType" class="form-label fw-bold">Type</label>
+      <select class="form-select" v-model="modalItem.type">
+        <option>{{"ADMIN"}}</option>
+        <option>{{"VIEWER"}}</option>
+      </select>
+    </div>
   </form>
 </template>
 
@@ -69,9 +77,8 @@ export default {
 
     validateEmail() {
       this.emailEmpty = this.modalItem.email.length === 0;
-      const regex = /^[^s@]+@[^\s@]+\.[^\s@]+$/;
-      // this.emailValid = this.modalItem.email.match(regex);
-      this.emailValid = !regex.test(this.modalItem.email)
+      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      this.emailValid = !this.modalItem.email.match(regex);
       this.hasError = this.emailValid;
     },
 
@@ -80,7 +87,6 @@ export default {
       this.hasError = this.modalItem.password.length === 0;
     }
   }
-
 }
 </script>
 
