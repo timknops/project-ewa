@@ -1,7 +1,7 @@
 <template>
   <div>
     <table-component
-      v-if="products.length > 0"
+      v-if="!productsAreLoading"
       :amount-to-display="6"
       :has-add-button="true"
       :has-delete-button="true"
@@ -43,7 +43,7 @@ import SpinnerComponent from "@/components/util/SpinnerComponent.vue";
  */
 export default {
   name: "ProductOverview",
-  components: {SpinnerComponent, ModalComponent, TableComponent },
+  components: { SpinnerComponent, ModalComponent, TableComponent },
   inject: ["productService"],
   data() {
     return {
@@ -68,6 +68,7 @@ export default {
         UPDATE: "update-product-modal",
         ADD: "add-product-modal",
       }),
+      productsAreLoading: true,
     };
   },
   methods: {
@@ -174,11 +175,35 @@ export default {
         console.log(e);
       }
     },
+
+    /**
+     * Formats the product data for when the data is empty.
+     * @param product the product to be formatted
+     * @return {{id: undefined, productName: undefined, description: undefined}}
+     */
+    formatEmptyTableData() {
+      return {
+        id: undefined,
+        productName: undefined,
+        description: undefined,
+      };
+    },
   },
   async created() {
     //clear the product so that the native check is deleted.
     this.products = [];
-    this.products = await this.productService.findAll();
+    const data = await this.productService.findAll();
+
+    // If there are no products, add only the table headers.
+    if (data.length === 0) {
+      this.products = [this.formatEmptyTableData()];
+
+      this.productsAreLoading = false;
+      return;
+    }
+
+    this.products = data;
+    this.productsAreLoading = false;
   },
 };
 </script>

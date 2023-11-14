@@ -283,7 +283,12 @@ export default {
     /** Updates the displayed data depending on the current start and end index. */
     updateDisplayedData() {
       // If the tableData has empty object values, show an empty table.
-      if (this.tableData[0].id === undefined) {
+      console.log(this.tableData);
+      if (
+        typeof Object.values(this.tableData[0])[0] === "function" ||
+        Object.values(this.tableData[0])[0] === undefined
+      ) {
+        console.log(this.tableData);
         this.showEmptyTable = true;
 
         return;
