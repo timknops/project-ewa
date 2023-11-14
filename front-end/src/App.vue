@@ -19,6 +19,8 @@ import { ProductAdaptor } from "@/service/productAdaptor";
 import {ResourceAdaptor} from "@/service/resourceAdaptor";
 import { WarehouseAdaptor } from "@/service/warehouseAdaptor";
 import { UserAdaptor } from "@/service/userAdaptor";
+import { TeamAdaptor } from "@/service/teamAdaptor";
+
 
 localStorage.setItem("loggedIn", true);
 export default {
@@ -38,7 +40,8 @@ export default {
       productService: new ProductAdaptor(`${appConfig.BACKEND_URL}/products`),
       warehouseService: new WarehouseAdaptor(`${appConfig.BACKEND_URL}/warehouses`),
       userService: new UserAdaptor(`${appConfig.BACKEND_URL}/users`),
-      resourceService: new ResourceAdaptor(appConfig.BACKEND_URL)
+      resourceService: new ResourceAdaptor(appConfig.BACKEND_URL),
+      teamsService: new TeamAdaptor(`${appConfig.BACKEND_URL}/teams`),
     }
   },
   methods: {
