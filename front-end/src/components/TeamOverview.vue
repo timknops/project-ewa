@@ -3,7 +3,10 @@
     <table-component
         :amount-to-display="5"
         :table-data="teams"
-        :has-edit-delete-buttons="true"
+        :has-add-button="true"
+        :has-delete-button="true"
+        :has-edit-button="true"
+        :hide-id-column="true"
         @edit="showEditModal"
         @delete="showDeleteModal"
         @add="showAddModal"

@@ -1,5 +1,5 @@
 <template>
-  <p>Are you sure you want to delete team {{modalItem.type}}</p>
+  <p>Are you sure you want to delete {{modalItem.team}}</p>
 </template>
 
 <script>
