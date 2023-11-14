@@ -2,23 +2,29 @@
   <form>
     <div class="mb-3">
       <label for="product-name" class="form-label fw-bold">Product name</label>
-      <input id="product-name"
-             type="text"
-             class="form-control"
-             :class="{'border-danger': nameEmpty}"
-             v-model.lazy.trim="modalItem.productName"
-             @blur="validateName">
-      <p v-if="nameEmpty" class="text-danger"> The name can't be empty!</p>
+      <input
+        id="product-name"
+        type="text"
+        class="form-control"
+        :class="{ 'border-danger': nameEmpty }"
+        v-model.lazy.trim="modalItem.productName"
+        @blur="validateName"
+      />
+      <p v-if="nameEmpty" class="text-danger">The name can't be empty!</p>
     </div>
     <div class="mb-3">
       <label for="description" class="form-label fw-bold">description</label>
-      <textarea id="description"
-                class="form-control"
-                :class="{'border-danger': descriptionEmpty}"
-                v-model.lazy.trim="modalItem.description"
-                @blur="validateDescription">
+      <textarea
+        id="description"
+        class="form-control"
+        :class="{ 'border-danger': descriptionEmpty }"
+        v-model.lazy.trim="modalItem.description"
+        @blur="validateDescription"
+      >
       </textarea>
-      <p v-if="descriptionEmpty" class="text-danger"> The description can't be empty!</p>
+      <p v-if="descriptionEmpty" class="text-danger">
+        The description can't be empty!
+      </p>
     </div>
   </form>
 </template>
@@ -32,7 +38,7 @@ export default {
   name: "AddProductModal",
   data() {
     return {
-      modalItem:{
+      modalItem: {
         id: 0,
         productName: "",
         description: "",
@@ -40,7 +46,7 @@ export default {
       hasError: false,
       nameEmpty: false,
       descriptionEmpty: false,
-    }
+    };
   },
   methods: {
     /**
@@ -57,12 +63,9 @@ export default {
     validateDescription() {
       this.descriptionEmpty = this.modalItem.description.length === 0;
       this.hasError = this.modalItem.description.length === 0;
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
-
-<style scoped>
-
-</style>
+<style scoped></style>

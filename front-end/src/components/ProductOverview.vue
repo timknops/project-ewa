@@ -183,9 +183,9 @@ export default {
      */
     formatEmptyTableData() {
       return {
-        id: undefined,
-        productName: undefined,
-        description: undefined,
+        id: "",
+        productName: "",
+        description: "",
       };
     },
   },

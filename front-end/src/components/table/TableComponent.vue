@@ -263,6 +263,9 @@ export default {
       showEmptyTable: false,
     };
   },
+  created() {
+    this.updateDisplayedData();
+  },
   methods: {
     /** Whenever the next button is pressed, the data is updated to show the next items depending on the display amount. */
     handleNextButton() {
@@ -283,16 +286,16 @@ export default {
     /** Updates the displayed data depending on the current start and end index. */
     updateDisplayedData() {
       // If the tableData has empty object values, show an empty table.
-      console.log(this.tableData);
       if (
         typeof Object.values(this.tableData[0])[0] === "function" ||
-        Object.values(this.tableData[0])[0] === undefined
+        Object.values(this.tableData[0])[0] === ""
       ) {
-        console.log(this.tableData);
         this.showEmptyTable = true;
 
         return;
       }
+
+      this.showEmptyTable = false;
 
       this.tableDataSorted = this.tableData;
       this.currentlyDisplayedData = this.tableDataSorted.slice(
@@ -393,9 +396,6 @@ export default {
       this.updateDisplayedData();
     },
   },
-  created() {
-    this.updateDisplayedData();
-  },
   computed: {
     /** Calculates the table height depending on the amount of items to be displayed at once. */
     calculateTableHeight() {
@@ -414,6 +414,7 @@ export default {
         return;
       }
 
+      this.showEmptyTable = false;
       this.tableColumnNames = Object.keys(this.tableData[0]);
 
       // Reset the sorting icon of the previous sorted column.

@@ -290,14 +290,14 @@ export default {
 
     /**
      * Formats the product data for when the data is empty.
-     * @return {{id: undefined, productName: undefined, description: undefined}}
+     * @return {{id: "", productName: "", description: ""}}
      */
     formatEmptyTableData() {
       return {
-        id: undefined,
-        productName: undefined,
-        description: undefined,
-        quantity: undefined,
+        id: "",
+        productName: "",
+        description: "",
+        quantity: "",
       };
     },
   },

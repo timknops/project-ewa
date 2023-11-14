@@ -70,7 +70,7 @@ export default {
   async created() {
     const data = await this.projectService.getAll();
 
-    // If there are no projects, add the table header row titles.
+    // If there are no projects, add only the table header row titles.
     if (data.length === 0) {
       this.projects = [this.formatEmptyTableData()];
 
@@ -116,14 +116,18 @@ export default {
       });
     },
 
+    /**
+     * Formats the table data when there are no projects.
+     * @returns {{id: "", name: "", client: "", dueDate: "", team: "", status: ""}}
+     */
     formatEmptyTableData() {
       return {
-        id: undefined,
-        name: undefined,
-        client: undefined,
-        dueDate: undefined,
-        team: undefined,
-        status: undefined,
+        id: "",
+        name: "",
+        client: "",
+        dueDate: "",
+        team: "",
+        status: "",
       };
     },
 
