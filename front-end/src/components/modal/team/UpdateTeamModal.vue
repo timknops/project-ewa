@@ -16,9 +16,10 @@
           id="warehouse"
           class="form-select"
           :class="{'border-danger': warehouseEmpty}"
-          v-model.lazy.trim="modalItem.warehouse"
-          @blur="validateWarehouse">
-        <option value="" disabled>Select a warehouse</option>
+          v-model="modalItem.warehouse"
+          @blur="validateWarehouse"
+      >
+        <option value="" disabled selected>Select Warehouse</option>
         <option v-for="(warehouse, index) in warehouseOptions" :key="index" :value="warehouse">
           {{ warehouse }}
         </option>
@@ -39,7 +40,7 @@ export default {
       },
       teamEmpty: false,
       warehouseEmpty: false,
-      warehouseOptions: ["Solar Sedum", "Superzon", "The switch", "Induct", "EHES"]
+      warehouseOptions: ["SolarSedum", "Superzon", "Theswitch", "Induct", "EHES"]
     }
   },
 
