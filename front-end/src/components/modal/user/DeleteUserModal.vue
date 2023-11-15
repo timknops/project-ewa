@@ -1,10 +1,13 @@
 <template>
-  <p>Are you sure you want to delete {{modalItem.team}}</p>
+  <p>Are you sure you want to delete user {{ modalItem.name }}</p>
 </template>
 
 <script>
+/**
+ * Modal for deleting a user
+ */
 export default {
-  name: "DeleteTeamModal",
+  name: "DeleteUserModal",
   data() {
     return {
       modalItem: {},
@@ -19,5 +22,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>

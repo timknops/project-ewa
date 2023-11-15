@@ -14,7 +14,7 @@ public class Team {
         this.type = type;
     }
     public enum Warehouse {
-        SolarSedum, EHES, Superzon
+        SolarSedum, Superzon, Theswitch, Induct, EHES
     }
     public enum TeamType {
         Internal, External

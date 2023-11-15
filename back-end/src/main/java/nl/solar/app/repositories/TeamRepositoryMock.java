@@ -15,10 +15,10 @@ public class TeamRepositoryMock implements EntityRepository<Team> {
         teams = new ArrayList<>();
         currentId = 1;
         teams.add(new Team(currentId++, "Team 1", Team.Warehouse.SolarSedum, Team.TeamType.Internal));
-        teams.add(new Team(currentId++, "Team 2", Team.Warehouse.SolarSedum, Team.TeamType.Internal));
-        teams.add(new Team(currentId++, "Team 3", Team.Warehouse.SolarSedum, Team.TeamType.Internal));
-        teams.add(new Team(currentId++, "Team 2", Team.Warehouse.EHES, Team.TeamType.External));
         teams.add(new Team(currentId++, "Team 2", Team.Warehouse.Superzon, Team.TeamType.External));
+        teams.add(new Team(currentId++, "Team 3", Team.Warehouse.Theswitch, Team.TeamType.External));
+        teams.add(new Team(currentId++, "Team 4", Team.Warehouse.Induct, Team.TeamType.External));
+        teams.add(new Team(currentId++, "Team 5", Team.Warehouse.EHES, Team.TeamType.External));
     }
 
     @Override

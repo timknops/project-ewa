@@ -11,14 +11,15 @@
       <p v-if="teamEmpty" class="text-danger"> The team name can't be empty!</p>
     </div>
     <div class="mb-3">
-      <label for="warehouse" class="form-label fw-bold">Warehouse</label>
+      <label for="warehouse" class="form-label fw-bold">Select Warehouse</label>
       <select
           id="warehouse"
-          class="form-control"
+          class="form-select"
           :class="{'border-danger': warehouseEmpty}"
-          v-model.lazy.trim="modalItem.warehouse"
-          @blur="validateWarehouse">
-        <option value="" disabled>Select a warehouse</option>
+          v-model="modalItem.warehouse"
+          @blur="validateWarehouse"
+      >
+        <option value="" disabled selected>Select Warehouse</option>
         <option v-for="(warehouse, index) in warehouseOptions" :key="index" :value="warehouse">
           {{ warehouse }}
         </option>
@@ -33,17 +34,25 @@ export default {
   name: "UpdateTeamModal",
   data() {
     return {
-      modalItem: {},
-      hasError: false,
+      modalItem: {
+        team: '',
+        warehouse: '',
+      },
       teamEmpty: false,
       warehouseEmpty: false,
-      warehouseOptions: ["SolarSedum", "EHES", "Superzon"]
+      warehouseOptions: ["SolarSedum", "Superzon", "Theswitch", "Induct", "EHES"]
     }
   },
 
   props: ["item"],
   created() {
     this.modalItem = Object.assign({}, this.item)
+  },
+
+  computed: {
+    hasError() {
+      return this.teamEmpty || this.warehouseEmpty;
+    }
   },
 
   methods: {

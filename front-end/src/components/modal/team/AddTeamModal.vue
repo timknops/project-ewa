@@ -11,10 +11,10 @@
       <p v-if="teamEmpty" class="text-danger"> The team name can't be empty!</p>
     </div>
     <div class="mb-3">
-      <label for="warehouse" class="form-label fw-bold">Warehouse</label>
+      <label for="warehouse" class="form-label fw-bold">Select Warehouse</label>
       <select
           id="warehouse"
-          class="form-control"
+          class="form-select"
           :class="{'border-danger': warehouseEmpty}"
           v-model.lazy.trim="modalItem.warehouse"
           @blur="validateWarehouse">
@@ -34,13 +34,22 @@ export default {
 
   data() {
     return {
-      modalItem:{},
-      hasError: false,
+      modalItem:{
+        team: '',
+        warehouse: '',
+      },
       teamEmpty: false,
       warehouseEmpty: false,
-      warehouseOptions: ["SolarSedum", "EHES", "Superzon"]
+      warehouseOptions: ["Solar Sedum", "Superzon", "The switch", "Induct", "EHES"]
     }
   },
+
+  computed: {
+    hasError() {
+      return this.teamEmpty || this.warehouseEmpty;
+    }
+  },
+
   methods: {
     validateName() {
       this.teamEmpty = this.modalItem.team.length === 0;
