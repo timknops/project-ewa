@@ -6,7 +6,10 @@
     data-bs-keyboard="false"
     tabindex="-1"
   >
-    <div class="modal-dialog modal-dialog-centered">
+    <div
+      class="modal-dialog modal-dialog-centered"
+      :class="{ 'wide-modal': this.activeModal === 'add-project-modal' }"
+    >
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">{{ title }}</h5>
@@ -118,5 +121,9 @@ export default {
 }
 .modal-title {
   font-weight: 700;
+}
+
+.wide-modal {
+  min-width: 800px !important;
 }
 </style>

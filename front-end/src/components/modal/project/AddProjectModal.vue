@@ -1,6 +1,7 @@
 <template>
   <form>
     <div class="mb-3">
+      <!-- Project name -->
       <label for="project-name" class="form-label fw-bold"
         >Project Name <span class="text-danger">*</span></label
       >
@@ -19,6 +20,7 @@
     </div>
 
     <div class="mb-3 grid row">
+      <!-- Client -->
       <div class="col">
         <label for="client" class="form-label fw-bold">Client</label>
         <input
@@ -29,13 +31,15 @@
           placeholder="Enter the client name"
         />
       </div>
+
+      <!-- Due date -->
       <div class="col">
         <label for="due-date" class="form-label fw-bold"
           >Due date <span class="text-danger">*</span></label
         >
         <input
           v-model.lazy.trim="modalItem.dueDate"
-          @blur="validateDueDate"
+          @change="validateDueDate"
           :class="{ 'border-danger': dueDateEmpty }"
           type="date"
           class="form-control"
@@ -48,13 +52,14 @@
     </div>
 
     <div class="mb-3 grid row">
+      <!-- Team -->
       <div class="col">
         <label for="team-select" class="form-label fw-bold"
           >Team <span class="text-danger">*</span></label
         >
         <select
           v-model="modalItem.team"
-          @blur="validateTeam"
+          @change="validateTeam"
           class="form-select"
           :class="{ 'border-danger': teamUnselected }"
           id="team-select"
@@ -70,12 +75,20 @@
         >
       </div>
 
+      <!-- Status -->
       <div class="col">
         <label for="status-select" class="form-label fw-bold"
           >Status <span class="text-danger">*</span></label
         >
-        <select class="form-select" id="status-select" aria-label="status">
-          <option selected>Assign status</option>
+        <select
+          v-model="modalItem.status"
+          @change="validateStatus"
+          :class="{ 'border-danger': statusUnselected }"
+          class="form-select"
+          id="status-select"
+          aria-label="status"
+        >
+          <option selected value="">Assign status</option>
           <option
             v-for="status in STATUS_OPTIONS"
             :key="status"
@@ -84,7 +97,22 @@
             {{ status }}
           </option>
         </select>
+        <small v-if="statusUnselected" class="text-danger"
+          >The status can't be unassigned!</small
+        >
       </div>
+    </div>
+
+    <!-- Description -->
+    <div class="mb-3">
+      <label for="description" class="form-label fw-bold">Description</label>
+      <textarea
+        v-model.lazy.trim="modalItem.description"
+        type="text"
+        class="form-control"
+        id="description"
+        placeholder="Enter the project description"
+      ></textarea>
     </div>
   </form>
 </template>
@@ -107,17 +135,30 @@ export default {
         team: "",
         status: "",
         description: "",
-        products: [],
+        products: [
+          {
+            id: 0,
+            name: "",
+            quantity: 0,
+            warehouse: "",
+          },
+        ],
       },
       nameEmpty: false,
       dueDateEmpty: false,
       teamUnselected: false,
+      statusUnselected: false,
       TEAM_OPTIONS: ["Team 1", "Team 2", "Team 3"],
       STATUS_OPTIONS: ["Upcoming", "In Progress", "Completed"],
     };
   },
   computed: {
     hasError() {
+      this.validateName();
+      this.validateDueDate();
+      this.validateTeam();
+      this.validateStatus();
+
       return this.nameEmpty || this.dueDateEmpty || this.teamUnselected;
     },
   },
@@ -133,12 +174,16 @@ export default {
     validateTeam() {
       this.teamUnselected = this.modalItem.team.length === 0;
     },
+
+    validateStatus() {
+      this.statusUnselected = this.modalItem.status.length === 0;
+    },
   },
 };
 </script>
 
-<style>
-.modal-dialog {
-  min-width: 600px !important;
+<style scope>
+label {
+  margin-bottom: 4px !important;
 }
 </style>

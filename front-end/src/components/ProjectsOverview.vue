@@ -33,6 +33,7 @@ import TableComponent from "@/components/table/TableComponent.vue";
 import SpinnerComponent from "@/components/util/SpinnerComponent.vue";
 import ModalComponent from "@/components/modal/ModalComponent.vue";
 import { Project } from "@/models/project";
+import { Transition } from "vue";
 
 /**
  * Component to display all projects in a table.
@@ -42,7 +43,7 @@ import { Project } from "@/models/project";
 export default {
   name: "ProjectsOverview",
   inject: ["projectService"],
-  components: { TableComponent, SpinnerComponent, ModalComponent },
+  components: { TableComponent, SpinnerComponent, ModalComponent, Transition },
   data() {
     return {
       projects: [],
@@ -231,4 +232,14 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.1s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+}
+</style>
