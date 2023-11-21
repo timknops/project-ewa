@@ -7,6 +7,7 @@
         :has-delete-button="true"
         :has-edit-button="true"
         :hide-id-column="true"
+        :has-search-bar="true"
         @edit="showEditModal"
         @delete="showDeleteModal"
         @add="showAddModal"

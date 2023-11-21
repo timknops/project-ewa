@@ -1,4 +1,13 @@
 <template>
+  <div class="mb-3" v-if="hasSearchBar">
+    <input
+        v-model="searchQuery"
+        type="text"
+        class="form-control"
+        placeholder="Search..."
+        @input="handleSearch"
+    />
+  </div>
   <div class="card border-0 pt-4 pb-2 d-flex" :style="{ width: tableWidth }">
     <div class="card-body px-4 py-0 overflow-hidden">
       <!-- Both the title and the subtitle are optional props! They will not be displayed when not specified -->
@@ -219,6 +228,10 @@ export default {
     hasDeleteButton: Boolean,
     hasAddButton: Boolean,
     hideIdColumn: Boolean,
+    hasSearchBar: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -257,9 +270,27 @@ export default {
       sortDirectionAllColumns: "default",
       /** The reference to the previous column icon that was sorted. */
       previousColumnIconRef: "",
+      /** The search query for filtering table data. */
+      searchQuery: "",
     };
   },
   methods: {
+    /** Handles the search functionality for the table. */
+    handleSearch() {
+      const query = this.searchQuery.toLowerCase().trim();
+      this.currentlyDisplayedData = this.tableDataSorted.filter((row) =>
+          this.rowContainsSearchQuery(row, query)
+      );
+    },
+
+    /** Checks if a table row contains the search query. */
+    rowContainsSearchQuery(row, query) {
+      const rowValues = Object.values(row);
+      return rowValues.some((value) =>
+          value.toString().toLowerCase().includes(query)
+      );
+    },
+
     /** Whenever the next button is pressed, the data is updated to show the next items depending on the display amount. */
     handleNextButton() {
       this.currentStartIndex = this.currentEndIndex;
