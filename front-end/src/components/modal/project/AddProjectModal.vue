@@ -122,12 +122,16 @@
       <div
         class="d-flex gap-2 justify-content-between align-items-center mb-2 px-2"
       >
-        <label for="products" class="form-label fw-bold m-0">Products</label>
+        <label for="products" class="form-label fw-bold mt-1">Products</label>
         <div class="d-flex gap-2">
-          <button class="btn py-1 custom-btn">
+          <button @click="addProduct" class="btn py-1 custom-btn" type="button">
             <FontAwesomeIcon icon="fa-solid fa-plus" size="sm" />
           </button>
-          <button class="btn py-1 custom-btn">
+          <button
+            @click="deleteSelectedProducts"
+            class="btn py-1 custom-btn"
+            type="button"
+          >
             <FontAwesomeIcon icon="fa-solid fa-trash" size="sm" />
           </button>
         </div>
@@ -139,15 +143,28 @@
             <thead>
               <tr>
                 <th scope="col" class="font-small">NAME</th>
-                <th scope="col" class="font-small">WAREHOUSE</th>
+                <th scope="col" class="font-small px-3">WAREHOUSE</th>
                 <th scope="col" class="font-small">QUANTITY</th>
                 <th scope="col" class="font-small"></th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(product, index) in modalItem.products" :key="index">
+              <tr v-if="modalItem.products.length === 0">
+                <td colspan="4" class="text-center empty-text">
+                  No products added yet.
+                </td>
+              </tr>
+              <tr
+                v-else
+                v-for="(product, index) in modalItem.products"
+                :key="index"
+              >
                 <td>
-                  <select class="form-select" aria-label="product">
+                  <select
+                    v-model="product.name"
+                    class="form-select"
+                    aria-label="product"
+                  >
                     <option selected value="">Choose product</option>
                     <option
                       v-for="productName in PRODUCT_NAMES"
@@ -159,8 +176,12 @@
                   </select>
                 </td>
 
-                <td>
-                  <select class="form-select" aria-label="warehouse">
+                <td class="px-3">
+                  <select
+                    v-model="product.warehouse"
+                    class="form-select"
+                    aria-label="warehouse"
+                  >
                     <option selected value="">Assign warehouse</option>
                     <option
                       v-for="warehouse in WAREHOUSE_OPTIONS"
@@ -183,10 +204,9 @@
                 <td>
                   <div class="checkbox-container">
                     <input
+                      v-model="product.selected"
                       class="form-check-input align-middle m-0"
                       type="checkbox"
-                      value=""
-                      id=""
                     />
                   </div>
                 </td>
@@ -209,6 +229,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
  */
 export default {
   name: "AddProjectModal",
+  components: { FontAwesomeIcon },
   data() {
     return {
       modalItem: {
@@ -219,14 +240,7 @@ export default {
         team: "",
         status: "",
         description: "",
-        products: [
-          {
-            id: 0,
-            name: "",
-            quantity: 0,
-            warehouse: "",
-          },
-        ],
+        products: [],
       },
       nameEmpty: false,
       dueDateEmpty: false,
@@ -245,6 +259,7 @@ export default {
       this.validateDueDate();
       this.validateTeam();
       this.validateStatus();
+
       return this.nameEmpty || this.dueDateEmpty || this.teamUnselected;
     },
   },
@@ -261,12 +276,33 @@ export default {
     validateStatus() {
       this.statusUnselected = this.modalItem.status.length === 0;
     },
+
+    /** Adds a new product to the products array. */
+    addProduct() {
+      this.deleteWithoutSelected = false;
+
+      this.modalItem.products.push({
+        id: this.modalItem.products.length,
+        name: "",
+        quantity: 0,
+        warehouse: "",
+        selected: false,
+      });
+    },
+
+    /** Deletes the selected products from the products array. */
+    deleteSelectedProducts() {
+      if (this.modalItem.products.length === 0) return;
+
+      this.modalItem.products = this.modalItem.products.filter(
+        (product) => !product.selected
+      );
+    },
   },
-  components: { FontAwesomeIcon },
 };
 </script>
 
-<style scope>
+<style scoped>
 label {
   margin-bottom: 4px !important;
 }
@@ -288,5 +324,9 @@ label {
   justify-content: center !important;
   align-items: center !important;
   height: 38px !important;
+}
+
+.empty-text {
+  color: var(--bs-gray-800) !important;
 }
 </style>
