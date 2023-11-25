@@ -115,7 +115,8 @@ export default {
      * very simple method to give someone an alert if they request a password reset
      */
     forgotPassword() {
-      alert("A request to reset your password has beent sent your e-mail");
+      localStorage.setItem('resetLogin', true)
+      this.$emit("updateResetLogin", true);
     },
   },
   created() {

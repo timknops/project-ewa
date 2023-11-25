@@ -1,10 +1,19 @@
 <template>
-  <loginPage
-    @update-logged-in="updateLoggedIn()"
-    v-if="loggedInActive === 'false'"
-  ></loginPage>
+  <div v-if="loggedInActive === 'false'">
+    <login-page
+        @update-logged-in="updateLoggedIn()"
+        @update-reset-login="updateResetLogin()"
+        v-if="resetLogin === 'false'"
+    >
+    </login-page>
+    <loginResetComponent
+        @update-logged-in="updateLoggedIn()"
+        @update-reset-login="updateResetLogin()"
+        v-else
+    ></loginResetComponent>
+  </div>
   <div v-else class="view">
-    <sidebar />
+    <sidebar/>
     <header-component class="header"></header-component>
     <router-view id="component"></router-view>
   </div>
@@ -12,25 +21,29 @@
 
 <script>
 import Sidebar from "@/components/Sidebar.vue";
-import LoginPage from "@/components/LoginPage.vue";
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import appConfig from "@/appConfig";
-import { ProductAdaptor } from "@/service/productAdaptor";
+import {ProductAdaptor} from "@/service/productAdaptor";
 import {ResourceAdaptor} from "@/service/resourceAdaptor";
-import { WarehouseAdaptor } from "@/service/warehouseAdaptor";
-import { UserAdaptor } from "@/service/userAdaptor";
+import {WarehouseAdaptor} from "@/service/warehouseAdaptor";
+import {UserAdaptor} from "@/service/userAdaptor";
+import LoginResetComponent from "@/components/LoginResetComponent.vue";
+import LoginPage from "@/components/LoginPage.vue";
 
-localStorage.setItem("loggedIn", true);
+localStorage.setItem("loggedIn", false);
+localStorage.setItem("resetLogin", false);
 export default {
   name: "App",
   components: {
     LoginPage,
+    LoginResetComponent,
     HeaderComponent,
     Sidebar,
   },
   data() {
     return {
       loggedInActive: {},
+      resetLogin: {}
     };
   },
   provide() {
@@ -45,14 +58,18 @@ export default {
     updateLoggedIn() {
       this.loggedInActive = localStorage.getItem("loggedIn");
     },
+    updateResetLogin() {
+      this.resetLogin = localStorage.getItem("resetLogin")
+    }
   },
   created() {
+    this.resetLogin = localStorage.getItem("resetLogin");
     this.loggedInActive = localStorage.getItem("loggedIn");
   },
 };
 </script>
 
-<style >
+<style>
 .view {
   grid-template-areas:
     "sidebar header"
@@ -75,6 +92,7 @@ export default {
 :root {
   --color-primary: #c7d02c;
   --color-secondary: #572700;
+  --color-tertiary: #111827;
   --color-text: #333;
   --color-bg: #fff;
   --color-subtitle: #bfbfbf;
@@ -86,7 +104,7 @@ export default {
   --navbar-height: 10rem;
 
   --custom-box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05),
-    0 4px 6px -4px rgb(0 0 0 / 0.05);
+  0 4px 6px -4px rgb(0 0 0 / 0.05);
 }
 
 body {

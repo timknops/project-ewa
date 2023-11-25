@@ -53,12 +53,17 @@ public class User {
         String randomFirstName = FIRST_NAME_ARRAY[(int) Math.floor(Math.random() * FIRST_NAME_ARRAY.length)];
         String randomSurname = SURNAME_ARRAY[(int) Math.floor(Math.random() * SURNAME_ARRAY.length)];
         String fullRandomName = randomFirstName + " " + randomSurname;
-        String randomEmail = randomFirstName + randomSurname + "@gmail.com";
+        String randomEmailPre = randomFirstName + randomSurname + userId + "@gmail.com";
+        //remove any whitespace in the random email
+        String randomEmail = randomEmailPre.replaceAll("\\s", "");
         String randomPassword = randomPasswordGen((int) (8 + Math.floor(Math.random() * 20)));
         final userType[] USER_TYPE_ARRAY = userType.values();
         userType randomUserType = USER_TYPE_ARRAY[(int) Math.floor(Math.random() * USER_TYPE_ARRAY.length)];
 
         return new User(userId, teamId, fullRandomName, randomEmail, randomPassword, randomUserType.toString());
+    }
+    public static User createStaticAdmin(){
+        return new User(1, 1, "a", "Julian@gmail.com", "a", "ADMIN");
     }
 
     /**

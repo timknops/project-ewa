@@ -7,10 +7,20 @@ import UserOverview from "@/components/UserOverview";
 import ProjectsOverview from "@/components/ProjectsOverview.vue";
 import InventoryOverview from "@/components/InventoryOverview.vue";
 import WarehouseOverview from "@/components/WarehouseOverview.vue";
+import loginResetPage from "@/components/LoginResetComponent.vue";
 
 export const router = createRouter({
   history: createWebHashHistory(),
   routes: [
+
+    {
+      path: "/loginPage",
+      component: loginPage
+    },
+    {
+      path: "/loginReset",
+      component: loginResetPage
+    },
     {
       path: "/dashboard",
       component: Dashboard,
@@ -37,7 +47,6 @@ export const router = createRouter({
       component: UserOverview,
       meta: { icon: "fa-solid fa-user" },
     },
-    { path: "/loginPage", component: loginPage },
     {
       path: "/user",
       component: UserOverview,
