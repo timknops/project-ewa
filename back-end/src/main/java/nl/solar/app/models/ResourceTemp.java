@@ -1,0 +1,93 @@
+package nl.solar.app.models;
+
+import java.util.Objects;
+
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
+
+/**
+ * Represents a resource.
+ * 
+ * @author Tim Knops
+ */
+@Entity
+public class ResourceTemp {
+
+  @EmbeddedId
+  private ResourceTempKey id;
+
+  @ManyToOne
+  @MapsId("projectId")
+  @JoinColumn(name = "project_id")
+  private Project project;
+
+  @ManyToOne
+  @MapsId("productId")
+  @JoinColumn(name = "product_id")
+  private Product product;
+
+  private int quantity;
+
+  public ResourceTemp() {
+  }
+
+  public ResourceTemp(Project project, Product product, int quantity) {
+    this.project = project;
+    this.product = product;
+    this.quantity = quantity;
+    this.id = new ResourceTempKey(project.getId(), product.getId());
+  }
+
+  public ResourceTempKey getId() {
+    return id;
+  }
+
+  public void setId(ResourceTempKey id) {
+    this.id = id;
+  }
+
+  public Project getProject() {
+    return project;
+  }
+
+  public Product getProduct() {
+    return product;
+  }
+
+  public int getQuantity() {
+    return quantity;
+  }
+
+  public void setProject(Project project) {
+    this.project = project;
+  }
+
+  public void setProduct(Product product) {
+    this.product = product;
+  }
+
+  public void setQuantity(int quantity) {
+    this.quantity = quantity;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+
+    if (!(o instanceof ResourceTemp))
+      return false;
+
+    ResourceTemp that = (ResourceTemp) o;
+    return getProject().equals(that.getProject()) && getProduct().equals(that.getProduct());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(getProject(), getProduct());
+  }
+
+}

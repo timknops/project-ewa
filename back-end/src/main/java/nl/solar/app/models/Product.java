@@ -1,8 +1,13 @@
 package nl.solar.app.models;
 
 import com.fasterxml.jackson.annotation.JsonView;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Id;
 import nl.solar.app.Views.ResourceView;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -10,8 +15,10 @@ import java.util.Objects;
  *
  * @author Julian Kruithof
  */
+@Entity
 public class Product {
 
+    @Id
     @JsonView(ResourceView.Complete.class)
     private long id;
 
@@ -21,9 +28,14 @@ public class Product {
     @JsonView(ResourceView.Complete.class)
     private String description;
 
+    @OneToMany(mappedBy = "product")
+    private List<ResourceTemp> projects;
+
     /**
-     * create an dummy product by using the default constructor and the getters and setters
-     * @param id - the id of the product
+     * create an dummy product by using the default constructor and the getters and
+     * setters
+     * 
+     * @param id          - the id of the product
      * @param productName the name of the product
      * @param description the description of the product
      * @return a Dummy product
@@ -62,7 +74,8 @@ public class Product {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
+        if (this == obj)
+            return true;
 
         if (obj instanceof Product product) {
             return this.getId() == product.id;

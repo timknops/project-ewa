@@ -38,12 +38,13 @@ public class ProjectRepositoryMock implements ProjectRepository {
 
         int amountOfProjects = 15;
 
-        for (int i = 0; i < amountOfProjects; i++) {
-            Team randomTeam = teams.get((int) (Math.random() * teams.size()));
+        // for (int i = 0; i < amountOfProjects; i++) {
+        // Team randomTeam = teams.get((int) (Math.random() * teams.size()));
 
-            this.projects.add(Project.createDummyProject(++currentId, "Project " + (i + 1), randomTeam,
-                    "Client " + (i + 1)));
-        }
+        // this.projects.add(Project.createDummyProject(++currentId, "Project " + (i +
+        // 1), randomTeam,
+        // "Client " + (i + 1)));
+        // }
     }
 
     @Override

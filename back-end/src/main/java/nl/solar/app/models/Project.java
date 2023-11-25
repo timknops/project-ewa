@@ -3,6 +3,12 @@ package nl.solar.app.models;
 import java.util.Date;
 import java.util.List;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import nl.solar.app.enums.ProjectStatus;
 
 /**
@@ -11,19 +17,30 @@ import nl.solar.app.enums.ProjectStatus;
  * 
  * @author Tim Knops
  */
+@Entity
 public class Project {
 
+    @Id
     private long id;
+
     private String projectName;
+
+    @OneToOne
     private Team team;
     private String client;
     private Date dueDate;
+
+    @Enumerated(EnumType.STRING)
     private ProjectStatus status;
+
+    @OneToOne
     private Warehouse warehouse;
-    private List<Product> products;
+
+    @OneToMany(mappedBy = "project")
+    private List<ResourceTemp> products;
 
     public Project(long id, String projectName, Team team, String client, Date dueDate, ProjectStatus status,
-            Warehouse warehouse, List<Product> products) {
+            Warehouse warehouse, List<ResourceTemp> products) {
         this.id = id;
         this.projectName = projectName;
         this.team = team;
@@ -130,5 +147,10 @@ public class Project {
             return this.getId() == project.id;
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(id);
     }
 }
