@@ -246,6 +246,7 @@ export default {
       dueDateEmpty: false,
       teamUnselected: false,
       statusUnselected: false,
+
       // Should all be retrieved from the database.
       TEAM_OPTIONS: ["Team 1", "Team 2", "Team 3"],
       STATUS_OPTIONS: ["Upcoming", "In Progress", "Completed"],

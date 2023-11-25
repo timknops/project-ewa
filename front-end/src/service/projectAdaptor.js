@@ -30,6 +30,14 @@ export class ProjectAdaptor {
     return await this.fetchJSON(`${this.resourceUrl}/${id}`);
   }
 
+  async add(project) {
+    return await this.fetchJSON(`${this.resourceUrl}`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(project),
+    });
+  }
+
   async delete(id) {
     try {
       return await this.fetchJSON(`${this.resourceUrl}/${id}`, {

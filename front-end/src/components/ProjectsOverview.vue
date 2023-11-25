@@ -151,6 +151,8 @@ export default {
      * @param {Object} project The project to be updated.
      */
     async addProject(project) {
+      console.log(project);
+
       try {
         const newProject = await this.projectService.add(project);
         this.projects.push(this.formatProject(newProject));
