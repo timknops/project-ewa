@@ -3,15 +3,25 @@ package nl.solar.app.models;
 import java.util.Objects;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
 
 @Entity
 public class Team {
 
     @Id
+    @SequenceGenerator(name = "project_id_generator", initialValue = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "project_id_generator")
     private long id;
+
     private String team;
     private Warehouse warehouse;
+
+    @Enumerated(EnumType.STRING)
     private TeamType type;
 
     public Team(long id, String team, Warehouse warehouse, TeamType type) {
@@ -19,6 +29,13 @@ public class Team {
         this.team = team;
         this.warehouse = warehouse;
         this.type = type;
+    }
+
+    public Team(long id) {
+        this.id = id;
+    }
+
+    public Team() {
     }
 
     public enum Warehouse {

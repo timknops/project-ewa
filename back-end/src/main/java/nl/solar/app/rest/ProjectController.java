@@ -18,6 +18,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import nl.solar.app.exceptions.PreConditionFailedException;
 import nl.solar.app.exceptions.ResourceNotFoundException;
 import nl.solar.app.models.Project;
+import nl.solar.app.repositories.EntityRepository;
 import nl.solar.app.repositories.ProjectRepository;
 
 /**
@@ -30,7 +31,7 @@ import nl.solar.app.repositories.ProjectRepository;
 public class ProjectController {
 
     @Autowired
-    ProjectRepository projectRepo;
+    EntityRepository<Project> projectRepo;
 
     /**
      * Retrieves a list of all projects.

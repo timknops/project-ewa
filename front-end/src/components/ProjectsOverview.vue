@@ -98,7 +98,7 @@ export default {
         name: project.projectName,
         client: project.client,
         dueDate: this.formatDate(project.dueDate),
-        team: project.team.team,
+        team: project.team ? project.team.team : null, // TODO: Remove null check.
         status: project.status,
       };
     },

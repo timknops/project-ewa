@@ -35,19 +35,37 @@ public class ProjectRepositoryJpa implements EntityRepository<Project> {
         return query.getResultList();
     }
 
+    /**
+     * Finds a project by id.
+     * 
+     * @param id The id of the project to find.
+     * @return Project The project with the given id.
+     */
     @Override
     public Project findById(long id) {
         throw new UnsupportedOperationException("Unimplemented method 'findById'");
     }
 
+    /**
+     * Deletes a project.
+     * 
+     * @param id The id of the project to delete.
+     * @return Project The deleted project.
+     */
     @Override
     public Project delete(long id) {
         throw new UnsupportedOperationException("Unimplemented method 'delete'");
     }
 
+    /**
+     * Saves a project.
+     * 
+     * @param newProject The project to save.
+     * @return Project The saved project.
+     */
     @Override
-    public Project save(Project item) {
-        throw new UnsupportedOperationException("Unimplemented method 'save'");
+    public Project save(Project newProject) {
+        return entityManager.merge(newProject);
     }
 
 }

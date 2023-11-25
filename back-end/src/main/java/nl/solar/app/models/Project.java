@@ -3,12 +3,16 @@ package nl.solar.app.models;
 import java.util.Date;
 import java.util.List;
 
+import jakarta.annotation.Generated;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.SequenceGenerator;
 import nl.solar.app.enums.ProjectStatus;
 
 /**
@@ -21,6 +25,8 @@ import nl.solar.app.enums.ProjectStatus;
 public class Project {
 
     @Id
+    @SequenceGenerator(name = "project_id_generator", initialValue = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "project_id_generator")
     private long id;
 
     private String projectName;
@@ -33,37 +39,39 @@ public class Project {
     @Enumerated(EnumType.STRING)
     private ProjectStatus status;
 
-    @OneToOne
-    private Warehouse warehouse;
-
     @OneToMany(mappedBy = "project")
     private List<ResourceTemp> products;
 
     public Project(long id, String projectName, Team team, String client, Date dueDate, ProjectStatus status,
-            Warehouse warehouse, List<ResourceTemp> products) {
+            List<ResourceTemp> products) {
         this.id = id;
         this.projectName = projectName;
         this.team = team;
         this.client = client;
         this.dueDate = dueDate;
         this.status = status;
-        this.warehouse = warehouse;
         this.products = products;
+    }
+
+    public Project(long id) {
+        this.id = id;
+    }
+
+    public Project() {
     }
 
     /**
      * Creates a dummy project with the given parameters.
      * 
-     * @param id          the id of the project
-     * @param projectName the name of the project
-     * @param team        the team of the project
-     * @param client      the client of the project
+     * @param currentId the current id
      * @return a dummy project
      */
-    public static Project createDummyProject(long id, String projectName, Team team, String client, Warehouse warehouse,
-            List<Product> products) {
+    public static Project createDummyProject(long id) {
+        Project project = new Project(id);
+
         // Generates a random date between 2022-01-01 and 2026-01-01.
         Date randomDueDate = randomDate(new Date(1640995200000L), new Date(1789568000000L));
+        project.setDueDate(randomDueDate);
 
         ProjectStatus randomStatus;
         if (randomDueDate.before(new Date())) { // If the due date is in the past, the project is completed.
@@ -76,7 +84,22 @@ public class Project {
             randomStatus = random < 0.4 ? ProjectStatus.UPCOMING : ProjectStatus.IN_PROGRESS;
         }
 
-        return new Project(id, projectName, team, client, randomDueDate, randomStatus, warehouse, products);
+        project.setStatus(randomStatus);
+
+        // Generate a random client and project name.
+        project.setClient("Client " + (int) (Math.random() * 100));
+        project.setProjectName("Project " + (int) (Math.random() * 100));
+
+        return project;
+    }
+
+    public boolean associateTeam(Team team) {
+        if (this.team == null) {
+            this.team = team;
+            return true;
+        }
+
+        return false;
     }
 
     /**

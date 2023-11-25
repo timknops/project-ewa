@@ -33,5 +33,11 @@ public class BackEndApplication implements CommandLineRunner {
         if (!projects.isEmpty()) {
             return;
         }
+
+        final int AMOUNT_OF_PROJECTS = 15;
+        for (int i = 0; i < AMOUNT_OF_PROJECTS; i++) {
+            Project project = Project.createDummyProject(0);
+            projectsRepo.save(project);
+        }
     }
 }
