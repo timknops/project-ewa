@@ -1,6 +1,7 @@
 package nl.solar.app.models;
 
 import java.util.Date;
+import java.util.List;
 
 import nl.solar.app.enums.ProjectStatus;
 
@@ -18,14 +19,19 @@ public class Project {
     private String client;
     private Date dueDate;
     private ProjectStatus status;
+    private Warehouse warehouse;
+    private List<Product> products;
 
-    public Project(long id, String projectName, Team team, String client, Date dueDate, ProjectStatus status) {
+    public Project(long id, String projectName, Team team, String client, Date dueDate, ProjectStatus status,
+            Warehouse warehouse, List<Product> products) {
         this.id = id;
         this.projectName = projectName;
         this.team = team;
         this.client = client;
         this.dueDate = dueDate;
         this.status = status;
+        this.warehouse = warehouse;
+        this.products = products;
     }
 
     /**
@@ -37,7 +43,8 @@ public class Project {
      * @param client      the client of the project
      * @return a dummy project
      */
-    public static Project createDummyProject(long id, String projectName, Team team, String client) {
+    public static Project createDummyProject(long id, String projectName, Team team, String client, Warehouse warehouse,
+            List<Product> products) {
         // Generates a random date between 2022-01-01 and 2026-01-01.
         Date randomDueDate = randomDate(new Date(1640995200000L), new Date(1789568000000L));
 
@@ -52,7 +59,7 @@ public class Project {
             randomStatus = random < 0.4 ? ProjectStatus.UPCOMING : ProjectStatus.IN_PROGRESS;
         }
 
-        return new Project(id, projectName, team, client, randomDueDate, randomStatus);
+        return new Project(id, projectName, team, client, randomDueDate, randomStatus, warehouse, products);
     }
 
     /**

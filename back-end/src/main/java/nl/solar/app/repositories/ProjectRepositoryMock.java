@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 import nl.solar.app.models.Project;
 import nl.solar.app.models.Team;
+import nl.solar.app.models.Warehouse;
+import nl.solar.app.models.Product;
 
 /**
  * This class is a mock repository for the Project model.
@@ -15,14 +17,24 @@ import nl.solar.app.models.Team;
 public class ProjectRepositoryMock implements ProjectRepository {
 
     private List<Project> projects;
+    private List<Team> teams;
+    private Warehouse warehouse;
+    private List<Product> products;
     private long currentId = 0;
 
     private final EntityRepository<Team> teamRepo;
+    private final EntityRepository<Warehouse> warehouseRepo;
+    private final EntityRepository<Product> productRepo;
 
-    public ProjectRepositoryMock(EntityRepository<Team> teamRepo) {
+    public ProjectRepositoryMock(EntityRepository<Team> teamRepo, EntityRepository<Warehouse> warehouseRepo,
+            EntityRepository<Product> productRepo) {
         this.teamRepo = teamRepo;
+        this.warehouseRepo = warehouseRepo;
+        this.productRepo = productRepo;
         this.projects = new ArrayList<>();
-        List<Team> teams = this.teamRepo.findAll();
+        this.teams = this.teamRepo.findAll();
+        this.warehouse = this.warehouseRepo.findAll().get(0);
+        this.products = this.productRepo.findAll();
 
         int amountOfProjects = 15;
 
@@ -72,4 +84,11 @@ public class ProjectRepositoryMock implements ProjectRepository {
 
         return item;
     }
+
+    @Override
+    public Object getAddModalInfo() {
+
+        return null;
+    }
+
 }

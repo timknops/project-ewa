@@ -121,4 +121,14 @@ public class ProjectController {
         Project updatedProject = this.projectRepo.save(project);
         return ResponseEntity.ok(updatedProject);
     }
+
+    /**
+     * Get all information for the add modal that is needed to create a new project.
+     * Including: Status, Teams, Warehouse and Products.
+     * 
+     */
+    @GetMapping(path = "/add", produces = "application/json")
+    public ResponseEntity<Object> getAddModalInfo() {
+        return ResponseEntity.ok().body(this.projectRepo.getAddModalInfo());
+    }
 }
