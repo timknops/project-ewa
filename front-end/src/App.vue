@@ -20,7 +20,7 @@ import { ResourceAdaptor } from "@/service/resourceAdaptor";
 import { WarehouseAdaptor } from "@/service/warehouseAdaptor";
 import { UserAdaptor } from "@/service/userAdaptor";
 import { TeamAdaptor } from "@/service/teamAdaptor";
-import { ProjectAdaptor } from "./service/projectAdaptor";
+import { ProjectAdaptor } from "@/service/projectAdaptor";
 
 localStorage.setItem("loggedIn", true);
 export default {

@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -28,6 +31,7 @@ public class Team {
     private TeamType type;
 
     @OneToMany(mappedBy = "team")
+    @JsonManagedReference
     private List<Project> projects = new ArrayList<>();
 
     public Team(long id, String team, Warehouse warehouse, TeamType type) {

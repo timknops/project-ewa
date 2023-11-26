@@ -229,6 +229,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
  */
 export default {
   name: "AddProjectModal",
+  inject: ["projectService"],
   components: { FontAwesomeIcon },
   data() {
     return {
@@ -248,11 +249,16 @@ export default {
       statusUnselected: false,
 
       // Should all be retrieved from the database.
-      TEAM_OPTIONS: ["Team 1", "Team 2", "Team 3"],
+      TEAM_OPTIONS: ["test", "test2"],
       STATUS_OPTIONS: ["Upcoming", "In Progress", "Completed"],
       WAREHOUSE_OPTIONS: ["Warehouse 1", "Warehouse 2", "Warehouse 3"],
       PRODUCT_NAMES: ["Product 1", "Product 2", "Product 3"],
     };
+  },
+  async created() {
+    const data = await this.projectService.getProjectAddModalData();
+    console.log(data);
+    // this.TEAM_OPTIONS = data.teams;
   },
   computed: {
     hasError() {

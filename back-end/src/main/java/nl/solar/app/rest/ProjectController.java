@@ -15,11 +15,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import nl.solar.app.exceptions.PreConditionFailedException;
 import nl.solar.app.exceptions.ResourceNotFoundException;
 import nl.solar.app.models.Project;
-import nl.solar.app.repositories.EntityRepository;
-import nl.solar.app.repositories.ProjectRepository;
+import nl.solar.app.models.views.ProjectView;
+import nl.solar.app.repositories.ProjectRepositoryJpa;
 
 /**
  * Controller class for managing project-related endpoints.
@@ -32,13 +34,14 @@ import nl.solar.app.repositories.ProjectRepository;
 public class ProjectController {
 
     @Autowired
-    EntityRepository<Project> projectRepo;
+    ProjectRepositoryJpa projectRepo;
 
     /**
      * Retrieves a list of all projects.
      *
      * @return A list of all projects.
      */
+    @JsonView(ProjectView.Overview.class)
     @GetMapping(produces = "application/json")
     public List<Project> getAll() {
         return this.projectRepo.findAll();
@@ -131,7 +134,13 @@ public class ProjectController {
      *         body.
      */
     @GetMapping(path = "/add", produces = "application/json")
-    public ResponseEntity<Object> getAddModalInfo() {
-        return ResponseEntity.ok().body(this.projectRepo.getAddModalInfo());
+    public ResponseEntity<Object> getAddModalInfo() throws ResourceNotFoundException {
+        Object addModalInfo = this.projectRepo.getAddModalInfo();
+
+        if (addModalInfo == null) {
+            throw new ResourceNotFoundException("Add modal info not found");
+        }
+
+        return ResponseEntity.ok(addModalInfo);
     }
 }

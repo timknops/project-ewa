@@ -7,9 +7,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
+import nl.solar.app.models.views.ResourceView;
 import jakarta.persistence.Id;
-import nl.solar.app.Views.ResourceView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,7 +35,7 @@ public class Product {
     private String description;
 
     @OneToMany(mappedBy = "product")
-    private List<ResourceTemp> projects;
+    private List<ResourceTemp> projects = new ArrayList<>();
 
     /**
      * create an dummy product by using the default constructor and the getters and
@@ -75,6 +76,14 @@ public class Product {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<ResourceTemp> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(List<ResourceTemp> projects) {
+        this.projects = projects;
     }
 
     @Override

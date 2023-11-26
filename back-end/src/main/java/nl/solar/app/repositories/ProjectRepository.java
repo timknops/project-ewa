@@ -13,5 +13,10 @@ import nl.solar.app.models.Project;
  */
 public interface ProjectRepository extends EntityRepository<Project> {
 
-  Object getAddModalInfo();
+    /**
+     * Retrieves the information needed to display the add modal.
+     * 
+     * @return The information needed to display the add modal.
+     */
+    Object getAddModalInfo();
 }

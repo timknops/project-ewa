@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import nl.solar.app.Views.ResourceView;
+import nl.solar.app.models.views.ResourceView;
 
 import java.util.Objects;
 

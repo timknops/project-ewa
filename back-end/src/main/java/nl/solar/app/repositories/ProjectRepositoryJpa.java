@@ -1,6 +1,8 @@
 package nl.solar.app.repositories;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
@@ -8,7 +10,6 @@ import org.springframework.stereotype.Repository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
-import jakarta.transaction.Transactional;
 import nl.solar.app.models.Project;
 
 /**
@@ -17,7 +18,6 @@ import nl.solar.app.models.Project;
  * @author Tim Knops
  */
 @Repository("PROJECTS.JPA")
-@Transactional
 @Primary
 public class ProjectRepositoryJpa implements EntityRepository<Project> {
 
@@ -66,5 +66,32 @@ public class ProjectRepositoryJpa implements EntityRepository<Project> {
     @Override
     public Project save(Project newProject) {
         return entityManager.merge(newProject);
+    }
+
+    /**
+     * Retrieves the information needed to display the add modal.
+     * 
+     * @return Map<String, List<String>> A map containing the information needed to
+     *         display the add modal.
+     */
+    public Map<String, List<String>> getAddModalInfo() {
+        // Get all team names.
+        TypedQuery<String> teamQuery = entityManager.createQuery("SELECT t.team FROM Team t", String.class);
+        List<String> teams = teamQuery.getResultList();
+
+        // Get all product names.
+        TypedQuery<String> productQuery = entityManager.createQuery("SELECT p.productName FROM Product p",
+                String.class);
+        List<String> productNames = productQuery.getResultList();
+
+        // TODO: Get all warehouse names using a query via the prodcuts. Can be done
+        // when the warehouse is implemented.
+
+        // Create a map to store the information.
+        Map<String, List<String>> addModalInfo = new HashMap<>();
+        addModalInfo.put("teams", teams);
+        addModalInfo.put("productNames", productNames);
+
+        return addModalInfo;
     }
 }

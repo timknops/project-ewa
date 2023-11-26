@@ -1,21 +1,25 @@
 package nl.solar.app.models;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import nl.solar.app.enums.ProjectStatus;
+import nl.solar.app.models.views.ProjectView;
 
 /**
  * Represents a project with a unique id, project name, team, client, due date,
@@ -29,22 +33,30 @@ public class Project {
     @Id
     @SequenceGenerator(name = "project_id_generator", initialValue = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "project_id_generator")
+    @JsonView(ProjectView.Overview.class)
     private long id;
 
+    @JsonView(ProjectView.Overview.class)
     private String projectName;
 
     @ManyToOne
     @JoinColumn(name = "team_id")
+    @JsonManagedReference
+    @JsonView(ProjectView.Overview.class)
     private Team team;
 
+    @JsonView(ProjectView.Overview.class)
     private String client;
+
+    @JsonView(ProjectView.Overview.class)
     private Date dueDate;
 
     @Enumerated(EnumType.STRING)
+    @JsonView(ProjectView.Overview.class)
     private ProjectStatus status;
 
     @OneToMany(mappedBy = "project")
-    private List<ResourceTemp> products;
+    private List<ResourceTemp> products = new ArrayList<>();
 
     /**
      * Creates a project with the given parameters.
