@@ -31,14 +31,14 @@ public class ResourceTemp {
 
   private int quantity;
 
-  public ResourceTemp() {
-  }
-
   public ResourceTemp(Project project, Product product, int quantity) {
     this.project = project;
     this.product = product;
     this.quantity = quantity;
     this.id = new ResourceTempKey(project.getId(), product.getId());
+  }
+
+  public ResourceTemp() {
   }
 
   public ResourceTempKey getId() {
@@ -81,8 +81,8 @@ public class ResourceTemp {
     if (!(o instanceof ResourceTemp))
       return false;
 
-    ResourceTemp that = (ResourceTemp) o;
-    return getProject().equals(that.getProject()) && getProduct().equals(that.getProduct());
+    ResourceTemp other = (ResourceTemp) o;
+    return getProject().equals(other.getProject()) && getProduct().equals(other.getProduct());
   }
 
   @Override

@@ -67,5 +67,4 @@ public class ProjectRepositoryJpa implements EntityRepository<Project> {
     public Project save(Project newProject) {
         return entityManager.merge(newProject);
     }
-
 }

@@ -3,7 +3,6 @@ package nl.solar.app.models;
 import java.util.Date;
 import java.util.List;
 
-import jakarta.annotation.Generated;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -66,8 +65,8 @@ public class Project {
      * @param currentId the current id
      * @return a dummy project
      */
-    public static Project createDummyProject(long id) {
-        Project project = new Project(id);
+    public static Project createDummyProject() {
+        Project project = new Project();
 
         // Generates a random date between 2022-01-01 and 2026-01-01.
         Date randomDueDate = randomDate(new Date(1640995200000L), new Date(1789568000000L));

@@ -14,8 +14,8 @@ import jakarta.persistence.SequenceGenerator;
 public class Team {
 
     @Id
-    @SequenceGenerator(name = "project_id_generator", initialValue = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "project_id_generator")
+    @SequenceGenerator(name = "team_id_generator", initialValue = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "team_id_generator")
     private long id;
 
     private String team;
@@ -36,6 +36,11 @@ public class Team {
     }
 
     public Team() {
+    }
+
+    public static Team createDummyTeam() {
+        String randomTeamName = "Team " + (int) (Math.random() * 100);
+        return new Team(0, randomTeamName, Warehouse.SolarSedum, TeamType.Internal);
     }
 
     public enum Warehouse {

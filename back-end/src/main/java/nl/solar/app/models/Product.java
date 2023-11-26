@@ -3,7 +3,10 @@ package nl.solar.app.models;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Id;
 import nl.solar.app.Views.ResourceView;
 
@@ -20,6 +23,8 @@ public class Product {
 
     @Id
     @JsonView(ResourceView.Complete.class)
+    @SequenceGenerator(name = "product_id_generator", initialValue = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_id_generator")
     private long id;
 
     @JsonView(ResourceView.Complete.class)
