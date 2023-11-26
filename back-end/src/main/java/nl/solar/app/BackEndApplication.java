@@ -43,6 +43,11 @@ public class BackEndApplication implements CommandLineRunner {
     @Autowired
     EntityRepository<Product> productsRepo;
 
+    /**
+     * Creates sample teams.
+     * 
+     * @author Tim Knops
+     */
     private void createSampleTeams() {
         List<Team> teams = teamsRepo.findAll();
 
@@ -57,25 +62,44 @@ public class BackEndApplication implements CommandLineRunner {
         }
     }
 
-    private void createSampleProjects() {
+    /**
+     * Creates sample projects and assigns them to a random team.
+     * 
+     * @throws RuntimeException if there are no teams.
+     * @author Tim Knops
+     */
+    private void createSampleProjects() throws RuntimeException {
         List<Project> projects = projectsRepo.findAll();
 
         if (!projects.isEmpty()) {
             return;
         }
 
+        List<Team> teams = teamsRepo.findAll();
+
+        // Throw an exception if there are no teams.
+        if (teams.isEmpty()) {
+            throw new RuntimeException("No teams found.");
+        }
+
         final int AMOUNT_OF_PROJECTS = 15;
         for (int i = 0; i < AMOUNT_OF_PROJECTS; i++) {
             Project project = Project.createDummyProject();
-            projectsRepo.save(project);
 
-            // Associate a random team with the project.
-            Team team = teamsRepo.findById((long) (Math.random() * 6) + 1); // TODO: TeamRepositoryJpa needs to be
-                                                                            // implemented.
-            project.setTeam(team);
+            // Give each project a random team.
+            Team team = teams.get((int) (Math.random() * teams.size()));
+            project.setTeam(team); // Set the team for the project.
+            team.getProjects().add(project); // Add the project to the team.
+
+            projectsRepo.save(project);
         }
     }
 
+    /**
+     * Creates sample products.
+     * 
+     * @author Tim Knops
+     */
     private void createSampleProducts() {
         List<Product> products = productsRepo.findAll();
 
@@ -99,6 +123,11 @@ public class BackEndApplication implements CommandLineRunner {
         }
     }
 
+    /**
+     * Creates sample resources.
+     * 
+     * @author Tim Knops
+     */
     private void createSampleResources() {
         List<ResourceTemp> resources = resourcesRepo.findAll();
 
@@ -120,6 +149,5 @@ public class BackEndApplication implements CommandLineRunner {
                 resourcesRepo.save(resource);
             }
         }
-
     }
 }

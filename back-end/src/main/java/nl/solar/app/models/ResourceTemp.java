@@ -31,6 +31,13 @@ public class ResourceTemp {
 
   private int quantity;
 
+  /**
+   * Creates a resource with a project, product and quantity.
+   * 
+   * @param project  - the project
+   * @param product  - the product
+   * @param quantity - the quantity
+   */
   public ResourceTemp(Project project, Product product, int quantity) {
     this.project = project;
     this.product = product;

@@ -22,7 +22,8 @@ import nl.solar.app.repositories.EntityRepository;
 import nl.solar.app.repositories.ProjectRepository;
 
 /**
- * Controller of all project end-points
+ * Controller class for managing project-related endpoints.
+ * This class handles CRUD operations for projects.
  * 
  * @Author Tim Knops
  */
@@ -124,9 +125,10 @@ public class ProjectController {
     }
 
     /**
-     * Get all information for the add modal that is needed to create a new project.
-     * Including: Status, Teams, Warehouse and Products.
-     * 
+     * Retrieves the information required for the add modal.
+     *
+     * @return ResponseEntity containing the add modal information in the response
+     *         body.
      */
     @GetMapping(path = "/add", produces = "application/json")
     public ResponseEntity<Object> getAddModalInfo() {

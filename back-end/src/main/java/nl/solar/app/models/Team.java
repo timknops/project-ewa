@@ -1,5 +1,7 @@
 package nl.solar.app.models;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import jakarta.persistence.Entity;
@@ -8,6 +10,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 
 @Entity
@@ -23,6 +26,9 @@ public class Team {
 
     @Enumerated(EnumType.STRING)
     private TeamType type;
+
+    @OneToMany(mappedBy = "team")
+    private List<Project> projects = new ArrayList<>();
 
     public Team(long id, String team, Warehouse warehouse, TeamType type) {
         this.id = id;
@@ -81,6 +87,14 @@ public class Team {
 
     public void setType(TeamType type) {
         this.type = type;
+    }
+
+    public List<Project> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(List<Project> project) {
+        this.projects = project;
     }
 
     @Override

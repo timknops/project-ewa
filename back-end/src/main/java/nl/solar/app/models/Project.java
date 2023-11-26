@@ -6,9 +6,12 @@ import java.util.List;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
@@ -30,8 +33,10 @@ public class Project {
 
     private String projectName;
 
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name = "team_id")
     private Team team;
+
     private String client;
     private Date dueDate;
 
@@ -41,6 +46,17 @@ public class Project {
     @OneToMany(mappedBy = "project")
     private List<ResourceTemp> products;
 
+    /**
+     * Creates a project with the given parameters.
+     * 
+     * @param id          the id of the project
+     * @param projectName the name of the project
+     * @param team        the team that is working on the project
+     * @param client      the client of the project
+     * @param dueDate     the due date of the project
+     * @param status      the status of the project
+     * @param products    the products of the project
+     */
     public Project(long id, String projectName, Team team, String client, Date dueDate, ProjectStatus status,
             List<ResourceTemp> products) {
         this.id = id;
@@ -90,15 +106,6 @@ public class Project {
         project.setProjectName("Project " + (int) (Math.random() * 100));
 
         return project;
-    }
-
-    public boolean associateTeam(Team team) {
-        if (this.team == null) {
-            this.team = team;
-            return true;
-        }
-
-        return false;
     }
 
     /**
@@ -158,6 +165,14 @@ public class Project {
 
     public void setProjectName(String projectName) {
         this.projectName = projectName;
+    }
+
+    public List<ResourceTemp> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<ResourceTemp> products) {
+        this.products = products;
     }
 
     @Override
