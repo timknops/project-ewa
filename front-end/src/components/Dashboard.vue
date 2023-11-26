@@ -9,7 +9,7 @@
 
       <div class="dropdown-menu">
         <a class="dropdown-item" :key="null" @click="warehouseSelect(null)">All warehouses</a>
-        <a class="dropdown-item" v-for="item in tableData" :key="item.Name" @click="warehouseSelect(item.Name)">{{item.Name}}</a>
+        <a  v-for="warehouse in wareHouseNameData" :key="warehouse" class="dropdown-item" @click="warehouseSelect(warehouse)">{{warehouse}}</a>
 
     </div>
     </div>
@@ -69,16 +69,19 @@ export default {
     return {
       tableData: [
         {
+          Warehouse: "Solar Clarity",
           Name: "enphase",
           Quantity: 9,
           Expected: 32,
         },
         {
+          Warehouse: "Solar Clarity",
           Name: "Gateway",
           Quantity: 18,
           Expected: 30,
         },
         {
+          Warehouse: "4Blue",
           Name: "MB 385 (white)",
           Quantity: 18,
           Expected: 30,
@@ -95,8 +98,7 @@ export default {
           Forecast: "",
         },
       ],
-      wareHouseNameData:[
-      ],
+      wareHouseNameData:["Solar Clarity", "4Blue"],
       selectedWarehouse: null,
       selectedWarehouseChart: null,
 
@@ -121,7 +123,7 @@ export default {
         if (this.selectedWarehouse === null) {
           return this.tableData;
         } else {
-          return this.tableData.filter((item) => item.Name === this.selectedWarehouse);
+          return this.tableData.filter((item) => item.Warehouse === this.selectedWarehouse);
         }
       }
       return this.tableData;
@@ -193,16 +195,12 @@ export default {
         data: chartData,
         options: chartOptions,
       });
-
     },
 
     warehouseSelect(nameOfTheWarehouse){
       this.selectedWarehouse = nameOfTheWarehouse;
       this.createChart(this.selectedWarehouseData);
-
     },
-
-
   },
 
 
