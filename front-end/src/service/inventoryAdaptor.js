@@ -17,11 +17,11 @@ export class InventoryAdaptor {
   }
 
   async findAll() {
-    return await this.fetchJSON(`${this.resourceUrl}/resources`);
+    return await this.fetchJSON(`${this.resourceUrl}/inventory`);
   }
 
   async findAllForWarehouse(id){
-    return await this.fetchJSON(`${this.resourceUrl}/warehouses/${id}/resources`)
+    return await this.fetchJSON(`${this.resourceUrl}/warehouses/${id}/inventory`)
   }
 
   async findByIds(wId, pId) {

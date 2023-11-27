@@ -5,7 +5,7 @@ import nl.solar.app.exceptions.PreConditionFailedException;
 import nl.solar.app.exceptions.ResourceNotFoundException;
 import nl.solar.app.models.Product;
 import nl.solar.app.repositories.EntityRepository;
-import nl.solar.app.repositories.ResourceRepository;
+import nl.solar.app.repositories.InventoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +26,7 @@ public class ProductController {
     @Autowired
     EntityRepository<Product> productRepo;
     @Autowired
-    ResourceRepository resourceRepository;
+    InventoryRepository inventoryRepository;
 
     /**
      * get a list of all products
@@ -68,7 +68,7 @@ public class ProductController {
         }
 
         //delete all resources for the product which was deleted
-        this.resourceRepository.deleteResourcesForProduct(deleted);
+        this.inventoryRepository.deleteInventoryForProduct(deleted);
 
         return ResponseEntity.ok(deleted);
     }
@@ -85,7 +85,7 @@ public class ProductController {
         Product added = this.productRepo.save(product);
 
         //Add a resource to all warehouses for the certain product which was added
-        this.resourceRepository.addResourcesForProduct(product);
+        this.inventoryRepository.addInventoryForProduct(product);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(added.getId()).toUri();
         return ResponseEntity.created(location).body(product);
