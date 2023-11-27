@@ -1,12 +1,13 @@
 package nl.solar.app.rest;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import nl.solar.app.Views.ResourceView;
+
 import nl.solar.app.exceptions.PreConditionFailedException;
 import nl.solar.app.exceptions.ResourceNotFoundException;
 import nl.solar.app.models.Inventory;
 import nl.solar.app.models.Warehouse;
 import nl.solar.app.repositories.InventoryRepository;
+import nl.solar.app.models.views.ResourceView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 
@@ -34,6 +35,7 @@ public class InventoryController {
 
     /**
      * Get a list of all resources and format it to the correct json string format
+     * 
      * @return a json array of resources
      */
     @JsonView(ResourceView.Complete.class)
@@ -50,25 +52,26 @@ public class InventoryController {
             GroupedByWarehouse.computeIfAbsent(inventory.getWarehouse(), k -> new ArrayList<>()).add(productFormat);
         }
 
-        /*Loop over all warehouses in the GroupBy map and format it to
-            [{
-                warehouse: {
-                    id: Long,
-                    name: String
-                },
-                products: [
-                    {
-                        id: Long,
-                        productName: String,
-                        description: String,
-                        quantity: Int
-                    },
-                    ...
-                ]
-            },
-            ...
-            ]
-        */
+        /*
+         * Loop over all warehouses in the GroupBy map and format it to
+         * [{
+         * warehouse: {
+         * id: Long,
+         * name: String
+         * },
+         * products: [
+         * {
+         * id: Long,
+         * productName: String,
+         * description: String,
+         * quantity: Int
+         * },
+         * ...
+         * ]
+         * },
+         * ...
+         * ]
+         */
         for (Map.Entry<Warehouse, List<Map<String, Object>>> entry : GroupedByWarehouse.entrySet()) {
             Map<String, Object> formattedResource = new HashMap<>();
             formattedResource.put("warehouse", entry.getKey());
@@ -80,10 +83,13 @@ public class InventoryController {
     }
 
     /**
-     * Get all resources for a particular warehouse and format it to the correct json format
+     * Get all resources for a particular warehouse and format it to the correct
+     * json format
+     * 
      * @param id the id of a warehouse
      * @return a list of resources from a specific warehouse
-     * @throws ResourceNotFoundException throw error if the specific warehouse doesn't exist
+     * @throws ResourceNotFoundException throw error if the specific warehouse
+     *                                   doesn't exist
      */
     @GetMapping(path = "/warehouses/{id}/inventory", produces = "application/json")
     public ResponseEntity<List<Map<String, Object>>> getInventoryForWarehouse(@PathVariable long id) throws ResourceNotFoundException {
@@ -102,6 +108,7 @@ public class InventoryController {
 
     /**
      * Get a specific resource
+     * 
      * @param wId the warehouse id
      * @param pId the product id
      * @return a resource in the correct format
@@ -123,7 +130,9 @@ public class InventoryController {
      * @param pId the product id
      * @param inventory the updated version of a resource
      * @return a resource in the correct format
-     * @throws PreConditionFailedException throw error if the warehouse id and product id in the body don't match the ids in the path
+     * @throws PreConditionFailedException throw error if the warehouse id and
+     *                                     product id in the body don't match the
+     *                                     ids in the path
      */
     @JsonView(ResourceView.Complete.class)
     @PutMapping(path = "/warehouses/{wId}/products/{pId}", produces = "application/json")
@@ -140,7 +149,8 @@ public class InventoryController {
     }
 
     /**
-     * Format a resource to an product object. This contains the product and the quantity
+     * Format a resource to an product object. This contains the product and the
+     * quantity
      * making sure this is seen by the front-end as one object
      * @param inventory the resource being reformatted.
      * @return return a Map (object) of a product containing the quantity

@@ -1,27 +1,27 @@
 <template>
   <div>
     <table-component
-        v-if="usersAdmin.length > 0"
-        :amount-to-display="5"
-        :has-add-button="true"
-        :has-delete-button="true"
-        :has-edit-button="true"
-        :table-data="usersAdmin"
-        @edit="showEditModal"
-        @delete="showDeleteModal"
-        @add="showAddModal"
+      v-if="usersAdmin.length > 0"
+      :amount-to-display="5"
+      :has-add-button="true"
+      :has-delete-button="true"
+      :has-edit-button="true"
+      :table-data="usersAdmin"
+      @edit="showEditModal"
+      @delete="showDeleteModal"
+      @add="showAddModal"
     />
-    <p v-else>Waiting....</p>
+    <SpinnerComponent v-else />
     <Transition>
       <modal-component
-          v-if="showModal"
-          :title="modalTitle"
-          :active-modal="modalBodyComponent"
-          :item="modalUser"
-          :ok-btn-text="okBtnText"
-          @cancel-modal-btn="this.showModal = false"
-          @corner-close-modal-btn="this.showModal = false"
-          @ok-modal-btn="handleOk"
+        v-if="showModal"
+        :title="modalTitle"
+        :active-modal="modalBodyComponent"
+        :item="modalUser"
+        :ok-btn-text="okBtnText"
+        @cancel-modal-btn="this.showModal = false"
+        @corner-close-modal-btn="this.showModal = false"
+        @ok-modal-btn="handleOk"
       />
     </Transition>
   </div>
@@ -30,7 +30,7 @@
 <script>
 import TableComponent from "@/components/table/TableComponent.vue";
 import ModalComponent from "@/components/modal/ModalComponent.vue";
-
+import SpinnerComponent from "@/components/util/SpinnerComponent.vue";
 
 /**
  * Component to display and manage the users for the admins
@@ -42,8 +42,8 @@ import ModalComponent from "@/components/modal/ModalComponent.vue";
  */
 export default {
   name: "UserOverview",
-  components: {TableComponent, ModalComponent},
-  inject: ['userService'],
+  components: { TableComponent, ModalComponent, SpinnerComponent },
+  inject: ["userService"],
   data() {
     return {
       /**
@@ -62,8 +62,8 @@ export default {
       MODAL_TYPES: Object.freeze({
         DELETE: "delete-user-modal",
         UPDATE: "update-user-modal",
-        ADD: "add-user-modal"
-      })
+        ADD: "add-user-modal",
+      }),
     };
   },
   async created() {
@@ -76,31 +76,31 @@ export default {
      * @param user that's being selected for deletion
      */
     showDeleteModal(user) {
-      this.modalTitle = "Delete user"
-      this.modalBodyComponent = this.MODAL_TYPES.DELETE
-      this.modalUser = user
-      this.okBtnText = "Delete"
-      this.showModal = true
+      this.modalTitle = "Delete user";
+      this.modalBodyComponent = this.MODAL_TYPES.DELETE;
+      this.modalUser = user;
+      this.okBtnText = "Delete";
+      this.showModal = true;
     },
     /**
      * When clicked on the edit button in the table, it will show the modal for editing an existing user
      * @param user that's being selected for editing
      */
     showEditModal(user) {
-      this.modalTitle = "Update user"
-      this.modalBodyComponent = this.MODAL_TYPES.UPDATE
-      this.modalUser = user
-      this.okBtnText = "Save"
+      this.modalTitle = "Update user";
+      this.modalBodyComponent = this.MODAL_TYPES.UPDATE;
+      this.modalUser = user;
+      this.okBtnText = "Save";
       this.showModal = true;
     },
     /**
      * When clicked on the add button in the table, it will show the modal for adding a new user
      */
     showAddModal() {
-      this.modalTitle = "Add user"
-      this.modalBodyComponent = this.MODAL_TYPES.ADD
-      this.okBtnText = "Add"
-      this.showModal = true
+      this.modalTitle = "Add user";
+      this.modalBodyComponent = this.MODAL_TYPES.ADD;
+      this.okBtnText = "Add";
+      this.showModal = true;
     },
 
     /**
@@ -136,7 +136,7 @@ export default {
         this.users.push(addedUser);
         this.showModal = false;
       } catch (e) {
-        console.log(e)
+        console.log(e);
       }
     },
     /**
@@ -149,15 +149,19 @@ export default {
         //get the full current user
         const userFromBack = await this.userService.asyncFindById(user.id);
         //temporarily add the password to save it with the user
-        user.password = userFromBack.password
-        const updatedUser = await this.userService.asyncSave(user)
+        user.password = userFromBack.password;
+        const updatedUser = await this.userService.asyncSave(user);
         //delete the password so that the table doesn't break
         delete updatedUser.password;
-        this.usersAdmin = this.usersAdmin.map((user) => user.id === updatedUser.id ? updatedUser : user);
-        this.users = this.users.map((user) => user.id === updatedUser.id ? updatedUser : user);
+        this.usersAdmin = this.usersAdmin.map((user) =>
+          user.id === updatedUser.id ? updatedUser : user
+        );
+        this.users = this.users.map((user) =>
+          user.id === updatedUser.id ? updatedUser : user
+        );
         this.showModal = false;
       } catch (e) {
-        console.log(e)
+        console.log(e);
       }
     },
     /**
@@ -168,14 +172,16 @@ export default {
     async onUserDelete(user) {
       try {
         const deletedUser = await this.userService.asyncDelete(user.id);
-        this.usersAdmin = this.usersAdmin.filter((user) => user.id !== deletedUser.id);
+        this.usersAdmin = this.usersAdmin.filter(
+          (user) => user.id !== deletedUser.id
+        );
         this.users = this.users.filter((user) => user.id !== deletedUser.id);
         this.showModal = false;
       } catch (e) {
-        console.log(e)
+        console.log(e);
       }
     },
-  }
+  },
 };
 </script>
 

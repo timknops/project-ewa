@@ -27,7 +27,7 @@
           </thead>
 
           <!-- If bold first row is set to true, then use the first version of the tbody, else use the other. -->
-          <tbody v-if="boldFirstColumn">
+          <tbody v-if="boldFirstColumn && !showEmptyTable">
             <tr
               v-for="tableRow in currentlyDisplayedData"
               :key="tableRow"
@@ -93,7 +93,7 @@
             </tr>
           </tbody>
 
-          <tbody v-else>
+          <tbody v-else-if="!showEmptyTable">
             <tr
               v-for="tableRow in currentlyDisplayedData"
               :key="tableRow"
@@ -120,22 +120,24 @@
                 <!-- If the column name is 'status' -->
                 <td
                   v-else-if="
-                    fieldData === 'completed' ||
-                    fieldData === 'in progress' ||
-                    fieldData === 'upcoming'
+                    fieldData === 'COMPLETED' ||
+                    fieldData === 'IN_PROGRESS' ||
+                    fieldData === 'UPCOMING'
                   "
                   class="py-3 px-3 px-lg-4"
                 >
                   <span
                     class="badge"
                     :class="STATUS_OPTIONS[fieldData.toUpperCase()]"
-                    >{{ fieldData.toUpperCase() }}</span
+                    >{{ fieldData.toUpperCase().replace("_", " ") }}</span
                   >
                 </td>
 
                 <!-- If the column name is 'id' and the hideIdColumn prop is set to true, then hide the column. -->
                 <td
-                  v-else-if="!hideIdColumn || Object.keys(tableRow)[index] !== 'id'"
+                  v-else-if="
+                    !hideIdColumn || Object.keys(tableRow)[index] !== 'id'
+                  "
                   class="py-3 table-text px-3 px-lg-4"
                 >
                   {{ fieldData }}
@@ -180,7 +182,7 @@ import TableHeaderRow from "@/components/table/TableHeaderRow.vue";
  * Custom table component. Allows user to dynamically set the width, height, whether the first row should be bold and
  * allows for dynamic column creation depending on the array of object passed as tableData.
  *
- * @param {String} tableWdith The width of the table.
+ * @param {String} tableWidth The width of the table.
  * @param {Boolean} boldFirstColumn Whether the first column should be bold or not.
  * @param {Number} amountToDisplay The amount of rows you want to display at once.
  * @param {Array} tableData The data that is to be displayed in the table.
@@ -240,7 +242,7 @@ export default {
        * Feel free to add your own additional status's as needed. */
       STATUS_OPTIONS: Object.freeze({
         COMPLETED: "success-badge",
-        "IN PROGRESS": "in-progress-badge",
+        IN_PROGRESS: "in-progress-badge",
         UPCOMING: "upcoming-badge",
       }),
       /** Copy of the table data, used for sorting. */
@@ -257,7 +259,12 @@ export default {
       sortDirectionAllColumns: "default",
       /** The reference to the previous column icon that was sorted. */
       previousColumnIconRef: "",
+      /** Whether the table should show an empty table or not. */
+      showEmptyTable: false,
     };
+  },
+  created() {
+    this.updateDisplayedData();
   },
   methods: {
     /** Whenever the next button is pressed, the data is updated to show the next items depending on the display amount. */
@@ -278,6 +285,18 @@ export default {
 
     /** Updates the displayed data depending on the current start and end index. */
     updateDisplayedData() {
+      // If the tableData has empty object values, show an empty table.
+      if (
+        typeof Object.values(this.tableData[0])[0] === "function" ||
+        Object.values(this.tableData[0])[0] === ""
+      ) {
+        this.showEmptyTable = true;
+
+        return;
+      }
+
+      this.showEmptyTable = false;
+
       this.tableDataSorted = this.tableData;
       this.currentlyDisplayedData = this.tableDataSorted.slice(
         this.currentStartIndex,
@@ -377,9 +396,6 @@ export default {
       this.updateDisplayedData();
     },
   },
-  created() {
-    this.updateDisplayedData();
-  },
   computed: {
     /** Calculates the table height depending on the amount of items to be displayed at once. */
     calculateTableHeight() {
@@ -391,6 +407,14 @@ export default {
   },
   watch: {
     tableData() {
+      if (this.tableData.length === 0) {
+        // If the table data is empty, show an empty table.
+        this.showEmptyTable = true;
+
+        return;
+      }
+
+      this.showEmptyTable = false;
       this.tableColumnNames = Object.keys(this.tableData[0]);
 
       // Reset the sorting icon of the previous sorted column.

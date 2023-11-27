@@ -53,10 +53,10 @@ export class Project {
     const randomName = "Project " + Math.floor(Math.random() * 100);
     const randomClient = "Client " + Math.floor(Math.random() * 100);
 
-    // Generates a random date between 2012-01-01 and 2024-02-29.
+    // Generates a random date between 2022-01-01 and 2026-01-01.
     const randomDueDate = this.randomDate(
-      new Date(2022, 0, 1),
-      new Date(2026, 1, 0)
+      new Date(2022, 1, 1),
+      new Date(2026, 1, 1)
     );
 
     let randomStatus;
@@ -75,7 +75,6 @@ export class Project {
         randomStatus = Project.status.IN_PROGRESS;
       }
     }
-
     return new Project(
       randomId,
       randomTeam,
@@ -84,5 +83,9 @@ export class Project {
       randomDueDate.toISOString().split("T")[0], // Convert date to string in format YYYY-MM-DD.
       randomStatus
     );
+  }
+
+  static getProjectPropertyNames() {
+    return Object.keys(new Project());
   }
 }
