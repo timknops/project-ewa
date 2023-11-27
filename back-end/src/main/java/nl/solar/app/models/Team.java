@@ -25,19 +25,19 @@ public class Team {
     private long id;
 
     private String team;
-    private Warehouse warehouse;
+    // private Warehouse warehouse;
 
     @Enumerated(EnumType.STRING)
     private TeamType type;
 
     @OneToMany(mappedBy = "team")
-    @JsonManagedReference
+    @JsonBackReference
     private List<Project> projects = new ArrayList<>();
 
     public Team(long id, String team, Warehouse warehouse, TeamType type) {
         this.id = id;
         this.team = team;
-        this.warehouse = warehouse;
+        // this.warehouse = warehouse;
         this.type = type;
     }
 
@@ -49,7 +49,7 @@ public class Team {
     }
 
     public static Team createDummyTeam() {
-        String randomTeamName = "Team " + (int) (Math.random() * 100);
+        String randomTeamName = "Team " + (int) (Math.random() * 10);
         return new Team(0, randomTeamName, Warehouse.SolarSedum, TeamType.Internal);
     }
 
@@ -77,13 +77,13 @@ public class Team {
         this.team = team;
     }
 
-    public Warehouse getWarehouse() {
-        return warehouse;
-    }
+    // public Warehouse getWarehouse() {
+    // return warehouse;
+    // }
 
-    public void setWarehouse(Warehouse warehouse) {
-        this.warehouse = warehouse;
-    }
+    // public void setWarehouse(Warehouse warehouse) {
+    // this.warehouse = warehouse;
+    // }
 
     public TeamType getType() {
         return type;

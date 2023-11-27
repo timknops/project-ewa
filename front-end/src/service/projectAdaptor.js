@@ -56,7 +56,7 @@ export class ProjectAdaptor {
    * @returns {Promise<object>} A promise that resolves to the fetched JSON data representing the added project.
    */
   async add(project) {
-    return await this.fetchJSON(`${this.resourceUrl}`, {
+    return await this.fetchJSON(`${this.resourceUrl}/add`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify(project),

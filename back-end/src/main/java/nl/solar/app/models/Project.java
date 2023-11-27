@@ -2,12 +2,16 @@ package nl.solar.app.models;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -17,6 +21,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import nl.solar.app.enums.ProjectStatus;
 import nl.solar.app.models.views.ProjectView;
@@ -31,8 +36,7 @@ import nl.solar.app.models.views.ProjectView;
 public class Project {
 
     @Id
-    @SequenceGenerator(name = "project_id_generator", initialValue = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "project_id_generator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonView(ProjectView.Overview.class)
     private long id;
 
@@ -49,14 +53,19 @@ public class Project {
     private String client;
 
     @JsonView(ProjectView.Overview.class)
+    @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING, timezone = "Europe/Amsterdam")
     private Date dueDate;
+
+    @JsonView(ProjectView.Overview.class)
+    private String description;
 
     @Enumerated(EnumType.STRING)
     @JsonView(ProjectView.Overview.class)
     private ProjectStatus status;
 
-    @OneToMany(mappedBy = "project")
-    private List<ResourceTemp> products = new ArrayList<>();
+    @OneToMany(mappedBy = "project", orphanRemoval = true, cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private Set<ResourceTemp> products = new HashSet<>();
 
     /**
      * Creates a project with the given parameters.
@@ -70,7 +79,7 @@ public class Project {
      * @param products    the products of the project
      */
     public Project(long id, String projectName, Team team, String client, Date dueDate, ProjectStatus status,
-            List<ResourceTemp> products) {
+            Set<ResourceTemp> products) {
         this.id = id;
         this.projectName = projectName;
         this.team = team;
@@ -147,6 +156,14 @@ public class Project {
         this.team = team;
     }
 
+    public void getDescription(String description) {
+        this.description = description;
+    }
+
+    public String setDescription() {
+        return description;
+    }
+
     public String getClient() {
         return client;
     }
@@ -179,11 +196,11 @@ public class Project {
         this.projectName = projectName;
     }
 
-    public List<ResourceTemp> getProducts() {
+    public Set<ResourceTemp> getProducts() {
         return products;
     }
 
-    public void setProducts(List<ResourceTemp> products) {
+    public void setProducts(Set<ResourceTemp> products) {
         this.products = products;
     }
 

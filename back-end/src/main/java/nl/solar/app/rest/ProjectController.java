@@ -1,7 +1,10 @@
 package nl.solar.app.rest;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +20,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import jakarta.persistence.TypedQuery;
 import nl.solar.app.exceptions.PreConditionFailedException;
 import nl.solar.app.exceptions.ResourceNotFoundException;
 import nl.solar.app.models.Project;
@@ -37,14 +41,31 @@ public class ProjectController {
     ProjectRepositoryJpa projectRepo;
 
     /**
-     * Retrieves a list of all projects.
-     *
+     * Retrieves a list of all projects specifically for the overview of the
+     * projects.
+     * 
      * @return A list of all projects.
      */
     @JsonView(ProjectView.Overview.class)
     @GetMapping(produces = "application/json")
-    public List<Project> getAll() {
-        return this.projectRepo.findAll();
+    public List<Map<String, Object>> getAll() {
+        List<Project> projects = this.projectRepo.findAll(); // Get all projects from the database.
+
+        // Format the projects to a list of maps.
+        List<Map<String, Object>> formattedProjects = new ArrayList<>();
+        for (Project project : projects) { // Loop through all projects.
+            Map<String, Object> formattedProject = new HashMap<>(); // Create a new map for the current project.
+            formattedProject.put("id", project.getId());
+            formattedProject.put("projectName", project.getProjectName());
+            formattedProject.put("client", project.getClient());
+            formattedProject.put("dueDate", project.getDueDate());
+            formattedProject.put("status", project.getStatus());
+            formattedProject.put("team", project.getTeam().getTeam());
+
+            formattedProjects.add(formattedProject); // Add the formatted project to the list of formatted projects.
+        }
+
+        return formattedProjects;
     }
 
     /**
@@ -94,7 +115,7 @@ public class ProjectController {
      * @throws ResourceNotFoundException If the project is null.
      * @return A ResponseEntity containing the created project.
      */
-    @PostMapping(produces = "application/json")
+    @PostMapping(path = "/add", produces = "application/json", consumes = "application/json;charset=UTF-8")
     public ResponseEntity<Project> createProject(@RequestBody Project project) throws ResourceNotFoundException {
         if (project == null) {
             throw new ResourceNotFoundException("Project is null");
@@ -104,6 +125,7 @@ public class ProjectController {
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(createdProject.getId()).toUri();
+
         return ResponseEntity.created(location).body(createdProject);
     }
 

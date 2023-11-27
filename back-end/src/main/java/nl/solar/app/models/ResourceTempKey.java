@@ -14,51 +14,49 @@ import jakarta.persistence.Embeddable;
 @Embeddable
 public class ResourceTempKey implements Serializable {
 
-  @Column(name = "project_id")
-  Long projectId;
+    @Column(name = "project_id")
+    private long projectId;
 
-  @Column(name = "product_id")
-  Long productId;
+    @Column(name = "product_id")
+    private long productId;
 
-  public ResourceTempKey() {
-  }
+    public ResourceTempKey(long projectId, long productId) {
+        this.projectId = projectId;
+        this.productId = productId;
+    }
 
-  public ResourceTempKey(Long projectId, Long productId) {
-    this.projectId = projectId;
-    this.productId = productId;
-  }
+    public ResourceTempKey() {
+    }
 
-  public Long getProjectId() {
-    return projectId;
-  }
+    public long getProjectId() {
+        return projectId;
+    }
 
-  public Long getProductId() {
-    return productId;
-  }
+    public long getProductId() {
+        return productId;
+    }
 
-  public void setProjectId(Long projectId) {
-    this.projectId = projectId;
-  }
+    public void setProjectId(long projectId) {
+        this.projectId = projectId;
+    }
 
-  public void setProductId(Long productId) {
-    this.productId = productId;
-  }
+    public void setProductId(long productId) {
+        this.productId = productId;
+    }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o)
-      return true;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof ResourceTempKey))
+            return false;
+        ResourceTempKey that = (ResourceTempKey) o;
+        return getProjectId() == that.getProjectId() && getProductId() == that.getProductId();
+    }
 
-    if (!(o instanceof ResourceTempKey))
-      return false;
-
-    ResourceTempKey that = (ResourceTempKey) o;
-    return getProjectId().equals(that.getProjectId()) && getProductId().equals(that.getProductId());
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(getProjectId(), getProductId());
-  }
+    @Override
+    public int hashCode() {
+        return Objects.hash(getProjectId(), getProductId());
+    }
 
 }

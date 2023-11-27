@@ -1,7 +1,10 @@
 package nl.solar.app.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,8 +14,10 @@ import nl.solar.app.models.views.ResourceView;
 import jakarta.persistence.Id;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Class which represents a product sold by Solar Sedum
@@ -24,8 +29,7 @@ public class Product {
 
     @Id
     @JsonView(ResourceView.Complete.class)
-    @SequenceGenerator(name = "product_id_generator", initialValue = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_id_generator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @JsonView(ResourceView.Complete.class)
@@ -34,8 +38,9 @@ public class Product {
     @JsonView(ResourceView.Complete.class)
     private String description;
 
-    @OneToMany(mappedBy = "product")
-    private List<ResourceTemp> projects = new ArrayList<>();
+    @OneToMany(mappedBy = "product", orphanRemoval = true, cascade = CascadeType.ALL)
+    @JsonBackReference
+    private Set<ResourceTemp> projects = new HashSet<>();
 
     /**
      * create an dummy product by using the default constructor and the getters and
@@ -78,11 +83,11 @@ public class Product {
         this.description = description;
     }
 
-    public List<ResourceTemp> getProjects() {
+    public Set<ResourceTemp> getProjects() {
         return projects;
     }
 
-    public void setProjects(List<ResourceTemp> projects) {
+    public void setProjects(Set<ResourceTemp> projects) {
         this.projects = projects;
     }
 

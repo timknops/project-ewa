@@ -1,5 +1,6 @@
 package nl.solar.app.repositories;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
+import jakarta.transaction.Transactional;
 import nl.solar.app.models.Project;
 
 /**
@@ -19,16 +21,11 @@ import nl.solar.app.models.Project;
  */
 @Repository("PROJECTS.JPA")
 @Primary
-public class ProjectRepositoryJpa implements EntityRepository<Project> {
+public class ProjectRepositoryJpa implements ProjectRepository {
 
     @PersistenceContext
     private EntityManager entityManager;
 
-    /**
-     * Returns a list of all projects.
-     * 
-     * @return List<Project> A list of all projects.
-     */
     @Override
     public List<Project> findAll() {
         TypedQuery<Project> query = entityManager.createQuery("SELECT p FROM Project p", Project.class);
@@ -65,6 +62,8 @@ public class ProjectRepositoryJpa implements EntityRepository<Project> {
      */
     @Override
     public Project save(Project newProject) {
+        System.out.println(newProject);
+
         return entityManager.merge(newProject);
     }
 

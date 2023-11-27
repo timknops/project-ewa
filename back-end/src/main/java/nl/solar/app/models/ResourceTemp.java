@@ -2,6 +2,9 @@ package nl.solar.app.models;
 
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -22,11 +25,13 @@ public class ResourceTemp {
   @ManyToOne
   @MapsId("projectId")
   @JoinColumn(name = "project_id")
+  @JsonManagedReference
   private Project project;
 
   @ManyToOne
   @MapsId("productId")
   @JoinColumn(name = "product_id")
+  @JsonBackReference
   private Product product;
 
   private int quantity;
@@ -88,13 +93,13 @@ public class ResourceTemp {
     if (!(o instanceof ResourceTemp))
       return false;
 
-    ResourceTemp other = (ResourceTemp) o;
-    return getProject().equals(other.getProject()) && getProduct().equals(other.getProduct());
+    ResourceTemp that = (ResourceTemp) o;
+    return Objects.equals(getProject(), that.getProject()) && Objects.equals(getProduct(), that.getProduct());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(getProject(), getProduct());
+    return Objects.hash(getProject().getId(), getProduct().getId());
   }
 
 }

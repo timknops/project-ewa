@@ -71,6 +71,8 @@ export default {
   async created() {
     const data = await this.projectService.getAll();
 
+    console.log(data);
+
     // If there are no projects, add only the table header row titles.
     if (data.length === 0) {
       this.projects = [this.formatEmptyTableData()];
@@ -98,7 +100,7 @@ export default {
         name: project.projectName,
         client: project.client,
         dueDate: this.formatDate(project.dueDate),
-        team: project.team ? project.team.team : null, // TODO: Remove null check.
+        team: project.team,
         status: project.status,
       };
     },

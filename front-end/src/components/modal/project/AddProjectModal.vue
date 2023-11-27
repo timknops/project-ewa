@@ -248,17 +248,16 @@ export default {
       teamUnselected: false,
       statusUnselected: false,
 
-      // Should all be retrieved from the database.
-      TEAM_OPTIONS: ["test", "test2"],
       STATUS_OPTIONS: ["Upcoming", "In Progress", "Completed"],
-      WAREHOUSE_OPTIONS: ["Warehouse 1", "Warehouse 2", "Warehouse 3"],
-      PRODUCT_NAMES: ["Product 1", "Product 2", "Product 3"],
+      TEAM_OPTIONS: [],
+      WAREHOUSE_OPTIONS: ["Warehouse 1", "Warehouse 2", "Warehouse 3"], // TODO: Retrieve from database.
+      PRODUCT_NAMES: [],
     };
   },
   async created() {
     const data = await this.projectService.getProjectAddModalData();
-    console.log(data);
-    // this.TEAM_OPTIONS = data.teams;
+    this.TEAM_OPTIONS = data.teams;
+    this.PRODUCT_NAMES = data.productNames;
   },
   computed: {
     hasError() {
