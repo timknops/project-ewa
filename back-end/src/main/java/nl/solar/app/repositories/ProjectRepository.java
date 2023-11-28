@@ -1,6 +1,7 @@
 package nl.solar.app.repositories;
 
 import nl.solar.app.models.Project;
+import nl.solar.app.repositories.jpaRepositories.ProjectRepositoryJpa;
 
 /**
  * Repository for the {@link Project} entity.

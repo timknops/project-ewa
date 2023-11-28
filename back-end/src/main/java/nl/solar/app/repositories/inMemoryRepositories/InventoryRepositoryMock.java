@@ -1,8 +1,10 @@
-package nl.solar.app.repositories;
+package nl.solar.app.repositories.inMemoryRepositories;
 
 import nl.solar.app.models.Product;
 import nl.solar.app.models.Inventory;
 import nl.solar.app.models.Warehouse;
+import nl.solar.app.repositories.EntityRepository;
+import nl.solar.app.repositories.InventoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

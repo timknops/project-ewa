@@ -1,9 +1,10 @@
-package nl.solar.app.repositories;
+package nl.solar.app.repositories.jpaRepositories;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import nl.solar.app.models.Warehouse;
+import nl.solar.app.repositories.EntityRepository;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
