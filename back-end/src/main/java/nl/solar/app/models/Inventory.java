@@ -1,5 +1,6 @@
 package nl.solar.app.models;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -19,7 +20,7 @@ import java.util.Objects;
 public class Inventory {
 
     @EmbeddedId
-    private InventoryKey id;
+    private InventoryKey id = new InventoryKey();
 
     public InventoryKey getId() {
         return id;
@@ -32,7 +33,7 @@ public class Inventory {
     @ManyToOne
     @MapsId("warehouseId")
     @JoinColumn(name = "warehouse_id")
-    @JsonIncludeProperties({"warehouse_id", "name"})
+    @JsonIncludeProperties(value = {"id", "name"})
     @JsonManagedReference
     private Warehouse warehouse;
 

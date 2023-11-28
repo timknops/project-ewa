@@ -3,6 +3,7 @@ package nl.solar.app;
 import java.util.List;
 
 import nl.solar.app.models.*;
+import nl.solar.app.repositories.InventoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -26,6 +27,7 @@ public class BackEndApplication implements CommandLineRunner {
         this.createSampleProjects();
         this.createSampleProducts();
         this.createSampleResources();
+        this.createDummyInventory();
     }
 
     // All repositories.
@@ -43,6 +45,9 @@ public class BackEndApplication implements CommandLineRunner {
 
     @Autowired
     EntityRepository<Product> productsRepo;
+
+    @Autowired
+    InventoryRepository inventoryRepo;
 
     private void createSampleWarehouse() {
         List<Warehouse> warehouses = warehouseRepo.findAll();
@@ -183,6 +188,24 @@ public class BackEndApplication implements CommandLineRunner {
 
                 productsRepo.save(product);
                 projectsRepo.save(project);
+            }
+        }
+    }
+
+    private void createDummyInventory() {
+        List<Inventory> inventoryList = inventoryRepo.findAll();
+
+        if (!inventoryList.isEmpty()) return;
+
+        for (Product product : productsRepo.findAll()) {
+            for (Warehouse warehouse : warehouseRepo.findAll()) {
+                Inventory inventory = Inventory.createDummyResource(warehouse, product);
+
+                product.getInventory().add(inventory);
+                warehouse.getInventory().add(inventory);
+
+                productsRepo.save(product);
+                warehouseRepo.save(warehouse);
             }
         }
     }

@@ -12,7 +12,7 @@ public class InventoryKey implements Serializable {
     @Column(name = "product_id")
     private Long productId;
 
-    @Column(name = "Warehouse_id")
+    @Column(name = "warehouse_id")
     private Long warehouseId;
 
     public Long getProductId() {

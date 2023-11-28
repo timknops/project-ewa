@@ -79,10 +79,9 @@ public class InventoryRepositoryJpa implements InventoryRepository {
 
             product.getInventory().add(inventory);
             warehouse.getInventory().add(inventory);
-        }
 
-        //persist bidirectional relationships via the cascading of product
-        productRepo.save(product);
+            warehouseRepo.save(warehouse);
+        }
     }
 
     @Override
@@ -95,8 +94,8 @@ public class InventoryRepositoryJpa implements InventoryRepository {
 
             product.getInventory().add(inventory);
             warehouse.getInventory().add(inventory);
-        }
 
-        warehouseRepo.save(warehouse);
+            productRepo.save(product);
+        }
     }
 }

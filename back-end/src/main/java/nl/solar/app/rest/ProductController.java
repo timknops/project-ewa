@@ -68,7 +68,11 @@ public class ProductController {
         }
 
         //delete all resources for the product which was deleted
-        this.inventoryRepository.deleteInventoryForProduct(deleted);
+        try {
+            this.inventoryRepository.deleteInventoryForProduct(deleted);
+        } catch (Exception ex) {
+            //if cascading is used the deleteInventory should not be used.
+        }
 
         return ResponseEntity.ok(deleted);
     }
@@ -84,8 +88,10 @@ public class ProductController {
         if (product.getProductName() == null || product.getProductName().isBlank()) throw new BadRequestException("Product name can't be empty");
         Product added = this.productRepo.save(product);
 
-        //Add a resource to all warehouses for the certain product which was added
         this.inventoryRepository.addInventoryForProduct(product);
+
+
+        //Add a resource to all warehouses for the certain product which was added
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(added.getId()).toUri();
         return ResponseEntity.created(location).body(product);

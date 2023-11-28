@@ -30,14 +30,16 @@ public class Product {
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference
-    @JsonIgnore
-    private List<ResourceTemp> projects = new ArrayList<>();
+    private List<ResourceTemp> projects;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference
-    @JsonIgnore
-    private Set<Inventory> inventory = new HashSet<>();
+    private Set<Inventory> inventory;
 
+    public Product() {
+        projects = new ArrayList<>();
+        inventory = new HashSet<>();
+    }
     /**
      * create an dummy product by using the default constructor and the getters and
      * setters
