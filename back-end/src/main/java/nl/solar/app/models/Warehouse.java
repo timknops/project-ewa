@@ -2,8 +2,7 @@ package nl.solar.app.models;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import nl.solar.app.models.views.ResourceView;
 
 import java.util.Objects;
@@ -13,6 +12,8 @@ public class Warehouse {
 
     @Id
     @JsonView(ResourceView.Complete.class)
+    @SequenceGenerator(name = "warehouse_id_generator", initialValue = 1000, allocationSize = 3)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "warehouse_id_generator")
     private long id;
 
     @JsonView(ResourceView.Complete.class)
@@ -25,6 +26,8 @@ public class Warehouse {
         this.name = name;
         this.location = location;
     }
+
+    public Warehouse(){}
 
     public static Warehouse createDummyWarehouses(long id, String name, String location) {
         return new Warehouse(

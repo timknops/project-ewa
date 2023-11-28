@@ -1,4 +1,4 @@
-package nl.solar.app.models;
+package nl.solar.app.models.compositeKeys;
 
 import java.io.Serializable;
 import java.util.Objects;

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 
-@Repository("RESOURCES.INMEMORY")
+@Repository("INVENTORY.INMEMORY")
 public class InventoryRepositoryMock implements InventoryRepository {
     private List<Inventory> inventoryList;
 

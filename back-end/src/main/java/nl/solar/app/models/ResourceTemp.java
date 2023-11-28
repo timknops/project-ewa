@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
+import nl.solar.app.models.compositeKeys.ResourceTempKey;
 
 /**
  * Represents a resource.

@@ -4,13 +4,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.*;
 import nl.solar.app.models.views.ResourceView;
-import jakarta.persistence.Id;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +31,7 @@ public class Product {
     @JsonView(ResourceView.Complete.class)
     private String description;
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference
     @JsonIgnore
     private List<ResourceTemp> projects = new ArrayList<>();
