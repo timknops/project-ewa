@@ -16,7 +16,7 @@ import LoginPage from "@/components/LoginPage.vue";
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import appConfig from "@/appConfig";
 import { ProductAdaptor } from "@/service/productAdaptor";
-import { ResourceAdaptor } from "@/service/resourceAdaptor";
+import { InventoryAdaptor } from "@/service/inventoryAdaptor";
 import { WarehouseAdaptor } from "@/service/warehouseAdaptor";
 import { UserAdaptor } from "@/service/userAdaptor";
 import { TeamAdaptor } from "@/service/teamAdaptor";
@@ -42,7 +42,7 @@ export default {
         `${appConfig.BACKEND_URL}/warehouses`
       ),
       userService: new UserAdaptor(`${appConfig.BACKEND_URL}/users`),
-      resourceService: new ResourceAdaptor(appConfig.BACKEND_URL),
+      inventoryService: new InventoryAdaptor(appConfig.BACKEND_URL),
       teamsService: new TeamAdaptor(`${appConfig.BACKEND_URL}/teams`),
       projectService: new ProjectAdaptor(`${appConfig.BACKEND_URL}/projects`),
     };
