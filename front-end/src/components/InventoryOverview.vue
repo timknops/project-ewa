@@ -120,7 +120,7 @@ export default {
     };
   },
 
-  inject: ["resourceService", "warehouseService"],
+  inject: ["inventoryService", "warehouseService"],
 
   methods: {
     // TODO should be available globally, and not stored directly in the component (comes with jwt)
@@ -230,12 +230,12 @@ export default {
     //   methods for modal
     /**
      * show the update modal
-     * @param {Product}resource the inventory object on which the edit button was clicked
+     * @param {Product}inventory the inventory object on which the edit button was clicked
      *
      *
      */
-    showUpdateModal(resource) {
-      /*format the resource to the format the back-end expect to receive, which is:
+    showUpdateModal(inventory) {
+      /*format the inventory to the format the back-end expect to receive, which is:
       {
         product: {id, productName, description},
         warehouse: {id, name},
@@ -243,9 +243,9 @@ export default {
       }
        */
       this.modalResource = {
-        product: {id: resource.id, productName: resource.productName, description: resource.description},
+        product: {id: inventory.id, productName: inventory.productName, description: inventory.description},
         warehouse: this.activeWarehouse,
-        quantity: resource.quantity
+        quantity: inventory.quantity
       }
       // show the modal
       this.showModal = true;
@@ -253,7 +253,7 @@ export default {
 
     /**
      *
-     * @param resource -  a resource object in the format of the back-end i,e
+     * @param inventory -  a inventory object in the format of the back-end i,e
      * {
      *   product: {id, productName, description},
      *   warehouse: {id, name},
@@ -262,10 +262,10 @@ export default {
      *
      * @return {Promise<void>}
      */
-    async handleUpdate(resource) {
+    async handleUpdate(inventory) {
       try {
-        //returns the same format as the resource explained above
-        const updated = await this.resourceService.updateResource(resource)
+        //returns the same format as the inventory explained above
+        const updated = await this.inventoryService.updateInventory(inventory)
         //find the correct warehouse where a quantity is updated for
         const warehouseIndex = this.totalProducts.findIndex(resource => resource.warehouse.id === updated.warehouse.id)
 
@@ -316,11 +316,11 @@ export default {
     //get list of products depending on the users role i.e. the total inventory or inventory of the warehouse of the user
     if (this.activeUser.role === "admin") {
       this.warehouses = await this.warehouseService.findAll();
-      this.totalProducts = await this.resourceService.findAll();
+      this.totalProducts = await this.inventoryService.findAll();
       //set the products to the products for all warehouses, i.e. when admin choses total as view.
       this.products = this.getTotalProductInfo();
     } else {
-      this.products = await this.resourceService.findAllForWarehouse(this.activeUser.team.warehouse.id);
+      this.products = await this.inventoryService.findAllForWarehouse(this.activeUser.team.warehouse.id);
     }
 
     //set active if there is a param in the url
