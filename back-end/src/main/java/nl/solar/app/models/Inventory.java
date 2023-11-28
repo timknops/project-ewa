@@ -34,13 +34,13 @@ public class Inventory {
     @MapsId("warehouseId")
     @JoinColumn(name = "warehouse_id")
     @JsonIncludeProperties(value = {"id", "name"})
-    @JsonManagedReference
+    @JsonManagedReference(value = "warehouse_inventory")
     private Warehouse warehouse;
 
     @ManyToOne
     @MapsId("productId")
     @JoinColumn(name = "product_id")
-    @JsonManagedReference
+    @JsonManagedReference(value = "product_inventory")
     private Product product;
 
     private int quantity;

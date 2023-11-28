@@ -25,7 +25,7 @@ public class Warehouse {
     private String location;
 
     @OneToMany(mappedBy = "warehouse", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference
+    @JsonBackReference(value = "warehouse_inventory")
     private Set<Inventory> inventory = new HashSet<>();
 
     public Warehouse(long id, String name, String location) {

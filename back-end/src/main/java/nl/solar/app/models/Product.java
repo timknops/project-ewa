@@ -29,11 +29,11 @@ public class Product {
     private String description;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference
+    @JsonBackReference(value = "product_resource")
     private List<ResourceTemp> projects;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference
+    @JsonBackReference(value = "product_inventory")
     private Set<Inventory> inventory;
 
     public Product() {

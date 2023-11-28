@@ -2,6 +2,7 @@ package nl.solar.app.models;
 
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -28,6 +29,7 @@ public class ResourceTemp {
   @ManyToOne
   @MapsId("productId")
   @JoinColumn(name = "product_id")
+  @JsonManagedReference("product_resource")
   private Product product;
 
   private int quantity;
