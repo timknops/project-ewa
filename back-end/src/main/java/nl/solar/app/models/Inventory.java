@@ -1,7 +1,11 @@
 package nl.solar.app.models;
 
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 
+import jakarta.persistence.*;
+import nl.solar.app.models.compositeKeys.InventoryKey;
 import nl.solar.app.models.views.ResourceView;
 
 import java.util.Objects;
@@ -11,13 +15,33 @@ import java.util.Objects;
  *
  * @author Julian
  */
+@Entity
 public class Inventory {
 
-    @JsonView(ResourceView.Complete.class)
+    @EmbeddedId
+    private InventoryKey id;
+
+    public InventoryKey getId() {
+        return id;
+    }
+
+    public void setId(InventoryKey id) {
+        this.id = id;
+    }
+
+    @ManyToOne
+    @MapsId("warehouseId")
+    @JoinColumn(name = "warehouse_id")
+    @JsonIncludeProperties({"warehouse_id", "name"})
+    @JsonManagedReference
     private Warehouse warehouse;
-    @JsonView(ResourceView.Complete.class)
+
+    @ManyToOne
+    @MapsId("productId")
+    @JoinColumn(name = "product_id")
+    @JsonManagedReference
     private Product product;
-    @JsonView(ResourceView.Complete.class)
+
     private int quantity;
 
     public static Inventory createDummyResource(Warehouse warehouse, Product product) {

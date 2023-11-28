@@ -1,11 +1,14 @@
 package nl.solar.app.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
-
 import jakarta.persistence.*;
 import nl.solar.app.models.views.ResourceView;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 public class Warehouse {
@@ -21,13 +24,19 @@ public class Warehouse {
 
     private String location;
 
+    @OneToMany(mappedBy = "warehouse", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference
+    @JsonIgnore
+    private Set<Inventory> inventory = new HashSet<>();
+
     public Warehouse(long id, String name, String location) {
         this.id = id;
         this.name = name;
         this.location = location;
     }
 
-    public Warehouse(){}
+    public Warehouse() {
+    }
 
     public static Warehouse createDummyWarehouses(long id, String name, String location) {
         return new Warehouse(
@@ -36,28 +45,36 @@ public class Warehouse {
                 location);
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public Set<Inventory> getInventory() {
+        return inventory;
+    }
+
+    public void setInventory(Set<Inventory> inventory) {
+        this.inventory = inventory;
     }
 
     public long getId() {
         return id;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getLocation() {
         return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     @Override
