@@ -37,12 +37,18 @@ public interface InventoryRepository extends ManyToManyRepository<Inventory> {
     /**
      * delete resources connected to a product which is deleted
      * @param product the product recently deleted
+     * @throws UnsupportedOperationException if method is not implemented because for example cascading rules are used
      */
-    void deleteInventoryForProduct(Product product);
+    default void deleteInventoryForProduct(Product product) {
+        throw new UnsupportedOperationException("No implementation should be needed if cascading is on");
+    };
 
     /**
      * delete resources connected to a warehouse which is deleted
      * @param warehouse the warehouse recently deleted
+     * @throws UnsupportedOperationException if method is not implemented because for example cascading rules are used
      */
-    void deleteInventoryForWarehouse(Warehouse warehouse);
+    default void deleteInventoryForWarehouse(Warehouse warehouse) {
+        throw new UnsupportedOperationException("No implementation should be needed if cascading is on");
+    };
 }
