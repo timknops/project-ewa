@@ -10,7 +10,7 @@
     </parent>
     <groupId>nl.solar</groupId>
     <artifactId>app</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1-SNAPSHOT</version> <!-- JAR??? -->
     <packaging>war</packaging>
     <name>back-end</name>
     <description>back-end</description>
