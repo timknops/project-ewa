@@ -30,6 +30,7 @@ import {WarehouseAdaptor} from "@/service/warehouseAdaptor";
 import {UserAdaptor} from "@/service/userAdaptor";
 import {InventoryAdaptor} from "@/service/inventoryAdaptor";
 import { TeamAdaptor } from "@/service/teamAdaptor";
+import {EmailAdaptor} from "@/service/emailAdaptor";
 
 
 
@@ -56,6 +57,7 @@ export default {
       userService: new UserAdaptor(`${appConfig.BACKEND_URL}/users`),
       inventoryService: new InventoryAdaptor(appConfig.BACKEND_URL),
       teamsService: new TeamAdaptor(`${appConfig.BACKEND_URL}/teams`),
+      emailService: new EmailAdaptor(`${appConfig.BACKEND_URL}`),
     }
   },
   methods: {

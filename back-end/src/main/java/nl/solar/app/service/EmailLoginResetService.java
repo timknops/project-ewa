@@ -32,7 +32,7 @@ public class EmailLoginResetService implements EmailService{
 
             javaMailSender.send(mailMessage);
             return "Mail has been send";
-        }catch (Exception e){
+        } catch (Exception e){
             return "Something went wrong while sending mail";
         }
     }

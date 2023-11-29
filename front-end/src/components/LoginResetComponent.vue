@@ -37,7 +37,7 @@
               <button
                   class="btn btn-primary login-button"
                   type="button"
-                  v-on:click="mailSubmit()"
+                  v-on:click="sendEmail()"
               >
                 Submit
               </button>
@@ -101,7 +101,8 @@
 <script>
 export default {
   name: "LoginResetComponent",
-  inject: ['userService'],
+  inject: ['userService',
+  'emailService'],
   data() {
     return {
       users: [],
@@ -186,6 +187,13 @@ export default {
       try {
         this.user.password = password
         await this.userService.asyncSave(this.user);
+      } catch (e){
+        console.log(e)
+      }
+    },
+    sendEmail(){
+      try {
+        this.emailService.asyncSendMail(this.input.email);
       } catch (e){
         console.log(e)
       }
