@@ -43,6 +43,9 @@ public class InventoryRepositoryJpa implements InventoryRepository {
         InventoryKey key = new InventoryKey();
         key.setProductId(productId);
         key.setWarehouseId(warehouseId);
+
+        System.out.println(key.getProductId());
+        System.out.println(key.getWarehouseId());
         return entityManager.find(Inventory.class, key);
     }
 

@@ -31,7 +31,7 @@ public class Team {
     private TeamType type;
 
     @OneToMany(mappedBy = "team")
-    @JsonManagedReference
+    @JsonBackReference
     private List<Project> projects = new ArrayList<>();
 
     public Team(long id, String team, Warehouse warehouse, TeamType type) {

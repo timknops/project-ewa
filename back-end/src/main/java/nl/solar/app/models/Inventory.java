@@ -1,13 +1,9 @@
 package nl.solar.app.models;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonIncludeProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonView;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import nl.solar.app.models.compositeKeys.InventoryKey;
-import nl.solar.app.models.views.ResourceView;
 
 import java.util.Objects;
 
@@ -22,27 +18,18 @@ public class Inventory {
     @EmbeddedId
     private InventoryKey id = new InventoryKey();
 
-    public InventoryKey getId() {
-        return id;
-    }
-
-    public void setId(InventoryKey id) {
-        this.id = id;
-    }
-
     @ManyToOne
     @MapsId("warehouseId")
     @JoinColumn(name = "warehouse_id")
-    @JsonIncludeProperties(value = {"id", "name"})
-    @JsonManagedReference(value = "warehouse_inventory")
+    @JsonIgnoreProperties(value = {"description"})
+//    @JsonManagedReference(value = "warehouse_inventory")
     private Warehouse warehouse;
 
     @ManyToOne
     @MapsId("productId")
     @JoinColumn(name = "product_id")
-    @JsonManagedReference(value = "product_inventory")
+//    @JsonManagedReference(value = "product_inventory")
     private Product product;
-
     private int quantity;
 
     public static Inventory createDummyResource(Warehouse warehouse, Product product) {
@@ -53,6 +40,14 @@ public class Inventory {
         inventory.setQuantity((int) (Math.floor(Math.random() * 40)));
 
         return inventory;
+    }
+
+    public InventoryKey getId() {
+        return id;
+    }
+
+    public void setId(InventoryKey id) {
+        this.id = id;
     }
 
     public Warehouse getWarehouse() {

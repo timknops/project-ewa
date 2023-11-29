@@ -2,6 +2,7 @@ package nl.solar.app.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
 import nl.solar.app.models.views.ResourceView;
@@ -29,11 +30,13 @@ public class Product {
     private String description;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference(value = "product_resource")
+//    @JsonBackReference(value = "product_resource")
+    @JsonIgnore
     private List<ResourceTemp> projects;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference(value = "product_inventory")
+//    @JsonBackReference(value = "product_inventory")
+    @JsonIgnore
     private Set<Inventory> inventory;
 
     public Product() {

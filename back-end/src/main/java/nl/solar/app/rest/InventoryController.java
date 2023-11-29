@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Controller for all end-points directly affecting the resources.
@@ -42,43 +44,37 @@ public class InventoryController {
     @GetMapping(path = "/inventory", produces = "application/json")
     public ResponseEntity<List<Map<String, Object>>> getInventory() {
         List<Inventory> inventories = inventoryRepo.findAll();
-        List<Map<String, Object>> formattedResources = new ArrayList<>();
-        Map<Warehouse, List<Map<String, Object>>> GroupedByWarehouse = new HashMap<>();
+//        List<Map<String, Object>> formattedResources = new ArrayList<>();
+//        Map<Warehouse, List<Map<String, Object>>> GroupedByWarehouse = new HashMap<>();
+//
+//        for (Inventory inventory : inventories) {
+//            Map<String, Object> productFormat = formatProductObject(inventory);
+//
+//            //add product to a list of the warehouse of the current resources.
+//            GroupedByWarehouse.computeIfAbsent(inventory.getWarehouse(), k -> new ArrayList<>()).add(productFormat);
+//        }
+//
+//        for (Map.Entry<Warehouse, List<Map<String, Object>>> entry : GroupedByWarehouse.entrySet()) {
+//            Map<String, Object> formattedResource = new HashMap<>();
+//            formattedResource.put("warehouse", entry.getKey());
+//            formattedResource.put("products", entry.getValue());
+//
+//            formattedResources.add(formattedResource);
+//        }
+//        return ResponseEntity.ok(formattedResources);
+        List<Map<String, Object>> formattedResources = inventories.stream().collect(
+                Collectors.groupingBy(Inventory::getWarehouse))
+                .entrySet().stream().
+                flatMap(entry -> {
+                    Warehouse warehouse = entry.getKey();
+                    List<Map<String, Object>> products = entry.getValue().stream()
+                            .map(this::formatProductObject).toList();
 
-        for (Inventory inventory : inventories) {
-            Map<String, Object> productFormat = formatProductObject(inventory);
-
-            //add product to a list of the warehouse of the current resources.
-            GroupedByWarehouse.computeIfAbsent(inventory.getWarehouse(), k -> new ArrayList<>()).add(productFormat);
-        }
-
-        /*
-         * Loop over all warehouses in the GroupBy map and format it to
-         * [{
-         * warehouse: {
-         * id: Long,
-         * name: String
-         * },
-         * products: [
-         * {
-         * id: Long,
-         * productName: String,
-         * description: String,
-         * quantity: Int
-         * },
-         * ...
-         * ]
-         * },
-         * ...
-         * ]
-         */
-        for (Map.Entry<Warehouse, List<Map<String, Object>>> entry : GroupedByWarehouse.entrySet()) {
-            Map<String, Object> formattedResource = new HashMap<>();
-            formattedResource.put("warehouse", entry.getKey());
-            formattedResource.put("products", entry.getValue());
-
-            formattedResources.add(formattedResource);
-        }
+                    Map<String, Object> formattedResource = new HashMap<>();
+                    formattedResource.put("warehouse", warehouse);
+                    formattedResource.put("products", products);
+                    return Stream.of(formattedResource);
+                }).toList();
         return ResponseEntity.ok(formattedResources);
     }
 
