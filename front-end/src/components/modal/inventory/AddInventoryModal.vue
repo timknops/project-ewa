@@ -41,12 +41,12 @@ export default {
     return {
       modalItem: {
         warehouse: {
-          id: Number
+          id: this.item.warehouseId
         },
         product: {
-          id: Number
+          id: null
         },
-        quantity: Number
+        quantity: 0
       },
       activeWarehouseId: Number,
       products: Array,
@@ -77,7 +77,6 @@ export default {
   },
   async created() {
     this.activeWarehouseId = this.item.warehouseId
-    this.modalItem.warehouse.id = this.activeWarehouseId
     this.products = await this.inventoryService.getProductWithoutInventory(this.activeWarehouseId);
 
     //close modal if all products have an inventory
