@@ -54,6 +54,14 @@ public class InventoryRepositoryJpa implements InventoryRepository {
     }
 
     @Override
+    public List<Product> findProductsWithoutInventory(long warehouseId) {
+        return entityManager.createQuery("SELECT p FROM Product p " +
+                " WHERE p.id NOT IN (SELECT i.id.productId FROM Inventory i WHERE i.id.warehouseId = :warehouse_id)", Product.class)
+                .setParameter("warehouse_id", warehouseId)
+                .getResultList();
+    }
+
+    @Override
     public Inventory deleteByIds(long productId, long warehouseId) {
         Inventory toBeDeleted = findByIds(productId, warehouseId);
 

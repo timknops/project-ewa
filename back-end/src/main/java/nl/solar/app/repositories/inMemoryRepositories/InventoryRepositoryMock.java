@@ -54,6 +54,11 @@ public class InventoryRepositoryMock implements InventoryRepository {
     }
 
     @Override
+    public List<Product> findProductsWithoutInventory(long warehouseId) {
+        return null;
+    }
+
+    @Override
     public Inventory deleteByIds(long warehouseId, long productId) {
         Inventory inventory = findByIds(warehouseId, productId);
 

@@ -39,4 +39,6 @@ public interface InventoryRepository extends ManyToManyRepository<Inventory> {
     default void deleteInventoryForWarehouse(Warehouse warehouse) {
         throw new UnsupportedOperationException("No implementation should be needed if cascading is on");
     };
+
+    List<Product> findProductsWithoutInventory(long warehouseId);
 }

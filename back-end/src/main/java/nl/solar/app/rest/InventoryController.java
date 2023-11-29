@@ -7,6 +7,7 @@ import nl.solar.app.exceptions.BadRequestException;
 import nl.solar.app.exceptions.PreConditionFailedException;
 import nl.solar.app.exceptions.ResourceNotFoundException;
 import nl.solar.app.models.Inventory;
+import nl.solar.app.models.Product;
 import nl.solar.app.models.Warehouse;
 import nl.solar.app.models.views.ResourceView;
 import nl.solar.app.repositories.InventoryRepository;
@@ -99,7 +100,7 @@ public class InventoryController {
      * @throws ResourceNotFoundException throw error if the resource doesn't exist
      */
     @GetMapping(path = "/warehouses/{wId}/products/{pId}", produces = "application/json")
-    public ResponseEntity<Object> getSingleInventory(@PathVariable long wId, @PathVariable long pId) throws ResourceNotFoundException {
+    public ResponseEntity<ProductDTO> getSingleInventory(@PathVariable long wId, @PathVariable long pId) throws ResourceNotFoundException {
         Inventory inventory = this.inventoryRepo.findByIds(pId, wId);
         if (inventory == null) {
             throw new ResourceNotFoundException("The combination of warehouse and product doesn't return a resource");
@@ -107,6 +108,12 @@ public class InventoryController {
 
         return ResponseEntity.ok().body(formatProductObject(inventory));
     }
+
+    @GetMapping(path = "/warehouses/{wId}/products/without-inventory", produces = "application/json")
+    public List<Product> getProductsWithoutInventory(@PathVariable long wId) {
+        return this.inventoryRepo.findProductsWithoutInventory(wId);
+    }
+
 
     /**
      * Update a specific resource
