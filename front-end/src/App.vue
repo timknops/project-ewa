@@ -26,7 +26,6 @@ import LoginResetComponent from "@/components/LoginResetComponent.vue";
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import appConfig from "@/appConfig";
 import {ProductAdaptor} from "@/service/productAdaptor";
-import {ResourceAdaptor} from "@/service/resourceAdaptor";
 import {WarehouseAdaptor} from "@/service/warehouseAdaptor";
 import {UserAdaptor} from "@/service/userAdaptor";
 import {InventoryAdaptor} from "@/service/inventoryAdaptor";
@@ -40,6 +39,7 @@ export default {
   name: "App",
   components: {
     LoginPage,
+    LoginResetComponent,
     HeaderComponent,
     Sidebar,
   },
