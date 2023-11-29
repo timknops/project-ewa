@@ -1,7 +1,6 @@
 package nl.solar.app.repositories.jpaRepositories;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.NamedQuery;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import nl.solar.app.models.Inventory;
@@ -15,7 +14,6 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Map;
 
 @Repository("INVENTORY.JPA")
 @Primary

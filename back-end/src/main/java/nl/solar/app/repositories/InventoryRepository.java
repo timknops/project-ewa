@@ -5,8 +5,6 @@ import nl.solar.app.models.Inventory;
 import nl.solar.app.models.Warehouse;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * Since a Resource is a lookup between a product and a warehouse it isn't possible to use the global entityRepo
