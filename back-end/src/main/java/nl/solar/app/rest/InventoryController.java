@@ -3,6 +3,7 @@ package nl.solar.app.rest;
 import com.fasterxml.jackson.annotation.JsonView;
 import nl.solar.app.DTO.InventoryDTO;
 import nl.solar.app.DTO.ProductDTO;
+import nl.solar.app.exceptions.BadRequestException;
 import nl.solar.app.exceptions.PreConditionFailedException;
 import nl.solar.app.exceptions.ResourceNotFoundException;
 import nl.solar.app.models.Inventory;
@@ -116,20 +117,21 @@ public class InventoryController {
      *                                     ids in the path
      */
     @JsonView(ResourceView.Complete.class)
-    @PutMapping(path = "/warehouses/{wId}/products/{pId}", produces = "application/json")
-    public ResponseEntity<Object> updateInventory(@PathVariable long wId, @PathVariable long pId, @RequestBody Inventory inventory)
-            throws PreConditionFailedException {
-        if (inventory.getProduct().getId() != pId || inventory.getWarehouse().getId() != wId) {
-            throw new PreConditionFailedException(
-                    "Ids of the body and path do not match"
-            );
+    @PatchMapping(path = "/warehouses/{wId}/products/{pId}", produces = "application/json")
+    public ResponseEntity<Object> updateInventory(@PathVariable long wId, @PathVariable long pId, @RequestBody Map<String, Integer> partiallyUpdated)
+            throws ResourceNotFoundException, BadRequestException {
+        Inventory existingInventory = inventoryRepo.findByIds(pId, wId);
+        if (existingInventory == null) {
+            throw new ResourceNotFoundException("inventory Not Found");
+        }
+        if (!partiallyUpdated.containsKey("quantity")) {
+            throw new BadRequestException("Request body doesn't contain quantity");
         }
 
-        //manually set the embedded key to make sure jpa can find it
-        inventory.getId().setWarehouseId(wId);
-        inventory.getId().setProductId(pId);
+        existingInventory.setQuantity(partiallyUpdated.get("quantity"));
 
-        Inventory update = this.inventoryRepo.save(inventory);
+        Inventory update = this.inventoryRepo.save(existingInventory);
+
         return ResponseEntity.ok().body(update);
     }
 
