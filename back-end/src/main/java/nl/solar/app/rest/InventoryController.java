@@ -44,37 +44,23 @@ public class InventoryController {
     @GetMapping(path = "/inventory", produces = "application/json")
     public ResponseEntity<List<Map<String, Object>>> getInventory() {
         List<Inventory> inventories = inventoryRepo.findAll();
-//        List<Map<String, Object>> formattedResources = new ArrayList<>();
-//        Map<Warehouse, List<Map<String, Object>>> GroupedByWarehouse = new HashMap<>();
-//
-//        for (Inventory inventory : inventories) {
-//            Map<String, Object> productFormat = formatProductObject(inventory);
-//
-//            //add product to a list of the warehouse of the current resources.
-//            GroupedByWarehouse.computeIfAbsent(inventory.getWarehouse(), k -> new ArrayList<>()).add(productFormat);
-//        }
-//
-//        for (Map.Entry<Warehouse, List<Map<String, Object>>> entry : GroupedByWarehouse.entrySet()) {
-//            Map<String, Object> formattedResource = new HashMap<>();
-//            formattedResource.put("warehouse", entry.getKey());
-//            formattedResource.put("products", entry.getValue());
-//
-//            formattedResources.add(formattedResource);
-//        }
-//        return ResponseEntity.ok(formattedResources);
-        List<Map<String, Object>> formattedResources = inventories.stream().collect(
-                Collectors.groupingBy(Inventory::getWarehouse))
-                .entrySet().stream().
-                flatMap(entry -> {
-                    Warehouse warehouse = entry.getKey();
-                    List<Map<String, Object>> products = entry.getValue().stream()
-                            .map(this::formatProductObject).toList();
+        List<Map<String, Object>> formattedResources = new ArrayList<>();
+        Map<Warehouse, List<Map<String, Object>>> GroupedByWarehouse = new HashMap<>();
 
-                    Map<String, Object> formattedResource = new HashMap<>();
-                    formattedResource.put("warehouse", warehouse);
-                    formattedResource.put("products", products);
-                    return Stream.of(formattedResource);
-                }).toList();
+        for (Inventory inventory : inventories) {
+            Map<String, Object> productFormat = formatProductObject(inventory);
+
+            //add product to a list of the warehouse of the current resources.
+            GroupedByWarehouse.computeIfAbsent(inventory.getWarehouse(), k -> new ArrayList<>()).add(productFormat);
+        }
+
+        for (Map.Entry<Warehouse, List<Map<String, Object>>> entry : GroupedByWarehouse.entrySet()) {
+            Map<String, Object> formattedResource = new HashMap<>();
+            formattedResource.put("warehouse", entry.getKey());
+            formattedResource.put("products", entry.getValue());
+
+            formattedResources.add(formattedResource);
+        }
         return ResponseEntity.ok(formattedResources);
     }
 
@@ -112,7 +98,7 @@ public class InventoryController {
      */
     @GetMapping(path = "/warehouses/{wId}/products/{pId}", produces = "application/json")
     public ResponseEntity<Object> getSingleInventory(@PathVariable long wId, @PathVariable long pId) throws ResourceNotFoundException {
-        Inventory inventory = this.inventoryRepo.findByIds(wId, pId);
+        Inventory inventory = this.inventoryRepo.findByIds(pId, wId);
         if (inventory == null) {
             throw new ResourceNotFoundException("The combination of warehouse and product doesn't return a resource");
         }
@@ -139,6 +125,10 @@ public class InventoryController {
                     "Ids of the body and path do not match"
             );
         }
+
+        //manually set the embedded key to make sure jpa can find it
+        inventory.getId().setWarehouseId(wId);
+        inventory.getId().setProductId(pId);
 
         Inventory update = this.inventoryRepo.save(inventory);
         return ResponseEntity.ok().body(update);

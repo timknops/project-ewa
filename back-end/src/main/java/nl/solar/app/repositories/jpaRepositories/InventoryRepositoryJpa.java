@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 @Repository("INVENTORY.JPA")
 @Primary
@@ -44,8 +45,6 @@ public class InventoryRepositoryJpa implements InventoryRepository {
         key.setProductId(productId);
         key.setWarehouseId(warehouseId);
 
-        System.out.println(key.getProductId());
-        System.out.println(key.getWarehouseId());
         return entityManager.find(Inventory.class, key);
     }
 
