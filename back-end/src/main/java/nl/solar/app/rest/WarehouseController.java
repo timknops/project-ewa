@@ -62,7 +62,6 @@ public class WarehouseController {
         }
 
         Warehouse newWarehouse = this.warehouseRepo.save(warehouse);
-        this.inventoryRepository.addInventoryForWarehouse(warehouse);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(newWarehouse.getId()).toUri();
         return ResponseEntity.created(location).body(newWarehouse);

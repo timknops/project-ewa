@@ -21,18 +21,6 @@ public interface InventoryRepository extends ManyToManyRepository<Inventory> {
      */
     List<Inventory> findInventoryForWarehouse(long warehouseId);
 
-    /**
-     * Add resources for a new product for all warehouses
-     * @param product the newly created product
-     */
-    void addInventoryForProduct(Product product);
-
-    /**
-     * Add resources for all existing product for a new warehouse
-     * @param warehouse the newly created warehouse
-     */
-    void addInventoryForWarehouse(Warehouse warehouse);
-
 
     /**
      * delete resources connected to a product which is deleted

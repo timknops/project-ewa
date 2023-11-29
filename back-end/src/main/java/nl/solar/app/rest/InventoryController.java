@@ -13,7 +13,10 @@ import nl.solar.app.repositories.InventoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -118,7 +121,7 @@ public class InventoryController {
      */
     @JsonView(ResourceView.Complete.class)
     @PatchMapping(path = "/warehouses/{wId}/products/{pId}", produces = "application/json")
-    public ResponseEntity<Object> updateInventory(@PathVariable long wId, @PathVariable long pId, @RequestBody Map<String, Integer> partiallyUpdated)
+    public ResponseEntity<Inventory> updateInventory(@PathVariable long wId, @PathVariable long pId, @RequestBody Map<String, Integer> partiallyUpdated)
             throws ResourceNotFoundException, BadRequestException {
         Inventory existingInventory = inventoryRepo.findByIds(pId, wId);
         if (existingInventory == null) {
@@ -133,6 +136,25 @@ public class InventoryController {
         Inventory update = this.inventoryRepo.save(existingInventory);
 
         return ResponseEntity.ok().body(update);
+    }
+
+    @JsonView(ResourceView.Complete.class)
+    @PostMapping(path = "/inventory", produces = "application/json")
+    public ResponseEntity<Inventory> addInventory(@RequestBody Inventory inventory, UriComponentsBuilder uriComponentsBuilder) throws BadRequestException {
+        if (inventory.getProduct() == null) {
+            throw new BadRequestException("Product is not set");
+        }
+        if (inventory.getWarehouse() == null) {
+            throw new BadRequestException("Warehouse is not set");
+        }
+
+
+
+        Inventory newInventory = this.inventoryRepo.save(inventory);
+
+        URI location = uriComponentsBuilder.path("/warehouses/{wId}/products/{pId}")
+                .buildAndExpand(newInventory.getWarehouse().getId(), newInventory.getProduct().getId()).toUri();
+        return ResponseEntity.created(location).body(newInventory);
     }
 
     /**

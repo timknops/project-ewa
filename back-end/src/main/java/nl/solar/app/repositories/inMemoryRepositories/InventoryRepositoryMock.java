@@ -54,24 +54,6 @@ public class InventoryRepositoryMock implements InventoryRepository {
     }
 
     @Override
-    public void addInventoryForProduct(Product product) {
-        for (Warehouse warehouse: warehouseRepo.findAll()) {
-            Inventory inventory = Inventory.createDummyResource(warehouse, product);
-            inventory.setQuantity(0);
-            inventoryList.add(inventory);
-        }
-    }
-
-    @Override
-    public void addInventoryForWarehouse(Warehouse warehouse) {
-        for (Product product: productRepo.findAll()) {
-            Inventory inventory = Inventory.createDummyResource(warehouse, product);
-            inventory.setQuantity(0);
-            inventoryList.add(inventory);
-        }
-    }
-
-    @Override
     public Inventory deleteByIds(long warehouseId, long productId) {
         Inventory inventory = findByIds(warehouseId, productId);
 

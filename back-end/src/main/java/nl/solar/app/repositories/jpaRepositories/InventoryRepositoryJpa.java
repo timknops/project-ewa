@@ -69,33 +69,4 @@ public class InventoryRepositoryJpa implements InventoryRepository {
         return entityManager.merge(item);
     }
 
-    @Override
-    public void addInventoryForProduct(Product product) {
-        List<Warehouse> warehouses = this.warehouseRepo.findAll();
-
-        for (Warehouse warehouse : warehouses) {
-            Inventory inventory = Inventory.createDummyResource(warehouse, product);
-            inventory.setQuantity(0);
-
-            product.getInventory().add(inventory);
-            warehouse.getInventory().add(inventory);
-
-            warehouseRepo.save(warehouse);
-        }
-    }
-
-    @Override
-    public void addInventoryForWarehouse(Warehouse warehouse) {
-        List<Product> products = productRepo.findAll();
-
-        for (Product product : products) {
-            Inventory inventory = Inventory.createDummyResource(warehouse, product);
-            inventory.setQuantity(0);
-
-            product.getInventory().add(inventory);
-            warehouse.getInventory().add(inventory);
-
-            productRepo.save(product);
-        }
-    }
 }

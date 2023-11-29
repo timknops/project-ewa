@@ -88,9 +88,6 @@ public class ProductController {
         if (product.getProductName() == null || product.getProductName().isBlank()) throw new BadRequestException("Product name can't be empty");
         Product added = this.productRepo.save(product);
 
-        this.inventoryRepository.addInventoryForProduct(product);
-
-
         //Add a resource to all warehouses for the certain product which was added
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(added.getId()).toUri();
