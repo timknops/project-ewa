@@ -48,6 +48,9 @@ import UpdateInventoryModal from "@/components/modal/inventory/UpdateInventoryMo
 import DeleteUserModal from "@/components/modal/user/DeleteUserModal.vue";
 import UpdateUserModal from "@/components/modal/user/UpdateUserModal.vue";
 import AddUserModal from "@/components/modal/user/AddUserModal.vue";
+import AddTeamModal from "@/components/modal/team/AddTeamModal";
+import UpdateTeamModal from "@/components/modal/team/UpdateTeamModal";
+import DeleteTeamModal from "@/components/modal/team/DeleteTeamModal";
 
 /**
  * General modal component, for the styling of the header and footer,
@@ -71,7 +74,10 @@ export default {
     DeleteWarehouseModal,
     UpdateWarehouseModal,
     AddWarehouseModal,
-    UpdateInventoryModal
+    UpdateInventoryModal,
+    DeleteTeamModal,
+    UpdateTeamModal,
+    AddTeamModal,
   },
   /**
    * props

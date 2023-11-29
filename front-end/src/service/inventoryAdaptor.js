@@ -1,4 +1,4 @@
-export class ResourceAdaptor {
+export class InventoryAdaptor {
   resourceUrl;
 
   constructor(resourceUrl) {
@@ -17,22 +17,22 @@ export class ResourceAdaptor {
   }
 
   async findAll() {
-    return await this.fetchJSON(`${this.resourceUrl}/resources`);
+    return await this.fetchJSON(`${this.resourceUrl}/inventory`);
   }
 
   async findAllForWarehouse(id){
-    return await this.fetchJSON(`${this.resourceUrl}/warehouses/${id}/resources`)
+    return await this.fetchJSON(`${this.resourceUrl}/warehouses/${id}/inventory`)
   }
 
   async findByIds(wId, pId) {
     return await this.fetchJSON(`${this.resourceUrl}/warehouses/${wId}/products/${pId}`)
   }
 
-  async updateResource(resource) {
-    return await this.fetchJSON(`${this.resourceUrl}/warehouses/${resource.warehouse.id}/products/${resource.product.id}`, {
+  async updateInventory(inventory) {
+    return await this.fetchJSON(`${this.resourceUrl}/warehouses/${inventory.warehouse.id}/products/${inventory.product.id}`, {
       method: "PUT",
       headers: {"content-type": "application/json"},
-      body: JSON.stringify(resource)
+      body: JSON.stringify(inventory)
     })
   }
 }

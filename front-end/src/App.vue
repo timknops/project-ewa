@@ -21,14 +21,18 @@
 
 <script>
 import Sidebar from "@/components/Sidebar.vue";
+import LoginPage from "@/components/LoginPage.vue";
+import LoginResetComponent from "@/components/LoginResetComponent.vue";
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import appConfig from "@/appConfig";
 import {ProductAdaptor} from "@/service/productAdaptor";
 import {ResourceAdaptor} from "@/service/resourceAdaptor";
 import {WarehouseAdaptor} from "@/service/warehouseAdaptor";
 import {UserAdaptor} from "@/service/userAdaptor";
-import LoginResetComponent from "@/components/LoginResetComponent.vue";
-import LoginPage from "@/components/LoginPage.vue";
+import {InventoryAdaptor} from "@/service/inventoryAdaptor";
+import { TeamAdaptor } from "@/service/teamAdaptor";
+
+
 
 localStorage.setItem("loggedIn", false);
 localStorage.setItem("resetLogin", false);
@@ -36,7 +40,6 @@ export default {
   name: "App",
   components: {
     LoginPage,
-    LoginResetComponent,
     HeaderComponent,
     Sidebar,
   },
@@ -51,7 +54,8 @@ export default {
       productService: new ProductAdaptor(`${appConfig.BACKEND_URL}/products`),
       warehouseService: new WarehouseAdaptor(`${appConfig.BACKEND_URL}/warehouses`),
       userService: new UserAdaptor(`${appConfig.BACKEND_URL}/users`),
-      resourceService: new ResourceAdaptor(appConfig.BACKEND_URL)
+      inventoryService: new InventoryAdaptor(appConfig.BACKEND_URL),
+      teamsService: new TeamAdaptor(`${appConfig.BACKEND_URL}/teams`),
     }
   },
   methods: {
