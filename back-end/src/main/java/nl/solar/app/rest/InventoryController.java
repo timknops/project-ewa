@@ -110,7 +110,7 @@ public class InventoryController {
      *
      * @param wId       the warehouse id
      * @param pId       the product id
-     * @param inventory the updated version of a resource
+     * @param partiallyUpdated the updated version of a resource
      * @return a resource in the correct format
      * @throws PreConditionFailedException throw error if the warehouse id and
      *                                     product id in the body don't match the

@@ -249,12 +249,8 @@ export default {
 
     /**
      *
-     * @param inventory -  a inventory object in the format of the back-end i,e
-     * {
-     *   product: {id, productName, description},
-     *   warehouse: {id, name},
-     *   quantity: Number,
-     * }
+     * @param inventory -  an inventory object in the format of the back-end i,e
+
      *
      * @return {Promise<void>}
      */

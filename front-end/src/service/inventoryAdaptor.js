@@ -30,9 +30,9 @@ export class InventoryAdaptor {
 
   async updateInventory(inventory) {
     return await this.fetchJSON(`${this.resourceUrl}/warehouses/${inventory.warehouse.id}/products/${inventory.product.id}`, {
-      method: "PUT",
+      method: "PATCH",
       headers: {"content-type": "application/json"},
-      body: JSON.stringify(inventory)
+      body: JSON.stringify({quantity: inventory.quantity})
     })
   }
 }
