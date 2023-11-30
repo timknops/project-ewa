@@ -97,6 +97,7 @@
             <tr
               v-for="tableRow in currentlyDisplayedData"
               :key="tableRow"
+              class="position-relative"
               @mouseenter="mouseEnter"
               @mouseleave="mouseLeave"
             >
@@ -162,7 +163,7 @@
     <TableFooter
       :table-data="tableDataSorted"
       :amount-to-display="amountToDisplay"
-      :display-amount="displayAmount"
+      :display-amount="savedAmountToDisplay"
       :current-start-index="currentStartIndex"
       :current-end-index="displayEndIndex()"
       @view-all="viewAllItems"
@@ -315,8 +316,7 @@ export default {
 
     /** Whenever the view all button is pressed, data gets changed and the view is updated to display all items. */
     viewAllItems() {
-      this.savedAmountToDisplay = this.displayAmount;
-      this.displayAmount = this.tableData.length;
+      this.savedAmountToDisplay = this.tableData.length;
       this.currentStartIndex = 0;
       this.currentEndIndex = this.tableData.length;
       this.updateDisplayedData();
@@ -324,7 +324,7 @@ export default {
 
     /** The opposite of the view all, revert back to the original. */
     viewLessItems() {
-      this.displayAmount = this.savedAmountToDisplay;
+      this.savedAmountToDisplay = 0
       this.currentStartIndex = 0;
       this.currentEndIndex = this.displayAmount;
       this.updateDisplayedData();
@@ -404,9 +404,15 @@ export default {
         this.ROW_HEIGHT_LARGE * this.displayAmount + TABLE_HEADER_HEIGHT + "px"
       );
     },
+
+    //updates if table data has changed
+    tableDataWatcher() {
+      return [...this.tableData]
+    }
   },
   watch: {
-    tableData() {
+    tableDataWatcher() {
+      console.log("table data has been updated")
       if (this.tableData.length === 0) {
         // If the table data is empty, show an empty table.
         this.showEmptyTable = true;
@@ -422,8 +428,10 @@ export default {
         this.previousColumnIconRef.currentSortDirection =
           this.SORT_DIRECTION_OPTIONS.DEFAULT;
       }
-      this.currentStartIndex = 0;
-      this.currentEndIndex = this.amountToDisplay;
+
+      if (this.savedAmountToDisplay > this.displayAmount) {
+        this.currentEndIndex = this.tableData.length
+      }
       this.updateDisplayedData();
     },
   },

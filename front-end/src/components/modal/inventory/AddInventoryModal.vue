@@ -75,14 +75,9 @@ export default {
       }
     }
   },
-  async created() {
+  created() {
     this.activeWarehouseId = this.item.warehouseId
-    this.products = await this.inventoryService.getProductWithoutInventory(this.activeWarehouseId);
-
-    //close modal if all products have an inventory
-    if (this.products.length === 0) {
-      this.$parent.$parent.$parent.$data.showModal = false
-    }
+    this.products = this.item.products
   }
 }
 </script>
