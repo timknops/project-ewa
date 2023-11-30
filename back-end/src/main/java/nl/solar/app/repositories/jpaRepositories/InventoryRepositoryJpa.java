@@ -9,7 +9,6 @@ import nl.solar.app.models.Warehouse;
 import nl.solar.app.models.compositeKeys.InventoryKey;
 import nl.solar.app.repositories.EntityRepository;
 import nl.solar.app.repositories.InventoryRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
@@ -23,7 +22,6 @@ public class InventoryRepositoryJpa implements InventoryRepository {
     private final EntityRepository<Product> productRepo;
     private final EntityRepository<Warehouse> warehouseRepo;
 
-    @Autowired
     public InventoryRepositoryJpa(EntityRepository<Product> productRepo, EntityRepository<Warehouse> warehouseRepo) {
         this.productRepo = productRepo;
         this.warehouseRepo = warehouseRepo;
@@ -48,7 +46,8 @@ public class InventoryRepositoryJpa implements InventoryRepository {
 
     @Override
     public List<Inventory> findInventoryForWarehouse(long warehouseId) {
-        return entityManager.createQuery("SELECT i FROM Inventory i WHERE i.id.warehouseId = :warehouse_id", Inventory.class)
+        return entityManager
+                .createQuery("SELECT i FROM Inventory i WHERE i.id.warehouseId = :warehouse_id", Inventory.class)
                 .setParameter("warehouse_id", warehouseId)
                 .getResultList();
     }
@@ -56,7 +55,8 @@ public class InventoryRepositoryJpa implements InventoryRepository {
     @Override
     public List<Product> findProductsWithoutInventory(long warehouseId) {
         return entityManager.createQuery("SELECT p FROM Product p " +
-                " WHERE p.id NOT IN (SELECT i.id.productId FROM Inventory i WHERE i.id.warehouseId = :warehouse_id)", Product.class)
+                " WHERE p.id NOT IN (SELECT i.id.productId FROM Inventory i WHERE i.id.warehouseId = :warehouse_id)",
+                Product.class)
                 .setParameter("warehouse_id", warehouseId)
                 .getResultList();
     }

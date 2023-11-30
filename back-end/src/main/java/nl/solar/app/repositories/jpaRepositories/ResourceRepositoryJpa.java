@@ -13,7 +13,7 @@ import jakarta.transaction.Transactional;
 import nl.solar.app.models.Resource;
 
 /**
- * Repository implementation for managing ResourceTemp entities using JPA.
+ * Repository implementation for managing Resource entities using JPA.
  * 
  * @see EntityRepository
  * @see Resource
@@ -29,21 +29,21 @@ public class ResourceRepositoryJpa implements EntityRepository<Resource> {
     private EntityManager entityManager;
 
     /**
-     * Retrieves all ResourceTemp entities from the database.
+     * Retrieves all Resource entities from the database.
      *
-     * @return A list of ResourceTemp entities.
+     * @return A list of Resource entities.
      */
     @Override
     public List<Resource> findAll() {
-        TypedQuery<Resource> query = entityManager.createQuery("SELECT r FROM ResourceTemp r", Resource.class);
+        TypedQuery<Resource> query = entityManager.createQuery("SELECT r FROM Resource r", Resource.class);
         return query.getResultList();
     }
 
     /**
-     * Retrieves a ResourceTemp entity by its ID.
+     * Retrieves a Resource entity by its ID.
      *
-     * @param id The ID of the ResourceTemp entity.
-     * @return The ResourceTemp entity with the specified ID.
+     * @param id The ID of the Resource entity.
+     * @return The Resource entity with the specified ID.
      */
     @Override
     public Resource findById(long id) {
@@ -51,10 +51,10 @@ public class ResourceRepositoryJpa implements EntityRepository<Resource> {
     }
 
     /**
-     * Deletes a ResourceTemp entity by its ID.
+     * Deletes a Resource entity by its ID.
      *
-     * @param id The ID of the ResourceTemp entity to delete.
-     * @return The deleted ResourceTemp entity.
+     * @param id The ID of the Resource entity to delete.
+     * @return The deleted Resource entity.
      */
     @Override
     public Resource delete(long id) {
@@ -62,10 +62,10 @@ public class ResourceRepositoryJpa implements EntityRepository<Resource> {
     }
 
     /**
-     * Saves a ResourceTemp entity to the database.
+     * Saves a Resource entity to the database.
      *
-     * @param item The ResourceTemp entity to save.
-     * @return The saved ResourceTemp entity.
+     * @param item The Resource entity to save.
+     * @return The saved Resource entity.
      */
     @Override
     public Resource save(Resource item) {

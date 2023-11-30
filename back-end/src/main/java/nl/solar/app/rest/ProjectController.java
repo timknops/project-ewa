@@ -24,6 +24,8 @@ import nl.solar.app.exceptions.PreConditionFailedException;
 import nl.solar.app.exceptions.ResourceNotFoundException;
 import nl.solar.app.models.Project;
 import nl.solar.app.models.views.ProjectView;
+import nl.solar.app.repositories.EntityRepository;
+import nl.solar.app.repositories.ProjectRepository;
 import nl.solar.app.repositories.jpaRepositories.ProjectRepositoryJpa;
 
 /**
@@ -37,7 +39,7 @@ import nl.solar.app.repositories.jpaRepositories.ProjectRepositoryJpa;
 public class ProjectController {
 
     @Autowired
-    ProjectRepositoryJpa projectRepo;
+    ProjectRepository projectRepo;
 
     /**
      * Retrieves a list of all projects specifically for the overview of the
@@ -114,7 +116,7 @@ public class ProjectController {
      * @throws ResourceNotFoundException If the project is null.
      * @return A ResponseEntity containing the created project.
      */
-    @PostMapping(path = "/add", produces = "application/json", consumes = "application/json;charset=UTF-8")
+    @PostMapping(path = "/add", produces = "application/json")
     public ResponseEntity<Project> createProject(@RequestBody Project project) throws ResourceNotFoundException {
         if (project == null) {
             throw new ResourceNotFoundException("Project is null");

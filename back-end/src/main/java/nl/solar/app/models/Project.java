@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -33,6 +34,7 @@ public class Project {
     @JoinColumn(name = "team_id")
     @JsonManagedReference
     @JsonView(ProjectView.Overview.class)
+    @JsonIgnore
     private Team team;
 
     @JsonView(ProjectView.Overview.class)
@@ -51,6 +53,7 @@ public class Project {
 
     @OneToMany(mappedBy = "project", orphanRemoval = true, cascade = CascadeType.ALL)
     @JsonManagedReference
+    @JsonIgnore
     private Set<Resource> products = new HashSet<>();
 
     /**

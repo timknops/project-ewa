@@ -5,12 +5,15 @@ import java.util.List;
 import java.util.Map;
 
 import nl.solar.app.repositories.EntityRepository;
+import nl.solar.app.repositories.ProjectRepository;
+
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
+import jakarta.transaction.Transactional;
 import nl.solar.app.models.Project;
 
 /**
@@ -19,6 +22,7 @@ import nl.solar.app.models.Project;
  * @author Tim Knops
  */
 @Repository("PROJECTS.JPA")
+@Transactional
 @Primary
 public class ProjectRepositoryJpa implements ProjectRepository {
 
@@ -61,8 +65,6 @@ public class ProjectRepositoryJpa implements ProjectRepository {
      */
     @Override
     public Project save(Project newProject) {
-        System.out.println(newProject);
-
         return entityManager.merge(newProject);
     }
 

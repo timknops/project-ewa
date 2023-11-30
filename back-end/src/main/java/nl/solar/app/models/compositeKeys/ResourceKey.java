@@ -7,7 +7,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 /**
- * Represents a composite key for the ResourceTemp class.
+ * Represents a composite key for the Resource class.
  * 
  * @author Tim Knops
  */

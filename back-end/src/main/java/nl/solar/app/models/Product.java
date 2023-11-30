@@ -39,7 +39,7 @@ public class Product {
     private Set<Inventory> inventory;
 
     public Product() {
-        projects = new ArrayList<>();
+        projects = new HashSet<>();
         inventory = new HashSet<>();
     }
 

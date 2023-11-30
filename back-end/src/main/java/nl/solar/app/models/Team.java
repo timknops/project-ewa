@@ -1,8 +1,10 @@
 package nl.solar.app.models;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -31,7 +33,7 @@ public class Team {
 
     @OneToMany(mappedBy = "team")
     @JsonBackReference
-    private List<Project> projects = new ArrayList<>();
+    private Set<Project> projects = new HashSet<>();
 
     public Team(long id, String team, Warehouse warehouse, TeamType type) {
         this.id = id;
@@ -92,11 +94,11 @@ public class Team {
         this.type = type;
     }
 
-    public List<Project> getProjects() {
+    public Set<Project> getProjects() {
         return projects;
     }
 
-    public void setProjects(List<Project> project) {
+    public void setProjects(Set<Project> project) {
         this.projects = project;
     }
 
