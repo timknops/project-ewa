@@ -20,7 +20,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import jakarta.persistence.TypedQuery;
 import nl.solar.app.exceptions.PreConditionFailedException;
 import nl.solar.app.exceptions.ResourceNotFoundException;
 import nl.solar.app.models.Project;
