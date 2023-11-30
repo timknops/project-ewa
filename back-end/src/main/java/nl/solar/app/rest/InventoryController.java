@@ -128,7 +128,7 @@ public class InventoryController {
      */
     @JsonView(ResourceView.Complete.class)
     @PatchMapping(path = "/warehouses/{wId}/products/{pId}", produces = "application/json")
-    public ResponseEntity<Inventory> updateInventory(@PathVariable long wId, @PathVariable long pId, @RequestBody Map<String, Integer> partiallyUpdated)
+    public ResponseEntity<Inventory> updateInventory(@PathVariable long wId, @PathVariable long pId, @RequestBody Map<String, Long> partiallyUpdated)
             throws ResourceNotFoundException, BadRequestException {
         Inventory existingInventory = inventoryRepo.findByIds(pId, wId);
         if (existingInventory == null) {

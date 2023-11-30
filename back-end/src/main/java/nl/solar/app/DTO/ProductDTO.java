@@ -16,9 +16,9 @@ public class ProductDTO {
     private String description;
 
     @JsonView(ResourceView.Complete.class)
-    private Integer quantity;
+    private Long quantity;
 
-    public ProductDTO(Long id, String productName, String description, Integer quantity) {
+    public ProductDTO(Long id, String productName, String description, Long quantity) {
         this.id = id;
         this.productName = productName;
         this.description = description;

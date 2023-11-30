@@ -20,14 +20,7 @@ import java.util.List;
 @Transactional
 public class InventoryRepositoryJpa implements InventoryRepository {
 
-    private final EntityRepository<Product> productRepo;
-    private final EntityRepository<Warehouse> warehouseRepo;
-
-    @Autowired
-    public InventoryRepositoryJpa(EntityRepository<Product> productRepo, EntityRepository<Warehouse> warehouseRepo) {
-        this.productRepo = productRepo;
-        this.warehouseRepo = warehouseRepo;
-    }
+    public InventoryRepositoryJpa() { }
 
     @PersistenceContext
     private EntityManager entityManager;
