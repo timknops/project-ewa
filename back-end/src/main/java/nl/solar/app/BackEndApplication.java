@@ -4,6 +4,8 @@ import java.util.List;
 
 import nl.solar.app.models.*;
 import nl.solar.app.repositories.InventoryRepository;
+import nl.solar.app.repositories.ResourceRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -41,7 +43,7 @@ public class BackEndApplication implements CommandLineRunner {
     EntityRepository<Project> projectsRepo;
 
     @Autowired
-    EntityRepository<Resource> resourcesRepo;
+    ResourceRepository resourcesRepo;
 
     @Autowired
     EntityRepository<Product> productsRepo;

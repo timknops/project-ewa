@@ -23,10 +23,12 @@ import com.fasterxml.jackson.annotation.JsonView;
 import nl.solar.app.exceptions.PreConditionFailedException;
 import nl.solar.app.exceptions.ResourceNotFoundException;
 import nl.solar.app.models.Project;
+import nl.solar.app.models.Team;
 import nl.solar.app.models.views.ProjectView;
+import nl.solar.app.models.wrappers.ProjectRequestWrapper;
 import nl.solar.app.repositories.EntityRepository;
 import nl.solar.app.repositories.ProjectRepository;
-import nl.solar.app.repositories.jpaRepositories.ProjectRepositoryJpa;
+import nl.solar.app.repositories.ResourceRepository;
 
 /**
  * Controller class for managing project-related endpoints.
@@ -41,6 +43,12 @@ public class ProjectController {
     @Autowired
     ProjectRepository projectRepo;
 
+    @Autowired
+    ResourceRepository resourceRepo;
+
+    @Autowired
+    EntityRepository<Team> teamRepo;
+
     /**
      * Retrieves a list of all projects specifically for the overview of the
      * projects.
@@ -49,24 +57,26 @@ public class ProjectController {
      */
     @JsonView(ProjectView.Overview.class)
     @GetMapping(produces = "application/json")
-    public List<Map<String, Object>> getAll() {
+    public List<Project> getAll() {
         List<Project> projects = this.projectRepo.findAll(); // Get all projects from the database.
 
-        // Format the projects to a list of maps.
-        List<Map<String, Object>> formattedProjects = new ArrayList<>();
-        for (Project project : projects) { // Loop through all projects.
-            Map<String, Object> formattedProject = new HashMap<>(); // Create a new map for the current project.
-            formattedProject.put("id", project.getId());
-            formattedProject.put("projectName", project.getProjectName());
-            formattedProject.put("client", project.getClient());
-            formattedProject.put("dueDate", project.getDueDate());
-            formattedProject.put("status", project.getStatus());
-            formattedProject.put("team", project.getTeam().getTeam());
+        // // Format the projects to a list of maps.
+        // List<Map<String, Object>> formattedProjects = new ArrayList<>();
+        // for (Project project : projects) { // Loop through all projects.
+        // Map<String, Object> formattedProject = new HashMap<>(); // Create a new map
+        // for the current project.
+        // formattedProject.put("id", project.getId());
+        // formattedProject.put("projectName", project.getProjectName());
+        // formattedProject.put("client", project.getClient());
+        // formattedProject.put("dueDate", project.getDueDate());
+        // formattedProject.put("status", project.getStatus());
+        // formattedProject.put("team", project.getTeam().getTeam());
 
-            formattedProjects.add(formattedProject); // Add the formatted project to the list of formatted projects.
-        }
+        // formattedProjects.add(formattedProject); // Add the formatted project to the
+        // list of formatted projects.
+        // }
 
-        return formattedProjects;
+        return projects;
     }
 
     /**
@@ -112,16 +122,25 @@ public class ProjectController {
     /**
      * Creates a new project.
      *
-     * @param project The project to create.
-     * @throws ResourceNotFoundException If the project is null.
+     * @param projectRequest The project to create.
      * @return A ResponseEntity containing the created project.
+     * @throws ResourceNotFoundException If the project with the given ID does not
      */
     @PostMapping(path = "/add", produces = "application/json")
-    public ResponseEntity<Project> createProject(@RequestBody Project project) throws ResourceNotFoundException {
+    public ResponseEntity<Project> createProject(@RequestBody ProjectRequestWrapper projectRequest)
+            throws ResourceNotFoundException {
+        Project project = projectRequest.getProject();
         if (project == null) {
             throw new ResourceNotFoundException("Project is null");
         }
 
+        Team team = this.teamRepo.findById(projectRequest.getTeamId());
+
+        if (team == null) {
+            throw new ResourceNotFoundException("Team with id: " + projectRequest.getTeamId() + " was not found");
+        }
+
+        project.setTeam(team);
         Project createdProject = this.projectRepo.save(project);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")

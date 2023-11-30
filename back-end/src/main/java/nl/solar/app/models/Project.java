@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -32,9 +33,9 @@ public class Project {
 
     @ManyToOne
     @JoinColumn(name = "team_id")
-    @JsonManagedReference
-    @JsonView(ProjectView.Overview.class)
     @JsonIgnore
+    @JsonIncludeProperties({ "id", "team" })
+    @JsonView(ProjectView.Overview.class)
     private Team team;
 
     @JsonView(ProjectView.Overview.class)

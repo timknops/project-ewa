@@ -3,6 +3,8 @@ package nl.solar.app.repositories.jpaRepositories;
 import java.util.List;
 
 import nl.solar.app.repositories.EntityRepository;
+import nl.solar.app.repositories.ResourceRepository;
+
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
@@ -23,52 +25,30 @@ import nl.solar.app.models.Resource;
 @Repository("RESOURCES.JPA")
 @Transactional
 @Primary
-public class ResourceRepositoryJpa implements EntityRepository<Resource> {
+public class ResourceRepositoryJpa implements ResourceRepository {
 
     @PersistenceContext
     private EntityManager entityManager;
 
-    /**
-     * Retrieves all Resource entities from the database.
-     *
-     * @return A list of Resource entities.
-     */
     @Override
     public List<Resource> findAll() {
         TypedQuery<Resource> query = entityManager.createQuery("SELECT r FROM Resource r", Resource.class);
         return query.getResultList();
     }
 
-    /**
-     * Retrieves a Resource entity by its ID.
-     *
-     * @param id The ID of the Resource entity.
-     * @return The Resource entity with the specified ID.
-     */
     @Override
-    public Resource findById(long id) {
-        throw new UnsupportedOperationException("Unimplemented method 'findById'");
+    public Resource findByIds(long firstId, long secondId) {
+        throw new UnsupportedOperationException("Unimplemented method 'findByIds'");
     }
 
-    /**
-     * Deletes a Resource entity by its ID.
-     *
-     * @param id The ID of the Resource entity to delete.
-     * @return The deleted Resource entity.
-     */
     @Override
-    public Resource delete(long id) {
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+    public Resource deleteByIds(long firstId, long secondId) {
+        throw new UnsupportedOperationException("Unimplemented method 'deleteByIds'");
     }
 
-    /**
-     * Saves a Resource entity to the database.
-     *
-     * @param item The Resource entity to save.
-     * @return The saved Resource entity.
-     */
     @Override
     public Resource save(Resource item) {
-        return entityManager.merge(item);
+        throw new UnsupportedOperationException("Unimplemented method 'save'");
     }
+
 }
