@@ -1,7 +1,6 @@
 package nl.solar.app.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
 import nl.solar.app.models.views.ResourceView;

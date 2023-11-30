@@ -12,7 +12,7 @@ import jakarta.persistence.Embeddable;
  * @author Tim Knops
  */
 @Embeddable
-public class ResourceTempKey implements Serializable {
+public class ResourceKey implements Serializable {
 
     @Column(name = "project_id")
     private long projectId;
@@ -20,12 +20,12 @@ public class ResourceTempKey implements Serializable {
     @Column(name = "product_id")
     private long productId;
 
-    public ResourceTempKey(long projectId, long productId) {
+    public ResourceKey(long projectId, long productId) {
         this.projectId = projectId;
         this.productId = productId;
     }
 
-    public ResourceTempKey() {
+    public ResourceKey() {
     }
 
     public long getProjectId() {
@@ -48,9 +48,9 @@ public class ResourceTempKey implements Serializable {
     public boolean equals(Object o) {
         if (this == o)
             return true;
-        if (!(o instanceof ResourceTempKey))
+        if (!(o instanceof ResourceKey))
             return false;
-        ResourceTempKey that = (ResourceTempKey) o;
+        ResourceKey that = (ResourceKey) o;
         return getProjectId() == that.getProjectId() && getProductId() == that.getProductId();
     }
 

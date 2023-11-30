@@ -41,7 +41,7 @@ public class BackEndApplication implements CommandLineRunner {
     EntityRepository<Project> projectsRepo;
 
     @Autowired
-    EntityRepository<ResourceTemp> resourcesRepo;
+    EntityRepository<Resource> resourcesRepo;
 
     @Autowired
     EntityRepository<Product> productsRepo;
@@ -163,7 +163,7 @@ public class BackEndApplication implements CommandLineRunner {
      * @author Tim Knops
      */
     private void createSampleResources() {
-        List<ResourceTemp> resources = resourcesRepo.findAll();
+        List<Resource> resources = resourcesRepo.findAll();
 
         if (!resources.isEmpty()) {
             return;
@@ -179,7 +179,7 @@ public class BackEndApplication implements CommandLineRunner {
 
             for (int i = 0; i < amountOfProducts; i++) {
                 Product product = products.get((int) (Math.random() * products.size()));
-                ResourceTemp resource = new ResourceTemp(project, product, (int) (Math.random() * 50) + 1);
+                Resource resource = new Resource(project, product, (int) (Math.random() * 50) + 1);
 
                 if (product.getProjects().contains(resource) || project.getProducts().contains(resource))
                     continue;

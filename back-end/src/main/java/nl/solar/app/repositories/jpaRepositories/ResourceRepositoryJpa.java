@@ -10,20 +10,20 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
-import nl.solar.app.models.ResourceTemp;
+import nl.solar.app.models.Resource;
 
 /**
  * Repository implementation for managing ResourceTemp entities using JPA.
  * 
  * @see EntityRepository
- * @see ResourceTemp
+ * @see Resource
  * 
  * @author Tim Knops
  */
-@Repository("RESOURCES_TEMP.JPA") // TODO: Rename to RESOURCES.JPA when refactor is done.
+@Repository("RESOURCES.JPA")
 @Transactional
 @Primary
-public class ResourceTempRepositoryJpa implements EntityRepository<ResourceTemp> {
+public class ResourceRepositoryJpa implements EntityRepository<Resource> {
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -34,8 +34,8 @@ public class ResourceTempRepositoryJpa implements EntityRepository<ResourceTemp>
      * @return A list of ResourceTemp entities.
      */
     @Override
-    public List<ResourceTemp> findAll() {
-        TypedQuery<ResourceTemp> query = entityManager.createQuery("SELECT r FROM ResourceTemp r", ResourceTemp.class);
+    public List<Resource> findAll() {
+        TypedQuery<Resource> query = entityManager.createQuery("SELECT r FROM ResourceTemp r", Resource.class);
         return query.getResultList();
     }
 
@@ -46,7 +46,7 @@ public class ResourceTempRepositoryJpa implements EntityRepository<ResourceTemp>
      * @return The ResourceTemp entity with the specified ID.
      */
     @Override
-    public ResourceTemp findById(long id) {
+    public Resource findById(long id) {
         throw new UnsupportedOperationException("Unimplemented method 'findById'");
     }
 
@@ -57,7 +57,7 @@ public class ResourceTempRepositoryJpa implements EntityRepository<ResourceTemp>
      * @return The deleted ResourceTemp entity.
      */
     @Override
-    public ResourceTemp delete(long id) {
+    public Resource delete(long id) {
         throw new UnsupportedOperationException("Unimplemented method 'delete'");
     }
 
@@ -68,7 +68,7 @@ public class ResourceTempRepositoryJpa implements EntityRepository<ResourceTemp>
      * @return The saved ResourceTemp entity.
      */
     @Override
-    public ResourceTemp save(ResourceTemp item) {
+    public Resource save(Resource item) {
         return entityManager.merge(item);
     }
 }

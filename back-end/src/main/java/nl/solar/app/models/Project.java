@@ -51,7 +51,7 @@ public class Project {
 
     @OneToMany(mappedBy = "project", orphanRemoval = true, cascade = CascadeType.ALL)
     @JsonManagedReference
-    private Set<ResourceTemp> products = new HashSet<>();
+    private Set<Resource> products = new HashSet<>();
 
     /**
      * Creates a project with the given parameters.
@@ -65,7 +65,7 @@ public class Project {
      * @param products    the products of the project
      */
     public Project(long id, String projectName, Team team, String client, Date dueDate, ProjectStatus status,
-            Set<ResourceTemp> products) {
+            Set<Resource> products) {
         this.id = id;
         this.projectName = projectName;
         this.team = team;
@@ -182,11 +182,11 @@ public class Project {
         this.projectName = projectName;
     }
 
-    public Set<ResourceTemp> getProducts() {
+    public Set<Resource> getProducts() {
         return products;
     }
 
-    public void setProducts(Set<ResourceTemp> products) {
+    public void setProducts(Set<Resource> products) {
         this.products = products;
     }
 
