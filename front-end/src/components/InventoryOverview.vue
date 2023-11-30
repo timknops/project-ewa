@@ -65,6 +65,10 @@
         @ok-modal-btn="handleOk"
       ></modal-component>
     </transition>
+
+    <transition>
+      <toast-component v-if="showToast" toast-message="All products have an inventory" toast-title="No Inventory to be added"></toast-component>
+    </transition>
   </div>
 </template>
 
@@ -72,6 +76,7 @@
 import TableComponent from "@/components/table/TableComponent.vue";
 import ModalComponent from "@/components/modal/ModalComponent.vue";
 import SpinnerComponent from "@/components/util/SpinnerComponent.vue";
+import ToastComponent from "@/components/util/ToastComponent.vue";
 
 /**
  * Component handling the logic of displaying the inventory.
@@ -85,7 +90,7 @@ import SpinnerComponent from "@/components/util/SpinnerComponent.vue";
  */
 export default {
   name: "InventoryOverview",
-  components: { SpinnerComponent, ModalComponent, TableComponent },
+  components: {ToastComponent, SpinnerComponent, ModalComponent, TableComponent },
   data() {
     return {
       /* list of objects containing the warehouse and its products
@@ -119,6 +124,7 @@ export default {
       okBtnText: "",
       modalResource: {},
       productsAreLoading: true,
+      showToast: false,
     };
   },
 
@@ -256,12 +262,20 @@ export default {
       this.showModal = true;
     },
 
-    showAddModal() {
+    async showAddModal() {
+      const productsWithoutInventory = await this.inventoryService.getProductWithoutInventory(this.activeWarehouse.id)
+      if (productsWithoutInventory.length === 0) {
+        this.showToast = true
+
+        setTimeout(() => this.showToast = false, 2000)
+        return
+      }
       this.modalTitle = "add Inventory"
       this.modalBodyComponent = this.MODAL_TYPES.ADD
       this.modalResource = {
         warehouseId: this.activeWarehouse.id,
-        warehouseName: this.activeWarehouse.name
+        warehouseName: this.activeWarehouse.name,
+        products: productsWithoutInventory
       }
       this.okBtnText = "Add"
       this.showModal = true;
@@ -449,5 +463,15 @@ Overwriting bootstrap active class
 .warehouse-select:not(.active):hover::before,
 .warehouse-select:not(.active):focus::before {
   background-color: var(--color-secondary);
+}
+/* styling for transitions*/
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
 }
 </style>
