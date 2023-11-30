@@ -1,7 +1,10 @@
 package nl.solar.app.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
-
+import jakarta.persistence.*;
+import nl.solar.app.models.compositeKeys.InventoryKey;
 import nl.solar.app.models.views.ResourceView;
 
 import java.util.Objects;
@@ -11,12 +14,28 @@ import java.util.Objects;
  *
  * @author Julian
  */
+@Entity
 public class Inventory {
 
+    @EmbeddedId
+    @JsonIgnore
+    private InventoryKey id = new InventoryKey();
+
+    @ManyToOne()
+    @MapsId("warehouseId")
+    @JoinColumn(name = "warehouse_id")
+    @JsonIgnoreProperties(value = {"description"})
     @JsonView(ResourceView.Complete.class)
+//    @JsonManagedReference(value = "warehouse_inventory")
     private Warehouse warehouse;
+
+    @ManyToOne()
+    @MapsId("productId")
+    @JoinColumn(name = "product_id")
     @JsonView(ResourceView.Complete.class)
+//    @JsonManagedReference(value = "product_inventory")
     private Product product;
+
     @JsonView(ResourceView.Complete.class)
     private int quantity;
 
@@ -28,6 +47,14 @@ public class Inventory {
         inventory.setQuantity((int) (Math.floor(Math.random() * 40)));
 
         return inventory;
+    }
+
+    public InventoryKey getId() {
+        return id;
+    }
+
+    public void setId(InventoryKey id) {
+        this.id = id;
     }
 
     public Warehouse getWarehouse() {

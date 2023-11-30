@@ -44,8 +44,10 @@
       :amount-to-display="6"
       :table-data="products"
       :has-edit-button="activeWarehouse != null && activeWarehouse !== 'Total'"
+      :has-add-button="activeWarehouse != null && activeWarehouse !== 'Total'"
       :hide-id-column="true"
       @edit="showUpdateModal"
+      @add="showAddModal"
     ></table-component>
 
     <!--    Templated doesn't wait for loading so show spinner for user information-->
@@ -60,7 +62,7 @@
         :ok-btn-text="okBtnText"
         @cancel-modal-btn="this.showModal = false"
         @corner-close-modal-btn="this.showModal = false"
-        @ok-modal-btn="handleUpdate"
+        @ok-modal-btn="handleOk"
       ></modal-component>
     </transition>
   </div>
@@ -106,11 +108,15 @@ export default {
       warehouses: [],
       activeWarehouse: "Total", //total selected by default.
 
-      //modal variables only update
+      //modal variables
       showModal: false,
-      modalTitle: "Update Inventory",
-      modalBodyComponent: "update-inventory-modal",
-      okBtnText: "Save",
+      modalTitle: "",
+      modalBodyComponent: "",
+      MODAL_TYPES: Object.freeze({
+        UPDATE: "update-inventory-modal",
+        ADD: "add-inventory-modal",
+      }),
+      okBtnText: "",
       modalResource: {},
       productsAreLoading: true,
     };
@@ -237,6 +243,9 @@ export default {
         quantity: Number,
       }
        */
+      this.modalTitle = "update Inventory";
+      this.modalBodyComponent = this.MODAL_TYPES.UPDATE;
+      this.okBtnText = "Save";
       this.modalResource = {
         product: {
           id: inventory.id,
@@ -246,18 +255,37 @@ export default {
         warehouse: this.activeWarehouse,
         quantity: inventory.quantity,
       };
+
       // show the modal
       this.showModal = true;
     },
 
+    showAddModal() {
+      this.modalTitle = "add Inventory";
+      this.modalBodyComponent = this.MODAL_TYPES.ADD;
+      this.modalResource = {
+        warehouseId: this.activeWarehouse.id,
+        warehouseName: this.activeWarehouse.name,
+      };
+      this.okBtnText = "Add";
+      this.showModal = true;
+    },
+
+    handleOk(inventory, modal) {
+      switch (modal) {
+        case this.MODAL_TYPES.UPDATE:
+          this.handleUpdate(inventory);
+          break;
+        case this.MODAL_TYPES.ADD:
+          this.handleAdd(inventory);
+          break;
+      }
+    },
+
     /**
      *
-     * @param inventory -  a inventory object in the format of the back-end i,e
-     * {
-     *   product: {id, productName, description},
-     *   warehouse: {id, name},
-     *   quantity: Number,
-     * }
+     * @param inventory -  an inventory object in the format of the back-end i,e
+
      *
      * @return {Promise<void>}
      */
@@ -265,6 +293,7 @@ export default {
       try {
         //returns the same format as the inventory explained above
         const updated = await this.inventoryService.updateInventory(inventory);
+
         //find the correct warehouse where a quantity is updated for
         const warehouseIndex = this.totalProducts.findIndex(
           (resource) => resource.warehouse.id === updated.warehouse.id
@@ -288,6 +317,23 @@ export default {
       }
     },
 
+    async handleAdd(inventory) {
+      const saved = await this.inventoryService.addInventory(inventory);
+      const warehouseIndex = this.totalProducts.findIndex(
+        (inventory) => inventory.warehouse.id === saved.warehouse.id
+      );
+      //reformat saved
+      const productObj = {
+        id: saved.product.id,
+        productName: saved.product.productName,
+        description: saved.product.description,
+        quantity: saved.quantity,
+      };
+      if (warehouseIndex !== -1) {
+        this.totalProducts[warehouseIndex].products.push(productObj);
+      }
+      this.showModal = false;
+    },
     /**
      * Formats the product data for when the data is empty.
      * @return {{id: "", productName: "", description: ""}}
@@ -339,6 +385,13 @@ export default {
       this.products = await this.inventoryService.findAllForWarehouse(
         this.activeUser.team.warehouse.id
       );
+    }
+
+    // If there are no products, add only the table headers.
+    if (this.products.length === 0) {
+      this.products = [this.formatEmptyTableData()];
+
+      this.productsAreLoading = false;
     }
 
     //set active if there is a param in the url

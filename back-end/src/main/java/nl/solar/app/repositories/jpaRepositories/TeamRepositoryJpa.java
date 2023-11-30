@@ -1,7 +1,8 @@
-package nl.solar.app.repositories;
+package nl.solar.app.repositories.jpaRepositories;
 
 import java.util.List;
 
+import nl.solar.app.repositories.EntityRepository;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 

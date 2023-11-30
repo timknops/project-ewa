@@ -15,6 +15,7 @@ import Sidebar from "@/components/Sidebar.vue";
 import LoginPage from "@/components/LoginPage.vue";
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import appConfig from "@/appConfig";
+
 import { ProductAdaptor } from "@/service/productAdaptor";
 import { InventoryAdaptor } from "@/service/inventoryAdaptor";
 import { WarehouseAdaptor } from "@/service/warehouseAdaptor";

@@ -1,7 +1,8 @@
-package nl.solar.app.repositories;
+package nl.solar.app.repositories.jpaRepositories;
 
 import java.util.List;
 
+import nl.solar.app.repositories.EntityRepository;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
@@ -27,12 +28,17 @@ public class ProductRepositoryJpa implements EntityRepository<Product> {
 
     @Override
     public Product findById(long id) {
-        throw new UnsupportedOperationException("Unimplemented method 'findById'");
+        return entityManager.find(Product.class, id);
     }
 
     @Override
     public Product delete(long id) {
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        Product toBeDelete = findById(id);
+
+        if (toBeDelete == null) return null;
+
+        entityManager.remove(toBeDelete);
+        return toBeDelete;
     }
 
     @Override

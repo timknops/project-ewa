@@ -1,19 +1,13 @@
 package nl.solar.app.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import nl.solar.app.models.views.ResourceView;
-import jakarta.persistence.Id;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Class which represents a product sold by Solar Sedum
@@ -34,14 +28,25 @@ public class Product {
     @JsonView(ResourceView.Complete.class)
     private String description;
 
-    @OneToMany(mappedBy = "product", orphanRemoval = true, cascade = CascadeType.ALL)
-    @JsonBackReference
-    private Set<ResourceTemp> projects = new HashSet<>();
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    // @JsonBackReference(value = "product_resource")
+    @JsonIgnore
+    private List<ResourceTemp> projects;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    // @JsonBackReference(value = "product_inventory")
+    @JsonIgnore
+    private Set<Inventory> inventory;
+
+    public Product() {
+        projects = new ArrayList<>();
+        inventory = new HashSet<>();
+    }
 
     /**
      * create an dummy product by using the default constructor and the getters and
      * setters
-     * 
+     *
      * @param id          - the id of the product
      * @param productName the name of the product
      * @param description the description of the product
@@ -53,6 +58,14 @@ public class Product {
         dummyProduct.setProductName(productName);
         dummyProduct.setDescription(description);
         return dummyProduct;
+    }
+
+    public Set<Inventory> getInventory() {
+        return inventory;
+    }
+
+    public void setInventory(Set<Inventory> inventory) {
+        this.inventory = inventory;
     }
 
     public long getId() {

@@ -2,14 +2,13 @@ package nl.solar.app.models;
 
 import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
+import nl.solar.app.models.compositeKeys.ResourceTempKey;
 
 /**
  * Represents a resource.
@@ -31,7 +30,7 @@ public class ResourceTemp {
   @ManyToOne
   @MapsId("productId")
   @JoinColumn(name = "product_id")
-  @JsonBackReference
+  @JsonManagedReference("product_resource")
   private Product product;
 
   private int quantity;

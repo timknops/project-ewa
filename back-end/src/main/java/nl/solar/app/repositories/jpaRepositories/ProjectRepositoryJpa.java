@@ -1,9 +1,10 @@
-package nl.solar.app.repositories;
+package nl.solar.app.repositories.jpaRepositories;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import nl.solar.app.repositories.EntityRepository;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 

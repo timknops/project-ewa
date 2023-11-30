@@ -1,15 +1,17 @@
-package nl.solar.app.repositories;
+package nl.solar.app.repositories.inMemoryRepositories;
 
 import nl.solar.app.models.Product;
 import nl.solar.app.models.Inventory;
 import nl.solar.app.models.Warehouse;
+import nl.solar.app.repositories.EntityRepository;
+import nl.solar.app.repositories.InventoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Repository("RESOURCES.INMEMORY")
+@Repository("INVENTORY.INMEMORY")
 public class InventoryRepositoryMock implements InventoryRepository {
     private List<Inventory> inventoryList;
 
@@ -52,21 +54,8 @@ public class InventoryRepositoryMock implements InventoryRepository {
     }
 
     @Override
-    public void addInventoryForProduct(Product product) {
-        for (Warehouse warehouse: warehouseRepo.findAll()) {
-            Inventory inventory = Inventory.createDummyResource(warehouse, product);
-            inventory.setQuantity(0);
-            inventoryList.add(inventory);
-        }
-    }
-
-    @Override
-    public void addInventoryForWarehouse(Warehouse warehouse) {
-        for (Product product: productRepo.findAll()) {
-            Inventory inventory = Inventory.createDummyResource(warehouse, product);
-            inventory.setQuantity(0);
-            inventoryList.add(inventory);
-        }
+    public List<Product> findProductsWithoutInventory(long warehouseId) {
+        return null;
     }
 
     @Override

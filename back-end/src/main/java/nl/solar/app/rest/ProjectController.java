@@ -24,7 +24,7 @@ import nl.solar.app.exceptions.PreConditionFailedException;
 import nl.solar.app.exceptions.ResourceNotFoundException;
 import nl.solar.app.models.Project;
 import nl.solar.app.models.views.ProjectView;
-import nl.solar.app.repositories.ProjectRepositoryJpa;
+import nl.solar.app.repositories.jpaRepositories.ProjectRepositoryJpa;
 
 /**
  * Controller class for managing project-related endpoints.

@@ -2,16 +2,14 @@ package nl.solar.app;
 
 import java.util.List;
 
+import nl.solar.app.models.*;
+import nl.solar.app.repositories.InventoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import jakarta.transaction.Transactional;
-import nl.solar.app.models.Product;
-import nl.solar.app.models.Project;
-import nl.solar.app.models.ResourceTemp;
-import nl.solar.app.models.Team;
 import nl.solar.app.repositories.EntityRepository;
 
 @SpringBootApplication
@@ -24,13 +22,18 @@ public class BackEndApplication implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
+        this.createSampleWarehouse();
         this.createSampleTeams();
         this.createSampleProjects();
         this.createSampleProducts();
         this.createSampleResources();
+        this.createDummyInventory();
     }
 
     // All repositories.
+    @Autowired
+    EntityRepository<Warehouse> warehouseRepo;
+
     @Autowired
     EntityRepository<Team> teamsRepo;
 
@@ -42,6 +45,37 @@ public class BackEndApplication implements CommandLineRunner {
 
     @Autowired
     EntityRepository<Product> productsRepo;
+
+    @Autowired
+    InventoryRepository inventoryRepo;
+
+    private void createSampleWarehouse() {
+        List<Warehouse> warehouses = warehouseRepo.findAll();
+
+        if (!warehouses.isEmpty())
+            return;
+
+        final String[] names = {
+                "Solar Sedum",
+                "Superzon",
+                "The switch",
+                "Induct",
+                "EHES"
+        };
+
+        final String[] locations = {
+                "H.J.E. Wenckebachweg 47D, 1096AK Amsterdam",
+                "Marconistraat 4A, 1704RG Heerhugowaard",
+                "Barndegat 8, 1505HN Zaandam",
+                "Philippusweg 2, 3125AS Schiedam",
+                "Bolwerk 5, 3905NH Veenendaal"
+        };
+
+        for (int i = 0; i < names.length; i++) {
+            Warehouse warehouse = new Warehouse(0, names[i], locations[i]);
+            warehouseRepo.save(warehouse);
+        }
+    }
 
     /**
      * Creates sample teams.
@@ -146,8 +180,37 @@ public class BackEndApplication implements CommandLineRunner {
             for (int i = 0; i < amountOfProducts; i++) {
                 Product product = products.get((int) (Math.random() * products.size()));
                 ResourceTemp resource = new ResourceTemp(project, product, (int) (Math.random() * 50) + 1);
-                resourcesRepo.save(resource);
+
+                if (product.getProjects().contains(resource) || project.getProducts().contains(resource))
+                    continue;
+
+                // Ensure bidirectional relationship.
+                project.getProducts().add(resource);
+                product.getProjects().add(resource);
+
+                productsRepo.save(product);
+                projectsRepo.save(project);
             }
         }
     }
+
+    private void createDummyInventory() {
+        List<Inventory> inventoryList = inventoryRepo.findAll();
+
+        if (!inventoryList.isEmpty())
+            return;
+
+        for (Product product : productsRepo.findAll()) {
+            for (Warehouse warehouse : warehouseRepo.findAll()) {
+                Inventory inventory = Inventory.createDummyResource(warehouse, product);
+
+                product.getInventory().add(inventory);
+                warehouse.getInventory().add(inventory);
+
+                productsRepo.save(product);
+                warehouseRepo.save(warehouse);
+            }
+        }
+    }
+
 }
