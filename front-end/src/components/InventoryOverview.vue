@@ -186,7 +186,7 @@ export default {
     /**
      * Get the products and stock information for a certain warehouse
      * @param warehouse the warehouse which has been selected
-     * @return {[Product]} an array of product objects or empty array if an error has occurred
+     * @return {} an array of product objects or empty array if an error has occurred
      */
     getWarehouseProductInfo(warehouse) {
       const productsObjectArray = this.totalProducts.filter(
@@ -194,11 +194,16 @@ export default {
       );
 
       // filter should return one element in the array, because there is only one warehouse active
-      if (productsObjectArray.length === 0 || productsObjectArray.length > 1) {
+      if (productsObjectArray.length > 1) {
         console.error(
           "There were multiple or no warehouses trying to receive their products"
         );
         return [];
+      }
+
+      if (productsObjectArray.length === 0) {
+        return [this.formatEmptyTableData()];
+
       }
 
       return productsObjectArray[0].products;
@@ -329,6 +334,7 @@ export default {
 
     async handleAdd(inventory) {
       const saved = await this.inventoryService.addInventory(inventory)
+      console.log(this.totalProducts)
       const warehouseIndex = this.totalProducts.findIndex((inventory) => inventory.warehouse.id === saved.warehouse.id)
       //reformat saved
       const productObj = {
@@ -337,9 +343,18 @@ export default {
         description: saved.product.description,
         quantity: saved.quantity
       }
+
       if (warehouseIndex !== -1) {
         this.totalProducts[warehouseIndex].products.push(productObj)
+      this.products = this.totalProducts[warehouseIndex].products
+      } else {
+        this.totalProducts.push({
+          warehouse: this.activeWarehouse,
+          products: [productObj]
+        })
+        this.products = this.totalProducts[warehouseIndex].products
       }
+
       this.showModal = false
     },
     /**
