@@ -58,7 +58,6 @@ export default {
      */
     validateName() {
       this.nameEmpty = this.modalItem.productName.length === 0;
-      this.hasError = this.modalItem.productName.length === 0;
     },
 
     /**
@@ -66,7 +65,6 @@ export default {
      */
     validateDescription() {
       this.descriptionEmpty = this.modalItem.description.length === 0;
-      this.hasError = this.modalItem.description.length === 0;
     },
   },
 };
