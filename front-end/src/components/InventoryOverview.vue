@@ -123,6 +123,7 @@ export default {
       }),
       okBtnText: "",
       modalResource: {},
+
       productsAreLoading: true,
       showToast: false,
     };
@@ -334,7 +335,6 @@ export default {
 
     async handleAdd(inventory) {
       const saved = await this.inventoryService.addInventory(inventory)
-      console.log(this.totalProducts)
       const warehouseIndex = this.totalProducts.findIndex((inventory) => inventory.warehouse.id === saved.warehouse.id)
       //reformat saved
       const productObj = {
@@ -346,13 +346,11 @@ export default {
 
       if (warehouseIndex !== -1) {
         this.totalProducts[warehouseIndex].products.push(productObj)
-      this.products = this.totalProducts[warehouseIndex].products
       } else {
         this.totalProducts.push({
           warehouse: this.activeWarehouse,
           products: [productObj]
         })
-        this.products = this.totalProducts[warehouseIndex].products
       }
 
       this.showModal = false
