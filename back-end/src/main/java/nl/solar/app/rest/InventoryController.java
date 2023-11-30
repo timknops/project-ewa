@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Controller for all end-points directly affecting the resources.
+ * Controller for all end-points directly affecting the inventory.
  *
  * @author Julian Kruithof
  */
@@ -109,6 +109,12 @@ public class InventoryController {
         return ResponseEntity.ok().body(formatProductObject(inventory));
     }
 
+    /**
+     * Retrieves a list of products without inventory for a specific warehouse.
+     *
+     * @param wId the ID of the warehouse for which to retrieve products without inventory
+     * @return a list of products without inventory for the specified warehouse
+     */
     @GetMapping(path = "/warehouses/{wId}/products/without-inventory", produces = "application/json")
     public List<Product> getProductsWithoutInventory(@PathVariable long wId) {
         return this.inventoryRepo.findProductsWithoutInventory(wId);
@@ -122,9 +128,8 @@ public class InventoryController {
      * @param pId       the product id
      * @param partiallyUpdated the updated version of a resource
      * @return a resource in the correct format
-     * @throws PreConditionFailedException throw error if the warehouse id and
-     *                                     product id in the body don't match the
-     *                                     ids in the path
+     * @throws BadRequestException if the quantity is not set in the request body
+     * @throws ResourceNotFoundException if the inventory that should be updated, is non-existent
      */
     @JsonView(ResourceView.Complete.class)
     @PatchMapping(path = "/warehouses/{wId}/products/{pId}", produces = "application/json")
@@ -145,6 +150,14 @@ public class InventoryController {
         return ResponseEntity.ok().body(update);
     }
 
+    /**
+     * Adds a new inventory item.
+     *
+     * @param inventory               the inventory item to be added, provided in the request body
+     * @param uriComponentsBuilder   a builder for creating URI components, used to build the location URI
+     * @return a ResponseEntity with the added inventory item and the corresponding location URI
+     * @throws BadRequestException   if the product or warehouse is not set in the inventory
+     */
     @JsonView(ResourceView.Complete.class)
     @PostMapping(path = "/inventory", produces = "application/json")
     public ResponseEntity<Inventory> addInventory(@RequestBody Inventory inventory, UriComponentsBuilder uriComponentsBuilder) throws BadRequestException {

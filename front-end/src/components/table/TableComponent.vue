@@ -412,7 +412,6 @@ export default {
   },
   watch: {
     tableDataWatcher() {
-      console.log("table data has been updated")
       if (this.tableData.length === 0) {
         // If the table data is empty, show an empty table.
         this.showEmptyTable = true;

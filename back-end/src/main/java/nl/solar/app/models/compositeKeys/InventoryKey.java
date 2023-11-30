@@ -6,6 +6,11 @@ import jakarta.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * Represents a composite key for the Inventory class.
+ *
+ * @author Julian Kruithof
+ */
 @Embeddable
 public class InventoryKey implements Serializable {
 

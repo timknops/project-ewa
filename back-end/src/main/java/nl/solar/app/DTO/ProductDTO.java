@@ -3,7 +3,12 @@ package nl.solar.app.DTO;
 import com.fasterxml.jackson.annotation.JsonView;
 import nl.solar.app.models.views.ResourceView;
 
-
+/**
+ * Data Transfer Object (DTO) representing a product, used to transfer product-related data
+ * between the backend and frontend with specific view annotations.
+ *
+ * @author Julian Kruithof
+ */
 public class ProductDTO {
 
     @JsonView(ResourceView.Complete.class)
@@ -18,6 +23,14 @@ public class ProductDTO {
     @JsonView(ResourceView.Complete.class)
     private Long quantity;
 
+    /**
+     * Constructs a ProductDTO with the specified product details.
+     *
+     * @param id           The unique identifier of the product.
+     * @param productName  The name of the product.
+     * @param description  The description of the product.
+     * @param quantity     The quantity of the product.
+     */
     public ProductDTO(Long id, String productName, String description, Long quantity) {
         this.id = id;
         this.productName = productName;

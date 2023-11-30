@@ -35,6 +35,11 @@
 </template>
 
 <script>
+/**
+ * Component modal for adding an inventory
+ *
+ * @author Julian Kruithof
+ */
 export default {
   name: "AddInventoryModal.vue",
   data() {
@@ -56,6 +61,10 @@ export default {
     }
   },
   computed: {
+    /**
+     * Check if an error has occurred
+     * @return {boolean} true if an error has occurred, otherwise false
+     */
     hasError() {
       return this.noProductSelectedError && this.emptyQuantityError && this.decimalError
     }
@@ -63,6 +72,10 @@ export default {
   inject: ["inventoryService"],
   props : ["item"],
   methods: {
+    /**
+     * validate the quantity.
+     * a quantity should be an Integer
+     */
     validateQuantity() {
       if (this.modalItem.quantity === "") {
         this.emptyQuantityError = true
@@ -83,7 +96,5 @@ export default {
 </script>
 
 <style scoped>
-.form-control:disabled {
-  background-color: var(--bs-body-bg);
-}
+
 </style>
