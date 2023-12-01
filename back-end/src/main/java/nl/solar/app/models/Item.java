@@ -15,7 +15,7 @@ import java.util.Objects;
 public class Item {
 
     @EmbeddedId
-    private ItemKey compositeId;
+    private ItemKey compositeId = new ItemKey();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("productId")

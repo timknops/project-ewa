@@ -7,7 +7,9 @@ import nl.solar.app.enums.OrderStatus;
 import nl.solar.app.models.utils.RandomDate;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Class which represents an order placed by Solar Sedum
@@ -25,6 +27,10 @@ public class Order {
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIncludeProperties({"id", "name"})
     private Warehouse warehouse;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    Set<Item> items = new HashSet<>();
 
     @JsonIgnore
     private LocalDateTime orderDate;
@@ -99,6 +105,14 @@ public class Order {
 
     public void setOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
+    }
+
+    public Set<Item> getItems() {
+        return items;
+    }
+
+    public void setItems(Set<Item> items) {
+        this.items = items;
     }
 
     @Override

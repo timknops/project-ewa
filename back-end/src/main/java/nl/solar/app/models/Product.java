@@ -37,9 +37,15 @@ public class Product {
     @JsonIgnore
     private Set<Inventory> inventory;
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private Set<Item> items;
+
+
     public Product() {
         projects = new ArrayList<>();
         inventory = new HashSet<>();
+        items = new HashSet<>();
     }
     /**
      * create an dummy product by using the default constructor and the getters and
@@ -64,6 +70,14 @@ public class Product {
 
     public void setInventory(Set<Inventory> inventory) {
         this.inventory = inventory;
+    }
+
+    public Set<Item> getItems() {
+        return items;
+    }
+
+    public void setItems(Set<Item> items) {
+        this.items = items;
     }
 
     public long getId() {

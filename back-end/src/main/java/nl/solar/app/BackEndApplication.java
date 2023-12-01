@@ -39,7 +39,7 @@ public class BackEndApplication implements CommandLineRunner {
     InventoryRepository inventoryRepo;
 
     @Autowired
-    ItemRepository itemRepository;
+    ItemRepository itemRepo;
 
 
 
@@ -57,6 +57,7 @@ public class BackEndApplication implements CommandLineRunner {
         this.createSampleProducts();
         this.createSampleResources();
         this.createDummyInventory();
+        this.createDummyItems();
     }
 
     /**
@@ -259,7 +260,36 @@ public class BackEndApplication implements CommandLineRunner {
     }
 
     private void createDummyItems() {
+        List<Item> items = itemRepo.findAll();
 
+        if (!items.isEmpty()) return;
+        List<Product> products = this.productsRepo.findAll();
+        List<Order> orders = this.orderRepo.findAll();
+        Random random = new Random();
+
+        //ensure every order has at least one item
+        for (Order order : orders) {
+            Item item = new Item();
+            item.setOrder(order);
+            Product product = products.get(random.nextInt(products.size()));
+            item.setProduct(product);
+            item.setQuantity(random.nextLong(50L));
+
+            order.getItems().add(item);
+            product.getItems().add(item);
+        }
+
+        //add 10 items to random orders
+        for (int i = 0; i < 10; i++) {
+            Item item = new Item();
+            Order order = orders.get(random.nextInt(orders.size()));
+            item.setOrder(order);
+            Product product = products.get(random.nextInt(products.size()));
+            item.setProduct(product);
+            item.setQuantity(random.nextLong(50L));
+
+            order.getItems().add(item);
+            product.getItems().add(item);
+        }
     }
-
 }
