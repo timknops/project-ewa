@@ -9,6 +9,11 @@ import nl.solar.app.models.utils.RandomDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+/**
+ * Class which represents an order placed by Solar Sedum
+ *
+ * @author Julian Kruithof
+ */
 @Entity
 public class Order {
 
@@ -33,6 +38,11 @@ public class Order {
 
     }
 
+    /**
+     * Create a random order with different delivery dates, order dates and status.
+     * @param warehouse warehouse for which a random order is created.
+     * @return a random order
+     */
     public static Order createDummyOrder(Warehouse warehouse) {
         final LocalDateTime MINIMUM_START = LocalDateTime.of(2023, 9, 12, 0, 0,0);
         final LocalDateTime MAXIMUM_END = LocalDateTime.of(2024, 2, 1, 0, 0,0);
