@@ -31,7 +31,6 @@ public class Team {
     private TeamType type;
 
     @OneToMany(mappedBy = "team")
-    @JsonBackReference
     private Set<Project> projects = new HashSet<>();
 
     public Team(long id, String team, Warehouse warehouse, TeamType type) {

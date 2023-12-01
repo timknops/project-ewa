@@ -33,7 +33,6 @@ public class Project {
 
     @ManyToOne
     @JoinColumn(name = "team_id")
-    @JsonIgnore
     @JsonIncludeProperties({ "id", "team" })
     @JsonView(ProjectView.Overview.class)
     private Team team;
@@ -53,7 +52,6 @@ public class Project {
     private ProjectStatus status;
 
     @OneToMany(mappedBy = "project", orphanRemoval = true, cascade = CascadeType.ALL)
-    @JsonManagedReference
     @JsonIgnore
     private Set<Resource> products = new HashSet<>();
 

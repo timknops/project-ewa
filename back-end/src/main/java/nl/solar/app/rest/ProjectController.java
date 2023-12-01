@@ -57,26 +57,26 @@ public class ProjectController {
      */
     @JsonView(ProjectView.Overview.class)
     @GetMapping(produces = "application/json")
-    public List<Project> getAll() {
+    public List<Map<String, Object>> getAll() {
         List<Project> projects = this.projectRepo.findAll(); // Get all projects from the database.
 
-        // // Format the projects to a list of maps.
-        // List<Map<String, Object>> formattedProjects = new ArrayList<>();
-        // for (Project project : projects) { // Loop through all projects.
-        // Map<String, Object> formattedProject = new HashMap<>(); // Create a new map
-        // for the current project.
-        // formattedProject.put("id", project.getId());
-        // formattedProject.put("projectName", project.getProjectName());
-        // formattedProject.put("client", project.getClient());
-        // formattedProject.put("dueDate", project.getDueDate());
-        // formattedProject.put("status", project.getStatus());
-        // formattedProject.put("team", project.getTeam().getTeam());
+        // Format the projects to a list of maps.
+        List<Map<String, Object>> formattedProjects = new ArrayList<>();
+        for (Project project : projects) { // Loop through all projects.
+            Map<String, Object> formattedProject = new HashMap<>(); // Create a new map for the current project.
+            formattedProject.put("id", project.getId());
+            formattedProject.put("projectName", project.getProjectName());
+            formattedProject.put("client", project.getClient());
+            formattedProject.put("dueDate", project.getDueDate());
+            formattedProject.put("status", project.getStatus());
 
-        // formattedProjects.add(formattedProject); // Add the formatted project to the
-        // list of formatted projects.
-        // }
+            formattedProject.put("teamId", project.getTeam().getId());
+            formattedProject.put("teamName", project.getTeam().getTeam());
 
-        return projects;
+            formattedProjects.add(formattedProject); // Add the formatted project to the list of formatted projects.
+        }
+
+        return formattedProjects;
     }
 
     /**
@@ -134,14 +134,19 @@ public class ProjectController {
             throw new ResourceNotFoundException("Project is null");
         }
 
+        // Get the team from the database.
         Team team = this.teamRepo.findById(projectRequest.getTeamId());
-
         if (team == null) {
             throw new ResourceNotFoundException("Team with id: " + projectRequest.getTeamId() + " was not found");
         }
 
+        // Set the team for the project.
         project.setTeam(team);
+
         Project createdProject = this.projectRepo.save(project);
+
+        // Add the project to the team.
+        team.getProjects().add(createdProject);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(createdProject.getId()).toUri();
@@ -176,13 +181,16 @@ public class ProjectController {
      *         body.
      */
     @GetMapping(path = "/add", produces = "application/json")
-    public ResponseEntity<Object> getAddModalInfo() throws ResourceNotFoundException {
-        Object addModalInfo = this.projectRepo.getAddModalInfo();
+    public ResponseEntity<Map<String, Object>> getAddModalInfo() throws ResourceNotFoundException {
+        List<Map<String, Object>> teamsInfo = this.projectRepo.getTeamsInfo();
+        List<Map<String, Object>> warehousesInfo = this.projectRepo.getWarehousesInfo();
+        List<Map<String, Object>> productsInfo = this.projectRepo.getProductsInfo();
 
-        if (addModalInfo == null) {
-            throw new ResourceNotFoundException("Add modal info not found");
-        }
+        Map<String, Object> response = new HashMap<>();
+        response.put("teams", teamsInfo);
+        response.put("warehouses", warehousesInfo);
+        response.put("products", productsInfo);
 
-        return ResponseEntity.ok(addModalInfo);
+        return ResponseEntity.ok(response);
     }
 }
