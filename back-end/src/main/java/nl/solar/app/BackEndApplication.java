@@ -1,19 +1,35 @@
 package nl.solar.app;
 
-import java.util.List;
-
+import jakarta.transaction.Transactional;
 import nl.solar.app.models.*;
+import nl.solar.app.repositories.EntityRepository;
 import nl.solar.app.repositories.InventoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import jakarta.transaction.Transactional;
-import nl.solar.app.repositories.EntityRepository;
+import java.util.List;
+import java.util.Random;
 
 @SpringBootApplication
 public class BackEndApplication implements CommandLineRunner {
+
+    // All repositories.
+    @Autowired
+    EntityRepository<Warehouse> warehouseRepo;
+    @Autowired
+    EntityRepository<Team> teamsRepo;
+    @Autowired
+    EntityRepository<Order> orderRepo;
+    @Autowired
+    EntityRepository<Project> projectsRepo;
+    @Autowired
+    EntityRepository<ResourceTemp> resourcesRepo;
+    @Autowired
+    EntityRepository<Product> productsRepo;
+    @Autowired
+    InventoryRepository inventoryRepo;
 
     public static void main(String[] args) {
         SpringApplication.run(BackEndApplication.class, args);
@@ -24,30 +40,12 @@ public class BackEndApplication implements CommandLineRunner {
     public void run(String... args) throws Exception {
         this.createSampleWarehouse();
         this.createSampleTeams();
+        this.createSampleOrders();
         this.createSampleProjects();
         this.createSampleProducts();
         this.createSampleResources();
         this.createDummyInventory();
     }
-
-    // All repositories.
-    @Autowired
-    EntityRepository<Warehouse> warehouseRepo;
-
-    @Autowired
-    EntityRepository<Team> teamsRepo;
-
-    @Autowired
-    EntityRepository<Project> projectsRepo;
-
-    @Autowired
-    EntityRepository<ResourceTemp> resourcesRepo;
-
-    @Autowired
-    EntityRepository<Product> productsRepo;
-
-    @Autowired
-    InventoryRepository inventoryRepo;
 
     /**
      * Create sample data for warehouse
@@ -83,7 +81,7 @@ public class BackEndApplication implements CommandLineRunner {
 
     /**
      * Creates sample teams.
-     * 
+     *
      * @author Tim Knops
      */
     private void createSampleTeams() {
@@ -101,8 +99,36 @@ public class BackEndApplication implements CommandLineRunner {
     }
 
     /**
+     * Creates sample orders
+     *
+     * @author Julian Kruithof
+     */
+    private void createSampleOrders() {
+        List<Order> orders = this.orderRepo.findAll();
+
+        if (!orders.isEmpty()) return;
+
+        List<Warehouse> warehouses = this.warehouseRepo.findAll();
+        for (Warehouse warehouse : warehouses) {
+            Random random = new Random();
+            int randomInt = random.nextInt(5) + 1;
+
+            for (int i = 0; i < randomInt; i++) {
+                Order order = Order.createDummyOrder(warehouse);
+
+                this.orderRepo.save(order);
+
+                //bidirectional
+                warehouse.getOrders().add(order);
+            }
+
+        }
+
+    }
+
+    /**
      * Creates sample projects and assigns them to a random team.
-     * 
+     *
      * @throws RuntimeException if there are no teams.
      * @author Tim Knops
      */
@@ -135,7 +161,7 @@ public class BackEndApplication implements CommandLineRunner {
 
     /**
      * Creates sample products.
-     * 
+     *
      * @author Tim Knops
      */
     private void createSampleProducts() {
@@ -163,7 +189,7 @@ public class BackEndApplication implements CommandLineRunner {
 
     /**
      * Creates sample resources.
-     * 
+     *
      * @author Tim Knops
      */
     private void createSampleResources() {

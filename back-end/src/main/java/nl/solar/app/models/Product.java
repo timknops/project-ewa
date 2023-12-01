@@ -30,12 +30,10 @@ public class Product {
     private String description;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @JsonBackReference(value = "product_resource")
     @JsonIgnore
     private List<ResourceTemp> projects;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @JsonBackReference(value = "product_inventory")
     @JsonIgnore
     private Set<Inventory> inventory;
 

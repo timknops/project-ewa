@@ -1,6 +1,5 @@
 package nl.solar.app.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
@@ -25,8 +24,11 @@ public class Warehouse {
     private String location;
 
     @OneToMany(mappedBy = "warehouse", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonBackReference(value = "warehouse_inventory")
+    @JsonIgnore
     private Set<Inventory> inventory = new HashSet<>();
+
+    @OneToMany(mappedBy = "warehouse")
+    Set<Order> orders = new HashSet<>();
 
     public Warehouse(long id, String name, String location) {
         this.id = id;
@@ -50,6 +52,14 @@ public class Warehouse {
 
     public void setInventory(Set<Inventory> inventory) {
         this.inventory = inventory;
+    }
+
+    public Set<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(Set<Order> orders) {
+        this.orders = orders;
     }
 
     public long getId() {

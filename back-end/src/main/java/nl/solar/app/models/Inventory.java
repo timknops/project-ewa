@@ -21,19 +21,17 @@ public class Inventory {
     @JsonIgnore
     private InventoryKey id = new InventoryKey();
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("warehouseId")
     @JoinColumn(name = "warehouse_id")
-    @JsonIgnoreProperties(value = {"description"})
+    @JsonIgnoreProperties({"location"})
     @JsonView(ResourceView.Complete.class)
-//    @JsonManagedReference(value = "warehouse_inventory")
     private Warehouse warehouse;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("productId")
     @JoinColumn(name = "product_id")
     @JsonView(ResourceView.Complete.class)
-//    @JsonManagedReference(value = "product_inventory")
     private Product product;
 
     @JsonView(ResourceView.Complete.class)
