@@ -2,7 +2,6 @@ package nl.solar.app.models;
 
 import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -24,13 +23,13 @@ public class Resource {
   @ManyToOne
   @MapsId("projectId")
   @JoinColumn(name = "project_id")
-  @JsonManagedReference
+  // @JsonManagedReference
   private Project project;
 
   @ManyToOne
   @MapsId("productId")
   @JoinColumn(name = "product_id")
-  @JsonManagedReference("product_resource")
+  // @JsonManagedReference("product_resource")
   private Product product;
 
   private int quantity;

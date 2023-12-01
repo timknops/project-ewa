@@ -1,7 +1,5 @@
 package nl.solar.app.repositories.jpaRepositories;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -44,7 +42,7 @@ public class ProjectRepositoryJpa implements ProjectRepository {
      */
     @Override
     public Project findById(long id) {
-        throw new UnsupportedOperationException("Unimplemented method 'findById'");
+        return entityManager.find(Project.class, id);
     }
 
     /**
@@ -55,7 +53,13 @@ public class ProjectRepositoryJpa implements ProjectRepository {
      */
     @Override
     public Project delete(long id) {
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        Project toBeDeleted = findById(id);
+
+        if (toBeDeleted == null)
+            return null;
+
+        entityManager.remove(toBeDeleted);
+        return toBeDeleted;
     }
 
     /**
@@ -82,9 +86,10 @@ public class ProjectRepositoryJpa implements ProjectRepository {
         List<Object[]> queryResult = entityManager.createQuery(queryString, Object[].class)
                 .getResultList();
 
+        // Format the query result to a list of maps.
         return queryResult.stream()
-                .map(row -> Map.of("id", row[0], nameField, row[1]))
-                .collect(Collectors.toList());
+                .map(row -> Map.of("id", row[0], nameField, row[1])) // Map the query result to a map.
+                .collect(Collectors.toList()); // Collect the mapped objects into a list.
     }
 
     /**

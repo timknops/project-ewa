@@ -20,6 +20,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import nl.solar.app.DTO.ProjectResourceDTO;
 import nl.solar.app.exceptions.PreConditionFailedException;
 import nl.solar.app.exceptions.ResourceNotFoundException;
 import nl.solar.app.models.Project;
@@ -88,7 +89,7 @@ public class ProjectController {
      *                                   exist.
      */
     @GetMapping(path = "{id}", produces = "application/json")
-    public ResponseEntity<Project> getProject(@PathVariable Long id) throws ResourceNotFoundException {
+    public ResponseEntity<Map<String, Object>> getProject(@PathVariable Long id) throws ResourceNotFoundException {
         Project project = this.projectRepo.findById(id);
 
         // If the project doesn't exist, throw an error.
@@ -96,7 +97,23 @@ public class ProjectController {
             throw new ResourceNotFoundException("Project with id: " + id + " was not found");
         }
 
-        return ResponseEntity.ok(project);
+        // Format the project to a map.
+        Map<String, Object> formattedProject = new HashMap<>();
+        formattedProject.put("id", project.getId());
+        formattedProject.put("projectName", project.getProjectName());
+        formattedProject.put("client", project.getClient());
+        formattedProject.put("dueDate", project.getDueDate());
+        formattedProject.put("status", project.getStatus());
+        formattedProject.put("teamId", project.getTeam().getId());
+        formattedProject.put("teamName", project.getTeam().getTeam());
+
+        // Get the resources for the project.
+        List<ProjectResourceDTO> resources = this.resourceRepo.getProjectResources(id);
+
+        // Add the resources to the formatted project.
+        formattedProject.put("resources", resources);
+
+        return ResponseEntity.ok(formattedProject);
     }
 
     /**
@@ -122,32 +139,20 @@ public class ProjectController {
     /**
      * Creates a new project.
      *
-     * @param projectRequest The project to create.
+     * @param project The project to be added.
      * @return A ResponseEntity containing the created project.
-     * @throws ResourceNotFoundException If the project with the given ID does not
+     * 
      */
     @PostMapping(path = "/add", produces = "application/json")
-    public ResponseEntity<Project> createProject(@RequestBody ProjectRequestWrapper projectRequest)
+    public ResponseEntity<Project> createProject(@RequestBody Project project)
             throws ResourceNotFoundException {
-        Project project = projectRequest.getProject();
-        if (project == null) {
-            throw new ResourceNotFoundException("Project is null");
-        }
 
-        // Get the team from the database.
-        Team team = this.teamRepo.findById(projectRequest.getTeamId());
-        if (team == null) {
-            throw new ResourceNotFoundException("Team with id: " + projectRequest.getTeamId() + " was not found");
-        }
+        // TODO: Ensure products are added, and add resources for each product.
 
-        // Set the team for the project.
-        project.setTeam(team);
-
+        // Save the project.
         Project createdProject = this.projectRepo.save(project);
 
-        // Add the project to the team.
-        team.getProjects().add(createdProject);
-
+        // Create the URI for the created project.
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(createdProject.getId()).toUri();
 
