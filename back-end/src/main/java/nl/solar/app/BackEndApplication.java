@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import nl.solar.app.models.*;
 import nl.solar.app.repositories.EntityRepository;
 import nl.solar.app.repositories.InventoryRepository;
+import nl.solar.app.repositories.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -18,18 +19,29 @@ public class BackEndApplication implements CommandLineRunner {
     // All repositories.
     @Autowired
     EntityRepository<Warehouse> warehouseRepo;
+
     @Autowired
     EntityRepository<Team> teamsRepo;
+
     @Autowired
     EntityRepository<Order> orderRepo;
+
     @Autowired
     EntityRepository<Project> projectsRepo;
+
     @Autowired
     EntityRepository<ResourceTemp> resourcesRepo;
+
     @Autowired
     EntityRepository<Product> productsRepo;
+
     @Autowired
     InventoryRepository inventoryRepo;
+
+    @Autowired
+    ItemRepository itemRepository;
+
+
 
     public static void main(String[] args) {
         SpringApplication.run(BackEndApplication.class, args);
@@ -244,6 +256,10 @@ public class BackEndApplication implements CommandLineRunner {
                 warehouseRepo.save(warehouse);
             }
         }
+    }
+
+    private void createDummyItems() {
+
     }
 
 }

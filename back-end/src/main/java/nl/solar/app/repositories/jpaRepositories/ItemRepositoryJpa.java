@@ -3,10 +3,9 @@ package nl.solar.app.repositories.jpaRepositories;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
-import nl.solar.app.models.Inventory;
 import nl.solar.app.models.Item;
 import nl.solar.app.models.compositeKeys.ItemKey;
-import nl.solar.app.repositories.ManyToManyRepository;
+import nl.solar.app.repositories.ItemRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -19,7 +18,7 @@ import java.util.List;
  */
 @Repository
 @Transactional
-public class ItemRepositoryJpa implements ManyToManyRepository<Item> {
+public class ItemRepositoryJpa implements ItemRepository {
 
     @PersistenceContext
     EntityManager entityManager;
