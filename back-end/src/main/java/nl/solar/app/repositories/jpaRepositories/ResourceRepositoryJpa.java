@@ -16,7 +16,9 @@ import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import nl.solar.app.DTO.ProjectResourceDTO;
 import nl.solar.app.models.Product;
+import nl.solar.app.models.Project;
 import nl.solar.app.models.Resource;
+import nl.solar.app.models.compositeKeys.ResourceKey;
 
 /**
  * Repository implementation for managing Resource entities using JPA.
@@ -78,5 +80,36 @@ public class ResourceRepositoryJpa implements ResourceRepository {
             projectResourceDTO.setQuantity((Integer) r[1]); // Set the quantity from the query result.
             return projectResourceDTO;
         }).collect(Collectors.toList()); // Collect the mapped objects into a list.
+    }
+
+    /**
+     * Adds resources to a project.
+     * 
+     * @param projectId the ID of the project
+     * @param resources a list of ProjectResourceDTO objects representing the
+     */
+    @Override
+    public void addProjectResources(long projectId, List<ProjectResourceDTO> resources) {
+        // Get the project from the database.
+        Project project = entityManager.find(Project.class, projectId);
+
+        // Loop through all resources.
+        for (ProjectResourceDTO resource : resources) {
+            // Load the Product entity within the current persistence context.
+            Product product = entityManager.find(Product.class, resource.getProduct().getId());
+
+            // Create a new Resource object.
+            Resource newResource = new Resource();
+            ResourceKey key = new ResourceKey();
+            key.setProjectId(projectId);
+            key.setProductId(resource.getProduct().getId());
+
+            newResource.setId(key); // Set the ID for the resource.
+            newResource.setProject(project); // Set the project for the resource.
+            newResource.setProduct(product); // Set the product for the resource.
+            newResource.setQuantity(resource.getQuantity()); // Set the quantity for the resource.
+
+            entityManager.persist(newResource); // Persist the resource to the database.
+        }
     }
 }

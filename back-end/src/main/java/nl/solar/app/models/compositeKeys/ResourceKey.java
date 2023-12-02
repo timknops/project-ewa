@@ -15,12 +15,12 @@ import jakarta.persistence.Embeddable;
 public class ResourceKey implements Serializable {
 
     @Column(name = "project_id")
-    private long projectId;
+    private Long projectId;
 
     @Column(name = "product_id")
-    private long productId;
+    private Long productId;
 
-    public ResourceKey(long projectId, long productId) {
+    public ResourceKey(Long projectId, Long productId) {
         this.projectId = projectId;
         this.productId = productId;
     }
@@ -28,19 +28,19 @@ public class ResourceKey implements Serializable {
     public ResourceKey() {
     }
 
-    public long getProjectId() {
+    public Long getProjectId() {
         return projectId;
     }
 
-    public long getProductId() {
+    public Long getProductId() {
         return productId;
     }
 
-    public void setProjectId(long projectId) {
+    public void setProjectId(Long projectId) {
         this.projectId = projectId;
     }
 
-    public void setProductId(long productId) {
+    public void setProductId(Long productId) {
         this.productId = productId;
     }
 
@@ -50,6 +50,7 @@ public class ResourceKey implements Serializable {
             return true;
         if (!(o instanceof ResourceKey))
             return false;
+
         ResourceKey that = (ResourceKey) o;
         return getProjectId() == that.getProjectId() && getProductId() == that.getProductId();
     }
@@ -58,5 +59,4 @@ public class ResourceKey implements Serializable {
     public int hashCode() {
         return Objects.hash(getProjectId(), getProductId());
     }
-
 }

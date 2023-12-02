@@ -14,4 +14,6 @@ public interface ResourceRepository extends ManyToManyRepository<Resource> {
      * @return a map with the product name as key and the quantity as value
      */
     List<ProjectResourceDTO> getProjectResources(long projectId);
+
+    void addProjectResources(long projectId, List<ProjectResourceDTO> resources);
 }

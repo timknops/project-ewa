@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ import nl.solar.app.DTO.ProjectResourceDTO;
 import nl.solar.app.exceptions.PreConditionFailedException;
 import nl.solar.app.exceptions.ResourceNotFoundException;
 import nl.solar.app.models.Project;
+import nl.solar.app.models.Resource;
 import nl.solar.app.models.Team;
 import nl.solar.app.models.views.ProjectView;
 import nl.solar.app.models.wrappers.ProjectRequestWrapper;
@@ -139,18 +141,26 @@ public class ProjectController {
     /**
      * Creates a new project.
      *
-     * @param project The project to be added.
+     * @param projectWrapper a wrapper containing the project and the resources.
      * @return A ResponseEntity containing the created project.
-     * 
      */
     @PostMapping(path = "/add", produces = "application/json")
-    public ResponseEntity<Project> createProject(@RequestBody Project project)
+    public ResponseEntity<Project> createProject(@RequestBody ProjectRequestWrapper projectWrapper)
             throws ResourceNotFoundException {
-
-        // TODO: Ensure products are added, and add resources for each product.
+        // Check if the team exists.
+        if (projectWrapper.getProject().getTeam() == null) {
+            throw new ResourceNotFoundException(
+                    "Team with id: " + projectWrapper.getProject().getTeam().getId() + " was not found");
+        }
 
         // Save the project.
-        Project createdProject = this.projectRepo.save(project);
+        Project createdProject = this.projectRepo.save(projectWrapper.getProject());
+
+        // Add the resources to the project if there are any.
+        List<ProjectResourceDTO> resources = projectWrapper.getResources();
+        if (resources != null && !resources.isEmpty()) {
+            this.resourceRepo.addProjectResources(createdProject.getId(), resources);
+        }
 
         // Create the URI for the created project.
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
