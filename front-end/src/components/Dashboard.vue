@@ -91,14 +91,17 @@ export default {
         {
           Username: "hx",
           Warehouse: "Solar Clarity",
+          Project: "Team 1"
         },
         {
           Username: "test",
           Warehouse: "4Blue",
+          Project: "Team 2"
         },
         {
           Username: "hi",
           Warehouse: "Solar Clarity",
+          Project: "Team 3"
         },
 
       ],
