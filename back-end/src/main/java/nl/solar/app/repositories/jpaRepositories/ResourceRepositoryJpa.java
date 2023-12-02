@@ -36,33 +36,56 @@ public class ResourceRepositoryJpa implements ResourceRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
+    /**
+     * Finds all resources.
+     * 
+     * @return List<Resource> A list of all resources.
+     */
     @Override
     public List<Resource> findAll() {
         TypedQuery<Resource> query = entityManager.createQuery("SELECT r FROM Resource r", Resource.class);
         return query.getResultList();
     }
 
+    /**
+     * Finds a resource by id.
+     * 
+     * @param id The id of the resource to find.
+     * @return Resource The resource with the given id.
+     */
     @Override
     public Resource findByIds(long firstId, long secondId) {
         throw new UnsupportedOperationException("Unimplemented method 'findByIds'");
     }
 
+    /**
+     * Deletes a resource.
+     * 
+     * @param id The id of the resource to delete.
+     * @return Resource The deleted resource.
+     */
     @Override
     public Resource deleteByIds(long firstId, long secondId) {
         throw new UnsupportedOperationException("Unimplemented method 'deleteByIds'");
     }
 
+    /**
+     * Saves a resource.
+     * 
+     * @param item The resource to save.
+     * @return Resource The saved resource.
+     */
     @Override
     public Resource save(Resource item) {
-        throw new UnsupportedOperationException("Unimplemented method 'save'");
+        return entityManager.merge(item);
     }
 
     /**
      * Retrieves the project resources for a given project ID.
      * 
      * @param projectId the ID of the project
-     * @return a list of ProjectResourceDTO objects representing the project
-     *         resources
+     * @return A list of ProjectResourceDTO objects representing the project
+     *         resources,
      */
     @Override
     public List<ProjectResourceDTO> getProjectResources(long projectId) {
@@ -86,7 +109,8 @@ public class ResourceRepositoryJpa implements ResourceRepository {
      * Adds resources to a project.
      * 
      * @param projectId the ID of the project
-     * @param resources a list of ProjectResourceDTO objects representing the
+     * @param resources A list of ProjectResourceDTO objects representing the
+     *                  resources to add.
      */
     @Override
     public void addProjectResources(long projectId, List<ProjectResourceDTO> resources) {

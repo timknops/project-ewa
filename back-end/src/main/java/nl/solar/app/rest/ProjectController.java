@@ -85,7 +85,7 @@ public class ProjectController {
     /**
      * Retrieves a project by its id.
      *
-     * @param id The id of the project to retrieve.
+     * @param id the id of the project to retrieve.
      * @return A ResponseEntity containing the retrieved project.
      * @throws ResourceNotFoundException If the project with the given ID does not
      *                                   exist.
@@ -121,7 +121,7 @@ public class ProjectController {
     /**
      * Deletes a project by its id.
      *
-     * @param id The id of the project to delete.
+     * @param id the id of the project to delete.
      * @return A ResponseEntity containing the deleted project.
      * @throws ResourceNotFoundException If the project with the given ID does not
      *                                   exist.
@@ -172,21 +172,49 @@ public class ProjectController {
     /**
      * Updates a project by its id.
      *
-     * @param id      The id of the project to update.
-     * @param project The project to update.
+     * @param id             the id of the project to update.
+     * @param projectWrapper a wrapper containing the project and the resources.
      * @return A ResponseEntity containing the updated project.
      * @throws PreConditionFailedException If the project with the given ID does not
      *                                     exist.
+     * @throws PreConditionFailedException If the id of the body and path do not
+     *                                     match.
      */
-    @PutMapping(path = "{id}", produces = "application/json")
-    public ResponseEntity<Project> updateProject(@PathVariable Long id, @RequestBody Project project)
+    @PutMapping(path = "/update/{id}", produces = "application/json")
+    public ResponseEntity<Project> updateProject(@PathVariable Long id,
+            @RequestBody ProjectRequestWrapper projectWrapper)
             throws PreConditionFailedException {
-        if (id != project.getId()) {
+        if (id != projectWrapper.getProject().getId()) {
             throw new PreConditionFailedException("Id of the body and path do not match");
         }
 
-        Project updatedProject = this.projectRepo.save(project);
-        return ResponseEntity.ok(updatedProject);
+        // Check if the project exists.
+        Project project = this.projectRepo.findById(id);
+        if (project == null) {
+            throw new PreConditionFailedException("Project with id: " + id + " was not found");
+        }
+
+        // Update the project.
+        Project updatedProject = this.projectRepo.save(projectWrapper.getProject());
+
+        // Get the resources for the project.
+        List<ProjectResourceDTO> resources = this.resourceRepo.getProjectResources(id);
+
+        // Loop through all resources.
+        for (ProjectResourceDTO resource : projectWrapper.getResources()) {
+            // Check if the resource is already in the database.
+            if (!resources.contains(resource)) {
+                // Add the resource.
+                this.resourceRepo.save(new Resource(updatedProject, resource.getProduct(),
+                        resource.getQuantity()));
+            }
+        }
+
+        // Create the URI for the updated project.
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                .buildAndExpand(updatedProject.getId()).toUri();
+
+        return ResponseEntity.created(location).body(updatedProject);
     }
 
     /**

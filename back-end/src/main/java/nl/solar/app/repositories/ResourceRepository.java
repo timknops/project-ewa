@@ -5,6 +5,11 @@ import java.util.List;
 import nl.solar.app.DTO.ProjectResourceDTO;
 import nl.solar.app.models.Resource;
 
+/**
+ * Repository for the {@link Resource} entity.
+ * 
+ * @author Tim Knops
+ */
 public interface ResourceRepository extends ManyToManyRepository<Resource> {
 
     /**
@@ -15,5 +20,11 @@ public interface ResourceRepository extends ManyToManyRepository<Resource> {
      */
     List<ProjectResourceDTO> getProjectResources(long projectId);
 
+    /**
+     * Add resources to a project
+     * 
+     * @param projectId the id of the project
+     * @param resources the resources to add
+     */
     void addProjectResources(long projectId, List<ProjectResourceDTO> resources);
 }

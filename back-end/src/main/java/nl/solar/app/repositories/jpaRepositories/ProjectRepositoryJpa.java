@@ -28,6 +28,11 @@ public class ProjectRepositoryJpa implements ProjectRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
+    /**
+     * Finds all projects.
+     * 
+     * @return List<Project> A list of all projects.
+     */
     @Override
     public List<Project> findAll() {
         TypedQuery<Project> query = entityManager.createQuery("SELECT p FROM Project p", Project.class);
@@ -37,8 +42,8 @@ public class ProjectRepositoryJpa implements ProjectRepository {
     /**
      * Finds a project by id.
      * 
-     * @param id The id of the project to find.
-     * @return Project The project with the given id.
+     * @param id the id of the project to find.
+     * @return The project with the given id.
      */
     @Override
     public Project findById(long id) {
@@ -48,8 +53,8 @@ public class ProjectRepositoryJpa implements ProjectRepository {
     /**
      * Deletes a project.
      * 
-     * @param id The id of the project to delete.
-     * @return Project The deleted project.
+     * @param id the id of the project to delete.
+     * @return The deleted project.
      */
     @Override
     public Project delete(long id) {
@@ -65,8 +70,8 @@ public class ProjectRepositoryJpa implements ProjectRepository {
     /**
      * Saves a project.
      * 
-     * @param newProject The project to save.
-     * @return Project The saved project.
+     * @param newProject the project to save.
+     * @return The saved project.
      */
     @Override
     public Project save(Project newProject) {
@@ -77,9 +82,9 @@ public class ProjectRepositoryJpa implements ProjectRepository {
      * This method executes a query and returns a list of maps containing the id and
      * name of the query result.
      * 
-     * @param queryString The query string to execute.
-     * @param idField     The name of the id field in the query result.
-     * @param nameField   The name of the name field in the query result.
+     * @param queryString the query string to execute
+     * @param idField     the name of the id field in the query result
+     * @param nameField   the name of the name field in the query result
      * @return A list of maps containing the id and name of the query result.
      */
     private List<Map<String, Object>> executeQuery(String queryString, String idField, String nameField) {
