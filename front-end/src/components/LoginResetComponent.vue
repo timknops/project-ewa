@@ -1,6 +1,9 @@
 <template>
 <!--  TODO add redirecting delays with information to the user that something is happening-->
   <div class="container-fluid">
+    <div v-if="alert1" class="alert alert-success text-center">
+      <p>Success! An email with a link to reset your password has been sent to your email address</p>
+    </div>
     <div class="col-md-4 offset-md-4 card my-5">
       <!--        grey card border-->
       <div class="text-center reset-header">
@@ -37,8 +40,7 @@
               <button
                   class="btn btn-primary login-button"
                   type="button"
-                  v-on:click="sendEmail()"
-              >
+                  v-on:click="mailSubmit()">
                 Submit
               </button>
             </div>
@@ -55,7 +57,9 @@
             class="card-body p-lg-5 card-color-grey set-font needs-validation"
         >
           <h2>Create a new password</h2>
-          <p>Enter a new and secure password for your account</p>
+          <p>Enter a new and secure password for your account.
+          You'll be redirected when the password has been changed.
+          </p>
 
           <!--            password-->
           <div class="form-group password mt-5">
@@ -115,12 +119,16 @@ export default {
       correctEmail: null,
       correctPassword: null,
       errorMessage: null,
-      newPassword: false
+      newPassword: false,
+      alert1: false
     }
   },
   async created(){
     this.users = await this.userService.asyncFindAll();
-    console.log(this.users);
+    this.user = this.findByEmail1(this.$route.params.email);
+    if (this.user != null){
+      this.newPassword = true;
+    }
   },
   methods: {
     //TODO seperate clear fields method
@@ -131,8 +139,9 @@ export default {
       } else {
         if (this.validEmail()){
           if (this.findByEmail(this.input.email) != null){
-            console.log(this.findByEmail(this.input.email))
-            this.newPassword = true;
+            this.sendEmail();
+            this.alert1 = true;
+            // this.newPassword = true;
             this.errorMessage = null;
           } else {
            this.correctEmail = false;
@@ -172,10 +181,15 @@ export default {
       this.user = this.users.find((user) => user.email === email);
       return this.user
     },
+    findByEmail1(email){
+      this.user = this.users.find((user) => user.email === email);
+      return this.user
+    },
     navigateToLogin(){
       this.clearFields();
       localStorage.setItem("resetLogin", false);
       this.$emit("updateResetLogin", false);
+      this.$router.push("/loginPage");
     },
     clearFields(){
       this.user = null;
@@ -192,13 +206,14 @@ export default {
       }
     },
     sendEmail(){
-      try {
-        this.emailService.asyncSendMail(this.input.email);
-      } catch (e){
-        console.log(e)
-      }
+      console.log(this.$route.params.email)
+      // try {
+      //   this.emailService.asyncSendMail(this.input.email);
+      // } catch (e){
+      //   console.log(e)
+      // }
     }
-  },
+  }
 }
 </script>
 

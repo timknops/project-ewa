@@ -117,6 +117,7 @@ export default {
     forgotPassword() {
       localStorage.setItem('resetLogin', true)
       this.$emit("updateResetLogin", true);
+      this.$router.push("/loginReset");
     },
   },
   created() {

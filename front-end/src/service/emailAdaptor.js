@@ -20,7 +20,7 @@ export class EmailAdaptor{
     async asyncSendMail(email){
         return await this.fetchJson(this.resourceUrl, {
             method: "POST",
-            body: JSON.stringify(email)
+            body: (email)
         })
     }
 }

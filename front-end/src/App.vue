@@ -1,16 +1,19 @@
 <template>
   <div v-if="loggedInActive === 'false'">
-    <login-page
-        @update-logged-in="updateLoggedIn()"
-        @update-reset-login="updateResetLogin()"
-        v-if="resetLogin === 'false'"
-    >
-    </login-page>
-    <loginResetComponent
-        @update-logged-in="updateLoggedIn()"
-        @update-reset-login="updateResetLogin()"
-        v-else
-    ></loginResetComponent>
+    <router-view
+    @update-logged-in="updateLoggedIn"
+    ></router-view>
+<!--    <login-page-->
+<!--        @update-logged-in="updateLoggedIn()"-->
+<!--        @update-reset-login="updateResetLogin()"-->
+<!--        v-if="resetLogin === 'false'"-->
+<!--    >-->
+<!--    </login-page>-->
+<!--    <loginResetComponent-->
+<!--        @update-logged-in="updateLoggedIn()"-->
+<!--        @update-reset-login="updateResetLogin()"-->
+<!--        v-else-->
+<!--    ></loginResetComponent>-->
   </div>
   <div v-else class="view">
     <sidebar/>
@@ -21,8 +24,6 @@
 
 <script>
 import Sidebar from "@/components/Sidebar.vue";
-import LoginPage from "@/components/LoginPage.vue";
-import LoginResetComponent from "@/components/LoginResetComponent.vue";
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import appConfig from "@/appConfig";
 import {ProductAdaptor} from "@/service/productAdaptor";
@@ -39,8 +40,6 @@ localStorage.setItem("resetLogin", false);
 export default {
   name: "App",
   components: {
-    LoginPage,
-    LoginResetComponent,
     HeaderComponent,
     Sidebar,
   },

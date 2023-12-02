@@ -15,4 +15,5 @@ public class Email {
     private String receiver;
     private String emailBody;
     private String subject;
+
 }

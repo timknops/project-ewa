@@ -18,8 +18,8 @@ export const router = createRouter({
       component: loginPage
     },
     {
-      path: "/loginReset",
-      component: loginResetPage
+      path: "/loginReset/:email?",
+      component: loginResetPage,
     },
     {
       path: "/dashboard",
@@ -63,6 +63,6 @@ export const router = createRouter({
       meta: {icon: "fa-solid fa-warehouse"}
     },
     // add paths to other components here
-    { path: "/:pathMatch(.*)", redirect: "/dashboard" }, // redirect non-existing path to dashboard
+    { path: "/:pathMatch(.*)", redirect: "" }, // redirect non-existing path to dashboard
   ],
 });
