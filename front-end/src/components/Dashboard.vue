@@ -4,7 +4,7 @@
     <!--Dropdown-->
     <div class="btn-group dropdown-color">
       <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Choose warehouse
+        {{selectedWarehouse ? selectedWarehouse : " Choose warehouse"}}
       </button>
 
       <div class="dropdown-menu">
