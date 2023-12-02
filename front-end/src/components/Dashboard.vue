@@ -3,7 +3,7 @@
 
     <!--Dropdown-->
     <div class="btn-group dropdown-color">
-      <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <button class="btn dropdown-toggle background-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         {{selectedWarehouse ? selectedWarehouse : " Choose warehouse"}}
       </button>
 
@@ -263,5 +263,9 @@ h2 {
   margin-top: 50px;
   box-shadow: var(--custom-box-shadow);
   border-radius: 0.5rem;
+}
+
+.background-dropdown {
+  background-color: rgba(199, 208, 44, 1);
 }
 </style>
