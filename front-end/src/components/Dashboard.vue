@@ -166,27 +166,31 @@ export default {
       const chartWidth = this.chartWidth;
       const chartHeight = this.chartHeight;
 
+      const nameLegend = [...new Set(data.map(item => item.Name))];
 
-      const labels = data.map((item) => item.Name);
-      const qdata = data.map((item) => item.Quantity);
-      const expectedData = data.map((item) => item.Expected);
+      const dataMonths = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+      ];
 
-      qdata.push(50);
+      const datasets = nameLegend.map((name, index) => {
+        const qdata = data
+            .filter(item => item.Name === name)
+            .map(item => item.Quantity);
+
+        qdata.push(50);
+
+        return {
+          label: `${name} `,
+          backgroundColor: this.barColors[index % this.barColors.length],
+          data: qdata,
+        };
+      });
+
 
       const chartData = {
-        labels: labels,
-        datasets: [
-          {
-            label: "Quantity",
-            backgroundColor: this.barColors[0],
-            data: qdata,
-          },
-          {
-            label: "Expected",
-            backgroundColor: "rgba(199, 208, 44, 1)",
-            data: expectedData,
-          },
-        ],
+        labels: dataMonths,
+        datasets: datasets,
       };
 
       const chartOptions = {
@@ -197,8 +201,6 @@ export default {
         },
         width: chartWidth,
         height: chartHeight,
-        // responsive: true,
-        // maintainAspectRatio: false,
         scales: {
           y: {
             beginAtZero: true,
@@ -217,7 +219,7 @@ export default {
       };
 
      this.saveChart = new Chart(this.$refs.combinedChart, {
-        type: "bar",
+        type: "line",
         data: chartData,
         options: chartOptions,
       });
