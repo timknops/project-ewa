@@ -5,7 +5,7 @@ import nl.solar.app.exceptions.PreConditionFailedException;
 import nl.solar.app.exceptions.ResourceNotFoundException;
 import nl.solar.app.models.Warehouse;
 import nl.solar.app.repositories.EntityRepository;
-import nl.solar.app.repositories.ResourceRepository;
+import nl.solar.app.repositories.InventoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +21,7 @@ public class WarehouseController {
     EntityRepository<Warehouse> warehouseRepo;
 
     @Autowired
-    ResourceRepository resourceRepository;
+    InventoryRepository inventoryRepository;
 
     @GetMapping(produces = "application/json")
     public List<Warehouse> getAll(){
@@ -47,7 +47,7 @@ public class WarehouseController {
             throw new ResourceNotFoundException("Cannot delete warehouse with id: " + id + "\nWarehouse not found");
         }
 
-        this.resourceRepository.deleteResourcesForWarehouse(warehouseToDelete);
+        this.inventoryRepository.deleteInventoryForWarehouse(warehouseToDelete);
 
         return ResponseEntity.ok(warehouseToDelete);
     }
@@ -59,7 +59,7 @@ public class WarehouseController {
         }
 
         Warehouse newWarehouse = this.warehouseRepo.save(warehouse);
-        this.resourceRepository.addResourcesForWarehouse(warehouse);
+        this.inventoryRepository.addInventoryForWarehouse(warehouse);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(newWarehouse.getId()).toUri();
         return ResponseEntity.created(location).body(newWarehouse);

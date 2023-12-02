@@ -11,7 +11,7 @@ import java.util.Objects;
  *
  * @author Julian
  */
-public class Resource {
+public class Inventory {
 
     @JsonView(ResourceView.Complete.class)
     private Warehouse warehouse;
@@ -20,14 +20,14 @@ public class Resource {
     @JsonView(ResourceView.Complete.class)
     private int quantity;
 
-    public static Resource createDummyResource(Warehouse warehouse, Product product) {
-        Resource resource = new Resource();
+    public static Inventory createDummyResource(Warehouse warehouse, Product product) {
+        Inventory inventory = new Inventory();
 
-        resource.setProduct(product);
-        resource.setWarehouse(warehouse);
-        resource.setQuantity((int) (Math.floor(Math.random() * 40)));
+        inventory.setProduct(product);
+        inventory.setWarehouse(warehouse);
+        inventory.setQuantity((int) (Math.floor(Math.random() * 40)));
 
-        return resource;
+        return inventory;
     }
 
     public Warehouse getWarehouse() {
@@ -56,9 +56,9 @@ public class Resource {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Resource resource) {
-            return resource.getWarehouse().getId() == this.getWarehouse().getId() &&
-                    resource.getProduct().getId() == this.getProduct().getId();
+        if (obj instanceof Inventory inventory) {
+            return inventory.getWarehouse().getId() == this.getWarehouse().getId() &&
+                    inventory.getProduct().getId() == this.getProduct().getId();
         }
         return false;
     }
