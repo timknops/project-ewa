@@ -44,7 +44,7 @@
         tableWidth="60%"
         :boldFirstColumn="true"
         :amountToDisplay="4"
-        :tableData="userData"
+        :tableData="selectedWarehouseUserData"
         table-title="Users"
         sub-title="Current active users"
       >
@@ -90,8 +90,17 @@ export default {
       userData: [
         {
           Username: "hx",
-          Warehouse: "Solar clarity",
+          Warehouse: "Solar Clarity",
         },
+        {
+          Username: "test",
+          Warehouse: "4Blue",
+        },
+        {
+          Username: "hi",
+          Warehouse: "Solar Clarity",
+        },
+
       ],
       forecastData: [
         {
@@ -128,7 +137,21 @@ export default {
       }
       return this.tableData;
     },
-  },
+
+    selectedWarehouseUserData() {
+      if (this.selectedWarehouse) {
+        if (this.selectedWarehouse === null) {
+          return this.userData;
+        } else {
+          return this.userData.filter(
+              (user) => user.Warehouse === this.selectedWarehouse
+          );
+        }
+      }
+      return this.userData;
+    },
+    },
+
 
   methods: {
     createChart(data) {
@@ -202,13 +225,6 @@ export default {
       this.createChart(this.selectedWarehouseData);
     },
   },
-
-
-
-  // watch: {
-  //   xValues: "createChart",
-  //   yValues: "createChart",
-  // },
 };
 </script>
 
