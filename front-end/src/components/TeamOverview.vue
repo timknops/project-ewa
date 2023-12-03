@@ -1,17 +1,17 @@
 <template>
   <div>
     <table-component
+        v-if="!teamsAreLoading"
         :amount-to-display="5"
-        :table-data="teams"
         :has-add-button="true"
         :has-delete-button="true"
         :has-edit-button="true"
-        :hide-id-column="true"
-        :has-search-bar="true"
+        :table-data="teams"
         @edit="showEditModal"
         @delete="showDeleteModal"
         @add="showAddModal"
     />
+    <SpinnerComponent v-else />
     <Transition>
       <modal-component
           v-if="showModal"
@@ -30,11 +30,11 @@
 <script>
 import TableComponent from "@/components/table/TableComponent";
 import ModalComponent from "@/components/modal/ModalComponent";
-
+import SpinnerComponent from "@/components/util/SpinnerComponent";
 
 export default {
   name: "TeamOverview",
-  components: {TableComponent, ModalComponent},
+  components: {TableComponent, ModalComponent, SpinnerComponent},
   inject: ['teamsService'],
 
   data() {
@@ -59,7 +59,8 @@ export default {
         ADD: "add-team-modal",
         UPDATE: "update-team-modal",
         DELETE: "delete-team-modal",
-      })
+      }),
+      teamsAreLoading: true,
     };
   },
   methods: {
@@ -129,11 +130,30 @@ export default {
       } catch (exception) {
         console.log(exception)
       }
-    }
+    },
+
+    formatEmptyTeamData() {
+      return {
+        id: "",
+        teamName: "",
+        warehouse: "",
+        type: "",
+      };
+    },
   },
 
   async created() {
-    this.teams = await this.teamsService.findAll();
+    const data = await this.teamsService.findAll();
+
+    if (data.length === 0) {
+      this.teams = [this.formatEmptyTeamData()];
+
+      this.teamsAreLoading = false;
+      return;
+    }
+
+    this.teams = data;
+    this.teamsAreLoading = false;
   },
 };
 </script>
