@@ -1,18 +1,26 @@
 package nl.solar.app.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
-import nl.solar.app.Views.ResourceView;
+import jakarta.persistence.*;
+import nl.solar.app.models.views.ResourceView;
 
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Class which represents a product sold by Solar Sedum
  *
  * @author Julian Kruithof
  */
+@Entity
 public class Product {
 
+    @Id
     @JsonView(ResourceView.Complete.class)
+    @SequenceGenerator(name = "product_id_generator", initialValue = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_id_generator")
     private long id;
 
     @JsonView(ResourceView.Complete.class)
@@ -21,9 +29,25 @@ public class Product {
     @JsonView(ResourceView.Complete.class)
     private String description;
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JsonBackReference(value = "product_resource")
+    @JsonIgnore
+    private List<ResourceTemp> projects;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JsonBackReference(value = "product_inventory")
+    @JsonIgnore
+    private Set<Inventory> inventory;
+
+    public Product() {
+        projects = new ArrayList<>();
+        inventory = new HashSet<>();
+    }
     /**
-     * create an dummy product by using the default constructor and the getters and setters
-     * @param id - the id of the product
+     * create an dummy product by using the default constructor and the getters and
+     * setters
+     *
+     * @param id          - the id of the product
      * @param productName the name of the product
      * @param description the description of the product
      * @return a Dummy product
@@ -34,6 +58,14 @@ public class Product {
         dummyProduct.setProductName(productName);
         dummyProduct.setDescription(description);
         return dummyProduct;
+    }
+
+    public Set<Inventory> getInventory() {
+        return inventory;
+    }
+
+    public void setInventory(Set<Inventory> inventory) {
+        this.inventory = inventory;
     }
 
     public long getId() {
@@ -60,9 +92,18 @@ public class Product {
         this.description = description;
     }
 
+    public List<ResourceTemp> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(List<ResourceTemp> projects) {
+        this.projects = projects;
+    }
+
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
+        if (this == obj)
+            return true;
 
         if (obj instanceof Product product) {
             return this.getId() == product.id;
