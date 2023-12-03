@@ -26,6 +26,16 @@
     >
     </TableComponent>
 
+    <div class="btn-group dropdown-color">
+      <button class="btn dropdown-toggle background-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        {{ selectedMonth ? selectedMonth : currentMonth }}
+      </button>
+
+      <div class="dropdown-menu">
+        <a v-for="(month, index) in allMonths" :key="index" class="dropdown-item" @click="selectMonth(month)">{{ month }}</a>
+      </div>
+    </div>
+
     <div class="table-container mb-5 gap-5 d-flex w-100">
       <!--Forecast-->
       <div class="user-table-overview-left card border-0">
@@ -114,6 +124,13 @@ export default {
       selectedWarehouse: null,
       selectedWarehouseChart: null,
 
+      //dropdown chart
+      selectedMonth: null,
+      currentMonth: "",
+      allMonths: [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+      ],
       chartDataList: [],
       //    chart: null,
       saveChart: null,
@@ -126,6 +143,8 @@ export default {
   },
 
   mounted() {
+    this.currentMonth = this.getMonthName(new Date().getMonth());
+    this.selectedMonth = this.currentMonth;
     this.createChart(this.tableData);
   },
 
@@ -157,6 +176,16 @@ export default {
 
 
   methods: {
+    selectMonth(monthIsSelected){
+      this.selectedMonth = monthIsSelected;
+      this.createChart(this.selectedWarehouseData);
+    },
+
+    getMonthName(monthI){
+      return this.allMonths[monthI]
+    },
+
+
     createChart(data) {
 
       if (this.saveChart) {
@@ -173,6 +202,12 @@ export default {
         'July', 'August', 'September', 'October', 'November', 'December'
       ];
 
+      const colorLegend = [
+          'rgba(199, 208, 44, 1)',
+          'rgba(91, 46, 24, 1)',
+          '#000000FF'
+      ]
+
       const datasets = nameLegend.map((name, index) => {
         const qdata = data
             .filter(item => item.Name === name)
@@ -182,7 +217,7 @@ export default {
 
         return {
           label: `${name} `,
-          backgroundColor: this.barColors[index % this.barColors.length],
+          backgroundColor: colorLegend[index % colorLegend.length],
           data: qdata,
         };
       });
@@ -194,7 +229,7 @@ export default {
       };
 
       const chartOptions = {
-        legend: {display: false},
+        legend: {display: true},
         title: {
           display: true,
           text: "Inventory Chart",
@@ -219,7 +254,7 @@ export default {
       };
 
      this.saveChart = new Chart(this.$refs.combinedChart, {
-        type: "line",
+        type: "bar",
         data: chartData,
         options: chartOptions,
       });
@@ -250,7 +285,6 @@ h2 {
 .my-chart {
   width: 100%;
   height: auto;
-  /*box-shadow: var(--custom-box-shadow);*/
 }
 
 .table-container {
