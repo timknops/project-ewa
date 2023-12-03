@@ -1,23 +1,32 @@
 <template>
-<!--  TODO add redirecting delays with information to the user that something is happening-->
+  <!--  TODO add redirecting delays with information to the user that something is happening-->
   <div class="container-fluid">
+    <!--    success alert when successfully logged in-->
     <div v-if="alert1" class="alert alert-success text-center">
       <p>Success! An email with a link to reset your password has been sent to your email address</p>
     </div>
     <div class="col-md-4 offset-md-4 card my-5">
-      <!--        grey card border-->
-      <div class="text-center reset-header">
+      <!--      header of email request-->
+      <div v-if="!newPassword" class="text-center reset-header">
+        <font-awesome-icon
+            icon="fa-regular fa-envelope"
+            class="lock-icon"
+        />
+      </div>
+      <!--      header of password reset-->
+      <div v-else class="text-center reset-header">
         <font-awesome-icon
             icon="fa-solid fa-user-lock"
             class="lock-icon"
         />
       </div>
       <div v-if="!newPassword">
-<!--        cancel button-->
+        <!--        cancel button-->
         <div class="float-end rounded-start-2 mt-3 cancel-button text-center p-2 px-4"
-        @click="navigateToLogin">
+             @click="navigateToLogin">
           go back
         </div>
+        <!--        grey card border-->
         <form
             class="card-body p-lg-5 card-color-grey set-font needs-validation"
         >
@@ -40,7 +49,7 @@
               <button
                   class="btn btn-primary login-button"
                   type="button"
-                  v-on:click="mailSubmit()">
+                  v-on:click="sendEmail()">
                 Submit
               </button>
             </div>
@@ -58,7 +67,7 @@
         >
           <h2>Create a new password</h2>
           <p>Enter a new and secure password for your account.
-          You'll be redirected when the password has been changed.
+            You'll be redirected when the password has been changed.
           </p>
 
           <!--            password-->
@@ -106,7 +115,7 @@
 export default {
   name: "LoginResetComponent",
   inject: ['userService',
-  'emailService'],
+    'emailService'],
   data() {
     return {
       users: [],
@@ -120,13 +129,15 @@ export default {
       correctPassword: null,
       errorMessage: null,
       newPassword: false,
-      alert1: false
+      alert1: false,
+      bodySplitter: []
     }
   },
-  async created(){
+  async created() {
+    this.bodySplitter = this.$route.params.email.split("_", 3);
     this.users = await this.userService.asyncFindAll();
-    this.user = this.findByEmail1(this.$route.params.email);
-    if (this.user != null){
+    this.user = this.findByEmail(this.bodySplitter[0]);
+    if (this.user != null) {
       this.newPassword = true;
     }
   },
@@ -137,15 +148,14 @@ export default {
         this.correctEmail = false;
         this.errorMessage = "Email cannot be empty";
       } else {
-        if (this.validEmail()){
-          if (this.findByEmail(this.input.email) != null){
+        if (this.validEmail()) {
+          if (this.findByEmail(this.input.email) != null) {
             this.sendEmail();
             this.alert1 = true;
-            // this.newPassword = true;
             this.errorMessage = null;
           } else {
-           this.correctEmail = false;
-           this.errorMessage = "User for given email does not exist"
+            this.correctEmail = false;
+            this.errorMessage = "User for given email does not exist"
           }
         } else {
           this.correctEmail = false;
@@ -153,7 +163,7 @@ export default {
         }
       }
     },
-    validEmail(){
+    validEmail() {
       const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return this.input.email.match(regex);
     },
@@ -162,7 +172,7 @@ export default {
         this.correctPassword = false;
         this.errorMessage = "Please fill in both forms"
       } else if (this.password1 === this.password2) {
-        if (this.password1 === this.user.password){
+        if (this.password1 === this.user.password) {
           this.correctPassword = false;
           this.errorMessage = "New password can't be the same as old password"
         } else {
@@ -177,41 +187,37 @@ export default {
         this.errorMessage = "Passwords do not match"
       }
     },
-    findByEmail(email){
+    findByEmail(email) {
       this.user = this.users.find((user) => user.email === email);
       return this.user
     },
-    findByEmail1(email){
-      this.user = this.users.find((user) => user.email === email);
-      return this.user
-    },
-    navigateToLogin(){
+    navigateToLogin() {
       this.clearFields();
       localStorage.setItem("resetLogin", false);
       this.$emit("updateResetLogin", false);
       this.$router.push("/loginPage");
     },
-    clearFields(){
+    clearFields() {
       this.user = null;
       this.password1 = null;
       this.password2 = null;
       this.errorMessage = null;
     },
-    async passwordUpdate(password){
+    async passwordUpdate(password) {
       try {
         this.user.password = password
         await this.userService.asyncSave(this.user);
-      } catch (e){
+      } catch (e) {
         console.log(e)
       }
     },
-    sendEmail(){
-      console.log(this.$route.params.email)
-      // try {
-      //   this.emailService.asyncSendMail(this.input.email);
-      // } catch (e){
-      //   console.log(e)
-      // }
+    sendEmail() {
+      this.user = this.findByEmail(this.input.email);
+      try {
+        this.emailService.asyncSendMail(this.input.email + "_" + this.user.name + "_" + this.user.id);
+      } catch (e) {
+        console.log(e)
+      }
     }
   }
 }

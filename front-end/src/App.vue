@@ -16,7 +16,7 @@
 <!--    ></loginResetComponent>-->
   </div>
   <div v-else class="view">
-    <sidebar/>
+    <sidebar @update-logged-in="updateLoggedIn"/>
     <header-component class="header"></header-component>
     <router-view id="component"></router-view>
   </div>
