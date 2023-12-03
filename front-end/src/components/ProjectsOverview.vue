@@ -137,8 +137,11 @@ export default {
      * @returns {Object} The formatted project.
      */
     formatProjectForRequest(project) {
+      // TODO: FIX EMPTY PRODUCTS.
+
       return {
         project: {
+          id: project.id,
           projectName: project.projectName,
           team: {
             id: project.team,
@@ -227,7 +230,9 @@ export default {
      */
     async updateProject(project) {
       try {
-        const updatedProject = await this.projectService.update(project);
+        const updatedProject = await this.projectService.update(
+          this.formatProjectForRequest(project)
+        );
         this.projects = this.projects.map((p) =>
           p.id === updatedProject.id
             ? this.formatProjectForTable(updatedProject)
@@ -255,10 +260,10 @@ export default {
      * Opens the edit modal to update a project.
      * @param {Object} project The project to be updated.
      */
-    showEditModal(project) {
+    async showEditModal(project) {
+      this.modalProject = await this.projectService.get(project.id);
       this.modalTitle = "Update project";
       this.modalBodyComponent = this.MODAL_TYPES.UPDATE;
-      this.modalProject = project;
       this.okBtnText = "Save";
       this.showModal = true;
     },

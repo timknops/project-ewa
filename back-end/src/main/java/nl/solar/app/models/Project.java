@@ -144,12 +144,12 @@ public class Project {
         this.team = team;
     }
 
-    public void getDescription(String description) {
-        this.description = description;
+    public String getDescription() {
+        return description;
     }
 
-    public String setDescription() {
-        return description;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getClient() {

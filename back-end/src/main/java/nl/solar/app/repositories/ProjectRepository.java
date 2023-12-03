@@ -30,12 +30,4 @@ public interface ProjectRepository extends EntityRepository<Project> {
      * @return A list of all products.
      */
     List<Map<String, Object>> getProductsInfo();
-
-    /**
-     * Retrieves a list of all warehouse names and ids.
-     * 
-     * @return A list of all warehouses.
-     */
-    List<Map<String, Object>> getWarehousesInfo();
-
 }

@@ -21,7 +21,6 @@ export default {
   props: ["item"],
   created() {
     this.modalItem = Object.assign({}, this.item);
-    console.log(this.modalItem);
   },
 };
 </script>

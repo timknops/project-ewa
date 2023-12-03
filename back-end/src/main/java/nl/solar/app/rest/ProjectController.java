@@ -77,8 +77,6 @@ public class ProjectController {
             team.put("id", project.getTeam().getId());
             team.put("team", project.getTeam().getTeam());
             formattedProject.put("team", team);
-            // formattedProject.put("teamId", project.getTeam().getId());
-            // formattedProject.put("teamName", project.getTeam().getTeam());
 
             formattedProjects.add(formattedProject); // Add the formatted project to the list of formatted projects.
         }
@@ -112,6 +110,7 @@ public class ProjectController {
         formattedProject.put("status", project.getStatus());
         formattedProject.put("teamId", project.getTeam().getId());
         formattedProject.put("teamName", project.getTeam().getTeam());
+        formattedProject.put("description", project.getDescription());
 
         // Get the resources for the project.
         List<ProjectResourceDTO> resources = this.resourceRepo.getProjectResources(id);
@@ -230,12 +229,10 @@ public class ProjectController {
     @GetMapping(path = "/add", produces = "application/json")
     public ResponseEntity<Map<String, Object>> getAddModalInfo() throws ResourceNotFoundException {
         List<Map<String, Object>> teamsInfo = this.projectRepo.getTeamsInfo();
-        List<Map<String, Object>> warehousesInfo = this.projectRepo.getWarehousesInfo();
         List<Map<String, Object>> productsInfo = this.projectRepo.getProductsInfo();
 
         Map<String, Object> response = new HashMap<>();
         response.put("teams", teamsInfo);
-        response.put("warehouses", warehousesInfo);
         response.put("products", productsInfo);
 
         return ResponseEntity.ok(response);

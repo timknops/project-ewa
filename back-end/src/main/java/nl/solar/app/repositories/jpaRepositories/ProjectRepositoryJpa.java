@@ -108,16 +108,6 @@ public class ProjectRepositoryJpa implements ProjectRepository {
     }
 
     /**
-     * Retrieves a list of all warehouses.
-     * 
-     * @return A list of all warehouses.
-     */
-    @Override
-    public List<Map<String, Object>> getWarehousesInfo() {
-        return executeQuery("SELECT w.id, w.name FROM Warehouse w", "name", "name");
-    }
-
-    /**
      * Retrieves a list of all products.
      * 
      * @return A list of all products.
