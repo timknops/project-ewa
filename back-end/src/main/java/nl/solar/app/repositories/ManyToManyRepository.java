@@ -48,5 +48,5 @@ public interface ManyToManyRepository<E> {
      * @param item the item to be added or deleted
      * @return the added or deleted item.
      */
-    Resource save(E item);
+    E save(E item);
 }

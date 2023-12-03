@@ -25,7 +25,7 @@ public class Team {
 
     private String team;
 
-    // private Warehouse warehouse;
+     private Warehouse warehouse;
 
     @Enumerated(EnumType.STRING)
     private TeamType type;
@@ -36,7 +36,7 @@ public class Team {
     public Team(long id, String team, Warehouse warehouse, TeamType type) {
         this.id = id;
         this.team = team;
-        // this.warehouse = warehouse;
+         this.warehouse = warehouse;
         this.type = type;
     }
 
@@ -76,13 +76,13 @@ public class Team {
         this.team = team;
     }
 
-    // public Warehouse getWarehouse() {
-    // return warehouse;
-    // }
+     public Warehouse getWarehouse() {
+     return warehouse;
+     }
 
-    // public void setWarehouse(Warehouse warehouse) {
-    // this.warehouse = warehouse;
-    // }
+     public void setWarehouse(Warehouse warehouse) {
+     this.warehouse = warehouse;
+     }
 
     public TeamType getType() {
         return type;
