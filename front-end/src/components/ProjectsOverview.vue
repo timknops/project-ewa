@@ -25,6 +25,15 @@
         @ok-modal-btn="handleOk"
       />
     </Transition>
+
+    <Transition>
+      <ToastComponent
+        v-if="showToast"
+        :toast-title="toastTitle"
+        :toast-message="toastMessage"
+        @close-toast="showToast = false"
+      />
+    </Transition>
   </div>
 </template>
 
@@ -32,6 +41,7 @@
 import TableComponent from "@/components/table/TableComponent.vue";
 import SpinnerComponent from "@/components/util/SpinnerComponent.vue";
 import ModalComponent from "@/components/modal/ModalComponent.vue";
+import ToastComponent from "@/components/util/ToastComponent.vue";
 import { Project } from "@/models/project";
 import { Transition } from "vue";
 
@@ -43,7 +53,13 @@ import { Transition } from "vue";
 export default {
   name: "ProjectsOverview",
   inject: ["projectService"],
-  components: { TableComponent, SpinnerComponent, ModalComponent, Transition },
+  components: {
+    TableComponent,
+    SpinnerComponent,
+    ModalComponent,
+    Transition,
+    ToastComponent,
+  },
   data() {
     return {
       projects: [],
@@ -66,6 +82,9 @@ export default {
         UPDATE: "update-project-modal",
         ADD: "add-project-modal",
       }),
+      showToast: false,
+      toastTitle: "",
+      toastMessage: "",
     };
   },
   async created() {
@@ -104,7 +123,7 @@ export default {
     },
 
     /**
-     * Formats the project to the correct format for the request.
+     * Formats the project to the correct format for the POST/PUT request.
      *
       {
         "project": {
@@ -137,7 +156,10 @@ export default {
      * @returns {Object} The formatted project.
      */
     formatProjectForRequest(project) {
-      // TODO: FIX EMPTY PRODUCTS.
+      // Loop through the products and remove those that have a product_id of "". Meaning that they do not have a product selected in the dropdown.
+      project.products = project.products.filter(
+        (product) => product.product_id !== ""
+      );
 
       return {
         project: {
@@ -203,6 +225,7 @@ export default {
         await this.projectService.delete(project.id);
         this.projects = this.projects.filter((p) => p.id !== project.id);
         this.showModal = false;
+        this.showTimedToast("Deleted successfully", "Project deleted.");
       } catch (error) {
         console.log(error);
       }
@@ -219,6 +242,7 @@ export default {
         );
         this.projects.push(this.formatProjectForTable(newProject));
         this.showModal = false;
+        this.showTimedToast("Success", "Project added.");
       } catch (error) {
         console.log(error);
       }
@@ -239,6 +263,7 @@ export default {
             : p
         );
         this.showModal = false;
+        this.showTimedToast("Updated successfully", "Project updated.");
       } catch (error) {
         console.log(error);
       }
@@ -295,6 +320,21 @@ export default {
         default:
           break;
       }
+    },
+
+    /**
+     * Shows a toast message for 4 seconds.
+     * @param {String} title The title of the toast.
+     * @param {String} message The message of the toast.
+     */
+    showTimedToast(title, message) {
+      this.toastTitle = title;
+      this.toastMessage = message;
+      this.showToast = true;
+
+      setTimeout(() => {
+        this.showToast = false;
+      }, 4000);
     },
   },
 };
