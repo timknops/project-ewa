@@ -2,9 +2,8 @@ package nl.solar.app.rest;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import nl.solar.app.DTO.InventoryDTO;
-import nl.solar.app.DTO.ProductDTO;
+import nl.solar.app.DTO.InventoryProductDTO;
 import nl.solar.app.exceptions.BadRequestException;
-import nl.solar.app.exceptions.PreConditionFailedException;
 import nl.solar.app.exceptions.ResourceNotFoundException;
 import nl.solar.app.models.Inventory;
 import nl.solar.app.models.Product;
@@ -14,7 +13,6 @@ import nl.solar.app.repositories.InventoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
@@ -51,16 +49,16 @@ public class InventoryController {
     public ResponseEntity<List<InventoryDTO>> getInventory() {
         List<Inventory> inventories = inventoryRepo.findAll();
         List<InventoryDTO> formattedResources = new ArrayList<>();
-        Map<Warehouse, List<ProductDTO>> GroupedByWarehouse = new HashMap<>();
+        Map<Warehouse, List<InventoryProductDTO>> GroupedByWarehouse = new HashMap<>();
 
         for (Inventory inventory : inventories) {
-            ProductDTO productFormat = formatProductObject(inventory);
+            InventoryProductDTO productFormat = formatProductObject(inventory);
 
             //add product to a list of the warehouse of the current resources.
             GroupedByWarehouse.computeIfAbsent(inventory.getWarehouse(), k -> new ArrayList<>()).add(productFormat);
         }
 
-        for (Map.Entry<Warehouse, List<ProductDTO>> entry : GroupedByWarehouse.entrySet()) {
+        for (Map.Entry<Warehouse, List<InventoryProductDTO>> entry : GroupedByWarehouse.entrySet()) {
            InventoryDTO formattedResource = new InventoryDTO(entry.getKey(), entry.getValue());
             formattedResources.add(formattedResource);
         }
@@ -77,14 +75,14 @@ public class InventoryController {
      *                                   doesn't exist
      */
     @GetMapping(path = "/warehouses/{id}/inventory", produces = "application/json")
-    public ResponseEntity<List<ProductDTO>> getInventoryForWarehouse(@PathVariable long id) throws ResourceNotFoundException {
+    public ResponseEntity<List<InventoryProductDTO>> getInventoryForWarehouse(@PathVariable long id) throws ResourceNotFoundException {
         List<Inventory> inventories = this.inventoryRepo.findInventoryForWarehouse(id);
 
         if (inventories.isEmpty()) {
             throw new ResourceNotFoundException("Warehouse doesn't exist");
         }
 
-        List<ProductDTO> formattedProducts = new ArrayList<>();
+        List<InventoryProductDTO> formattedProducts = new ArrayList<>();
         for (Inventory inventory : inventories) {
             formattedProducts.add(formatProductObject(inventory));
         }
@@ -100,7 +98,7 @@ public class InventoryController {
      * @throws ResourceNotFoundException throw error if the resource doesn't exist
      */
     @GetMapping(path = "/warehouses/{wId}/products/{pId}", produces = "application/json")
-    public ResponseEntity<ProductDTO> getSingleInventory(@PathVariable long wId, @PathVariable long pId) throws ResourceNotFoundException {
+    public ResponseEntity<InventoryProductDTO> getSingleInventory(@PathVariable long wId, @PathVariable long pId) throws ResourceNotFoundException {
         Inventory inventory = this.inventoryRepo.findByIds(pId, wId);
         if (inventory == null) {
             throw new ResourceNotFoundException("The combination of warehouse and product doesn't return a resource");
@@ -185,8 +183,8 @@ public class InventoryController {
      * @param inventory the resource being reformatted.
      * @return return a Map (object) of a product containing the quantity
      */
-    private ProductDTO formatProductObject(Inventory inventory) {
-        return new ProductDTO(inventory.getProduct().getId(),
+    private InventoryProductDTO formatProductObject(Inventory inventory) {
+        return new InventoryProductDTO(inventory.getProduct().getId(),
                 inventory.getProduct().getProductName(),
                 inventory.getProduct().getDescription(),
                 inventory.getQuantity());

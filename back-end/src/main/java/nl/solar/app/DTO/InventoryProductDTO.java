@@ -9,7 +9,7 @@ import nl.solar.app.models.views.ResourceView;
  *
  * @author Julian Kruithof
  */
-public class ProductDTO {
+public class InventoryProductDTO {
 
     @JsonView(ResourceView.Complete.class)
     private Long id;
@@ -31,7 +31,7 @@ public class ProductDTO {
      * @param description  The description of the product.
      * @param quantity     The quantity of the product.
      */
-    public ProductDTO(Long id, String productName, String description, Long quantity) {
+    public InventoryProductDTO(Long id, String productName, String description, Long quantity) {
         this.id = id;
         this.productName = productName;
         this.description = description;
