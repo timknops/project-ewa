@@ -3,9 +3,9 @@
     <div class="card-body px-4 py-0 overflow-hidden">
       <!-- Both the title and the subtitle are optional props! They will not be displayed when not specified -->
       <h5
-        v-if="tableTitle !== undefined"
-        class="fw-bold table-title ps-lg-4 ps-3 mb-0"
-        :class="{ 'mb-2': subTitle === undefined }"
+          v-if="tableTitle !== undefined"
+          class="fw-bold table-title ps-lg-4 ps-3 mb-0"
+          :class="{ 'mb-2': subTitle === undefined }"
       >
         {{ tableTitle }}
       </h5>
@@ -15,7 +15,7 @@
       <div class="table-responsive" :style="{ height: calculateTableHeight }">
         <table class="table table-hover mb-0">
           <thead>
-            <TableHeaderRow
+          <TableHeaderRow
               :table-column-names="tableColumnNames"
               :has-add-button="hasAddButton"
               :hide-id-column="hideIdColumn"
@@ -23,65 +23,65 @@
               :previous-sorted-column="previousSortedColumn"
               @sort="sortByColumn($event)"
               @add="$emit('add')"
-            />
+          />
           </thead>
 
           <!-- If bold first row is set to true, then use the first version of the tbody, else use the other. -->
           <tbody v-if="boldFirstColumn && !showEmptyTable">
-            <tr
+          <tr
               v-for="tableRow in currentlyDisplayedData"
               :key="tableRow"
               @mouseenter="mouseEnter"
               @mouseleave="mouseLeave"
-            >
-              <!-- Makes the first column of the row bold. -->
-              <th
+          >
+            <!-- Makes the first column of the row bold. -->
+            <th
                 v-if="!hideIdColumn"
                 scope="row"
                 class="py-3 table-text px-3 px-lg-4"
-              >
-                {{ Object.values(tableRow)[0] }}
-              </th>
+            >
+              {{ Object.values(tableRow)[0] }}
+            </th>
 
-              <!-- Loops through the rest of the object values, except for the first. -->
-              <template
+            <!-- Loops through the rest of the object values, except for the first. -->
+            <template
                 v-for="i in Object.values(tableRow).length - 1"
                 :key="Object.values(tableRow)[i]"
-              >
-                <!-- If the field data is of type array -->
-                <td
+            >
+              <!-- If the field data is of type array -->
+              <td
                   v-if="Array.isArray(Object.values(tableRow)[i])"
                   class="py-3 px-3 px-lg-4 array-display"
-                >
+              >
                   <span
-                    v-for="j in this.arrayAmountToDisplay"
-                    :key="Object.values(tableRow)[i][j - 1]"
-                    class="badge array-badge me-1"
-                    >{{ Object.values(tableRow)[i][j - 1] }}</span
+                      v-for="j in this.arrayAmountToDisplay"
+                      :key="Object.values(tableRow)[i][j - 1]"
+                      class="badge array-badge me-1"
+                  >{{ Object.values(tableRow)[i][j - 1] }}</span
                   >
-                </td>
+              </td>
 
-                <!-- If the column name is 'status' -->
-                <td
+              <!-- If the column name is 'status' -->
+              <td
                   v-else-if="Object.keys(tableRow)[i] === 'status'"
                   class="py-3 px-3 px-lg-4"
-                >
+              >
                   <span
-                    class="badge"
-                    :class="
+                      class="badge"
+                      :class="
                       STATUS_OPTIONS[Object.values(tableRow)[i].toUpperCase()]
                     "
-                    >{{ Object.values(tableRow)[i].toUpperCase() }}</span
+                  >{{ Object.values(tableRow)[i].toUpperCase() }}</span
                   >
-                </td>
+              </td>
 
-                <td v-else class="py-3 table-text px-3 px-lg-4">
-                  {{ Object.values(tableRow)[i] }}
-                </td>
-              </template>
+              <td v-else class="py-3 table-text px-3 px-lg-4">
+                {{ Object.values(tableRow)[i] }}
+              </td>
+            </template>
 
-              <!-- If the table has edit and delete buttons -->
-              <TableEditDeleteButtons
+            <!-- If the table has edit and delete buttons -->
+            <TableEditDeleteButtons
                 v-if="hasEditButton || hasDeleteButton"
                 :table-row="tableRow"
                 :row-height-large="ROW_HEIGHT_LARGE"
@@ -89,64 +89,64 @@
                 :has-delete-button="hasDeleteButton"
                 @edit="$emit('edit', tableRow)"
                 @delete="$emit('delete', tableRow)"
-              />
-            </tr>
+            />
+          </tr>
           </tbody>
 
           <tbody v-else-if="!showEmptyTable">
-            <tr
+          <tr
               v-for="tableRow in currentlyDisplayedData"
               :key="tableRow"
               class="position-relative"
               @mouseenter="mouseEnter"
               @mouseleave="mouseLeave"
-            >
-              <template
+          >
+            <template
                 v-for="(fieldData, index) in Object.values(tableRow)"
                 :key="fieldData"
-              >
-                <!-- If the field data is of type array -->
-                <td
+            >
+              <!-- If the field data is of type array -->
+              <td
                   v-if="Array.isArray(fieldData)"
                   class="py-3 px-3 px-lg-4 array-display"
-                >
+              >
                   <span
-                    v-for="i in this.arrayAmountToDisplay"
-                    :key="fieldData[i - 1]"
-                    class="badge array-badge me-1"
-                    >{{ fieldData[i - 1] }}</span
+                      v-for="i in this.arrayAmountToDisplay"
+                      :key="fieldData[i - 1]"
+                      class="badge array-badge me-1"
+                  >{{ fieldData[i - 1] }}</span
                   >
-                </td>
+              </td>
 
-                <!-- If the column name is 'status' -->
-                <td
+              <!-- If the column name is 'status' -->
+              <td
                   v-else-if="
                     fieldData === 'COMPLETED' ||
                     fieldData === 'IN_PROGRESS' ||
                     fieldData === 'UPCOMING'
                   "
                   class="py-3 px-3 px-lg-4"
-                >
+              >
                   <span
-                    class="badge"
-                    :class="STATUS_OPTIONS[fieldData.toUpperCase()]"
-                    >{{ fieldData.toUpperCase().replace("_", " ") }}</span
+                      class="badge"
+                      :class="STATUS_OPTIONS[fieldData.toUpperCase()]"
+                  >{{ fieldData.toUpperCase().replace("_", " ") }}</span
                   >
-                </td>
+              </td>
 
-                <!-- If the column name is 'id' and the hideIdColumn prop is set to true, then hide the column. -->
-                <td
+              <!-- If the column name is 'id' and the hideIdColumn prop is set to true, then hide the column. -->
+              <td
                   v-else-if="
                     !hideIdColumn || Object.keys(tableRow)[index] !== 'id'
                   "
                   class="py-3 table-text px-3 px-lg-4"
-                >
-                  {{ fieldData }}
-                </td>
-              </template>
+              >
+                {{ fieldData }}
+              </td>
+            </template>
 
-              <!-- If the table has edit and delete buttons -->
-              <TableEditDeleteButtons
+            <!-- If the table has edit and delete buttons -->
+            <TableEditDeleteButtons
                 v-if="hasEditButton || hasDeleteButton"
                 :table-row="tableRow"
                 :row-height-large="ROW_HEIGHT_LARGE"
@@ -154,22 +154,22 @@
                 :has-delete-button="hasDeleteButton"
                 @edit="$emit('edit', tableRow)"
                 @delete="$emit('delete', tableRow)"
-              />
-            </tr>
+            />
+          </tr>
           </tbody>
         </table>
       </div>
     </div>
     <TableFooter
-      :table-data="tableDataSorted"
-      :amount-to-display="amountToDisplay"
-      :display-amount="savedAmountToDisplay"
-      :current-start-index="currentStartIndex"
-      :current-end-index="displayEndIndex()"
-      @view-all="viewAllItems"
-      @view-less="viewLessItems"
-      @previous="handlePreviousButton"
-      @next="handleNextButton"
+        :table-data="tableDataSorted"
+        :amount-to-display="amountToDisplay"
+        :display-amount="savedAmountToDisplay"
+        :current-start-index="currentStartIndex"
+        :current-end-index="displayEndIndex()"
+        @view-all="viewAllItems"
+        @view-less="viewLessItems"
+        @previous="handlePreviousButton"
+        @next="handleNextButton"
     />
   </div>
 </template>
@@ -247,7 +247,7 @@ export default {
         UPCOMING: "upcoming-badge",
       }),
       /** shallow Copy of the table data, used for sorting. */
-      tableDataSorted: this.tableData.slice(),
+      tableDataSorted: this.tableData,
       /** The name of the previous sorted column, used for sorting. */
       previousSortedColumn: "",
       /** The options for the sorting icons. */
@@ -288,8 +288,8 @@ export default {
     updateDisplayedData() {
       // If the tableData has empty object values, show an empty table.
       if (
-        typeof Object.values(this.tableData[0])[0] === "function" ||
-        Object.values(this.tableData[0])[0] === ""
+          typeof Object.values(this.tableData[0])[0] === "function" ||
+          Object.values(this.tableData[0])[0] === ""
       ) {
         this.showEmptyTable = true;
 
@@ -298,10 +298,15 @@ export default {
 
       this.showEmptyTable = false;
 
+      this.tableDataSorted = this.tableData;
       this.currentlyDisplayedData = this.tableDataSorted.slice(
-        this.currentStartIndex,
-        this.currentEndIndex
+          this.currentStartIndex,
+          this.currentEndIndex
       );
+
+      if (this.currentlyDisplayedData.length === 0) {
+        this.handlePreviousButton()
+      }
     },
 
     /** Ensures that the ending index is the right number in the bottom left range display. */
@@ -348,14 +353,14 @@ export default {
       if (this.previousSortedColumn === columnName) {
         // If the current sort direction is descending, set it to ascending and vice versa.
         if (
-          columnIconRef.currentSortDirection ===
-          this.SORT_DIRECTION_OPTIONS.DESCENDING
+            columnIconRef.currentSortDirection ===
+            this.SORT_DIRECTION_OPTIONS.DESCENDING
         ) {
           columnIconRef.currentSortDirection =
-            this.SORT_DIRECTION_OPTIONS.ASCENDING;
+              this.SORT_DIRECTION_OPTIONS.ASCENDING;
         } else {
           columnIconRef.currentSortDirection =
-            this.SORT_DIRECTION_OPTIONS.DESCENDING;
+              this.SORT_DIRECTION_OPTIONS.DESCENDING;
         }
 
         this.tableDataSorted.reverse();
@@ -382,12 +387,12 @@ export default {
         // If the previous sorted column is not empty.
 
         this.previousColumnIconRef.currentSortDirection =
-          this.SORT_DIRECTION_OPTIONS.DEFAULT;
+            this.SORT_DIRECTION_OPTIONS.DEFAULT;
       }
 
       // Set the sorting icon for the column that was clicked to descending.
       columnIconRef.currentSortDirection =
-        this.SORT_DIRECTION_OPTIONS.DESCENDING;
+          this.SORT_DIRECTION_OPTIONS.DESCENDING;
 
       // Update the displayed data and save the previous sorted column.
       this.previousSortedColumn = columnName;
@@ -400,7 +405,7 @@ export default {
     calculateTableHeight() {
       const TABLE_HEADER_HEIGHT = 63;
       return (
-        this.ROW_HEIGHT_LARGE * this.displayAmount + TABLE_HEADER_HEIGHT + "px"
+          this.ROW_HEIGHT_LARGE * this.displayAmount + TABLE_HEADER_HEIGHT + "px"
       );
     },
 
@@ -421,14 +426,6 @@ export default {
       this.showEmptyTable = false;
       this.tableColumnNames = Object.keys(this.tableData[0]);
 
-      // Reset the sorting icon of the previous sorted column.
-      if (this.previousSortedColumn !== "") {
-        this.previousColumnIconRef.currentSortDirection =
-          this.SORT_DIRECTION_OPTIONS.DEFAULT;
-
-        //reset sorted data to shallow copy of the new tableData
-        this.tableDataSorted = this.tableData.slice()
-      }
 
       if (this.savedAmountToDisplay > this.displayAmount) {
         this.currentEndIndex = this.tableData.length
@@ -476,10 +473,12 @@ button:not(.btn-primary) {
   color: var(--bs-gray-900);
   transition: none !important;
 }
+
 button:hover:not(.btn-primary) {
   text-decoration: underline;
   color: var(--color-primary);
 }
+
 button:active {
   color: var(--color-primary) !important;
 }
