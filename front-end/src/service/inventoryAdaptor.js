@@ -1,8 +1,9 @@
 export class InventoryAdaptor {
   resourceUrl;
 
-  constructor(resourceUrl) {
-    this.resourceUrl = resourceUrl;
+  constructor() {
+    this.resourceUrl = process.env.VUE_APP_API_URL;
+    console.log(this.resourceUrl);
   }
 
   async fetchJSON(url, options = null) {
