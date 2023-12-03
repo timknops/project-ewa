@@ -324,7 +324,7 @@ export default {
 
     /** The opposite of the view all, revert back to the original. */
     viewLessItems() {
-      this.savedAmountToDisplay = 0
+      this.savedAmountToDisplay = 0;
       this.currentStartIndex = 0;
       this.currentEndIndex = this.displayAmount;
       this.updateDisplayedData();
@@ -407,12 +407,11 @@ export default {
 
     //updates if table data has changed
     tableDataWatcher() {
-      return [...this.tableData]
-    }
+      return [...this.tableData];
+    },
   },
   watch: {
     tableDataWatcher() {
-      console.log("table data has been updated")
       if (this.tableData.length === 0) {
         // If the table data is empty, show an empty table.
         this.showEmptyTable = true;
@@ -430,7 +429,7 @@ export default {
       }
 
       if (this.savedAmountToDisplay > this.displayAmount) {
-        this.currentEndIndex = this.tableData.length
+        this.currentEndIndex = this.tableData.length;
       }
       this.updateDisplayedData();
     },

@@ -71,8 +71,6 @@ export default {
   async created() {
     const data = await this.projectService.getAll();
 
-    console.log(data);
-
     // If there are no projects, add only the table header row titles.
     if (data.length === 0) {
       this.projects = [this.formatEmptyTableData()];
@@ -83,7 +81,7 @@ export default {
 
     // Modify the data so that it is displayed correctly in the table.
     this.projects = data.map((project) => {
-      return this.formatProject(project);
+      return this.formatProjectForTable(project);
     });
 
     this.projectsAreLoading = false;
@@ -94,14 +92,73 @@ export default {
      * @param {Object} project The project to be formatted.
      * @returns {Object} The formatted project.
      */
-    formatProject(project) {
+    formatProjectForTable(project) {
       return {
         id: project.id,
         name: project.projectName,
         client: project.client,
         dueDate: this.formatDate(project.dueDate),
-        team: project.team,
+        team: project.team.team,
         status: project.status,
+      };
+    },
+
+    /**
+     * Formats the project to the correct format for the request.
+     *
+      {
+        "project": {
+          "projectName": "Project name",
+          "team": {
+            "id": 1,
+            "teamName": "Team name"
+          },
+          "client": "Client Name",
+          "dueDate": "2023-12-31",
+          "description": "Project Description",
+          "status": "" // UPCOMING, IN_PROGRESS, COMPLETED
+        },
+        "resources": [
+          {
+            "product": {
+              "id": 1
+            },
+            "quantity": 500
+          },
+          {
+            "product": {
+              "id": 2
+            },
+            "quantity": 300
+          }
+        ]
+      }
+     * @param {Object} project the project to be formatted.
+     * @returns {Object} The formatted project.
+     */
+    formatProjectForRequest(project) {
+      return {
+        project: {
+          projectName: project.projectName,
+          team: {
+            id: project.team,
+          },
+          client: project.client,
+          dueDate: project.dueDate,
+          description: project.description,
+          status:
+            project.status === "In Progress"
+              ? "IN_PROGRESS"
+              : project.status.toUpperCase(),
+        },
+        resources: project.products.map((product) => {
+          return {
+            product: {
+              id: product.product_id,
+            },
+            quantity: product.quantity,
+          };
+        }),
       };
     },
 
@@ -153,11 +210,11 @@ export default {
      * @param {Object} project The project to be updated.
      */
     async addProject(project) {
-      console.log(project);
-
       try {
-        const newProject = await this.projectService.add(project);
-        this.projects.push(this.formatProject(newProject));
+        const newProject = await this.projectService.add(
+          this.formatProjectForRequest(project)
+        );
+        this.projects.push(this.formatProjectForTable(newProject));
         this.showModal = false;
       } catch (error) {
         console.log(error);
@@ -172,7 +229,9 @@ export default {
       try {
         const updatedProject = await this.projectService.update(project);
         this.projects = this.projects.map((p) =>
-          p.id === updatedProject.id ? this.formatProject(updatedProject) : p
+          p.id === updatedProject.id
+            ? this.formatProjectForTable(updatedProject)
+            : p
         );
         this.showModal = false;
       } catch (error) {

@@ -66,8 +66,8 @@
           aria-label="team"
         >
           <option selected value="">Assign team</option>
-          <option v-for="team in TEAM_OPTIONS" :key="team" :value="team">
-            {{ team }}
+          <option v-for="team in TEAM_OPTIONS" :key="team.id" :value="team.id">
+            {{ team.team }}
           </option>
         </select>
         <small v-if="teamUnselected" class="text-danger"
@@ -161,17 +161,17 @@
               >
                 <td>
                   <select
-                    v-model="product.name"
+                    v-model="product.product_id"
                     class="form-select"
                     aria-label="product"
                   >
                     <option selected value="">Choose product</option>
                     <option
-                      v-for="productName in PRODUCT_NAMES"
-                      :key="productName"
-                      :value="productName"
+                      v-for="product in PRODUCT_NAMES"
+                      :key="product.id"
+                      :value="product.id"
                     >
-                      {{ productName }}
+                      {{ product.product_name }}
                     </option>
                   </select>
                 </td>
@@ -185,10 +185,10 @@
                     <option selected value="">Assign warehouse</option>
                     <option
                       v-for="warehouse in WAREHOUSE_OPTIONS"
-                      :key="warehouse"
-                      :value="warehouse"
+                      :key="warehouse.id"
+                      :value="warehouse.id"
                     >
-                      {{ warehouse }}
+                      {{ warehouse.name }}
                     </option>
                   </select>
                 </td>
@@ -250,14 +250,16 @@ export default {
 
       STATUS_OPTIONS: ["Upcoming", "In Progress", "Completed"],
       TEAM_OPTIONS: [],
-      WAREHOUSE_OPTIONS: ["Warehouse 1", "Warehouse 2", "Warehouse 3"], // TODO: Retrieve from database.
+      WAREHOUSE_OPTIONS: [],
       PRODUCT_NAMES: [],
     };
   },
   async created() {
-    const data = await this.projectService.getProjectAddModalData();
+    const data = await this.projectService.getProjectAddModalData(); // Get the data for the dropdowns.
+
     this.TEAM_OPTIONS = data.teams;
-    this.PRODUCT_NAMES = data.productNames;
+    this.PRODUCT_NAMES = data.products;
+    this.WAREHOUSE_OPTIONS = data.warehouses;
   },
   computed: {
     hasError() {
@@ -289,7 +291,7 @@ export default {
 
       this.modalItem.products.push({
         id: this.modalItem.products.length,
-        name: "",
+        product_id: "",
         quantity: 0,
         warehouse: "",
         selected: false,

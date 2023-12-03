@@ -73,8 +73,12 @@ public class ProjectController {
             formattedProject.put("dueDate", project.getDueDate());
             formattedProject.put("status", project.getStatus());
 
-            formattedProject.put("teamId", project.getTeam().getId());
-            formattedProject.put("teamName", project.getTeam().getTeam());
+            Map<String, Object> team = new HashMap<>();
+            team.put("id", project.getTeam().getId());
+            team.put("team", project.getTeam().getTeam());
+            formattedProject.put("team", team);
+            // formattedProject.put("teamId", project.getTeam().getId());
+            // formattedProject.put("teamName", project.getTeam().getTeam());
 
             formattedProjects.add(formattedProject); // Add the formatted project to the list of formatted projects.
         }
