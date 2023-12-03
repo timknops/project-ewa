@@ -26,19 +26,25 @@
     >
     </TableComponent>
 
-    <div class="btn-group dropdown-color">
-      <button class="btn dropdown-toggle background-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        {{ selectedMonth ? selectedMonth : currentMonth }}
-      </button>
 
-      <div class="dropdown-menu">
-        <a v-for="(month, index) in allMonths" :key="index" class="dropdown-item" @click="selectMonth(month)">{{ month }}</a>
-      </div>
-    </div>
+<!--    Dropdown for months-->
+
 
     <div class="table-container mb-5 gap-5 d-flex w-100">
       <!--Forecast-->
       <div class="user-table-overview-left card border-0">
+
+        <div class="btn-group dropdown-color">
+          <button class="btn dropdown-toggle background-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            {{ selectedMonth ? selectedMonth : currentMonth }}
+          </button>
+
+
+          <div class="dropdown-menu position-absolute">
+            <a v-for="(month, index) in allMonths" :key="index" class="dropdown-item" @click="selectMonth(month)">{{ month }}</a>
+          </div>
+        </div>
+
         <div class="table-container card-body align-items-center d-flex">
           <canvas
             ref="combinedChart"
