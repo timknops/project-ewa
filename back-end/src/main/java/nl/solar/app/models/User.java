@@ -1,6 +1,9 @@
 package nl.solar.app.models;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import nl.solar.app.models.views.UserView;
 
 import java.util.Objects;
@@ -10,7 +13,13 @@ import java.util.Objects;
  *
  * @author Noa de Greef
  */
+@Entity
+@Data
+@NoArgsConstructor
 public class User {
+    @Id
+    @SequenceGenerator(name = "user_id_generator", initialValue = 5000)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_id_generator")
     @JsonView(UserView.userAdmin.class)
     private long id;
     @JsonView(UserView.userAdmin.class)
@@ -63,7 +72,7 @@ public class User {
         return new User(userId, teamId, fullRandomName, randomEmail, randomPassword, randomUserType.toString());
     }
     public static User createStaticAdmin(){
-        return new User(1, 1, "a", "Julian@gmail.com", "a", "ADMIN");
+        return new User(1, 1, "a", "greefnhva@gmail.com", "a", "ADMIN");
     }
 
     /**
@@ -98,51 +107,4 @@ public class User {
         return Objects.hashCode(id);
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public long getTeamId() {
-        return teamId;
-    }
-
-    public void setTeamId(long teamId) {
-        this.teamId = teamId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
 }

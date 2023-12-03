@@ -35,7 +35,7 @@ import {EmailAdaptor} from "@/service/emailAdaptor";
 import { ProjectAdaptor } from "@/service/projectAdaptor";
 
 
-localStorage.setItem("loggedIn", false);
+localStorage.setItem("loggedIn", true);
 localStorage.setItem("resetLogin", false);
 export default {
   name: "App",

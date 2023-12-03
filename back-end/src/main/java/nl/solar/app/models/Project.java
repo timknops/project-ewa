@@ -80,8 +80,7 @@ public class Project {
 
     /**
      * Creates a dummy project with the given parameters.
-     * 
-     * @param currentId the current id
+     *
      * @return a dummy project
      */
     public static Project createDummyProject() {

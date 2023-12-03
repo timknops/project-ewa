@@ -24,6 +24,7 @@ public class BackEndApplication implements CommandLineRunner {
     public void run(String... args) throws Exception {
         this.createSampleWarehouse();
         this.createSampleTeams();
+        this.createSampleUser();
         this.createSampleProjects();
         this.createSampleProducts();
         this.createSampleResources();
@@ -31,6 +32,9 @@ public class BackEndApplication implements CommandLineRunner {
     }
 
     // All repositories.
+    @Autowired
+    EntityRepository<User> userRepo;
+
     @Autowired
     EntityRepository<Warehouse> warehouseRepo;
 
@@ -98,6 +102,18 @@ public class BackEndApplication implements CommandLineRunner {
             Team team = Team.createDummyTeam();
             teamsRepo.save(team);
         }
+    }
+
+    private void createSampleUser(){
+        List<User> users = userRepo.findAll();
+        List<Team> teams = teamsRepo.findAll();
+
+        if (!users.isEmpty()) return;
+        for (int i = 0; i < teams.size(); i++) {
+            User user = User.creatyDummyUser(i, teams.get(i).getId());
+            userRepo.save(user);
+        }
+
     }
 
     /**
