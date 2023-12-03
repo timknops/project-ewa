@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * Since a Resource is a lookup between a product and a warehouse it isn't possible to use the global entityRepo
- * Therefore is has its own.
+ * Therefore it has its own.
  *
  * @author Julian Kruithof
  */
@@ -40,5 +40,11 @@ public interface InventoryRepository extends ManyToManyRepository<Inventory> {
         throw new UnsupportedOperationException("No implementation should be needed if cascading is on");
     };
 
+    /**
+     * Retrieves products without inventory for a specific warehouse from the database.
+     *
+     * @param warehouseId the ID of the warehouse
+     * @return a list of products without inventory for the specified warehouse
+     */
     List<Product> findProductsWithoutInventory(long warehouseId);
 }

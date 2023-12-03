@@ -2,9 +2,8 @@ package nl.solar.app.rest;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import nl.solar.app.DTO.InventoryDTO;
-import nl.solar.app.DTO.ProductDTO;
+import nl.solar.app.DTO.InventoryProductDTO;
 import nl.solar.app.exceptions.BadRequestException;
-import nl.solar.app.exceptions.PreConditionFailedException;
 import nl.solar.app.exceptions.ResourceNotFoundException;
 import nl.solar.app.models.Inventory;
 import nl.solar.app.models.Product;
@@ -23,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Controller for all end-points directly affecting the resources.
+ * Controller for all end-points directly affecting the inventory.
  *
  * @author Julian Kruithof
  */
@@ -50,16 +49,16 @@ public class InventoryController {
     public ResponseEntity<List<InventoryDTO>> getInventory() {
         List<Inventory> inventories = inventoryRepo.findAll();
         List<InventoryDTO> formattedResources = new ArrayList<>();
-        Map<Warehouse, List<ProductDTO>> GroupedByWarehouse = new HashMap<>();
+        Map<Warehouse, List<InventoryProductDTO>> GroupedByWarehouse = new HashMap<>();
 
         for (Inventory inventory : inventories) {
-            ProductDTO productFormat = formatProductObject(inventory);
+            InventoryProductDTO productFormat = formatProductObject(inventory);
 
             // add product to a list of the warehouse of the current resources.
             GroupedByWarehouse.computeIfAbsent(inventory.getWarehouse(), k -> new ArrayList<>()).add(productFormat);
         }
 
-        for (Map.Entry<Warehouse, List<ProductDTO>> entry : GroupedByWarehouse.entrySet()) {
+        for (Map.Entry<Warehouse, List<InventoryProductDTO>> entry : GroupedByWarehouse.entrySet()) {
             InventoryDTO formattedResource = new InventoryDTO(entry.getKey(), entry.getValue());
             formattedResources.add(formattedResource);
         }
@@ -76,7 +75,7 @@ public class InventoryController {
      *                                   doesn't exist
      */
     @GetMapping(path = "/warehouses/{id}/inventory", produces = "application/json")
-    public ResponseEntity<List<ProductDTO>> getInventoryForWarehouse(@PathVariable long id)
+    public ResponseEntity<List<InventoryProductDTO>> getInventoryForWarehouse(@PathVariable long id)
             throws ResourceNotFoundException {
         List<Inventory> inventories = this.inventoryRepo.findInventoryForWarehouse(id);
 
@@ -84,7 +83,7 @@ public class InventoryController {
             throw new ResourceNotFoundException("Warehouse doesn't exist");
         }
 
-        List<ProductDTO> formattedProducts = new ArrayList<>();
+        List<InventoryProductDTO> formattedProducts = new ArrayList<>();
         for (Inventory inventory : inventories) {
             formattedProducts.add(formatProductObject(inventory));
         }
@@ -100,7 +99,7 @@ public class InventoryController {
      * @throws ResourceNotFoundException throw error if the resource doesn't exist
      */
     @GetMapping(path = "/warehouses/{wId}/products/{pId}", produces = "application/json")
-    public ResponseEntity<ProductDTO> getSingleInventory(@PathVariable long wId, @PathVariable long pId)
+    public ResponseEntity<InventoryProductDTO> getSingleInventory(@PathVariable long wId, @PathVariable long pId)
             throws ResourceNotFoundException {
         Inventory inventory = this.inventoryRepo.findByIds(pId, wId);
         if (inventory == null) {
@@ -110,6 +109,13 @@ public class InventoryController {
         return ResponseEntity.ok().body(formatProductObject(inventory));
     }
 
+    /**
+     * Retrieves a list of products without inventory for a specific warehouse.
+     *
+     * @param wId the ID of the warehouse for which to retrieve products without
+     *            inventory
+     * @return a list of products without inventory for the specified warehouse
+     */
     @GetMapping(path = "/warehouses/{wId}/products/without-inventory", produces = "application/json")
     public List<Product> getProductsWithoutInventory(@PathVariable long wId) {
         return this.inventoryRepo.findProductsWithoutInventory(wId);
@@ -122,14 +128,15 @@ public class InventoryController {
      * @param pId              the product id
      * @param partiallyUpdated the updated version of a resource
      * @return a resource in the correct format
-     * @throws PreConditionFailedException throw error if the warehouse id and
-     *                                     product id in the body don't match the
-     *                                     ids in the path
+     * @throws BadRequestException       if the quantity is not set in the request
+     *                                   body
+     * @throws ResourceNotFoundException if the inventory that should be updated, is
+     *                                   non-existent
      */
     @JsonView(ResourceView.Complete.class)
     @PatchMapping(path = "/warehouses/{wId}/products/{pId}", produces = "application/json")
     public ResponseEntity<Inventory> updateInventory(@PathVariable long wId, @PathVariable long pId,
-            @RequestBody Map<String, Integer> partiallyUpdated)
+            @RequestBody Map<String, Long> partiallyUpdated)
             throws ResourceNotFoundException, BadRequestException {
         Inventory existingInventory = inventoryRepo.findByIds(pId, wId);
         if (existingInventory == null) {
@@ -146,6 +153,18 @@ public class InventoryController {
         return ResponseEntity.ok().body(update);
     }
 
+    /**
+     * Adds a new inventory item.
+     *
+     * @param inventory            the inventory item to be added, provided in the
+     *                             request body
+     * @param uriComponentsBuilder a builder for creating URI components, used to
+     *                             build the location URI
+     * @return a ResponseEntity with the added inventory item and the corresponding
+     *         location URI
+     * @throws BadRequestException if the product or warehouse is not set in the
+     *                             inventory
+     */
     @JsonView(ResourceView.Complete.class)
     @PostMapping(path = "/inventory", produces = "application/json")
     public ResponseEntity<Inventory> addInventory(@RequestBody Inventory inventory,
@@ -172,8 +191,8 @@ public class InventoryController {
      * @param inventory the resource being reformatted.
      * @return return a Map (object) of a product containing the quantity
      */
-    private ProductDTO formatProductObject(Inventory inventory) {
-        return new ProductDTO(inventory.getProduct().getId(),
+    private InventoryProductDTO formatProductObject(Inventory inventory) {
+        return new InventoryProductDTO(inventory.getProduct().getId(),
                 inventory.getProduct().getProductName(),
                 inventory.getProduct().getDescription(),
                 inventory.getQuantity());

@@ -263,7 +263,7 @@ export default {
         quantity: Number,
       }
        */
-      this.modalTitle = "update Inventory";
+      this.modalTitle = "Update inventory";
       this.modalBodyComponent = this.MODAL_TYPES.UPDATE;
       this.okBtnText = "Save";
       this.modalResource = {
@@ -288,10 +288,10 @@ export default {
       if (productsWithoutInventory.length === 0) {
         this.showToast = true;
 
-        setTimeout(() => (this.showToast = false), 2000);
+        setTimeout(() => (this.showToast = false), 3000);
         return;
       }
-      this.modalTitle = "add Inventory";
+      this.modalTitle = "Add inventory";
       this.modalBodyComponent = this.MODAL_TYPES.ADD;
       this.modalResource = {
         warehouseId: this.activeWarehouse.id,
@@ -348,13 +348,25 @@ export default {
       }
     },
 
+    /**
+     * Handles the addition of a new inventory item.
+     *
+     * @param {Object} inventory - The inventory item to be added.
+     * @param {number} inventory.warehouse.id - The ID of the warehouse associated with the inventory.
+     * @param {Object} inventory.product - The product associated with the inventory.
+     * @param {number} inventory.product.id - The ID of the product.
+     * @param {string} inventory.product.productName - The name of the product.
+     * @param {string} inventory.product.description - The description of the product.
+     * @param {number} inventory.quantity - The quantity of the product in the inventory.
+     */
     async handleAdd(inventory) {
       const saved = await this.inventoryService.addInventory(inventory);
       const warehouseIndex = this.totalProducts.findIndex(
         (inventory) => inventory.warehouse.id === saved.warehouse.id
       );
-      //reformat saved
-      const productObj = {
+
+      //reformat the saved inventory object to an object used in the products list of the inventory
+      const inventoryObj = {
         id: saved.product.id,
         productName: saved.product.productName,
         description: saved.product.description,
@@ -362,16 +374,19 @@ export default {
       };
 
       if (warehouseIndex !== -1) {
-        this.totalProducts[warehouseIndex].products.push(productObj);
+        //if warehouse already has inventory items existing add the new inventory to the list
+        this.totalProducts[warehouseIndex].products.push(inventoryObj);
       } else {
+        //no inventory exist for the warehouse, push the correct warehouse to the total list and add inventory to the list
         this.totalProducts.push({
           warehouse: this.activeWarehouse,
-          products: [productObj],
+          products: [inventoryObj],
         });
       }
 
       this.showModal = false;
     },
+
     /**
      * Formats the product data for when the data is empty.
      * @return {{id: "", productName: "", description: ""}}

@@ -37,7 +37,7 @@ public class Inventory {
     private Product product;
 
     @JsonView(ResourceView.Complete.class)
-    private int quantity;
+    private long quantity;
 
     public static Inventory createDummyResource(Warehouse warehouse, Product product) {
         Inventory inventory = new Inventory();
@@ -73,11 +73,11 @@ public class Inventory {
         this.product = product;
     }
 
-    public int getQuantity() {
+    public long getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(long quantity) {
         this.quantity = quantity;
     }
 

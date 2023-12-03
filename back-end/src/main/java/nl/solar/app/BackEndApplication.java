@@ -51,6 +51,11 @@ public class BackEndApplication implements CommandLineRunner {
     @Autowired
     InventoryRepository inventoryRepo;
 
+    /**
+     * Create sample data for warehouse
+     *
+     * @author Julian Kruithof
+     */
     private void createSampleWarehouse() {
         List<Warehouse> warehouses = warehouseRepo.findAll();
 
@@ -196,6 +201,11 @@ public class BackEndApplication implements CommandLineRunner {
         }
     }
 
+    /**
+     * Add dummy inventories to the database
+     *
+     * @author Julian Kruithof
+     */
     private void createDummyInventory() {
         List<Inventory> inventoryList = inventoryRepo.findAll();
 

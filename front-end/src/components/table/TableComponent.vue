@@ -246,8 +246,8 @@ export default {
         IN_PROGRESS: "in-progress-badge",
         UPCOMING: "upcoming-badge",
       }),
-      /** Copy of the table data, used for sorting. */
-      tableDataSorted: this.tableData,
+      /** shallow Copy of the table data, used for sorting. */
+      tableDataSorted: this.tableData.slice(),
       /** The name of the previous sorted column, used for sorting. */
       previousSortedColumn: "",
       /** The options for the sorting icons. */
@@ -298,7 +298,6 @@ export default {
 
       this.showEmptyTable = false;
 
-      this.tableDataSorted = this.tableData;
       this.currentlyDisplayedData = this.tableDataSorted.slice(
         this.currentStartIndex,
         this.currentEndIndex
@@ -426,6 +425,9 @@ export default {
       if (this.previousSortedColumn !== "") {
         this.previousColumnIconRef.currentSortDirection =
           this.SORT_DIRECTION_OPTIONS.DEFAULT;
+
+        //reset sorted data to shallow copy of the new tableData
+        this.tableDataSorted = this.tableData.slice()
       }
 
       if (this.savedAmountToDisplay > this.displayAmount) {

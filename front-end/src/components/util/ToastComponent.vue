@@ -17,6 +17,11 @@
 </template>
 
 <script>
+/**
+ * A toast component to show a small massage to a user
+ *
+ * @author Julian Kruithof
+ */
 export default {
   name: "ToastComponent",
   props: {
