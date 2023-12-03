@@ -1,6 +1,7 @@
-package nl.solar.app.repositories;
+package nl.solar.app.repositories.inMemoryRepositories;
 
 import nl.solar.app.models.User;
+import nl.solar.app.repositories.EntityRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
