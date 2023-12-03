@@ -2,6 +2,7 @@ package nl.solar.app.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import nl.solar.app.enums.OrderStatus;
 import nl.solar.app.models.utils.RandomDate;
@@ -56,7 +57,7 @@ public class Order {
         Order order = new Order();
         order.setId(0);
         order.setWarehouse(warehouse);
-        order.orderDate = RandomDate.randomLocalDateTime(MINIMUM_START, MAXIMUM_END);
+        order.orderDate = RandomDate.randomLocalDateTime(MINIMUM_START, LocalDateTime.now());
         order.deliverDate = RandomDate.randomLocalDateTime(order.orderDate, MAXIMUM_END);
 
         if (order.deliverDate.isBefore(LocalDateTime.now())) {
