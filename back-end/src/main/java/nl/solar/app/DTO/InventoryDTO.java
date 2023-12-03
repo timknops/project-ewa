@@ -17,7 +17,7 @@ public class InventoryDTO {
     @JsonView(ResourceView.Complete.class)
     private Warehouse warehouse;
     @JsonView(ResourceView.Complete.class)
-    private List<ProductDTO> products;
+    private List<InventoryProductDTO> products;
 
     /**
      * Constructs an InventoryDTO with the specified warehouse and product DTOs.
@@ -25,7 +25,7 @@ public class InventoryDTO {
      * @param warehouse The warehouse associated with the inventory.
      * @param products  The list of product DTOs associated with the inventory.
      */
-    public InventoryDTO(Warehouse warehouse, List<ProductDTO> products) {
+    public InventoryDTO(Warehouse warehouse, List<InventoryProductDTO> products) {
         this.warehouse = warehouse;
         this.products = products;
     }
