@@ -89,18 +89,21 @@ export default {
           Name: "enphase",
           Quantity: 9,
           Expected: 32,
+          Month: "December"
         },
         {
           Warehouse: "Solar Clarity",
           Name: "Gateway",
           Quantity: 18,
           Expected: 30,
+          Month: "December"
         },
         {
           Warehouse: "4Blue",
           Name: "MB 385 (white)",
           Quantity: 18,
           Expected: 30,
+          Month: "December"
         },
       ],
       userData: [
@@ -184,7 +187,7 @@ export default {
   methods: {
     selectMonth(monthIsSelected){
       this.selectedMonth = monthIsSelected;
-      this.createChart(this.selectedWarehouseData);
+      this.createChart();
     },
 
     getMonthName(monthI){
@@ -192,8 +195,7 @@ export default {
     },
 
 
-    createChart(data) {
-
+    createChart() {
       if (this.saveChart) {
         this.saveChart.destroy();
       }
@@ -201,37 +203,27 @@ export default {
       const chartWidth = this.chartWidth;
       const chartHeight = this.chartHeight;
 
-      const nameLegend = [...new Set(data.map(item => item.Name))];
-
-      const dataMonths = [
-        'January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'
-      ];
-
       const colorLegend = [
           'rgba(199, 208, 44, 1)',
           'rgba(91, 46, 24, 1)',
           '#000000FF'
-      ]
+      ];
 
-      const datasets = nameLegend.map((name, index) => {
-        const qdata = data
-            .filter(item => item.Name === name)
-            .map(item => item.Quantity);
-
-        qdata.push(50);
-
-        return {
-          label: `${name} `,
-          backgroundColor: colorLegend[index % colorLegend.length],
-          data: qdata,
-        };
-      });
-
+      const dataBasedOnTheMonth = this.tableData.filter(item => (!this.selectedWarehouse || item.Warehouse === this.selectedWarehouse) && item.Month === this.selectedMonth);
+      const nameLegend = [...new Set(dataBasedOnTheMonth.map(item => item.Name))];
 
       const chartData = {
-        labels: dataMonths,
-        datasets: datasets,
+        labels: nameLegend,
+        datasets: nameLegend.map((name, index) => {
+          const qdata = dataBasedOnTheMonth.filter(item => item.Name === name)
+              .map(item => item.Quantity);
+
+          return {
+            label: `${name} `,
+            backgroundColor: colorLegend[index % colorLegend.length],
+            data: qdata,
+          };
+        }),
       };
 
       const chartOptions = {
