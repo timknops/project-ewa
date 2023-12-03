@@ -5,6 +5,7 @@ import nl.solar.app.exceptions.PreConditionFailedException;
 import nl.solar.app.exceptions.ResourceNotFoundException;
 import nl.solar.app.models.Warehouse;
 import nl.solar.app.repositories.EntityRepository;
+import nl.solar.app.repositories.InventoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,9 +20,12 @@ public class WarehouseController {
     @Autowired
     EntityRepository<Warehouse> warehouseRepo;
 
+    @Autowired
+    InventoryRepository inventoryRepository;
+
     @GetMapping(produces = "application/json")
     public List<Warehouse> getAll(){
-        return this.warehouseRepo.findALL();
+        return this.warehouseRepo.findAll();
     }
 
     @GetMapping(path = "{id}", produces = "application/json")
@@ -43,6 +47,11 @@ public class WarehouseController {
             throw new ResourceNotFoundException("Cannot delete warehouse with id: " + id + "\nWarehouse not found");
         }
 
+        try {
+            this.inventoryRepository.deleteInventoryForWarehouse(warehouseToDelete);
+        } catch (Exception ex) {
+            //if exception is throw dont delete inventory, because of cascading rules
+        }
         return ResponseEntity.ok(warehouseToDelete);
     }
 

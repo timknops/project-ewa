@@ -1,13 +1,14 @@
-package nl.solar.app.repositories;
+package nl.solar.app.repositories.inMemoryRepositories;
 
 import nl.solar.app.models.Warehouse;
+import nl.solar.app.repositories.EntityRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Repository("WAREHOUSES.INMEMORY")
-public class WarehouseRepositoryMock implements EntityRepository<Warehouse>{
+public class WarehouseRepositoryMock implements EntityRepository<Warehouse> {
     private List<Warehouse> warehouses;
     private final long ID = 1000;
     private long currentId = ID;
@@ -44,7 +45,7 @@ public class WarehouseRepositoryMock implements EntityRepository<Warehouse>{
     }
 
     @Override
-    public List<Warehouse> findALL() {
+    public List<Warehouse> findAll() {
         return warehouses;
     }
 

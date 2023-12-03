@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import TableComponent from "@/components/TableComponent.vue";
+import TableComponent from "@/components/table/TableComponent.vue";
 import Chart from "chart.js/auto";
 
 export default {

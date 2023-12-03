@@ -1,6 +1,7 @@
-package nl.solar.app.repositories;
+package nl.solar.app.repositories.inMemoryRepositories;
 
 import nl.solar.app.models.Product;
+import nl.solar.app.repositories.EntityRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public class ProductRepositoryMock implements EntityRepository<Product> {
     }
 
     @Override
-    public List<Product> findALL() {
+    public List<Product> findAll() {
         return products;
     }
 

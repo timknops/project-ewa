@@ -38,7 +38,6 @@ export default {
   data() {
     return {
       modalItem: {},
-      hasError: false, //check for general error to stop submissions of modal
       nameEmpty: false, //specific error check for correct response to user
       descriptionEmpty: false
     }
@@ -49,13 +48,18 @@ export default {
     this.modalItem = Object.assign({}, this.item)
   },
 
+  computed: {
+    hasError() {
+      return this.nameEmpty || this.descriptionEmpty;
+    }
+  },
+
   methods: {
     /**
      * check if a name is empty
      */
     validateName() {
       this.nameEmpty = this.modalItem.productName.length === 0;
-      this.hasError = this.modalItem.productName.length === 0;
     },
 
     /**
@@ -63,7 +67,6 @@ export default {
      */
     validateDescription() {
       this.descriptionEmpty = this.modalItem.description.length === 0;
-      this.hasError = this.modalItem.description.length === 0;
     }
   }
 }
@@ -71,7 +74,5 @@ export default {
 
 
 <style scoped>
-.form-control:disabled {
-  background-color: var(--bs-body-bg);
-}
+
 </style>

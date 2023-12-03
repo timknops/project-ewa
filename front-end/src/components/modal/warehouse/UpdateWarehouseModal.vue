@@ -34,7 +34,6 @@ export default {
   data() {
     return {
       modalItem: {},
-      hasError: false,
       nameEmpty: false,
       locationCorrect: true
     }
@@ -43,14 +42,17 @@ export default {
   created() {
     this.modalItem = Object.assign({}, this.item)
   },
+  computed: {
+    hasError() {
+      return this.nameEmpty || !this.locationCorrect;
+    }
+  },
   methods: {
     validateName() {
       this.nameEmpty = this.modalItem.name.length === 0;
-      this.hasError = this.modalItem.name.length === 0;
     },
     validateLocation() {
       this.locationCorrect = this.modalItem.location.match('[A-Za-z .-]+[ ][0-9]+([A-Za-z]?)+(([0-9]{1,2})?),[ ][0-9]{4}[A-Za-z]{2}[ ][A-Za-z]+')
-      this.hasError = !this.locationCorrect;
     }
   }
 }
