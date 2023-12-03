@@ -1,7 +1,14 @@
 package nl.solar.app.repositories;
 
+import nl.solar.app.models.Inventory;
+
 import java.util.List;
 
+/**
+ * A repository to handle all entities which have a many-to-many relation
+ * for example {@link Inventory}
+ * @param <E> the item which is a many-to-many link-table entity
+ */
 public interface ManyToManyRepository<E> {
     /**
      * Find all items and return it

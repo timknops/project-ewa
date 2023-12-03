@@ -6,7 +6,10 @@
     data-bs-keyboard="false"
     tabindex="-1"
   >
-    <div class="modal-dialog modal-dialog-centered">
+    <div
+      class="modal-dialog modal-dialog-centered"
+      :class="{ 'wide-modal': this.activeModal === 'add-project-modal' }"
+    >
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">{{ title }}</h5>
@@ -51,6 +54,9 @@ import AddUserModal from "@/components/modal/user/AddUserModal.vue";
 import AddTeamModal from "@/components/modal/team/AddTeamModal";
 import UpdateTeamModal from "@/components/modal/team/UpdateTeamModal";
 import DeleteTeamModal from "@/components/modal/team/DeleteTeamModal";
+import DeleteProjectModal from "@/components/modal/project/DeleteProjectModal.vue";
+import AddProjectModal from "./project/AddProjectModal.vue";
+import AddInventoryModal from "@/components/modal/inventory/AddInventoryModal.vue";
 
 /**
  * General modal component, for the styling of the header and footer,
@@ -75,9 +81,12 @@ export default {
     UpdateWarehouseModal,
     AddWarehouseModal,
     UpdateInventoryModal,
+    AddInventoryModal,
     DeleteTeamModal,
     UpdateTeamModal,
     AddTeamModal,
+    DeleteProjectModal,
+    AddProjectModal,
   },
   /**
    * props
@@ -114,5 +123,9 @@ export default {
 }
 .modal-title {
   font-weight: 700;
+}
+
+.wide-modal {
+  min-width: 800px !important;
 }
 </style>
