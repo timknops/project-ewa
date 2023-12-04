@@ -92,6 +92,16 @@ export default {
           Month: "December",
           Date: 4,
         },
+
+        {
+          Warehouse: "Solar Clarity",
+          Name: "enphase",
+          Quantity: 15,
+          Expected: 32,
+          Month: "December",
+          Date: 6,
+        },
+
         {
           Warehouse: "Solar Clarity",
           Name: "Gateway",
@@ -188,12 +198,13 @@ export default {
     selectedWarehouseData(){
       if(this.selectedWarehouse) {
         if (this.selectedWarehouse === null) {
-          return this.tableData;
+          return this.tableData.map(item => ({ Warehouse: item.Warehouse, Name: item.Name}));
         } else {
-          return this.tableData.filter((item) => item.Warehouse === this.selectedWarehouse);
+          return this.tableData.filter((item) => item.Warehouse === this.selectedWarehouse)
+              .map(item => ({Warehosue: item.Warehouse, Name: item.Name}));
         }
       }
-      return this.tableData;
+      return this.tableData.map(item => ({Warehouse: item.Warehouse, Name: item.Name}));
     },
 
     selectedWarehouseUserData() {
@@ -242,14 +253,20 @@ export default {
       const datasets = nameLegend.map((name, index) => {
             const qdata = dataBasedOnTheMonth
                 .filter(item => item.Name === name)
-                .map(item => item.Quantity);
+                .map(item => ({
+                      x: `${item.Date}/${this.allMonths.indexOf(item.Month) + 1}`,
+                      y: item.Quantity
+                    })
+                );
 
         // const backgroundColor = colorLegend[index % colorLegend.length];
 
           return {
             label: name,
             backgroundColor: colorLegend[index % colorLegend.length],
+            borderColor: colorLegend[index % colorLegend.length],
             data: qdata,
+
           };
         });
 
@@ -288,20 +305,23 @@ export default {
             callbacks: {
               label: (context) => {
                 const item = context.dataset.data[context.dataIndex];
-                return `${item.label}: ${context.parsed.y}`;
+                return `${context.dataset.label}: ${item.y}`;
               }
             }
           },
         },
         elements: {
-          bar: {
-            borderRadius: 30,
-          },
+          // bar: {
+          //   borderRadius: 30,
+          // },
+          line: {
+            tension: 0,
+          }
         },
       };
 
      this.saveChart = new Chart(this.$refs.combinedChart, {
-        type: "bar",
+        type: "line",
         data: chartData,
         options: chartOptions,
       });
