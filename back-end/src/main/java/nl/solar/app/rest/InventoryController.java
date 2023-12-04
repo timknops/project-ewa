@@ -54,12 +54,12 @@ public class InventoryController {
         for (Inventory inventory : inventories) {
             InventoryProductDTO productFormat = formatProductObject(inventory);
 
-            //add product to a list of the warehouse of the current resources.
+            // add product to a list of the warehouse of the current resources.
             GroupedByWarehouse.computeIfAbsent(inventory.getWarehouse(), k -> new ArrayList<>()).add(productFormat);
         }
 
         for (Map.Entry<Warehouse, List<InventoryProductDTO>> entry : GroupedByWarehouse.entrySet()) {
-           InventoryDTO formattedResource = new InventoryDTO(entry.getKey(), entry.getValue());
+            InventoryDTO formattedResource = new InventoryDTO(entry.getKey(), entry.getValue());
             formattedResources.add(formattedResource);
         }
         return ResponseEntity.ok(formattedResources);
@@ -75,7 +75,8 @@ public class InventoryController {
      *                                   doesn't exist
      */
     @GetMapping(path = "/warehouses/{id}/inventory", produces = "application/json")
-    public ResponseEntity<List<InventoryProductDTO>> getInventoryForWarehouse(@PathVariable long id) throws ResourceNotFoundException {
+    public ResponseEntity<List<InventoryProductDTO>> getInventoryForWarehouse(@PathVariable long id)
+            throws ResourceNotFoundException {
         List<Inventory> inventories = this.inventoryRepo.findInventoryForWarehouse(id);
 
         if (inventories.isEmpty()) {
@@ -98,7 +99,8 @@ public class InventoryController {
      * @throws ResourceNotFoundException throw error if the resource doesn't exist
      */
     @GetMapping(path = "/warehouses/{wId}/products/{pId}", produces = "application/json")
-    public ResponseEntity<InventoryProductDTO> getSingleInventory(@PathVariable long wId, @PathVariable long pId) throws ResourceNotFoundException {
+    public ResponseEntity<InventoryProductDTO> getSingleInventory(@PathVariable long wId, @PathVariable long pId)
+            throws ResourceNotFoundException {
         Inventory inventory = this.inventoryRepo.findByIds(pId, wId);
         if (inventory == null) {
             throw new ResourceNotFoundException("The combination of warehouse and product doesn't return a resource");
@@ -110,7 +112,8 @@ public class InventoryController {
     /**
      * Retrieves a list of products without inventory for a specific warehouse.
      *
-     * @param wId the ID of the warehouse for which to retrieve products without inventory
+     * @param wId the ID of the warehouse for which to retrieve products without
+     *            inventory
      * @return a list of products without inventory for the specified warehouse
      */
     @GetMapping(path = "/warehouses/{wId}/products/without-inventory", produces = "application/json")
@@ -118,20 +121,22 @@ public class InventoryController {
         return this.inventoryRepo.findProductsWithoutInventory(wId);
     }
 
-
     /**
      * Update a specific resource
      *
-     * @param wId       the warehouse id
-     * @param pId       the product id
+     * @param wId              the warehouse id
+     * @param pId              the product id
      * @param partiallyUpdated the updated version of a resource
      * @return a resource in the correct format
-     * @throws BadRequestException if the quantity is not set in the request body
-     * @throws ResourceNotFoundException if the inventory that should be updated, is non-existent
+     * @throws BadRequestException       if the quantity is not set in the request
+     *                                   body
+     * @throws ResourceNotFoundException if the inventory that should be updated, is
+     *                                   non-existent
      */
     @JsonView(ResourceView.Complete.class)
     @PatchMapping(path = "/warehouses/{wId}/products/{pId}", produces = "application/json")
-    public ResponseEntity<Inventory> updateInventory(@PathVariable long wId, @PathVariable long pId, @RequestBody Map<String, Long> partiallyUpdated)
+    public ResponseEntity<Inventory> updateInventory(@PathVariable long wId, @PathVariable long pId,
+            @RequestBody Map<String, Long> partiallyUpdated)
             throws ResourceNotFoundException, BadRequestException {
         Inventory existingInventory = inventoryRepo.findByIds(pId, wId);
         if (existingInventory == null) {
@@ -151,22 +156,25 @@ public class InventoryController {
     /**
      * Adds a new inventory item.
      *
-     * @param inventory               the inventory item to be added, provided in the request body
-     * @param uriComponentsBuilder   a builder for creating URI components, used to build the location URI
-     * @return a ResponseEntity with the added inventory item and the corresponding location URI
-     * @throws BadRequestException   if the product or warehouse is not set in the inventory
+     * @param inventory            the inventory item to be added, provided in the
+     *                             request body
+     * @param uriComponentsBuilder a builder for creating URI components, used to
+     *                             build the location URI
+     * @return a ResponseEntity with the added inventory item and the corresponding
+     *         location URI
+     * @throws BadRequestException if the product or warehouse is not set in the
+     *                             inventory
      */
     @JsonView(ResourceView.Complete.class)
     @PostMapping(path = "/inventory", produces = "application/json")
-    public ResponseEntity<Inventory> addInventory(@RequestBody Inventory inventory, UriComponentsBuilder uriComponentsBuilder) throws BadRequestException {
+    public ResponseEntity<Inventory> addInventory(@RequestBody Inventory inventory,
+            UriComponentsBuilder uriComponentsBuilder) throws BadRequestException {
         if (inventory.getProduct() == null) {
             throw new BadRequestException("Product is not set");
         }
         if (inventory.getWarehouse() == null) {
             throw new BadRequestException("Warehouse is not set");
         }
-
-
 
         Inventory newInventory = this.inventoryRepo.save(inventory);
 

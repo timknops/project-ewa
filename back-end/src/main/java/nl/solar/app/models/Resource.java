@@ -2,13 +2,12 @@ package nl.solar.app.models;
 
 import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
-import nl.solar.app.models.compositeKeys.ResourceTempKey;
+import nl.solar.app.models.compositeKeys.ResourceKey;
 
 /**
  * Represents a resource.
@@ -16,10 +15,10 @@ import nl.solar.app.models.compositeKeys.ResourceTempKey;
  * @author Tim Knops
  */
 @Entity
-public class ResourceTemp {
+public class Resource {
 
   @EmbeddedId
-  private ResourceTempKey id;
+  private ResourceKey id;
 
   @ManyToOne
   @MapsId("projectId")
@@ -29,7 +28,6 @@ public class ResourceTemp {
   @ManyToOne
   @MapsId("productId")
   @JoinColumn(name = "product_id")
-  @JsonManagedReference("product_resource")
   private Product product;
 
   private int quantity;
@@ -41,21 +39,21 @@ public class ResourceTemp {
    * @param product  - the product
    * @param quantity - the quantity
    */
-  public ResourceTemp(Project project, Product product, int quantity) {
+  public Resource(Project project, Product product, int quantity) {
     this.project = project;
     this.product = product;
     this.quantity = quantity;
-    this.id = new ResourceTempKey(project.getId(), product.getId());
+    this.id = new ResourceKey(project.getId(), product.getId());
   }
 
-  public ResourceTemp() {
+  public Resource() {
   }
 
-  public ResourceTempKey getId() {
+  public ResourceKey getId() {
     return id;
   }
 
-  public void setId(ResourceTempKey id) {
+  public void setId(ResourceKey id) {
     this.id = id;
   }
 
@@ -88,16 +86,16 @@ public class ResourceTemp {
     if (this == o)
       return true;
 
-    if (!(o instanceof ResourceTemp))
+    if (!(o instanceof Resource))
       return false;
 
-    ResourceTemp other = (ResourceTemp) o;
-    return getProject().equals(other.getProject()) && getProduct().equals(other.getProduct());
+    Resource that = (Resource) o;
+    return Objects.equals(getProject(), that.getProject()) && Objects.equals(getProduct(), that.getProduct());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(getProject(), getProduct());
+    return Objects.hash(getProject().getId(), getProduct().getId());
   }
 
 }

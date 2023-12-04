@@ -1,8 +1,6 @@
 package nl.solar.app.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
 import nl.solar.app.models.views.ResourceView;
@@ -19,8 +17,7 @@ public class Product {
 
     @Id
     @JsonView(ResourceView.Complete.class)
-    @SequenceGenerator(name = "product_id_generator", initialValue = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_id_generator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @JsonView(ResourceView.Complete.class)
@@ -31,7 +28,7 @@ public class Product {
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<ResourceTemp> projects;
+    private Set<Resource> resources;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
@@ -43,10 +40,11 @@ public class Product {
 
 
     public Product() {
-        projects = new ArrayList<>();
+        resources = new HashSet<>();
         inventory = new HashSet<>();
         items = new HashSet<>();
     }
+
     /**
      * create an dummy product by using the default constructor and the getters and
      * setters
@@ -104,12 +102,12 @@ public class Product {
         this.description = description;
     }
 
-    public List<ResourceTemp> getProjects() {
-        return projects;
+    public Set<Resource> getResources() {
+        return resources;
     }
 
-    public void setProjects(List<ResourceTemp> projects) {
-        this.projects = projects;
+    public void setResources(Set<Resource> resources) {
+        this.resources = resources;
     }
 
     @Override

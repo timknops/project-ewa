@@ -1,16 +1,18 @@
 package nl.solar.app.repositories.jpaRepositories;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import nl.solar.app.repositories.EntityRepository;
+import nl.solar.app.repositories.ProjectRepository;
+
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
+import jakarta.transaction.Transactional;
 import nl.solar.app.models.Project;
 
 /**
@@ -19,14 +21,15 @@ import nl.solar.app.models.Project;
  * @author Tim Knops
  */
 @Repository("PROJECTS.JPA")
+@Transactional
 @Primary
-public class ProjectRepositoryJpa implements EntityRepository<Project> {
+public class ProjectRepositoryJpa implements ProjectRepository {
 
     @PersistenceContext
     private EntityManager entityManager;
 
     /**
-     * Returns a list of all projects.
+     * Finds all projects.
      * 
      * @return List<Project> A list of all projects.
      */
@@ -39,30 +42,36 @@ public class ProjectRepositoryJpa implements EntityRepository<Project> {
     /**
      * Finds a project by id.
      * 
-     * @param id The id of the project to find.
-     * @return Project The project with the given id.
+     * @param id the id of the project to find.
+     * @return The project with the given id.
      */
     @Override
     public Project findById(long id) {
-        throw new UnsupportedOperationException("Unimplemented method 'findById'");
+        return entityManager.find(Project.class, id);
     }
 
     /**
      * Deletes a project.
      * 
-     * @param id The id of the project to delete.
-     * @return Project The deleted project.
+     * @param id the id of the project to delete.
+     * @return The deleted project.
      */
     @Override
     public Project delete(long id) {
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        Project toBeDeleted = findById(id);
+
+        if (toBeDeleted == null)
+            return null;
+
+        entityManager.remove(toBeDeleted);
+        return toBeDeleted;
     }
 
     /**
      * Saves a project.
      * 
-     * @param newProject The project to save.
-     * @return Project The saved project.
+     * @param newProject the project to save.
+     * @return The saved project.
      */
     @Override
     public Project save(Project newProject) {
@@ -70,29 +79,42 @@ public class ProjectRepositoryJpa implements EntityRepository<Project> {
     }
 
     /**
-     * Retrieves the information needed to display the add modal.
+     * This method executes a query and returns a list of maps containing the id and
+     * name of the query result.
      * 
-     * @return Map<String, List<String>> A map containing the information needed to
-     *         display the add modal.
+     * @param queryString the query string to execute
+     * @param idField     the name of the id field in the query result
+     * @param nameField   the name of the name field in the query result
+     * @return A list of maps containing the id and name of the query result.
      */
-    public Map<String, List<String>> getAddModalInfo() {
-        // Get all team names.
-        TypedQuery<String> teamQuery = entityManager.createQuery("SELECT t.team FROM Team t", String.class);
-        List<String> teams = teamQuery.getResultList();
+    private List<Map<String, Object>> executeQuery(String queryString, String idField, String nameField) {
+        List<Object[]> queryResult = entityManager.createQuery(queryString, Object[].class)
+                .getResultList();
 
-        // Get all product names.
-        TypedQuery<String> productQuery = entityManager.createQuery("SELECT p.productName FROM Product p",
-                String.class);
-        List<String> productNames = productQuery.getResultList();
-
-        // TODO: Get all warehouse names using a query via the prodcuts. Can be done
-        // when the warehouse is implemented.
-
-        // Create a map to store the information.
-        Map<String, List<String>> addModalInfo = new HashMap<>();
-        addModalInfo.put("teams", teams);
-        addModalInfo.put("productNames", productNames);
-
-        return addModalInfo;
+        // Format the query result to a list of maps.
+        return queryResult.stream()
+                .map(row -> Map.of("id", row[0], nameField, row[1])) // Map the query result to a map.
+                .collect(Collectors.toList()); // Collect the mapped objects into a list.
     }
+
+    /**
+     * Retrieves a list of all teams.
+     * 
+     * @return A list of all teams.
+     */
+    @Override
+    public List<Map<String, Object>> getTeamsInfo() {
+        return executeQuery("SELECT t.id, t.team FROM Team t", "team", "team");
+    }
+
+    /**
+     * Retrieves a list of all products.
+     * 
+     * @return A list of all products.
+     */
+    @Override
+    public List<Map<String, Object>> getProductsInfo() {
+        return executeQuery("SELECT p.id, p.productName FROM Product p", "productName", "product_name");
+    }
+
 }

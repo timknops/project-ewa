@@ -8,7 +8,11 @@
   >
     <div
       class="modal-dialog modal-dialog-centered"
-      :class="{ 'wide-modal': this.activeModal === 'add-project-modal' }"
+      :class="{
+        'wide-modal':
+          this.activeModal === 'add-project-modal' ||
+          this.activeModal === 'update-project-modal',
+      }"
     >
       <div class="modal-content">
         <div class="modal-header">
@@ -56,6 +60,7 @@ import UpdateTeamModal from "@/components/modal/team/UpdateTeamModal";
 import DeleteTeamModal from "@/components/modal/team/DeleteTeamModal";
 import DeleteProjectModal from "@/components/modal/project/DeleteProjectModal.vue";
 import AddProjectModal from "./project/AddProjectModal.vue";
+import UpdateProjectModal from "./project/UpdateProjectModal.vue";
 import AddInventoryModal from "@/components/modal/inventory/AddInventoryModal.vue";
 
 /**
@@ -86,6 +91,7 @@ export default {
     UpdateTeamModal,
     AddTeamModal,
     DeleteProjectModal,
+    UpdateProjectModal,
     AddProjectModal,
   },
   /**

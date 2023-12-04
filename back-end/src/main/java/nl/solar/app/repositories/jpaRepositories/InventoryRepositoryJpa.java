@@ -14,7 +14,8 @@ import java.util.List;
 
 /**
  * JPA implementation of the repository for managing {@link Inventory} entities.
- * This repository provides CRUD operations related to inventory using Java Persistence API (JPA).
+ * This repository provides CRUD operations related to inventory using Java
+ * Persistence API (JPA).
  *
  * @author Julian Kruithof
  */
@@ -44,7 +45,8 @@ public class InventoryRepositoryJpa implements InventoryRepository {
      *
      * @param productId   the ID of the product
      * @param warehouseId the ID of the warehouse
-     * @return the inventory with the specified product and warehouse IDs, or {@code null} if not found
+     * @return the inventory with the specified product and warehouse IDs, or
+     *         {@code null} if not found
      */
     @Override
     public Inventory findByIds(long productId, long warehouseId) {
@@ -63,13 +65,15 @@ public class InventoryRepositoryJpa implements InventoryRepository {
      */
     @Override
     public List<Inventory> findInventoryForWarehouse(long warehouseId) {
-        return entityManager.createQuery("SELECT i FROM Inventory i WHERE i.id.warehouseId = :warehouse_id", Inventory.class)
+        return entityManager
+                .createQuery("SELECT i FROM Inventory i WHERE i.id.warehouseId = :warehouse_id", Inventory.class)
                 .setParameter("warehouse_id", warehouseId)
                 .getResultList();
     }
 
     /**
-     * Retrieves products without inventory for a specific warehouse from the database.
+     * Retrieves products without inventory for a specific warehouse from the
+     * database.
      *
      * @param warehouseId the ID of the warehouse
      * @return a list of products without inventory for the specified warehouse
@@ -77,7 +81,8 @@ public class InventoryRepositoryJpa implements InventoryRepository {
     @Override
     public List<Product> findProductsWithoutInventory(long warehouseId) {
         return entityManager.createQuery("SELECT p FROM Product p " +
-                        " WHERE p.id NOT IN (SELECT i.id.productId FROM Inventory i WHERE i.id.warehouseId = :warehouse_id)", Product.class)
+                " WHERE p.id NOT IN (SELECT i.id.productId FROM Inventory i WHERE i.id.warehouseId = :warehouse_id)",
+                Product.class)
                 .setParameter("warehouse_id", warehouseId)
                 .getResultList();
     }
@@ -87,7 +92,8 @@ public class InventoryRepositoryJpa implements InventoryRepository {
      *
      * @param productId   the ID of the product
      * @param warehouseId the ID of the warehouse
-     * @return the deleted inventory, or {@code null} if the inventory with the specified IDs does not exist
+     * @return the deleted inventory, or {@code null} if the inventory with the
+     *         specified IDs does not exist
      */
     @Override
     public Inventory deleteByIds(long productId, long warehouseId) {

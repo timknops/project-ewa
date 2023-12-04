@@ -1,11 +1,12 @@
 package nl.solar.app.models;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.*;
@@ -13,8 +14,7 @@ import nl.solar.app.enums.ProjectStatus;
 import nl.solar.app.models.views.ProjectView;
 
 /**
- * Represents a project with a unique id, project name, team, client, due date,
- * and status.
+ * Represents a project.
  * 
  * @author Tim Knops
  */
@@ -22,8 +22,7 @@ import nl.solar.app.models.views.ProjectView;
 public class Project {
 
     @Id
-    @SequenceGenerator(name = "project_id_generator", initialValue = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "project_id_generator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonView(ProjectView.Overview.class)
     private long id;
 
@@ -32,7 +31,7 @@ public class Project {
 
     @ManyToOne
     @JoinColumn(name = "team_id")
-    @JsonManagedReference
+    @JsonIncludeProperties({ "id", "team" })
     @JsonView(ProjectView.Overview.class)
     private Team team;
 
@@ -40,14 +39,19 @@ public class Project {
     private String client;
 
     @JsonView(ProjectView.Overview.class)
+    @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING, timezone = "Europe/Amsterdam")
     private Date dueDate;
+
+    @JsonView(ProjectView.Overview.class)
+    private String description;
 
     @Enumerated(EnumType.STRING)
     @JsonView(ProjectView.Overview.class)
     private ProjectStatus status;
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
-    private List<ResourceTemp> products = new ArrayList<>();
+    @OneToMany(mappedBy = "project", orphanRemoval = true, cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Set<Resource> resources = new HashSet<>();
 
     /**
      * Creates a project with the given parameters.
@@ -61,14 +65,14 @@ public class Project {
      * @param products    the products of the project
      */
     public Project(long id, String projectName, Team team, String client, Date dueDate, ProjectStatus status,
-            List<ResourceTemp> products) {
+            Set<Resource> resources) {
         this.id = id;
         this.projectName = projectName;
         this.team = team;
         this.client = client;
         this.dueDate = dueDate;
         this.status = status;
-        this.products = products;
+        this.resources = resources;
     }
 
     public Project(long id) {
@@ -138,6 +142,14 @@ public class Project {
         this.team = team;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public String getClient() {
         return client;
     }
@@ -170,12 +182,12 @@ public class Project {
         this.projectName = projectName;
     }
 
-    public List<ResourceTemp> getProducts() {
-        return products;
+    public Set<Resource> getResources() {
+        return resources;
     }
 
-    public void setProducts(List<ResourceTemp> products) {
-        this.products = products;
+    public void setResources(Set<Resource> resources) {
+        this.resources = resources;
     }
 
     @Override

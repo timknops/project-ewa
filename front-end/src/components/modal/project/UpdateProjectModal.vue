@@ -1,5 +1,5 @@
 <template>
-  <form>
+  <form v-if="this.dropdownData !== null">
     <div class="mb-3">
       <!-- Project name -->
       <label for="project-name" class="form-label fw-bold"
@@ -88,7 +88,7 @@
           id="status-select"
           aria-label="status"
         >
-          <option selected value="">Assign status</option>
+          <option value="">Assign status</option>
           <option
             v-for="status in STATUS_OPTIONS"
             :key="status"
@@ -164,7 +164,7 @@
                     class="form-select"
                     aria-label="product"
                   >
-                    <option selected value="">Choose product</option>
+                    <option value="">Choose product</option>
                     <option
                       v-for="product in PRODUCT_NAMES"
                       :key="product.id"
@@ -205,43 +205,32 @@
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 /**
- * The modal for adding a project
+ * Update project modal component.
  *
- * @Author Tim Knops
+ * @param {Object} item The project to be updated.
+ * @returns {Object} The update project modal component.
+ * @author Tim Knops
  */
 export default {
-  name: "AddProjectModal",
-  inject: ["projectService"],
+  name: "UpdateProjectModal",
   components: { FontAwesomeIcon },
+  inject: ["projectService"],
+  props: ["item"],
   data() {
     return {
-      modalItem: {
-        id: 0,
-        projectName: "",
-        client: "",
-        dueDate: "",
-        team: "",
-        status: "",
-        description: "",
-        products: [],
-      },
+      dropdownData: null,
+      modalItem: {},
       nameEmpty: false,
-      dueDateEmpty: false,
       teamUnselected: false,
+      dueDateEmpty: false,
       statusUnselected: false,
-
       STATUS_OPTIONS: ["Upcoming", "In Progress", "Completed"],
       TEAM_OPTIONS: [],
       PRODUCT_NAMES: [],
     };
   },
-  async created() {
-    const data = await this.projectService.getProjectModalData(); // Get the data for the dropdowns.
-
-    this.TEAM_OPTIONS = data.teams;
-    this.PRODUCT_NAMES = data.products;
-  },
   computed: {
+    /** Checks if the modal item has an error. */
     hasError() {
       this.validateName();
       this.validateDueDate();
@@ -256,6 +245,14 @@ export default {
       );
     },
   },
+  async created() {
+    this.dropdownData = await this.projectService.getProjectModalData(); // Get the dropdown data for the project.
+
+    this.TEAM_OPTIONS = this.dropdownData.teams;
+    this.PRODUCT_NAMES = this.dropdownData.products;
+
+    this.formatModalItem();
+  },
   methods: {
     validateName() {
       this.nameEmpty = this.modalItem.projectName.length === 0;
@@ -268,6 +265,39 @@ export default {
     },
     validateStatus() {
       this.statusUnselected = this.modalItem.status.length === 0;
+    },
+
+    /** Format the item so that it matches the form and the add modal. */
+    formatModalItem() {
+      this.modalItem = {
+        id: this.item.id,
+        projectName: this.item.projectName,
+        client: this.item.client,
+        dueDate: this.item.dueDate.split("T")[0],
+        team: this.item.teamId,
+        status: this.formatStatus(this.item.status),
+        description: this.item.description,
+        products: this.item.resources.map((product) => ({
+          product_id: product.product.id,
+          selected: false,
+          quantity: product.quantity,
+        })),
+      };
+    },
+
+    /**
+     * Formats the status to the correct format for the request.
+     * @param {String} status The status to be formatted.
+     */
+    formatStatus(status) {
+      switch (status) {
+        case "IN_PROGRESS":
+          return "In Progress";
+        case "COMPLETED":
+          return "Completed";
+        default:
+          return "Upcoming";
+      }
     },
 
     /** Adds a new product to the products array. */
@@ -292,7 +322,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 label {
   margin-bottom: 4px !important;
 }

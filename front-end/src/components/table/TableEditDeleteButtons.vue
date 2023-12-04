@@ -33,7 +33,7 @@
  * @param {Boolean} hasEditButton Whether the edit button should be displayed.
  * @param {Boolean} hasDeleteButton Whether the delete button should be displayed.
  *
- * @auhtor Tim Knops
+ * @author Tim Knops
  */
 export default {
   name: "TableEditDeleteButtons",

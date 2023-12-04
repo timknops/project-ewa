@@ -25,6 +25,15 @@
         @ok-modal-btn="handleOk"
       />
     </Transition>
+
+    <Transition>
+      <ToastComponent
+        v-if="showToast"
+        :toast-title="toastTitle"
+        :toast-message="toastMessage"
+        @close-toast="showToast = false"
+      />
+    </Transition>
   </div>
 </template>
 
@@ -32,6 +41,7 @@
 import TableComponent from "@/components/table/TableComponent.vue";
 import SpinnerComponent from "@/components/util/SpinnerComponent.vue";
 import ModalComponent from "@/components/modal/ModalComponent.vue";
+import ToastComponent from "@/components/util/ToastComponent.vue";
 import { Project } from "@/models/project";
 import { Transition } from "vue";
 
@@ -43,7 +53,13 @@ import { Transition } from "vue";
 export default {
   name: "ProjectsOverview",
   inject: ["projectService"],
-  components: { TableComponent, SpinnerComponent, ModalComponent, Transition },
+  components: {
+    TableComponent,
+    SpinnerComponent,
+    ModalComponent,
+    Transition,
+    ToastComponent,
+  },
   data() {
     return {
       projects: [],
@@ -66,6 +82,9 @@ export default {
         UPDATE: "update-project-modal",
         ADD: "add-project-modal",
       }),
+      showToast: false,
+      toastTitle: "",
+      toastMessage: "",
     };
   },
   async created() {
@@ -81,7 +100,7 @@ export default {
 
     // Modify the data so that it is displayed correctly in the table.
     this.projects = data.map((project) => {
-      return this.formatProject(project);
+      return this.formatProjectForTable(project);
     });
 
     this.projectsAreLoading = false;
@@ -92,14 +111,79 @@ export default {
      * @param {Object} project The project to be formatted.
      * @returns {Object} The formatted project.
      */
-    formatProject(project) {
+    formatProjectForTable(project) {
       return {
         id: project.id,
         name: project.projectName,
         client: project.client,
         dueDate: this.formatDate(project.dueDate),
-        team: project.team ? project.team.team : null, // TODO: Remove null check.
+        team: project.team.team,
         status: project.status,
+      };
+    },
+
+    /**
+     * Formats the project to the correct format for the POST/PUT request.
+     *
+      {
+        "project": {
+          "projectName": "Project name",
+          "team": {
+            "id": 1,
+            "teamName": "Team name"
+          },
+          "client": "Client Name",
+          "dueDate": "2023-12-31",
+          "description": "Project Description",
+          "status": "" // UPCOMING, IN_PROGRESS, COMPLETED
+        },
+        "resources": [
+          {
+            "product": {
+              "id": 1
+            },
+            "quantity": 500
+          },
+          {
+            "product": {
+              "id": 2
+            },
+            "quantity": 300
+          }
+        ]
+      }
+     * @param {Object} project the project to be formatted.
+     * @returns {Object} The formatted project.
+     */
+    formatProjectForRequest(project) {
+      // Loop through the products and remove those that have a product_id of "". Meaning that they do not have a product selected in the dropdown.
+      project.products = project.products.filter(
+        (product) => product.product_id !== ""
+      );
+
+      return {
+        project: {
+          id: project.id,
+          projectName: project.projectName,
+          team: {
+            id: project.team,
+          },
+          client: project.client,
+          dueDate: project.dueDate,
+          description: project.description,
+          status:
+            project.status === "In Progress"
+              ? "IN_PROGRESS"
+              : project.status.toUpperCase(),
+        },
+        resources: project.products.map((product) => {
+          return {
+            product: {
+              id: product.product_id,
+            },
+            quantity: product.quantity,
+          };
+        }),
       };
     },
 
@@ -141,6 +225,7 @@ export default {
         await this.projectService.delete(project.id);
         this.projects = this.projects.filter((p) => p.id !== project.id);
         this.showModal = false;
+        this.showTimedToast("Deleted successfully", "Project deleted.");
       } catch (error) {
         console.log(error);
       }
@@ -151,12 +236,13 @@ export default {
      * @param {Object} project The project to be updated.
      */
     async addProject(project) {
-      console.log(project);
-
       try {
-        const newProject = await this.projectService.add(project);
-        this.projects.push(this.formatProject(newProject));
+        const newProject = await this.projectService.add(
+          this.formatProjectForRequest(project)
+        );
+        this.projects.push(this.formatProjectForTable(newProject));
         this.showModal = false;
+        this.showTimedToast("Success", "Project added.");
       } catch (error) {
         console.log(error);
       }
@@ -168,11 +254,16 @@ export default {
      */
     async updateProject(project) {
       try {
-        const updatedProject = await this.projectService.update(project);
+        const updatedProject = await this.projectService.update(
+          this.formatProjectForRequest(project)
+        );
         this.projects = this.projects.map((p) =>
-          p.id === updatedProject.id ? this.formatProject(updatedProject) : p
+          p.id === updatedProject.id
+            ? this.formatProjectForTable(updatedProject)
+            : p
         );
         this.showModal = false;
+        this.showTimedToast("Updated successfully", "Project updated.");
       } catch (error) {
         console.log(error);
       }
@@ -194,10 +285,10 @@ export default {
      * Opens the edit modal to update a project.
      * @param {Object} project The project to be updated.
      */
-    showEditModal(project) {
+    async showEditModal(project) {
+      this.modalProject = await this.projectService.get(project.id);
       this.modalTitle = "Update project";
       this.modalBodyComponent = this.MODAL_TYPES.UPDATE;
-      this.modalProject = project;
       this.okBtnText = "Save";
       this.showModal = true;
     },
@@ -229,6 +320,21 @@ export default {
         default:
           break;
       }
+    },
+
+    /**
+     * Shows a toast message for 4 seconds.
+     * @param {String} title The title of the toast.
+     * @param {String} message The message of the toast.
+     */
+    showTimedToast(title, message) {
+      this.toastTitle = title;
+      this.toastMessage = message;
+      this.showToast = true;
+
+      setTimeout(() => {
+        this.showToast = false;
+      }, 4000);
     },
   },
 };

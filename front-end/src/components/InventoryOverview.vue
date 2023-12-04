@@ -67,7 +67,11 @@
     </transition>
 
     <transition>
-      <toast-component v-if="showToast" toast-message="All products have an inventory" toast-title="No Inventory to be added"></toast-component>
+      <toast-component
+        v-if="showToast"
+        toast-message="All products have an inventory"
+        toast-title="No Inventory to be added"
+      ></toast-component>
     </transition>
   </div>
 </template>
@@ -90,7 +94,12 @@ import ToastComponent from "@/components/util/ToastComponent.vue";
  */
 export default {
   name: "InventoryOverview",
-  components: {ToastComponent, SpinnerComponent, ModalComponent, TableComponent },
+  components: {
+    ToastComponent,
+    SpinnerComponent,
+    ModalComponent,
+    TableComponent,
+  },
   data() {
     return {
       /* list of objects containing the warehouse and its products
@@ -204,7 +213,6 @@ export default {
 
       if (productsObjectArray.length === 0) {
         return [this.formatEmptyTableData()];
-
       }
 
       return productsObjectArray[0].products;
@@ -255,35 +263,42 @@ export default {
         quantity: Number,
       }
        */
-      this.modalTitle = "Update inventory"
-      this.modalBodyComponent = this.MODAL_TYPES.UPDATE
-      this.okBtnText = "Save"
+      this.modalTitle = "Update inventory";
+      this.modalBodyComponent = this.MODAL_TYPES.UPDATE;
+      this.okBtnText = "Save";
       this.modalResource = {
-        product: {id: inventory.id, productName: inventory.productName, description: inventory.description},
+        product: {
+          id: inventory.id,
+          productName: inventory.productName,
+          description: inventory.description,
+        },
         warehouse: this.activeWarehouse,
-        quantity: inventory.quantity
-      }
+        quantity: inventory.quantity,
+      };
 
       // show the modal
       this.showModal = true;
     },
 
     async showAddModal() {
-      const productsWithoutInventory = await this.inventoryService.getProductWithoutInventory(this.activeWarehouse.id)
+      const productsWithoutInventory =
+        await this.inventoryService.getProductWithoutInventory(
+          this.activeWarehouse.id
+        );
       if (productsWithoutInventory.length === 0) {
-        this.showToast = true
+        this.showToast = true;
 
-        setTimeout(() => this.showToast = false, 3000)
-        return
+        setTimeout(() => (this.showToast = false), 3000);
+        return;
       }
-      this.modalTitle = "Add inventory"
-      this.modalBodyComponent = this.MODAL_TYPES.ADD
+      this.modalTitle = "Add inventory";
+      this.modalBodyComponent = this.MODAL_TYPES.ADD;
       this.modalResource = {
         warehouseId: this.activeWarehouse.id,
         warehouseName: this.activeWarehouse.name,
-        products: productsWithoutInventory
-      }
-      this.okBtnText = "Add"
+        products: productsWithoutInventory,
+      };
+      this.okBtnText = "Add";
       this.showModal = true;
     },
 
@@ -308,7 +323,7 @@ export default {
     async handleUpdate(inventory) {
       try {
         //returns the same format as the inventory explained above
-        const updated = await this.inventoryService.updateInventory(inventory)
+        const updated = await this.inventoryService.updateInventory(inventory);
 
         //find the correct warehouse where a quantity is updated for
         const warehouseIndex = this.totalProducts.findIndex(
@@ -345,29 +360,31 @@ export default {
      * @param {number} inventory.quantity - The quantity of the product in the inventory.
      */
     async handleAdd(inventory) {
-      const saved = await this.inventoryService.addInventory(inventory)
-      const warehouseIndex = this.totalProducts.findIndex((inventory) => inventory.warehouse.id === saved.warehouse.id)
+      const saved = await this.inventoryService.addInventory(inventory);
+      const warehouseIndex = this.totalProducts.findIndex(
+        (inventory) => inventory.warehouse.id === saved.warehouse.id
+      );
 
       //reformat the saved inventory object to an object used in the products list of the inventory
       const inventoryObj = {
         id: saved.product.id,
         productName: saved.product.productName,
         description: saved.product.description,
-        quantity: saved.quantity
-      }
+        quantity: saved.quantity,
+      };
 
       if (warehouseIndex !== -1) {
         //if warehouse already has inventory items existing add the new inventory to the list
-        this.totalProducts[warehouseIndex].products.push(inventoryObj)
+        this.totalProducts[warehouseIndex].products.push(inventoryObj);
       } else {
         //no inventory exist for the warehouse, push the correct warehouse to the total list and add inventory to the list
         this.totalProducts.push({
           warehouse: this.activeWarehouse,
-          products: [inventoryObj]
-        })
+          products: [inventoryObj],
+        });
       }
 
-      this.showModal = false
+      this.showModal = false;
     },
 
     /**
@@ -418,7 +435,9 @@ export default {
       //set the products to the products for all warehouses, i.e. when admin choses total as view.
       this.products = this.getTotalProductInfo();
     } else {
-      this.products = await this.inventoryService.findAllForWarehouse(this.activeUser.team.warehouse.id);
+      this.products = await this.inventoryService.findAllForWarehouse(
+        this.activeUser.team.warehouse.id
+      );
     }
 
     // If there are no products, add only the table headers.

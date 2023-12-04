@@ -85,7 +85,7 @@ export class ProjectAdaptor {
    * @returns {Promise<object>} A promise that resolves to the fetched JSON data representing the updated project.
    */
   async update(project) {
-    return await this.fetchJSON(`${this.resourceUrl}/${project.id}`, {
+    return await this.fetchJSON(`${this.resourceUrl}/${project.project.id}`, {
       method: "PUT",
       headers: { "content-type": "application/json" },
       body: JSON.stringify(project),
@@ -93,10 +93,10 @@ export class ProjectAdaptor {
   }
 
   /**
-   * Retrieves data for the project add modal.
+   * Retrieves data for the project add/update modal.
    * @returns {Promise<object>} A promise that resolves to the fetched JSON data representing the project add modal data.
    */
-  async getProjectAddModalData() {
-    return await this.fetchJSON(`${this.resourceUrl}/add`);
+  async getProjectModalData() {
+    return await this.fetchJSON(`${this.resourceUrl}/modal`);
   }
 }
