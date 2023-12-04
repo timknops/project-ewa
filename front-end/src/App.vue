@@ -22,6 +22,7 @@ import { WarehouseAdaptor } from "@/service/warehouseAdaptor";
 import { UserAdaptor } from "@/service/userAdaptor";
 import { TeamAdaptor } from "@/service/teamAdaptor";
 import { ProjectAdaptor } from "@/service/projectAdaptor";
+import {OrderAdaptor} from "@/service/orderAdaptor";
 
 localStorage.setItem("loggedIn", true);
 export default {
@@ -46,6 +47,7 @@ export default {
       inventoryService: new InventoryAdaptor(appConfig.BACKEND_URL),
       teamsService: new TeamAdaptor(`${appConfig.BACKEND_URL}/teams`),
       projectService: new ProjectAdaptor(`${appConfig.BACKEND_URL}/projects`),
+      orderService: new OrderAdaptor(`${appConfig.BACKEND_URL}/orders`)
     };
   },
   methods: {

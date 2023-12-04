@@ -1,7 +1,7 @@
 <template>
   <!--    display the current warehouse which the user is assigned to-->
   <div>
-    <warehouse-header-display :active-user="activeUser" :active-warehouse="activeWarehouse"
+    <warehouse-header-display :active-user="activeUser" :active-warehouse="activeWarehouse" total-text="Total Inventory"
                               @setActiveWarehouse="setActiveWarehouse">
     </warehouse-header-display>
     <table-component

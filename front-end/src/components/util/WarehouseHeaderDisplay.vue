@@ -24,7 +24,7 @@
           :class="{ active: activeWarehouse === 'Total' }"
           @click="$emit('setActiveWarehouse','Total')"
       >
-        <strong>Total Inventory</strong>
+        <strong>{{totalText}}</strong>
       </button>
     </div>
     <div class="col-auto" v-for="(warehouse) in warehouses" :key="warehouse.id">
@@ -47,7 +47,8 @@ export default {
   props: {
     activeUser: {},
     activeWarehouse: {},
-    hasNoTotalOption: Boolean
+    hasNoTotalOption: Boolean,
+    totalText: String
   },
   data() {
     return {
