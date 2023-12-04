@@ -55,6 +55,11 @@ public class OrderController {
         return ResponseEntity.ok(order);
     }
 
+    @GetMapping(path = "{id}/items", produces = "application/json")
+    public List<ItemDTO> getItemsForOrder(@PathVariable long id) {
+        return this.itemRepo.getItemsForOrder(id);
+    }
+
     @Transactional
     @PostMapping(produces = "application/json")
     public ResponseEntity<Order> addOrder(@RequestBody OrderRequestDTO Request) {

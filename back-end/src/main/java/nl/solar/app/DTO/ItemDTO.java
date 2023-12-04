@@ -3,6 +3,12 @@ package nl.solar.app.DTO;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import nl.solar.app.models.Product;
 
+/**
+ * Data Transfer Object (DTO) representing a item, used to transfer product-related data
+ * between the backend and frontend with specific view annotations.
+ *
+ * @author Julian Kruithof
+ */
 public class ItemDTO {
     @JsonIncludeProperties({"id", "productName"})
     private Product product;
