@@ -91,10 +91,29 @@ export default {
           .map(order => ({
             id: order.id,
             warehouse: order.warehouse.name,
-            deliverDate: order.deliverDate,
+            deliverDate: this.formatDate(order.deliverDate),
             orderStatus: order.orderStatus
           }))
 
+    },
+
+    /**
+     * Formats date to, example: Jun 1, 2021
+     * @param {Date} date Date to be formatted.
+     * @returns {String} Formatted date.
+     */
+    formatDate(date) {
+      // Formats date to, example: Jun 1, 2021
+      return new Date(date).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+        hour12: false
+
+      });
     },
 
     /**
@@ -128,10 +147,10 @@ export default {
      * open the edit modal to update a order
      * @param order the order to be updated
      */
-    showEditModal(order) {
+    async showEditModal(order) {
       this.modalTitle = "Update order";
       this.modalBodyComponent = this.MODAL_TYPES.UPDATE;
-      this.modalOrderInfo = order;
+      this.modalOrderInfo = await this.orderService.findById(order.id)
       this.okBtnText = "Save";
       this.showModal = true;
     },
@@ -173,8 +192,19 @@ export default {
       }
     },
 
-    updateOrder(order) {
-      console.log(order)
+    async updateOrder(order) {
+      try {
+        const updated = await this.orderService.update(order);
+        const formatted = { ...updated}
+        formatted.warehouse = updated.warehouse.name
+        formatted.deliverDate = this.formatDate(updated.deliverDate)
+        this.orders = this.orders.map((order) =>
+            order.id === formatted.id ? formatted : order
+        );
+        this.showModal = false;
+      } catch (e) {
+        console.log(e);
+      }
     },
 
     async addOrder(order) {
@@ -182,6 +212,7 @@ export default {
         const added = await this.orderService.add(order);
         const formatted = {...added}
         formatted.warehouse = added.warehouse.name
+        formatted.deliverDate = this.formatDate(added.deliverDate)
         this.orders.push(formatted);
         this.showModal = false;
       } catch (e) {

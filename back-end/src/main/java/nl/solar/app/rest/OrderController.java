@@ -54,7 +54,7 @@ public class OrderController {
     }
 
     @GetMapping(path = "{id}/items", produces = "application/json")
-    public List<ItemDTO> getItemsForOrder(@PathVariable long id) {
+    public List<Item> getItemsForOrder(@PathVariable long id) {
         return this.itemRepo.getItemsForOrder(id);
     }
 

@@ -13,5 +13,5 @@ import java.util.List;
  */
 public interface ItemRepository extends ManyToManyRepository<Item> {
 
-    List<ItemDTO> getItemsForOrder(long orderId) ;
+    List<Item> getItemsForOrder(long orderId) ;
 }

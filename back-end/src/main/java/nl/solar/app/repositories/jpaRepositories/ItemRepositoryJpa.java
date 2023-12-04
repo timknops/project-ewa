@@ -49,8 +49,8 @@ public class ItemRepositoryJpa implements ItemRepository {
     }
 
     @Override
-    public List<ItemDTO> getItemsForOrder(long orderId) {
-        return entityManager.createQuery("SELECT NEW nl.solar.app.DTO.ItemDTO(i.product, i.quantity) FROM Item i WHERE i.compositeId.orderId = :order_id", ItemDTO.class)
+    public List<Item> getItemsForOrder(long orderId) {
+        return entityManager.createQuery("SELECT i FROM Item i WHERE i.compositeId.orderId = :order_id", Item.class)
                 .setParameter("order_id", orderId)
                 .getResultList();
     }

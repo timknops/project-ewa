@@ -1,6 +1,7 @@
 package nl.solar.app.models;
 
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import nl.solar.app.models.compositeKeys.ItemKey;
 
@@ -15,6 +16,7 @@ import java.util.Objects;
 public class Item {
 
     @EmbeddedId
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private ItemKey compositeId = new ItemKey();
 
     @ManyToOne(fetch = FetchType.LAZY)

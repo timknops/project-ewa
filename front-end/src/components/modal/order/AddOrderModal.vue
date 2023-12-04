@@ -206,10 +206,30 @@ export default {
 
 
 <style scoped>
+label {
+  margin-bottom: 4px !important;
+}
+
+.font-small {
+  font-size: 0.9rem !important;
+  color: var(--bs-gray-800) !important;
+}
+
 .custom-btn {
   background-color: var(--bs-gray-200) !important;
 }
 .custom-btn:hover {
   background-color: var(--bs-gray-400) !important;
+}
+
+.checkbox-container {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  height: 38px !important;
+}
+
+.empty-text {
+  color: var(--bs-gray-800) !important;
 }
 </style>
