@@ -2,51 +2,52 @@
   <!--    display the current warehouse which the user is assigned to-->
   <div>
     <div
-        class="row warehouse-display rounded-top mx-0 p-3 pb-0"
-        v-if="activeUser.role === 'viewer'"
+      class="row warehouse-display rounded-top mx-0 p-3 pb-0"
+      v-if="activeUser.role === 'viewer'"
     >
       <div class="col">
         <strong class="warehouse-select active">{{
-            activeUser.team.warehouse.name
-          }}</strong>
+          activeUser.team.warehouse.name
+        }}</strong>
       </div>
     </div>
 
     <!-- row containing all names of warehouses and total which the admin can pick    -->
     <div
-        class="row warehouse-display rounded-top mx-0 p-3 pb-0"
-        v-else-if="activeUser.role === 'admin'"
+      class="row warehouse-display rounded-top mx-0 p-3 pb-0"
+      v-else-if="activeUser.role === 'admin'"
     >
       <div class="col-auto">
         <button
-            type="button"
-            class="warehouse-select btn btn-link p-0"
-            :class="{ active: activeWarehouse === 'Total' }"
-            @click="setActiveWarehouse('Total')"
+          type="button"
+          class="warehouse-select btn btn-link p-0"
+          :class="{ active: activeWarehouse === 'Total' }"
+          @click="setActiveWarehouse('Total')"
         >
           <strong>Total Inventory</strong>
         </button>
       </div>
       <div class="col-auto" v-for="warehouse in warehouses" :key="warehouse.id">
         <button
-            type="button"
-            class="warehouse-select btn btn-link p-0"
-            :class="{ active: warehouse.name === activeWarehouse.name }"
-            @click="setActiveWarehouse(warehouse)"
+          type="button"
+          class="warehouse-select btn btn-link p-0"
+          :class="{ active: warehouse.name === activeWarehouse.name }"
+          @click="setActiveWarehouse(warehouse)"
         >
           <strong>{{ warehouse.name }}</strong>
         </button>
       </div>
     </div>
     <table-component
-        v-if="products.length > 0"
-        class="rounded-top-0 mt-0"
-        :amount-to-display="6"
-        :table-data="products"
-        :has-edit-button="activeWarehouse != null && activeWarehouse !== 'Total'"
-        :hide-id-column="true"
-
-        @edit="showUpdateModal"
+      v-if="!productsAreLoading"
+      class="rounded-top-0 mt-0"
+      :amount-to-display="6"
+      :table-data="products"
+      :has-edit-button="activeWarehouse != null && activeWarehouse !== 'Total'"
+      :has-add-button="activeWarehouse != null && activeWarehouse !== 'Total'"
+      :hide-id-column="true"
+      @edit="showUpdateModal"
+      @add="showAddModal"
     ></table-component>
 
     <!--    Templated doesn't wait for loading so show spinner for user information-->
@@ -54,25 +55,32 @@
 
     <transition>
       <modal-component
-          v-if="showModal"
-          :title="modalTitle"
-          :active-modal="modalBodyComponent"
-          :item="modalResource"
-          :ok-btn-text="okBtnText"
-          @cancel-modal-btn="this.showModal = false"
-          @corner-close-modal-btn="this.showModal = false"
-          @ok-modal-btn="handleUpdate"
+        v-if="showModal"
+        :title="modalTitle"
+        :active-modal="modalBodyComponent"
+        :item="modalResource"
+        :ok-btn-text="okBtnText"
+        @cancel-modal-btn="this.showModal = false"
+        @corner-close-modal-btn="this.showModal = false"
+        @ok-modal-btn="handleOk"
       ></modal-component>
+    </transition>
+
+    <transition>
+      <toast-component
+        v-if="showToast"
+        toast-message="All products have an inventory"
+        toast-title="No Inventory to be added"
+      ></toast-component>
     </transition>
   </div>
 </template>
 
 <script>
-
 import TableComponent from "@/components/table/TableComponent.vue";
 import ModalComponent from "@/components/modal/ModalComponent.vue";
 import SpinnerComponent from "@/components/util/SpinnerComponent.vue";
-
+import ToastComponent from "@/components/util/ToastComponent.vue";
 
 /**
  * Component handling the logic of displaying the inventory.
@@ -86,7 +94,12 @@ import SpinnerComponent from "@/components/util/SpinnerComponent.vue";
  */
 export default {
   name: "InventoryOverview",
-  components: {SpinnerComponent, ModalComponent, TableComponent},
+  components: {
+    ToastComponent,
+    SpinnerComponent,
+    ModalComponent,
+    TableComponent,
+  },
   data() {
     return {
       /* list of objects containing the warehouse and its products
@@ -102,21 +115,26 @@ export default {
       activeUser: {
         name: String,
         role: String,
-        team: {name: String, warehouse: name},
+        team: { name: String, warehouse: name },
       },
 
       //for now only the name, could change to objects if needed.
-      warehouses: [
-
-      ],
+      warehouses: [],
       activeWarehouse: "Total", //total selected by default.
 
-      //modal variables only update
+      //modal variables
       showModal: false,
-      modalTitle: "Update Inventory",
-      modalBodyComponent: "update-inventory-modal",
-      okBtnText: "Save",
-      modalResource: {}
+      modalTitle: "",
+      modalBodyComponent: "",
+      MODAL_TYPES: Object.freeze({
+        UPDATE: "update-inventory-modal",
+        ADD: "add-inventory-modal",
+      }),
+      okBtnText: "",
+      modalResource: {},
+
+      productsAreLoading: true,
+      showToast: false,
     };
   },
 
@@ -132,7 +150,7 @@ export default {
           name: "team1",
           warehouse: {
             id: 1003,
-            name: "Superzon"
+            name: "Superzon",
           },
         },
       };
@@ -144,8 +162,8 @@ export default {
      * @return {Warehouse|string} a warehouse or total if the name is total
      */
     findWarehouseByName(name) {
-      if (name === "Total") return "Total"
-      return this.warehouses.find((warehouse) => name === warehouse.name)
+      if (name === "Total") return "Total";
+      return this.warehouses.find((warehouse) => name === warehouse.name);
     },
 
     /**
@@ -153,7 +171,6 @@ export default {
      * @param warehouse a warehouse object
      */
     setActiveWarehouse(warehouse) {
-
       //if warehouse doesn't have a id it means the method was called by the route watcher this means only the name was sent.
       if (warehouse.id) {
         this.activeWarehouse = warehouse;
@@ -179,19 +196,23 @@ export default {
     /**
      * Get the products and stock information for a certain warehouse
      * @param warehouse the warehouse which has been selected
-     * @return {[Product]} an array of product objects or empty array if an error has occurred
+     * @return {} an array of product objects or empty array if an error has occurred
      */
     getWarehouseProductInfo(warehouse) {
       const productsObjectArray = this.totalProducts.filter(
-          (totalList) => totalList.warehouse.id === warehouse.id
+        (totalList) => totalList.warehouse.id === warehouse.id
       );
 
       // filter should return one element in the array, because there is only one warehouse active
-      if (productsObjectArray.length === 0 || productsObjectArray.length > 1) {
+      if (productsObjectArray.length > 1) {
         console.error(
-            "There were multiple or no warehouses trying to receive their products"
+          "There were multiple or no warehouses trying to receive their products"
         );
         return [];
+      }
+
+      if (productsObjectArray.length === 0) {
+        return [this.formatEmptyTableData()];
       }
 
       return productsObjectArray[0].products;
@@ -242,48 +263,142 @@ export default {
         quantity: Number,
       }
        */
+      this.modalTitle = "Update inventory";
+      this.modalBodyComponent = this.MODAL_TYPES.UPDATE;
+      this.okBtnText = "Save";
       this.modalResource = {
-        product: {id: inventory.id, productName: inventory.productName, description: inventory.description},
+        product: {
+          id: inventory.id,
+          productName: inventory.productName,
+          description: inventory.description,
+        },
         warehouse: this.activeWarehouse,
-        quantity: inventory.quantity
-      }
+        quantity: inventory.quantity,
+      };
+
       // show the modal
       this.showModal = true;
     },
 
+    async showAddModal() {
+      const productsWithoutInventory =
+        await this.inventoryService.getProductWithoutInventory(
+          this.activeWarehouse.id
+        );
+      if (productsWithoutInventory.length === 0) {
+        this.showToast = true;
+
+        setTimeout(() => (this.showToast = false), 3000);
+        return;
+      }
+      this.modalTitle = "Add inventory";
+      this.modalBodyComponent = this.MODAL_TYPES.ADD;
+      this.modalResource = {
+        warehouseId: this.activeWarehouse.id,
+        warehouseName: this.activeWarehouse.name,
+        products: productsWithoutInventory,
+      };
+      this.okBtnText = "Add";
+      this.showModal = true;
+    },
+
+    handleOk(inventory, modal) {
+      switch (modal) {
+        case this.MODAL_TYPES.UPDATE:
+          this.handleUpdate(inventory);
+          break;
+        case this.MODAL_TYPES.ADD:
+          this.handleAdd(inventory);
+          break;
+      }
+    },
+
     /**
      *
-     * @param inventory -  a inventory object in the format of the back-end i,e
-     * {
-     *   product: {id, productName, description},
-     *   warehouse: {id, name},
-     *   quantity: Number,
-     * }
+     * @param inventory -  an inventory object in the format of the back-end i,e
+
      *
      * @return {Promise<void>}
      */
     async handleUpdate(inventory) {
       try {
         //returns the same format as the inventory explained above
-        const updated = await this.inventoryService.updateInventory(inventory)
+        const updated = await this.inventoryService.updateInventory(inventory);
+
         //find the correct warehouse where a quantity is updated for
-        const warehouseIndex = this.totalProducts.findIndex(resource => resource.warehouse.id === updated.warehouse.id)
+        const warehouseIndex = this.totalProducts.findIndex(
+          (resource) => resource.warehouse.id === updated.warehouse.id
+        );
 
         if (warehouseIndex !== -1) {
           //find the correct product to update the quantity for
-          const productIndex = this.totalProducts[warehouseIndex].products.findIndex(product => product.id === updated.product.id)
+          const productIndex = this.totalProducts[
+            warehouseIndex
+          ].products.findIndex((product) => product.id === updated.product.id);
 
           if (productIndex !== -1) {
             //update the correct product
-            this.totalProducts[warehouseIndex].products[productIndex].quantity = updated.quantity
+            this.totalProducts[warehouseIndex].products[productIndex].quantity =
+              updated.quantity;
           }
         }
-        this.showModal = false
-
+        this.showModal = false;
       } catch (e) {
-        console.error(e)
+        console.error(e);
       }
-    }
+    },
+
+    /**
+     * Handles the addition of a new inventory item.
+     *
+     * @param {Object} inventory - The inventory item to be added.
+     * @param {number} inventory.warehouse.id - The ID of the warehouse associated with the inventory.
+     * @param {Object} inventory.product - The product associated with the inventory.
+     * @param {number} inventory.product.id - The ID of the product.
+     * @param {string} inventory.product.productName - The name of the product.
+     * @param {string} inventory.product.description - The description of the product.
+     * @param {number} inventory.quantity - The quantity of the product in the inventory.
+     */
+    async handleAdd(inventory) {
+      const saved = await this.inventoryService.addInventory(inventory);
+      const warehouseIndex = this.totalProducts.findIndex(
+        (inventory) => inventory.warehouse.id === saved.warehouse.id
+      );
+
+      //reformat the saved inventory object to an object used in the products list of the inventory
+      const inventoryObj = {
+        id: saved.product.id,
+        productName: saved.product.productName,
+        description: saved.product.description,
+        quantity: saved.quantity,
+      };
+
+      if (warehouseIndex !== -1) {
+        //if warehouse already has inventory items existing add the new inventory to the list
+        this.totalProducts[warehouseIndex].products.push(inventoryObj);
+      } else {
+        //no inventory exist for the warehouse, push the correct warehouse to the total list and add inventory to the list
+        this.totalProducts.push({
+          warehouse: this.activeWarehouse,
+          products: [inventoryObj],
+        });
+      }
+
+      this.showModal = false;
+    },
+
+    /**
+     * Formats the product data for when the data is empty.
+     * @return {{id: "", productName: "", description: ""}}
+     */
+    formatEmptyTableData() {
+      return {
+        id: "",
+        productName: "",
+        description: "",
+        quantity: "",
+      };
+    },
   },
 
   watch: {
@@ -320,7 +435,16 @@ export default {
       //set the products to the products for all warehouses, i.e. when admin choses total as view.
       this.products = this.getTotalProductInfo();
     } else {
-      this.products = await this.inventoryService.findAllForWarehouse(this.activeUser.team.warehouse.id);
+      this.products = await this.inventoryService.findAllForWarehouse(
+        this.activeUser.team.warehouse.id
+      );
+    }
+
+    // If there are no products, add only the table headers.
+    if (this.products.length === 0) {
+      this.products = [this.formatEmptyTableData()];
+
+      this.productsAreLoading = false;
     }
 
     //set active if there is a param in the url
@@ -329,6 +453,8 @@ export default {
       if (this.activeUser.role === "viewer") return;
       this.setActiveWarehouse(this.$route.params.warehouse);
     }
+
+    this.productsAreLoading = false;
   },
 };
 </script>
@@ -384,5 +510,15 @@ Overwriting bootstrap active class
 .warehouse-select:not(.active):hover::before,
 .warehouse-select:not(.active):focus::before {
   background-color: var(--color-secondary);
+}
+/* styling for transitions*/
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
 }
 </style>

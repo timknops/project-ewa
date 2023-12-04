@@ -3,17 +3,6 @@
     <router-view
     @update-logged-in="updateLoggedIn"
     ></router-view>
-<!--    <login-page-->
-<!--        @update-logged-in="updateLoggedIn()"-->
-<!--        @update-reset-login="updateResetLogin()"-->
-<!--        v-if="resetLogin === 'false'"-->
-<!--    >-->
-<!--    </login-page>-->
-<!--    <loginResetComponent-->
-<!--        @update-logged-in="updateLoggedIn()"-->
-<!--        @update-reset-login="updateResetLogin()"-->
-<!--        v-else-->
-<!--    ></loginResetComponent>-->
   </div>
   <div v-else class="view">
     <sidebar @update-logged-in="updateLoggedIn"/>
@@ -32,7 +21,7 @@ import {UserAdaptor} from "@/service/userAdaptor";
 import {InventoryAdaptor} from "@/service/inventoryAdaptor";
 import { TeamAdaptor } from "@/service/teamAdaptor";
 import {EmailAdaptor} from "@/service/emailAdaptor";
-
+import { ProjectAdaptor } from "@/service/projectAdaptor";
 
 
 localStorage.setItem("loggedIn", false);
@@ -52,12 +41,15 @@ export default {
   provide() {
     return {
       productService: new ProductAdaptor(`${appConfig.BACKEND_URL}/products`),
-      warehouseService: new WarehouseAdaptor(`${appConfig.BACKEND_URL}/warehouses`),
+      warehouseService: new WarehouseAdaptor(
+        `${appConfig.BACKEND_URL}/warehouses`
+      ),
       userService: new UserAdaptor(`${appConfig.BACKEND_URL}/users`),
       inventoryService: new InventoryAdaptor(appConfig.BACKEND_URL),
       teamsService: new TeamAdaptor(`${appConfig.BACKEND_URL}/teams`),
       emailService: new EmailAdaptor(`${appConfig.BACKEND_URL}`),
-    }
+      projectService: new ProjectAdaptor(`${appConfig.BACKEND_URL}/projects`),
+    };
   },
   methods: {
     updateLoggedIn() {

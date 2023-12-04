@@ -47,8 +47,11 @@ public class WarehouseController {
             throw new ResourceNotFoundException("Cannot delete warehouse with id: " + id + "\nWarehouse not found");
         }
 
-        this.inventoryRepository.deleteInventoryForWarehouse(warehouseToDelete);
-
+        try {
+            this.inventoryRepository.deleteInventoryForWarehouse(warehouseToDelete);
+        } catch (Exception ex) {
+            //if exception is throw dont delete inventory, because of cascading rules
+        }
         return ResponseEntity.ok(warehouseToDelete);
     }
 
@@ -59,7 +62,6 @@ public class WarehouseController {
         }
 
         Warehouse newWarehouse = this.warehouseRepo.save(warehouse);
-        this.inventoryRepository.addInventoryForWarehouse(warehouse);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(newWarehouse.getId()).toUri();
         return ResponseEntity.created(location).body(newWarehouse);

@@ -74,7 +74,5 @@ export default {
 
 
 <style scoped>
-.form-control:disabled {
-  background-color: var(--bs-body-bg);
-}
+
 </style>
