@@ -135,6 +135,7 @@ export default {
   },
   watch: {
     '$route'(){
+      this.alert1 = false;
       this.bodySplitter = this.$route.params.email.split("_", 3);
       this.user = this.findByEmail(this.bodySplitter[0]);
       if (this.bodySplitter.length === 3) {
