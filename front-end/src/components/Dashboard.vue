@@ -18,7 +18,7 @@
     <TableComponent
       :tableWidth="'100%'"
       :boldFirstColumn="true"
-      :amountToDisplay="3"
+      :amountToDisplay="4"
       :tableData="selectedWarehouseData"
       :arrayAmountToDisplay="10"
       table-title="Inventory"
@@ -111,8 +111,8 @@ export default {
           Name: "Gateway",
           Quantity: 18,
           Expected: 30,
-          Month: "January"
-
+          Month: "January",
+          Date: 4
         },
         {
           Warehouse: "Solar Clarity",
@@ -120,7 +120,7 @@ export default {
           Quantity: 18,
           Expected: 30,
           Month: "December",
-          Date: 5
+          Date: 4
         },
         {
           Warehouse: "4Blue",
@@ -200,15 +200,30 @@ export default {
 
   computed: {
     selectedWarehouseData(){
-      if(this.selectedWarehouse) {
-        if (this.selectedWarehouse === null) {
-          return this.tableData.map(item => ({ Warehouse: item.Warehouse, Name: item.Name}));
-        } else {
-          return this.tableData.filter((item) => item.Warehouse === this.selectedWarehouse)
-              .map(item => ({Warehouse: item.Warehouse, Name: item.Name}));
-        }
+
+      const currentDate = new Date();
+      // eslint-disable-next-line no-unused-vars
+      const dateFormat = `${currentDate.getDate()}/${currentDate.getMonth() + 1}`;
+
+      if (this.selectedWarehouse) {
+        return this.tableData
+            .filter(item => item.Warehouse === this.selectedWarehouse && item.Date === currentDate.getDate() && item.Month === this.getMonthName(currentDate.getMonth() + 1))
+            .map(item => ({
+              Warehouse: item.Warehouse,
+              Name: item.Name,
+              Quantity: item.Quantity,
+            }));
       }
-      return this.tableData.map(item => ({Warehouse: item.Warehouse, Name: item.Name}));
+
+      return this.tableData
+          .filter(item => item.Date === currentDate.getDate() && item.Month === this.getMonthName(currentDate.getMonth() + 1))
+          .map(item => ({
+            Warehouse: item.Warehouse,
+            Name: item.Name,
+            Quantity: item.Quantity,
+          }));
+
+
     },
 
     selectedWarehouseUserData() {
@@ -233,7 +248,7 @@ export default {
     },
 
     getMonthName(monthI){
-      return this.allMonths[monthI]
+      return this.allMonths[monthI - 1]
     },
 
 
