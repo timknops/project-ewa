@@ -123,9 +123,17 @@ public class BackEndApplication implements CommandLineRunner {
             throw new RuntimeException("No teams found.");
         }
 
+        final String[] PROJECT_DESCRIPTIONS = {
+                "Solar Sedum is proud to announce the successful completion of Project GreenSky, where we transformed urban rooftops into vibrant, eco-friendly spaces.",
+                "Superzon is a project that aims to provide solar energy to the entire city of Amsterdam. We are proud to announce that we have successfully completed the first phase of this project.",
+                "The Switch is a project that aims to provide solar energy to the entire city of Amsterdam. We are proud to announce that we have successfully completed the second phase of this project.",
+                "Induct is a project that aims to provide solar energy to the entire city of Amsterdam. We are proud to announce that we have successfully completed the first phase of this project.",
+        };
+
         final int AMOUNT_OF_PROJECTS = 15;
         for (int i = 0; i < AMOUNT_OF_PROJECTS; i++) {
-            Project project = Project.createDummyProject();
+            Project project = Project
+                    .createDummyProject(PROJECT_DESCRIPTIONS[(int) (Math.random() * PROJECT_DESCRIPTIONS.length)]);
 
             // Give each project a random team.
             Team team = teams.get((int) (Math.random() * teams.size()));

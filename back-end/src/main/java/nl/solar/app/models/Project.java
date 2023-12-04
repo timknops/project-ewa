@@ -88,7 +88,7 @@ public class Project {
      * @param currentId the current id
      * @return a dummy project
      */
-    public static Project createDummyProject() {
+    public static Project createDummyProject(String description) {
         Project project = new Project();
 
         // Generates a random date between 2022-01-01 and 2026-01-01.
@@ -111,6 +111,7 @@ public class Project {
         // Generate a random client and project name.
         project.setClient("Client " + (int) (Math.random() * 100));
         project.setProjectName("Project " + (int) (Math.random() * 100));
+        project.setDescription(description);
 
         return project;
     }

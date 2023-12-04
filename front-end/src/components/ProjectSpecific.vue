@@ -1,6 +1,6 @@
 <template>
   <div class="grid row gap-4">
-    <div class="card border-0 d-flex col-xl p-4">
+    <div class="card border-0 d-flex col-xl-4 p-4">
       <div v-if="projectLoaded" class="px-1">
         <h3 class="fw-bold fs-2 project-title">
           {{ project.projectName }}
@@ -8,15 +8,19 @@
         <span class="badge mb-4" :class="STATUS_OPTIONS[project.status]">{{
           projectStatus
         }}</span>
-        <p class="fw-bold">
+        <p class="fw-bold mb-2">
           Client: <span class="fw-normal">{{ project.client }}</span>
         </p>
-        <p class="fw-bold">
+        <p class="fw-bold mb-2">
           Due Date:
           <span class="fw-normal">{{ dueDate }}</span>
         </p>
-        <p class="fw-bold">
+        <p class="fw-bold mb-2">
           Assigned Team: <span class="fw-normal">{{ project.teamName }}</span>
+        </p>
+        <p class="fw-bold">
+          Description:
+          <span class="fw-normal">{{ description }}</span>
         </p>
       </div>
       <SpinnerComponent v-else />
@@ -82,6 +86,13 @@ export default {
     /** Computed value for the project due date. */
     dueDate() {
       return this.project.dueDate.split("T")[0];
+    },
+
+    /** Computed value for the project description. If the project has no description, a fallback message is displayed. */
+    description() {
+      return this.project.description === null
+        ? "This project has no description."
+        : this.project.description;
     },
   },
 
