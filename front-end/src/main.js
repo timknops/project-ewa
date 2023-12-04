@@ -26,6 +26,9 @@ import { faSortDown } from "@fortawesome/free-solid-svg-icons";
 import { faSortUp } from "@fortawesome/free-solid-svg-icons";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { faBoxOpen } from "@fortawesome/free-solid-svg-icons";
+import { faEnvelope } from "@fortawesome/free-regular-svg-icons";
+import { faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
+import { faUserLock } from "@fortawesome/free-solid-svg-icons";
 
 /* add icons to the library */
 library.add(
@@ -44,8 +47,11 @@ library.add(
   faSortDown,
   faSortUp,
   faBoxOpen,
+  faUserLock,
+  faEnvelope,
+  faArrowRightFromBracket,
   faPlus,
-  faTruckFast
+  faTruckFast,
 );
 
 /* import bootstrap */

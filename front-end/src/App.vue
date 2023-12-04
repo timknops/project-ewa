@@ -1,10 +1,11 @@
 <template>
-  <loginPage
-    @update-logged-in="updateLoggedIn()"
-    v-if="loggedInActive === 'false'"
-  ></loginPage>
+  <div v-if="loggedInActive === 'false'">
+    <router-view
+    @update-logged-in="updateLoggedIn"
+    ></router-view>
+  </div>
   <div v-else class="view">
-    <sidebar />
+    <sidebar @update-logged-in="updateLoggedIn"/>
     <header-component class="header"></header-component>
     <router-view id="component"></router-view>
   </div>
@@ -12,29 +13,29 @@
 
 <script>
 import Sidebar from "@/components/Sidebar.vue";
-import LoginPage from "@/components/LoginPage.vue";
 import HeaderComponent from "@/components/HeaderComponent.vue";
 import appConfig from "@/appConfig";
-
-import { ProductAdaptor } from "@/service/productAdaptor";
-import { InventoryAdaptor } from "@/service/inventoryAdaptor";
-import { WarehouseAdaptor } from "@/service/warehouseAdaptor";
-import { UserAdaptor } from "@/service/userAdaptor";
+import {ProductAdaptor} from "@/service/productAdaptor";
+import {WarehouseAdaptor} from "@/service/warehouseAdaptor";
+import {UserAdaptor} from "@/service/userAdaptor";
+import {InventoryAdaptor} from "@/service/inventoryAdaptor";
 import { TeamAdaptor } from "@/service/teamAdaptor";
+import {EmailAdaptor} from "@/service/emailAdaptor";
 import { ProjectAdaptor } from "@/service/projectAdaptor";
 import {OrderAdaptor} from "@/service/orderAdaptor";
 
-localStorage.setItem("loggedIn", true);
+
+localStorage.setItem("loggedIn", false);
 export default {
   name: "App",
   components: {
-    LoginPage,
     HeaderComponent,
     Sidebar,
   },
   data() {
     return {
       loggedInActive: {},
+      resetLogin: {}
     };
   },
   provide() {
@@ -46,6 +47,7 @@ export default {
       userService: new UserAdaptor(`${appConfig.BACKEND_URL}/users`),
       inventoryService: new InventoryAdaptor(appConfig.BACKEND_URL),
       teamsService: new TeamAdaptor(`${appConfig.BACKEND_URL}/teams`),
+      emailService: new EmailAdaptor(`${appConfig.BACKEND_URL}`),
       projectService: new ProjectAdaptor(`${appConfig.BACKEND_URL}/projects`),
       orderService: new OrderAdaptor(`${appConfig.BACKEND_URL}/orders`)
     };
@@ -53,7 +55,7 @@ export default {
   methods: {
     updateLoggedIn() {
       this.loggedInActive = localStorage.getItem("loggedIn");
-    },
+    }
   },
   created() {
     this.loggedInActive = localStorage.getItem("loggedIn");
@@ -84,6 +86,7 @@ export default {
 :root {
   --color-primary: #c7d02c;
   --color-secondary: #572700;
+  --color-tertiary: #111827;
   --color-text: #333;
   --color-bg: #fff;
   --color-subtitle: #bfbfbf;
@@ -95,7 +98,7 @@ export default {
   --navbar-height: 10rem;
 
   --custom-box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05),
-    0 4px 6px -4px rgb(0 0 0 / 0.05);
+  0 4px 6px -4px rgb(0 0 0 / 0.05);
 }
 
 body {
