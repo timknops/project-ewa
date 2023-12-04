@@ -12,6 +12,7 @@ import nl.solar.app.models.Order;
 import nl.solar.app.models.Product;
 import nl.solar.app.repositories.EntityRepository;
 import nl.solar.app.repositories.ItemRepository;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Controller for all endpoint affecting the order entity
@@ -105,6 +107,13 @@ public class OrderController {
         return ResponseEntity.ok(updated);
     }
 
+    @DeleteMapping(path = "{id}", produces = "application/json")
+    public ResponseEntity<Order> deleteOrder(@PathVariable long id) {
+        Order toBeDelete = this.orderRepo.delete(id);
 
-
+        if (toBeDelete == null) {
+            throw new ResourceNotFoundException("Cannot delete order with id: " + id + "Order not found");
+        }
+        return ResponseEntity.ok(toBeDelete);
+    }
 }

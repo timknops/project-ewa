@@ -1,5 +1,6 @@
 package nl.solar.app.repositories;
 
+import nl.solar.app.DTO.ItemDTO;
 import nl.solar.app.models.Item;
 
 import java.util.List;
@@ -12,5 +13,5 @@ import java.util.List;
  */
 public interface ItemRepository extends ManyToManyRepository<Item> {
 
-    List<Item> getItemsForOrder(long orderId) ;
+    List<ItemDTO> getItemsForOrder(long orderId) ;
 }

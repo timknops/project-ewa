@@ -3,6 +3,7 @@ package nl.solar.app.repositories.jpaRepositories;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
+import nl.solar.app.DTO.ItemDTO;
 import nl.solar.app.models.Item;
 import nl.solar.app.models.Order;
 import nl.solar.app.models.compositeKeys.ItemKey;
@@ -48,8 +49,8 @@ public class ItemRepositoryJpa implements ItemRepository {
     }
 
     @Override
-    public List<Item> getItemsForOrder(long orderId) {
-        return entityManager.createQuery("SELECT i FROM Item i WHERE i.compositeId.orderId = :order_id", Item.class)
+    public List<ItemDTO> getItemsForOrder(long orderId) {
+        return entityManager.createQuery("SELECT NEW nl.solar.app.DTO.ItemDTO(i.product, i.quantity) FROM Item i WHERE i.compositeId.orderId = :order_id", ItemDTO.class)
                 .setParameter("order_id", orderId)
                 .getResultList();
     }
