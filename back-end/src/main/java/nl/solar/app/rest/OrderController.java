@@ -89,20 +89,22 @@ public class OrderController {
 
     @Transactional
     @PutMapping(path = "{id}", produces = "application/json")
-    public ResponseEntity<Order> updateOrder(@PathVariable long id, @RequestBody OrderRequestDTO requestDTO) {
-        if (requestDTO.getOrder().getId() != id) {
+    public ResponseEntity<Order> updateOrder(@PathVariable long id, @RequestBody Order order) {
+        if (order.getId() != id) {
             throw new PreConditionFailedException("The id's in the path and body don't match");
         }
 
         Order existingOrder = this.orderRepo.findById(id);
-        if (requestDTO.getOrder().getDeliverDate().isBefore(existingOrder.getOrderDate())) {
+
+        if (order.getDeliverDate().isBefore(existingOrder.getOrderDate())) {
             throw new BadRequestException("An order can not be delivered in the past!");
         }
-        requestDTO.getOrder().setOrderDate(existingOrder.getOrderDate());
-        Order updated = this.orderRepo.save(requestDTO.getOrder());
+        order.setOrderDate(existingOrder.getOrderDate());
 
+        Order updated = this.orderRepo.save(order);
         return ResponseEntity.ok(updated);
     }
+
 
 
 }

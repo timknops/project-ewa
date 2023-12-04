@@ -30,7 +30,7 @@ public class Order {
     private Warehouse warehouse;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     Set<Item> items = new HashSet<>();
 
     @JsonIgnore

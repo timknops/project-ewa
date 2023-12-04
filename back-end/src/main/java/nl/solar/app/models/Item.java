@@ -31,6 +31,17 @@ public class Item {
 
     private long quantity;
 
+    public Item(Product product, Order order, long quantity) {
+        this.product = product;
+        this.order = order;
+        this.quantity = quantity;
+        ItemKey key = new ItemKey();
+        key.setProductId(product.getId());
+        key.setOrderId(order.getId());
+        this.compositeId = key;
+    }
+
+
     public Item() {}
 
     public ItemKey getCompositeId() {
@@ -47,6 +58,7 @@ public class Item {
 
     public void setProduct(Product product) {
         this.product = product;
+        this.compositeId.setProductId(this.product.getId());
     }
 
     public Order getOrder() {
@@ -55,6 +67,7 @@ public class Item {
 
     public void setOrder(Order order) {
         this.order = order;
+        this.compositeId.setOrderId(this.order.getId());
     }
 
     public long getQuantity() {
