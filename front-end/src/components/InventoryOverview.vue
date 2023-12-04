@@ -380,8 +380,9 @@ export default {
         //no inventory exist for the warehouse, push the correct warehouse to the total list and add inventory to the list
         this.totalProducts.push({
           warehouse: this.activeWarehouse,
-          products: [inventoryObj],
+          products: [{...inventoryObj}],
         });
+        this.products = [{...inventoryObj}];
       }
 
       this.showModal = false;
