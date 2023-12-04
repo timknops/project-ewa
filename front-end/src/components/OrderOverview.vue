@@ -81,9 +81,9 @@ export default {
   methods: {
     setActiveWarehouse(warehouse) {
       this.activeWarehouse = warehouse
-
       this.$router.push("/orders/" + warehouse.name)
       this.orders = this.getOrdersForWarehouse(this.activeWarehouse)
+
     },
 
     getOrdersForWarehouse(warehouse) {
@@ -142,9 +142,9 @@ export default {
     showAddModal() {
       this.modalTitle = "Add order";
       this.modalBodyComponent = this.MODAL_TYPES.ADD;
-      this.modalOrderInfo({
+      this.modalOrderInfo = {
         warehouse: this.activeWarehouse
-      })
+      }
       this.okBtnText = "Add";
       this.showModal = true;
     },
@@ -177,15 +177,23 @@ export default {
       console.log(order)
     },
 
-    addOrder(order) {
-      console.log(order)
+    async addOrder(order) {
+      try {
+        const added = await this.orderService.add(order);
+        const formatted = {...added}
+        formatted.warehouse = added.warehouse.name
+        this.orders.push(formatted);
+        this.showModal = false;
+      } catch (e) {
+        console.log(e);
+      }
     }
   },
 
   async created() {
     const data = await this.orderService.findAll();
     this.totalOrders = data
-    this.orders = [this.formatEmptyTableData()]
+    this.setActiveWarehouse(data[0].warehouse)
     this.ordersAreLoaded = true
   }
 
