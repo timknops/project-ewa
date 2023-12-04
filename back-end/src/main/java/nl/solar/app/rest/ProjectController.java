@@ -71,12 +71,15 @@ public class ProjectController {
      *                                   exist.
      */
     @GetMapping(path = "{id}", produces = "application/json")
-    public ResponseEntity<Map<String, Object>> getProject(@PathVariable Long id) throws ResourceNotFoundException {
+    public ResponseEntity<Map<String, Object>> getProject(@PathVariable Long id) {
         Project project = this.projectRepo.findById(id);
 
-        // If the project doesn't exist, throw an error.
+        // If the project doesn't exist, return a value so that the frontend can handle
+        // it.
         if (project == null) {
-            throw new ResourceNotFoundException("Project with id: " + id + " was not found");
+            Map<String, Object> response = new HashMap<>();
+            response.put("error", "Project with id: " + id + " was not found");
+            return ResponseEntity.ok(response);
         }
 
         // Format the project to a map.

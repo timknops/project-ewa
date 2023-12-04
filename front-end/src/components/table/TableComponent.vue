@@ -4,12 +4,12 @@
       <!-- Both the title and the subtitle are optional props! They will not be displayed when not specified -->
       <h5
         v-if="tableTitle !== undefined"
-        class="fw-bold table-title ps-lg-4 ps-3 mb-0"
+        class="fw-bold table-title ps-2 mb-0"
         :class="{ 'mb-2': subTitle === undefined }"
       >
         {{ tableTitle }}
       </h5>
-      <p v-if="subTitle !== undefined" class="ps-lg-4 ps-3 subtitle mb-2">
+      <p v-if="subTitle !== undefined" class="ps-2 subtitle mb-2">
         {{ subTitle }}
       </p>
       <div class="table-responsive" :style="{ height: calculateTableHeight }">
@@ -81,14 +81,16 @@
               </template>
 
               <!-- If the table has edit and delete buttons -->
-              <TableEditDeleteButtons
+              <TableButtons
                 v-if="hasEditButton || hasDeleteButton"
                 :table-row="tableRow"
                 :row-height-large="ROW_HEIGHT_LARGE"
                 :has-edit-button="hasEditButton"
                 :has-delete-button="hasDeleteButton"
+                :has-specific-button="hasSpecificButton"
                 @edit="$emit('edit', tableRow)"
                 @delete="$emit('delete', tableRow)"
+                @specific="$emit('specific', tableRow)"
               />
             </tr>
           </tbody>
@@ -146,14 +148,16 @@
               </template>
 
               <!-- If the table has edit and delete buttons -->
-              <TableEditDeleteButtons
+              <TableButtons
                 v-if="hasEditButton || hasDeleteButton"
                 :table-row="tableRow"
                 :row-height-large="ROW_HEIGHT_LARGE"
                 :has-edit-button="hasEditButton"
                 :has-delete-button="hasDeleteButton"
+                :has-specific-button="hasSpecificButton"
                 @edit="$emit('edit', tableRow)"
                 @delete="$emit('delete', tableRow)"
+                @specific="$emit('specific', tableRow)"
               />
             </tr>
           </tbody>
@@ -175,7 +179,7 @@
 </template>
 
 <script>
-import TableEditDeleteButtons from "@/components/table/TableEditDeleteButtons.vue";
+import TableButtons from "@/components/table/TableButtons.vue";
 import TableFooter from "@/components/table/TableFooter.vue";
 import TableHeaderRow from "@/components/table/TableHeaderRow.vue";
 
@@ -193,6 +197,7 @@ import TableHeaderRow from "@/components/table/TableHeaderRow.vue";
  * @param {Boolean} hasEditButton Whether the table has an edit button or not.
  * @param {Boolean} hasDeleteButton Whether the table has a delete button or not.
  * @param {Boolean} hasAddButton Whether the table has an add button or not.
+ * @param {Boolean} hasSpecificButton Whether the table has a specific button or not.
  * @param {Boolean} hideIdColumn Whether the ID column should be hidden or not.
  *
  * @author Tim Knops
@@ -202,7 +207,7 @@ export default {
   components: {
     TableHeaderRow,
     TableFooter,
-    TableEditDeleteButtons,
+    TableButtons,
   },
   props: {
     tableWidth: String,
@@ -221,6 +226,7 @@ export default {
     hasEditButton: Boolean,
     hasDeleteButton: Boolean,
     hasAddButton: Boolean,
+    hasSpecificButton: Boolean,
     hideIdColumn: Boolean,
   },
   data() {

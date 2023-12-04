@@ -7,9 +7,11 @@
       :has-delete-button="true"
       :has-edit-button="true"
       :has-add-button="true"
+      :has-specific-button="true"
       @edit="showEditModal"
       @delete="showDeleteModal"
       @add="showAddModal"
+      @specific="showSpecificView"
     />
     <SpinnerComponent v-else />
 
@@ -335,6 +337,10 @@ export default {
       setTimeout(() => {
         this.showToast = false;
       }, 4000);
+    },
+
+    showSpecificView(project) {
+      this.$router.push(`/projects/${project.id}`);
     },
   },
 };

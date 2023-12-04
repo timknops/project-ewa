@@ -27,6 +27,7 @@ import { faSortUp } from "@fortawesome/free-solid-svg-icons";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { faBoxOpen } from "@fortawesome/free-solid-svg-icons";
 import { faBarsProgress } from "@fortawesome/free-solid-svg-icons";
+import { faEye } from "@fortawesome/free-solid-svg-icons";
 
 /* add icons to the library */
 library.add(
@@ -46,7 +47,8 @@ library.add(
   faSortUp,
   faBoxOpen,
   faPlus,
-  faBarsProgress
+  faBarsProgress,
+  faEye
 );
 
 /* import bootstrap */
