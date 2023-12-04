@@ -7,6 +7,7 @@ import UserOverview from "@/components/UserOverview";
 import ProjectsOverview from "@/components/ProjectsOverview.vue";
 import InventoryOverview from "@/components/InventoryOverview.vue";
 import WarehouseOverview from "@/components/WarehouseOverview.vue";
+import ProjectSpecific from "@/components/ProjectSpecific.vue";
 
 export const router = createRouter({
   history: createWebHashHistory(),
@@ -25,7 +26,7 @@ export const router = createRouter({
     {
       path: "/products",
       component: ProductOverview,
-      meta: {icon: "fa-solid fa-box-open"}
+      meta: { icon: "fa-solid fa-box-open" },
     },
     {
       path: "/team",
@@ -49,9 +50,15 @@ export const router = createRouter({
       meta: { icon: "fa-solid fa-project-diagram" },
     },
     {
+      path: "/projects/:id",
+      component: ProjectSpecific,
+      meta: { icon: "fa-solid fa-bars-progress" },
+      name: "Project Specific",
+    },
+    {
       path: "/warehouses",
       component: WarehouseOverview,
-      meta: {icon: "fa-solid fa-warehouse"}
+      meta: { icon: "fa-solid fa-warehouse" },
     },
     // add paths to other components here
     { path: "/:pathMatch(.*)", redirect: "/dashboard" }, // redirect non-existing path to dashboard

@@ -29,8 +29,8 @@
       <li class="nav-item">
         <router-link to="/products" class="nav-link" active-class="active">
           <font-awesome-icon
-              icon="fa-solid fa-box-open"
-              class="sidebar-icons"
+            icon="fa-solid fa-box-open"
+            class="sidebar-icons"
           />Products
         </router-link>
       </li>
@@ -42,6 +42,34 @@
           />Projects
         </router-link>
       </li>
+
+      <!-- TODO: Make use of submenu for projects when specific view is implemented.
+      <li
+        @click="submenuProjects = !submenuProjects"
+        href="#homeSubmenu"
+        data-toggle="collapse"
+        aria-expanded="false"
+        class="dropdown-toggle collapsed nav-item"
+        active-class="active"
+      >
+        Home
+      </li>
+      <ul
+        class="list-unstyled collapse"
+        id="homeSubmenu"
+        :class="submenuProjects ? 'show' : ''"
+      >
+        <li>
+          <a href="#">Home 1</a>
+        </li>
+        <li>
+          <a href="#">Home 2</a>
+        </li>
+        <li>
+          <a href="#">Home 3</a>
+        </li> -->
+      <!-- </ul> -->
+
       <li class="nav-item">
         <router-link to="/warehouses" class="nav-link" active-class="active">
           <font-awesome-icon
@@ -77,6 +105,7 @@ export default {
   data() {
     return {
       dashboardRoute: "/dashboard",
+      submenuProjects: false,
     };
   },
 };

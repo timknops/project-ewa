@@ -53,10 +53,16 @@ export default {
      * @return {string} the name of the page the user is currently on.
      */
     displayCurrentPageName() {
-      //When vue initially loads header the route is / and matched is empty.
+      // When vue initially loads header the route is / and matched is empty.
       if (!this.$route.matched[0]) {
         return;
       }
+
+      // If the route has a name, return the name.
+      if (this.$route.matched[0].name !== undefined) {
+        return this.$route.matched[0].name;
+      }
+
       const pageName = this.$route.matched[0].path;
       return pageName
         .substring(1, 2)
