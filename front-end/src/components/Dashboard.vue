@@ -89,22 +89,48 @@ export default {
           Name: "enphase",
           Quantity: 9,
           Expected: 32,
-          Month: "December"
+          Month: "December",
+          Date: 4,
         },
         {
           Warehouse: "Solar Clarity",
           Name: "Gateway",
           Quantity: 18,
           Expected: 30,
-          Month: "December"
+          Month: "January"
+
+        },
+        {
+          Warehouse: "Solar Clarity",
+          Name: "MB 385 (white)",
+          Quantity: 18,
+          Expected: 30,
+          Month: "December",
+          Date: 5
         },
         {
           Warehouse: "4Blue",
           Name: "MB 385 (white)",
-          Quantity: 18,
+          Quantity: 33,
+          Expected: 30,
+          Month: "January"
+        },
+        {
+          Warehouse: "4Blue",
+          Name: "MB 385 (white)",
+          Quantity: 33,
+          Expected: 30,
+          Month: "March"
+        },
+        {
+          Warehouse: "4Blue",
+          Name: "Gateway",
+          Quantity: 11,
           Expected: 30,
           Month: "December"
         },
+
+
       ],
       userData: [
         {
@@ -122,6 +148,7 @@ export default {
           Warehouse: "Solar Clarity",
           Project: "Team 3"
         },
+
 
       ],
       forecastData: [
@@ -146,7 +173,7 @@ export default {
       chartWidth: 200,
       chartHeight: 80,
       // xValues: ["This week", "Expected"],
-      //yValues: [0, 36],
+      // yValues: [0, 36],
       barColors: ["rgba(91, 46, 24, 1)"],
     };
   },
@@ -212,22 +239,38 @@ export default {
       const dataBasedOnTheMonth = this.tableData.filter(item => (!this.selectedWarehouse || item.Warehouse === this.selectedWarehouse) && item.Month === this.selectedMonth);
       const nameLegend = [...new Set(dataBasedOnTheMonth.map(item => item.Name))];
 
-      const chartData = {
-        labels: nameLegend,
-        datasets: nameLegend.map((name, index) => {
-          const qdata = dataBasedOnTheMonth.filter(item => item.Name === name)
-              .map(item => item.Quantity);
+      const datasets = nameLegend.map((name, index) => {
+            const qdata = dataBasedOnTheMonth
+                .filter(item => item.Name === name)
+                .map(item => item.Quantity);
+
+        // const backgroundColor = colorLegend[index % colorLegend.length];
 
           return {
-            label: `${name} `,
+            label: name,
             backgroundColor: colorLegend[index % colorLegend.length],
             data: qdata,
           };
-        }),
+        });
+
+      const currentDate = new Date();
+      const dateLabels = Array.from({ length: 14 }, (_, index) => {
+        const nextDate = new Date(currentDate);
+        nextDate.setDate(currentDate.getDate() + index);
+        const day = nextDate.getDate();
+        const month = nextDate.getMonth() + 1;
+        return `${day}/${month}`;
+      });
+
+
+      const chartData = {
+        labels:  dateLabels,
+        datasets: datasets,
       };
 
+
       const chartOptions = {
-        legend: {display: true},
+        legend: {display: false},
         title: {
           display: true,
           text: "Inventory Chart",
@@ -242,6 +285,12 @@ export default {
         plugins: {
           tooltip: {
             enabled: true,
+            callbacks: {
+              label: (context) => {
+                const item = context.dataset.data[context.dataIndex];
+                return `${item.label}: ${context.parsed.y}`;
+              }
+            }
           },
         },
         elements: {
