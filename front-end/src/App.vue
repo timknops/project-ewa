@@ -25,7 +25,6 @@ import { ProjectAdaptor } from "@/service/projectAdaptor";
 
 
 localStorage.setItem("loggedIn", false);
-localStorage.setItem("resetLogin", false);
 export default {
   name: "App",
   components: {
@@ -54,13 +53,9 @@ export default {
   methods: {
     updateLoggedIn() {
       this.loggedInActive = localStorage.getItem("loggedIn");
-    },
-    updateResetLogin() {
-      this.resetLogin = localStorage.getItem("resetLogin")
     }
   },
   created() {
-    this.resetLogin = localStorage.getItem("resetLogin");
     this.loggedInActive = localStorage.getItem("loggedIn");
   },
 };
