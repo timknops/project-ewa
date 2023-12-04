@@ -105,17 +105,18 @@ export default {
           Month: "December",
           Date: 6,
         },
+        {
+          Warehouse: "Solar Clarity",
+          Name: "enphase",
+          Quantity: 6,
+          Expected: 32,
+          Month: "December",
+          Date: 20,
+        },
+
 
         {
-          Warehouse: "Solar Clarity",
-          Name: "Gateway",
-          Quantity: 18,
-          Expected: 30,
-          Month: "January",
-          Date: 4
-        },
-        {
-          Warehouse: "Solar Clarity",
+          Warehouse: "4Blue",
           Name: "MB 385 (white)",
           Quantity: 18,
           Expected: 30,
@@ -125,19 +126,22 @@ export default {
         {
           Warehouse: "4Blue",
           Name: "MB 385 (white)",
-          Quantity: 33,
+          Quantity: 15,
           Expected: 30,
-          Month: "January",
-          Date: 4
+          Month: "December",
+          Date: 10
         },
         {
           Warehouse: "4Blue",
           Name: "MB 385 (white)",
-          Quantity: 33,
+          Quantity: 15,
           Expected: 30,
-          Month: "March",
-          Date: 4
+          Month: "December",
+          Date: 20
         },
+
+
+
         {
           Warehouse: "4Blue",
           Name: "Gateway",
@@ -145,6 +149,22 @@ export default {
           Expected: 30,
           Month: "December",
           Date: 4
+        },
+        {
+          Warehouse: "4Blue",
+          Name: "Gateway",
+          Quantity: 19,
+          Expected: 30,
+          Month: "December",
+          Date: 10
+        },
+        {
+          Warehouse: "4Blue",
+          Name: "Gateway",
+          Quantity: 19,
+          Expected: 30,
+          Month: "December",
+          Date: 20
         },
 
 
@@ -343,7 +363,7 @@ export default {
       };
 
      this.saveChart = new Chart(this.$refs.combinedChart, {
-        type: "bar",
+        type: "line",
         data: chartData,
         options: chartOptions,
       });
