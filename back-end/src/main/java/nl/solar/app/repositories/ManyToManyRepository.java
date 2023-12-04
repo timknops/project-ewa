@@ -1,7 +1,6 @@
 package nl.solar.app.repositories;
 
 import nl.solar.app.models.Inventory;
-import nl.solar.app.models.Resource;
 
 import java.util.List;
 

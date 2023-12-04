@@ -253,12 +253,10 @@ export default {
      * @param {Object} project The project to be updated.
      */
     async updateProject(project) {
-      console.log(project);
       try {
         const updatedProject = await this.projectService.update(
           this.formatProjectForRequest(project)
         );
-        console.log(updatedProject);
         this.projects = this.projects.map((p) =>
           p.id === updatedProject.id
             ? this.formatProjectForTable(updatedProject)

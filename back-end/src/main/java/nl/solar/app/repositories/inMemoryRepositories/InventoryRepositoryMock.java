@@ -5,7 +5,6 @@ import nl.solar.app.models.Inventory;
 import nl.solar.app.models.Warehouse;
 import nl.solar.app.repositories.EntityRepository;
 import nl.solar.app.repositories.InventoryRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -15,11 +14,9 @@ import java.util.List;
 public class InventoryRepositoryMock implements InventoryRepository {
     private List<Inventory> inventoryList;
 
-
     private final EntityRepository<Product> productRepo;
     private final EntityRepository<Warehouse> warehouseRepo;
 
-    @Autowired
     public InventoryRepositoryMock(EntityRepository<Product> productRepo, EntityRepository<Warehouse> warehouseRepo) {
         this.productRepo = productRepo;
         this.warehouseRepo = warehouseRepo;
@@ -27,8 +24,8 @@ public class InventoryRepositoryMock implements InventoryRepository {
         List<Product> products = this.productRepo.findAll();
         List<Warehouse> warehouses = this.warehouseRepo.findAll();
 
-        for (Warehouse warehouse: warehouses) {
-            for (Product product: products) {
+        for (Warehouse warehouse : warehouses) {
+            for (Product product : products) {
                 Inventory inventory = Inventory.createDummyResource(warehouse, product);
                 inventoryList.add(inventory);
             }
@@ -49,7 +46,8 @@ public class InventoryRepositoryMock implements InventoryRepository {
     @Override
     public Inventory findByIds(long warehouseId, long productId) {
         return inventoryList.stream()
-                .filter(resource -> resource.getWarehouse().getId() == warehouseId && resource.getProduct().getId() == productId)
+                .filter(resource -> resource.getWarehouse().getId() == warehouseId
+                        && resource.getProduct().getId() == productId)
                 .findFirst().orElse(null);
     }
 

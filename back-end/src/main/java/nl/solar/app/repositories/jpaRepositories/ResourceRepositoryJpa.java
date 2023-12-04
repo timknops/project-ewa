@@ -1,7 +1,6 @@
 package nl.solar.app.repositories.jpaRepositories;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import nl.solar.app.repositories.EntityRepository;
