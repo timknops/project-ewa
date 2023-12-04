@@ -2,7 +2,7 @@ export class ProductAdaptor {
   resourceUrl;
 
   constructor() {
-    this.resourceUrl = process.env.VUE_APP_API_URL;
+    this.resourceUrl = process.env.VUE_APP_API_URL + '/products';
     console.log(this.resourceUrl);
   }
 
