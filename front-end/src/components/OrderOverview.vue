@@ -32,6 +32,13 @@
           @ok-modal-btn="handleOk"
       ></modal-component>
     </transition>
+    <transition>
+      <toast-component
+          v-if="showToast"
+          :toast-message="toastMessage"
+          :toast-title="toastTitle"
+      ></toast-component>
+    </transition>
   </div>
 
 </template>
@@ -41,10 +48,11 @@ import WarehouseHeaderDisplay from "@/components/util/WarehouseHeaderDisplay.vue
 import TableComponent from "@/components/table/TableComponent.vue";
 import SpinnerComponent from "@/components/util/SpinnerComponent.vue";
 import ModalComponent from "@/components/modal/ModalComponent.vue";
+import ToastComponent from "@/components/util/ToastComponent.vue";
 
 export default {
   name: "orderOverview",
-  components: {ModalComponent, SpinnerComponent, TableComponent, WarehouseHeaderDisplay},
+  components: {ToastComponent, ModalComponent, SpinnerComponent, TableComponent, WarehouseHeaderDisplay},
   inject: ["orderService"],
   data() {
     return {
@@ -75,6 +83,10 @@ export default {
         UPDATE: "update-order-modal",
         ADD: "add-order-modal",
       }),
+
+      showToast: false,
+      toastTitle: "",
+      toastMessage: ""
 
     }
   },
@@ -187,6 +199,9 @@ export default {
         const deleted = await this.orderService.delete(order.id);
         this.orders = this.orders.filter(order => order.id !== deleted.id)
         this.showModal = false
+        this.showTimedToast(
+            "Order Deleted",
+            `Successfully deleted an order with id: ${deleted.id} for warehouse ${this.activeWarehouse.name}`)
       } catch (e) {
         console.error(e)
       }
@@ -202,6 +217,10 @@ export default {
             order.id === formatted.id ? formatted : order
         );
         this.showModal = false;
+        this.showTimedToast(
+            "Order Updated",
+            `Successfully updated an order with id: ${updated.id} for warehouse ${this.activeWarehouse.name}`
+        )
       } catch (e) {
         console.log(e);
       }
@@ -215,10 +234,21 @@ export default {
         formatted.deliverDate = this.formatDate(added.deliverDate)
         this.orders.push(formatted);
         this.showModal = false;
+        this.showTimedToast(
+            "Order added",
+            `Successfully added an order with id: ${added.id} from warehouse ${this.activeWarehouse.name}`)
       } catch (e) {
         console.log(e);
       }
-    }
+    },
+
+    showTimedToast(title, message) {
+      this.toastTitle = title
+      this.toastMessage = message
+      this.showToast = true
+
+      setTimeout(()=> this.showToast = false, 4000)
+    },
   },
 
   async created() {
