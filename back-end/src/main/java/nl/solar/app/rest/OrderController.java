@@ -12,7 +12,6 @@ import nl.solar.app.models.Order;
 import nl.solar.app.models.Product;
 import nl.solar.app.repositories.EntityRepository;
 import nl.solar.app.repositories.ItemRepository;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +20,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Controller for all endpoint affecting the order entity
