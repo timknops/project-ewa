@@ -247,7 +247,7 @@ export default {
         UPCOMING: "upcoming-badge",
       }),
       /** shallow Copy of the table data, used for sorting. */
-      tableDataSorted: this.tableData.slice(),
+      tableDataSorted: this.tableData,
       /** The name of the previous sorted column, used for sorting. */
       previousSortedColumn: "",
       /** The options for the sorting icons. */
@@ -298,10 +298,15 @@ export default {
 
       this.showEmptyTable = false;
 
+      this.tableDataSorted = this.tableData;
       this.currentlyDisplayedData = this.tableDataSorted.slice(
         this.currentStartIndex,
         this.currentEndIndex
       );
+
+      if (this.currentlyDisplayedData.length === 0) {
+        this.handlePreviousButton();
+      }
     },
 
     /** Ensures that the ending index is the right number in the bottom left range display. */
@@ -422,15 +427,6 @@ export default {
       this.showEmptyTable = false;
       this.tableColumnNames = Object.keys(this.tableData[0]);
 
-      // Reset the sorting icon of the previous sorted column.
-      if (this.previousSortedColumn !== "") {
-        this.previousColumnIconRef.currentSortDirection =
-          this.SORT_DIRECTION_OPTIONS.DEFAULT;
-
-        //reset sorted data to shallow copy of the new tableData
-        this.tableDataSorted = this.tableData.slice();
-      }
-
       if (this.savedAmountToDisplay > this.displayAmount) {
         this.currentEndIndex = this.tableData.length;
       }
@@ -477,10 +473,12 @@ button:not(.btn-primary) {
   color: var(--bs-gray-900);
   transition: none !important;
 }
+
 button:hover:not(.btn-primary) {
   text-decoration: underline;
   color: var(--color-primary);
 }
+
 button:active {
   color: var(--color-primary) !important;
 }
