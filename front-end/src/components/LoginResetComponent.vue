@@ -49,7 +49,7 @@
               <button
                   class="btn btn-primary login-button"
                   type="button"
-                  v-on:click="sendEmail()">
+                  v-on:click="mailSubmit()">
                 Submit
               </button>
             </div>
@@ -133,11 +133,20 @@ export default {
       bodySplitter: []
     }
   },
+  watch: {
+    '$route'(){
+      this.bodySplitter = this.$route.params.email.split("_", 3);
+      this.user = this.findByEmail(this.bodySplitter[0]);
+      if (this.bodySplitter.length === 3) {
+        this.newPassword = true;
+      }
+    }
+  },
   async created() {
     this.bodySplitter = this.$route.params.email.split("_", 3);
     this.users = await this.userService.asyncFindAll();
     this.user = this.findByEmail(this.bodySplitter[0]);
-    if (this.user != null) {
+    if (this.bodySplitter.length === 3) {
       this.newPassword = true;
     }
   },
@@ -152,6 +161,7 @@ export default {
           if (this.findByEmail(this.input.email) != null) {
             this.sendEmail();
             this.alert1 = true;
+            console.log(this.alert1)
             this.errorMessage = null;
           } else {
             this.correctEmail = false;
