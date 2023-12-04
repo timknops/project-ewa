@@ -1,5 +1,5 @@
 <template>
-  <div class="grid row gap-4">
+  <div class="grid row gap-5">
     <div class="card border-0 d-flex col-xl-4 p-4">
       <div v-if="projectLoaded" class="px-1">
         <h3 class="fw-bold fs-2 project-title">
@@ -73,7 +73,6 @@ export default {
 
     this.formatProducts();
 
-    console.log(this.products);
     this.productsLoaded = true;
     this.projectLoaded = true;
   },
