@@ -1,8 +1,8 @@
 <template>
   <div>
-    <table-component
+    <TableComponent
         v-if="!teamsAreLoading"
-        :amount-to-display="5"
+        :amount-to-display="4"
         :has-add-button="true"
         :has-delete-button="true"
         :has-edit-button="true"
@@ -13,7 +13,7 @@
     />
     <SpinnerComponent v-else />
     <Transition>
-      <modal-component
+      <ModalComponent
           v-if="showModal"
           :title="modalTitle"
           :active-modal="modalBodyComponent"
@@ -28,9 +28,9 @@
 </template>
 
 <script>
-import TableComponent from "@/components/table/TableComponent";
-import ModalComponent from "@/components/modal/ModalComponent";
-import SpinnerComponent from "@/components/util/SpinnerComponent";
+import TableComponent from "@/components/table/TableComponent.vue";
+import ModalComponent from "@/components/modal/ModalComponent.vue";
+import SpinnerComponent from "@/components/util/SpinnerComponent.vue";
 
 export default {
   name: "TeamOverview",
@@ -39,12 +39,7 @@ export default {
 
   data() {
     return {
-      teams: [{
-        id: Number,
-        teamName: String,
-        warehouse: String,
-        type: String,
-      }],
+      teams: [],
       showModal: false,
       modalTitle: "",
       modalBodyComponent: "",
@@ -71,10 +66,10 @@ export default {
       this.showModal = true
     },
 
-    showEditModal(team) {
+    async showEditModal(team) {
       this.modalTitle = "Update team"
       this.modalBodyComponent = this.MODAL_TYPES.UPDATE
-      this.modalTeam = team
+      this.modalTeam = await this.teamsService.findById(team.id)
       this.okBtnText = "Save"
       this.showModal = true;
     },
@@ -132,7 +127,16 @@ export default {
       }
     },
 
-    formatEmptyTeamData() {
+    formatTeamForTable(team) {
+      return {
+        id: team.id,
+        teamName: team.team,
+        warehouse: team.warehouse.warehouse,
+        type: team.type,
+      };
+    },
+
+    formatEmptyTableData() {
       return {
         id: "",
         teamName: "",
@@ -146,13 +150,16 @@ export default {
     const data = await this.teamsService.findAll();
 
     if (data.length === 0) {
-      this.teams = [this.formatEmptyTeamData()];
+      this.teams = [this.formatEmptyTableData()];
 
       this.teamsAreLoading = false;
       return;
     }
 
-    this.teams = data;
+    this.teams = data.map((team) => {
+      return this.formatTeamForTable(team);
+    });
+
     this.teamsAreLoading = false;
   },
 };
