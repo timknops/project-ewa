@@ -127,21 +127,24 @@ export default {
           Name: "MB 385 (white)",
           Quantity: 33,
           Expected: 30,
-          Month: "January"
+          Month: "January",
+          Date: 4
         },
         {
           Warehouse: "4Blue",
           Name: "MB 385 (white)",
           Quantity: 33,
           Expected: 30,
-          Month: "March"
+          Month: "March",
+          Date: 4
         },
         {
           Warehouse: "4Blue",
           Name: "Gateway",
           Quantity: 11,
           Expected: 30,
-          Month: "December"
+          Month: "December",
+          Date: 4
         },
 
 
@@ -340,7 +343,7 @@ export default {
       };
 
      this.saveChart = new Chart(this.$refs.combinedChart, {
-        type: "line",
+        type: "bar",
         data: chartData,
         options: chartOptions,
       });
