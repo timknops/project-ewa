@@ -27,23 +27,27 @@
     </TableComponent>
 
 
-<!--    Dropdown for months-->
+
 
 
     <div class="table-container mb-5 gap-5 d-flex w-100">
       <!--Forecast-->
       <div class="user-table-overview-left card border-0">
 
+<!--            Dropdown for months-->
         <div class="btn-group dropdown-color">
-          <button class="btn dropdown-toggle background-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <a class="btn dropdown-toggle background-dropdown"  aria-haspopup="true" aria-expanded="false">
             {{ selectedMonth ? selectedMonth : currentMonth }}
-          </button>
+          </a>
 
 
           <div class="dropdown-menu position-absolute">
-            <a v-for="(month, index) in allMonths" :key="index" class="dropdown-item" @click="selectMonth(month)">{{ month }}</a>
+<!--            <a v-for="(month, index) in allMonths" :key="index" class="dropdown-item" @click="selectMonth(month)">{{ month }}</a>-->
+
           </div>
         </div>
+
+
 
         <div class="table-container card-body align-items-center d-flex">
           <canvas
@@ -201,7 +205,7 @@ export default {
           return this.tableData.map(item => ({ Warehouse: item.Warehouse, Name: item.Name}));
         } else {
           return this.tableData.filter((item) => item.Warehouse === this.selectedWarehouse)
-              .map(item => ({Warehosue: item.Warehouse, Name: item.Name}));
+              .map(item => ({Warehouse: item.Warehouse, Name: item.Name}));
         }
       }
       return this.tableData.map(item => ({Warehouse: item.Warehouse, Name: item.Name}));
