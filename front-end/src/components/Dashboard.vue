@@ -94,7 +94,7 @@ export default {
           Quantity: 9,
           Expected: 32,
           Month: "December",
-          Date: 5,
+          Date: 4,
         },
 
         {
@@ -103,7 +103,7 @@ export default {
           Quantity: 15,
           Expected: 32,
           Month: "December",
-          Date: 8,
+          Date: 5,
         },
         {
           Warehouse: "Solar Clarity",
@@ -161,7 +161,7 @@ export default {
         {
           Warehouse: "4Blue",
           Name: "Gateway",
-          Quantity: 19,
+          Quantity: 33,
           Expected: 30,
           Month: "December",
           Date: 20
@@ -288,10 +288,10 @@ export default {
           'rgba(91, 46, 24, 1)',
           '#000000FF'
       ];
+      const dateOfTheDay = new Date();
+      const dataBasedOnTheMonth = this.tableData.filter( item => (!this.selectedWarehouse || item.Warehouse === this.selectedWarehouse) && item.Month === this.selectedMonth && item.Date >= dateOfTheDay.getDate());
 
-      const dataBasedOnTheMonth = this.tableData.filter(item => (!this.selectedWarehouse || item.Warehouse === this.selectedWarehouse) && item.Month === this.selectedMonth);
       const nameLegend = [...new Set(dataBasedOnTheMonth.map(item => item.Name))];
-
       const datasets = nameLegend.map((name, index) => {
             const qdata = dataBasedOnTheMonth
                 .filter(item => item.Name === name)
@@ -312,10 +312,10 @@ export default {
           };
         });
 
-      const currentDate = new Date();
+      // const currentDate = new Date();
       const dateLabels = Array.from({ length: 14 }, (_, index) => {
-        const nextDate = new Date(currentDate);
-        nextDate.setDate(currentDate.getDate() + index);
+        const nextDate = new Date(dateOfTheDay);
+        nextDate.setDate(dateOfTheDay.getDate() + index);
         const day = nextDate.getDate();
         const month = nextDate.getMonth() + 1;
         return `${day}/${month}`;
