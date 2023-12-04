@@ -94,7 +94,7 @@ export default {
           Quantity: 9,
           Expected: 32,
           Month: "December",
-          Date: 4,
+          Date: 5,
         },
 
         {
@@ -103,7 +103,7 @@ export default {
           Quantity: 15,
           Expected: 32,
           Month: "December",
-          Date: 6,
+          Date: 8,
         },
         {
           Warehouse: "Solar Clarity",
@@ -121,7 +121,7 @@ export default {
           Quantity: 18,
           Expected: 30,
           Month: "December",
-          Date: 4
+          Date: 5
         },
         {
           Warehouse: "4Blue",
@@ -148,7 +148,7 @@ export default {
           Quantity: 11,
           Expected: 30,
           Month: "December",
-          Date: 4
+          Date: 5
         },
         {
           Warehouse: "4Blue",
