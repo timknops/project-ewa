@@ -193,7 +193,7 @@ export default {
   },
 
   mounted() {
-    this.currentMonth = this.getMonthName(new Date().getMonth());
+    this.currentMonth = this.getMonthName(new Date().getMonth() + 1);
     this.selectedMonth = this.currentMonth;
     this.createChart(this.tableData);
   },
