@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from "vue-router";
+import {createRouter, createWebHashHistory} from "vue-router";
 import Dashboard from "@/components/Dashboard";
 import ProductOverview from "@/components/ProductOverview.vue";
 import loginPage from "@/components/LoginPage.vue";
@@ -7,6 +7,7 @@ import UserOverview from "@/components/UserOverview";
 import ProjectsOverview from "@/components/ProjectsOverview.vue";
 import InventoryOverview from "@/components/InventoryOverview.vue";
 import WarehouseOverview from "@/components/WarehouseOverview.vue";
+import OrderOverview from "@/components/OrderOverview.vue";
 
 export const router = createRouter({
   history: createWebHashHistory(),
@@ -14,13 +15,13 @@ export const router = createRouter({
     {
       path: "/dashboard",
       component: Dashboard,
-      meta: { icon: "fa-solid fa-house" },
+      meta: {icon: "fa-solid fa-house"},
     }, // path to the dashboard
     {
       path: "/inventory",
       component: InventoryOverview,
-      meta: { icon: "fa-solid fa-boxes-stacked" },
-      children: [{ path: ":warehouse", component: InventoryOverview }],
+      meta: {icon: "fa-solid fa-boxes-stacked"},
+      children: [{path: ":warehouse", component: InventoryOverview}],
     },
     {
       path: "/products",
@@ -30,30 +31,36 @@ export const router = createRouter({
     {
       path: "/team",
       component: TeamOverview,
-      meta: { icon: "fa-solid fa-users" },
+      meta: {icon: "fa-solid fa-users"},
     },
     {
       path: "/users",
       component: UserOverview,
-      meta: { icon: "fa-solid fa-user" },
+      meta: {icon: "fa-solid fa-user"},
     },
-    { path: "/loginPage", component: loginPage },
+    {path: "/loginPage", component: loginPage},
     {
       path: "/user",
       component: UserOverview,
-      meta: { icon: "fa-solid fa-user" },
+      meta: {icon: "fa-solid fa-user"},
     },
     {
       path: "/projects",
       component: ProjectsOverview,
-      meta: { icon: "fa-solid fa-project-diagram" },
+      meta: {icon: "fa-solid fa-project-diagram"},
     },
     {
       path: "/warehouses",
       component: WarehouseOverview,
       meta: {icon: "fa-solid fa-warehouse"}
     },
+    {
+      path: "/orders",
+      component: OrderOverview,
+      meta: {icon: "fa-solid fa-truck-fast"},
+      children: [{path: ":warehouse", component: OrderOverview}]
+    },
     // add paths to other components here
-    { path: "/:pathMatch(.*)", redirect: "/dashboard" }, // redirect non-existing path to dashboard
+    {path: "/:pathMatch(.*)", redirect: "/dashboard"}, // redirect non-existing path to dashboard
   ],
 });
