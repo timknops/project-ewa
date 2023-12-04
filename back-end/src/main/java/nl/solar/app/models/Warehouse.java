@@ -28,6 +28,7 @@ public class Warehouse {
     private Set<Inventory> inventory = new HashSet<>();
 
     @OneToMany(mappedBy = "warehouse")
+    @JsonIgnore
     Set<Order> orders = new HashSet<>();
 
     public Warehouse(long id, String name, String location) {
