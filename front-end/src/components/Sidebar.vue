@@ -66,6 +66,16 @@
           />Users
         </router-link>
       </li>
+      <li class="nav-item">
+        <router-link to="/loginPage" class="nav-link" active-class="active"
+        @click="logOut"
+        >
+          <font-awesome-icon
+            icon="fa-solid fa-arrow-right-from-bracket"
+            class="sidebar-icons"
+            />Log out
+        </router-link>
+      </li>
     </ul>
   </nav>
 </template>
@@ -79,6 +89,12 @@ export default {
       dashboardRoute: "/dashboard",
     };
   },
+  methods: {
+    logOut(){
+      localStorage.setItem("loggedIn", false);
+      this.$emit("updateLoggedIn", true);
+    }
+  }
 };
 </script>
 
