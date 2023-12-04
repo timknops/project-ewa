@@ -188,12 +188,12 @@ public class BackEndApplication implements CommandLineRunner {
                 Product product = products.get((int) (Math.random() * products.size()));
                 Resource resource = new Resource(project, product, (int) (Math.random() * 50) + 1);
 
-                if (product.getProjects().contains(resource) || project.getProducts().contains(resource))
+                if (product.getResources().contains(resource) || project.getResources().contains(resource))
                     continue;
 
                 // Ensure bidirectional relationship.
-                project.getProducts().add(resource);
-                product.getProjects().add(resource);
+                project.getResources().add(resource);
+                product.getResources().add(resource);
 
                 productsRepo.save(product);
                 projectsRepo.save(project);

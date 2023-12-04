@@ -404,12 +404,13 @@ export default {
       );
     },
 
-    //updates if table data has changed
+    // Updates if table data has changed
     tableDataWatcher() {
       return [...this.tableData];
     },
   },
   watch: {
+    /** Whenever the table data changes, update the table. */
     tableDataWatcher() {
       if (this.tableData.length === 0) {
         // If the table data is empty, show an empty table.
@@ -427,7 +428,7 @@ export default {
           this.SORT_DIRECTION_OPTIONS.DEFAULT;
 
         //reset sorted data to shallow copy of the new tableData
-        this.tableDataSorted = this.tableData.slice()
+        this.tableDataSorted = this.tableData.slice();
       }
 
       if (this.savedAmountToDisplay > this.displayAmount) {

@@ -3,6 +3,7 @@ package nl.solar.app.rest;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -60,28 +61,9 @@ public class ProjectController {
      */
     @JsonView(ProjectView.Overview.class)
     @GetMapping(produces = "application/json")
-    public List<Map<String, Object>> getAll() {
-        List<Project> projects = this.projectRepo.findAll(); // Get all projects from the database.
-
-        // Format the projects to a list of maps.
-        List<Map<String, Object>> formattedProjects = new ArrayList<>();
-        for (Project project : projects) { // Loop through all projects.
-            Map<String, Object> formattedProject = new HashMap<>(); // Create a new map for the current project.
-            formattedProject.put("id", project.getId());
-            formattedProject.put("projectName", project.getProjectName());
-            formattedProject.put("client", project.getClient());
-            formattedProject.put("dueDate", project.getDueDate());
-            formattedProject.put("status", project.getStatus());
-
-            Map<String, Object> team = new HashMap<>();
-            team.put("id", project.getTeam().getId());
-            team.put("team", project.getTeam().getTeam());
-            formattedProject.put("team", team);
-
-            formattedProjects.add(formattedProject); // Add the formatted project to the list of formatted projects.
-        }
-
-        return formattedProjects;
+    public List<Project> getAll() {
+        List<Project> projects = this.projectRepo.findAll();
+        return projects;
     }
 
     /**
@@ -147,7 +129,7 @@ public class ProjectController {
      * @param projectWrapper a wrapper containing the project and the resources.
      * @return A ResponseEntity containing the created project.
      */
-    @PostMapping(path = "/add", produces = "application/json")
+    @PostMapping(produces = "application/json")
     public ResponseEntity<Project> createProject(@RequestBody ProjectRequestWrapper projectWrapper)
             throws ResourceNotFoundException {
         // Check if the team exists.
@@ -183,10 +165,10 @@ public class ProjectController {
      * @throws PreConditionFailedException If the id of the body and path do not
      *                                     match.
      */
-    @PutMapping(path = "/update/{id}", produces = "application/json")
+    @PutMapping(path = "{id}", produces = "application/json")
     public ResponseEntity<Project> updateProject(@PathVariable Long id,
             @RequestBody ProjectRequestWrapper projectWrapper)
-            throws PreConditionFailedException {
+            throws PreConditionFailedException, ResourceNotFoundException {
         if (id != projectWrapper.getProject().getId()) {
             throw new PreConditionFailedException("Id of the body and path do not match");
         }
@@ -194,23 +176,18 @@ public class ProjectController {
         // Check if the project exists.
         Project project = this.projectRepo.findById(id);
         if (project == null) {
-            throw new PreConditionFailedException("Project with id: " + id + " was not found");
+            throw new ResourceNotFoundException("Project with id: " + id + " was not found");
         }
 
         // Update the project.
         Project updatedProject = this.projectRepo.save(projectWrapper.getProject());
 
-        // Get the resources for the project.
-        List<ProjectResourceDTO> resources = this.resourceRepo.getProjectResources(id);
+        // Delete all existing resources.
+        this.resourceRepo.deleteProjectResources(id);
 
-        // Loop through all resources.
+        // Add back the resources that are still in the projectWrapper.
         for (ProjectResourceDTO resource : projectWrapper.getResources()) {
-            // Check if the resource is already in the database.
-            if (!resources.contains(resource)) {
-                // Add the resource.
-                this.resourceRepo.save(new Resource(updatedProject, resource.getProduct(),
-                        resource.getQuantity()));
-            }
+            this.resourceRepo.save(new Resource(updatedProject, resource.getProduct(), resource.getQuantity()));
         }
 
         // Create the URI for the updated project.
@@ -221,12 +198,12 @@ public class ProjectController {
     }
 
     /**
-     * Retrieves the information required for the add modal.
+     * Retrieves the information required for the add/update modal.
      *
      * @return ResponseEntity containing the add modal information in the response
      *         body.
      */
-    @GetMapping(path = "/add", produces = "application/json")
+    @GetMapping(path = "/modal", produces = "application/json")
     public ResponseEntity<Map<String, Object>> getAddModalInfo() throws ResourceNotFoundException {
         List<Map<String, Object>> teamsInfo = this.projectRepo.getTeamsInfo();
         List<Map<String, Object>> productsInfo = this.projectRepo.getProductsInfo();

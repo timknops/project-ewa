@@ -50,7 +50,8 @@ public class ResourceRepositoryJpa implements ResourceRepository {
     /**
      * Finds a resource by id.
      * 
-     * @param id The id of the resource to find.
+     * @param firstId  The first id of the resource to find.
+     * @param secondId The second id of the resource to find.
      * @return Resource The resource with the given id.
      */
     @Override
@@ -61,7 +62,8 @@ public class ResourceRepositoryJpa implements ResourceRepository {
     /**
      * Deletes a resource.
      * 
-     * @param id The id of the resource to delete.
+     * @param firstId  The first id of the resource to delete.
+     * @param secondId The second id of the resource to delete.
      * @return Resource The deleted resource.
      */
     @Override
@@ -136,4 +138,17 @@ public class ResourceRepositoryJpa implements ResourceRepository {
             entityManager.persist(newResource); // Persist the resource to the database.
         }
     }
+
+    /**
+     * Deletes all resources for a given project ID.
+     * 
+     * @param projectId the ID of the project
+     */
+    @Override
+    public void deleteProjectResources(long projectId) {
+        // Execute a query to delete all resources for a given project ID.
+        entityManager.createQuery("DELETE FROM Resource r WHERE r.project.id = :projectId")
+                .setParameter("projectId", projectId).executeUpdate();
+    }
+
 }

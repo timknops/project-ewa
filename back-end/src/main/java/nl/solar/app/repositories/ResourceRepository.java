@@ -27,4 +27,11 @@ public interface ResourceRepository extends ManyToManyRepository<Resource> {
      * @param resources the resources to add
      */
     void addProjectResources(long projectId, List<ProjectResourceDTO> resources);
+
+    /**
+     * Delete all resources from a project
+     * 
+     * @param projectId the id of the project
+     */
+    void deleteProjectResources(long projectId);
 }

@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -14,6 +15,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
+import nl.solar.app.models.views.ProjectView;
 
 @Entity
 public class Team {
@@ -21,11 +23,13 @@ public class Team {
     @Id
     @SequenceGenerator(name = "team_id_generator", initialValue = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "team_id_generator")
+    @JsonView(ProjectView.Overview.class)
     private long id;
 
+    @JsonView(ProjectView.Overview.class)
     private String team;
 
-     private Warehouse warehouse;
+    private Warehouse warehouse;
 
     @Enumerated(EnumType.STRING)
     private TeamType type;
@@ -36,7 +40,7 @@ public class Team {
     public Team(long id, String team, Warehouse warehouse, TeamType type) {
         this.id = id;
         this.team = team;
-         this.warehouse = warehouse;
+        this.warehouse = warehouse;
         this.type = type;
     }
 
@@ -76,13 +80,13 @@ public class Team {
         this.team = team;
     }
 
-     public Warehouse getWarehouse() {
-     return warehouse;
-     }
+    public Warehouse getWarehouse() {
+        return warehouse;
+    }
 
-     public void setWarehouse(Warehouse warehouse) {
-     this.warehouse = warehouse;
-     }
+    public void setWarehouse(Warehouse warehouse) {
+        this.warehouse = warehouse;
+    }
 
     public TeamType getType() {
         return type;

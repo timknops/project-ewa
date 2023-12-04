@@ -29,7 +29,7 @@ public class Product {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     // @JsonBackReference(value = "product_resource")
     @JsonIgnore
-    private Set<Resource> projects;
+    private Set<Resource> resources;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     // @JsonBackReference(value = "product_inventory")
@@ -37,7 +37,7 @@ public class Product {
     private Set<Inventory> inventory;
 
     public Product() {
-        projects = new HashSet<>();
+        resources = new HashSet<>();
         inventory = new HashSet<>();
     }
 
@@ -90,12 +90,12 @@ public class Product {
         this.description = description;
     }
 
-    public Set<Resource> getProjects() {
-        return projects;
+    public Set<Resource> getResources() {
+        return resources;
     }
 
-    public void setProjects(Set<Resource> projects) {
-        this.projects = projects;
+    public void setResources(Set<Resource> resources) {
+        this.resources = resources;
     }
 
     @Override

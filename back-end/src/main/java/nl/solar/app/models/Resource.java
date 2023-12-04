@@ -23,13 +23,11 @@ public class Resource {
   @ManyToOne
   @MapsId("projectId")
   @JoinColumn(name = "project_id")
-  // @JsonManagedReference
   private Project project;
 
   @ManyToOne
   @MapsId("productId")
   @JoinColumn(name = "product_id")
-  // @JsonManagedReference("product_resource")
   private Product product;
 
   private int quantity;

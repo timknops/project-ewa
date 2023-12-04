@@ -7,7 +7,6 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.*;
@@ -15,8 +14,7 @@ import nl.solar.app.enums.ProjectStatus;
 import nl.solar.app.models.views.ProjectView;
 
 /**
- * Represents a project with a unique id, project name, team, client, due date,
- * and status.
+ * Represents a project.
  * 
  * @author Tim Knops
  */
@@ -53,7 +51,7 @@ public class Project {
 
     @OneToMany(mappedBy = "project", orphanRemoval = true, cascade = CascadeType.ALL)
     @JsonIgnore
-    private Set<Resource> products = new HashSet<>();
+    private Set<Resource> resources = new HashSet<>();
 
     /**
      * Creates a project with the given parameters.
@@ -67,14 +65,14 @@ public class Project {
      * @param products    the products of the project
      */
     public Project(long id, String projectName, Team team, String client, Date dueDate, ProjectStatus status,
-            Set<Resource> products) {
+            Set<Resource> resources) {
         this.id = id;
         this.projectName = projectName;
         this.team = team;
         this.client = client;
         this.dueDate = dueDate;
         this.status = status;
-        this.products = products;
+        this.resources = resources;
     }
 
     public Project(long id) {
@@ -184,12 +182,12 @@ public class Project {
         this.projectName = projectName;
     }
 
-    public Set<Resource> getProducts() {
-        return products;
+    public Set<Resource> getResources() {
+        return resources;
     }
 
-    public void setProducts(Set<Resource> products) {
-        this.products = products;
+    public void setResources(Set<Resource> resources) {
+        this.resources = resources;
     }
 
     @Override
