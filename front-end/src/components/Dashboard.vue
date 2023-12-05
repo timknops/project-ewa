@@ -4,49 +4,49 @@
     <!--Dropdown-->
     <div class="btn-group dropdown-color">
       <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Choose warehouse
+        {{ selectedWarehouse }}
       </button>
 
       <div class="dropdown-menu">
-        <a class="dropdown-item" :key="null" @click="warehouseSelect(null)">All warehouses</a>
-        <a  v-for="warehouse in wareHouseNameData" :key="warehouse" class="dropdown-item" @click="warehouseSelect(warehouse)">{{warehouse}}</a>
-
+        <div class="dropdown-item" :key="null" @click="warehouseSelect('All warehouses')">All warehouses</div>
+        <div class="dropdown-item" v-for="warehouse in warehouses" :key="warehouse.name"
+             @click="warehouseSelect(warehouse.name)">{{warehouse.name}}</div>
+      </div>
     </div>
-    </div>
 
-    <!--Inventory-->
+    <!--Inventory changes information-->
     <TableComponent
-      :tableWidth="'100%'"
-      :boldFirstColumn="true"
-      :amountToDisplay="3"
-      :tableData="selectedWarehouseData"
-      :arrayAmountToDisplay="10"
-      table-title="Inventory"
-      sub-title="Current inventory of my warehouse"
-    >
-    </TableComponent>
+        :amountToDisplay="3"
+        :tableWidth="'100%'"
+        :boldFirstColumn="true"
+        :tableData="selectedInventoryChanges"
+        :arrayAmountToDisplay="10"
+        table-title="Inventory changes"
+        sub-title="Upcoming inventory changes of the selected warehouse"
+    />
+
 
     <div class="table-container mb-5 gap-5 d-flex w-100">
       <!--Forecast-->
       <div class="user-table-overview-left card border-0">
         <div class="table-container card-body align-items-center d-flex">
           <canvas
-            ref="combinedChart"
-            style="width: calc(50vw - 23rem); height: 100%"
-            class="my-chart"
+              ref="combinedChart"
+              style="width: calc(50vw - 23rem); height: 100%"
+              class="my-chart"
           ></canvas>
         </div>
       </div>
 
-      <!--User information-->
+      <!--Project information-->
       <TableComponent
         class="user-table-overview-right"
         tableWidth="60%"
         :boldFirstColumn="true"
         :amountToDisplay="4"
-        :tableData="userData"
-        table-title="Users"
-        sub-title="Current active users"
+        :tableData="selectedProjectData"
+        table-title="Projects"
+          sub-title="Upcoming projects"
       >
       </TableComponent>
     </div>
@@ -56,123 +56,294 @@
 </template>
 
 <script>
-import TableComponent from "@/components/table/TableComponent.vue";
 import Chart from "chart.js/auto";
+import TableComponent from "@/components/table/TableComponent.vue";
 
 export default {
   // eslint-disable-next-line
   name: "Dashboard",
   components: {
-    TableComponent,
+    TableComponent
   },
+  inject: ["warehouseService"],
   data() {
     return {
-      tableData: [
-        {
-          Warehouse: "Solar Clarity",
-          Name: "enphase",
-          Quantity: 9,
-          Expected: 32,
-        },
-        {
-          Warehouse: "Solar Clarity",
-          Name: "Gateway",
-          Quantity: 18,
-          Expected: 30,
-        },
-        {
-          Warehouse: "4Blue",
-          Name: "MB 385 (white)",
-          Quantity: 18,
-          Expected: 30,
-        },
-      ],
-      userData: [
-        {
-          Username: "hx",
-          Warehouse: "Solar clarity",
-        },
-      ],
-      forecastData: [
-        {
-          Forecast: "",
-        },
-      ],
-      wareHouseNameData:["Solar Clarity", "4Blue"],
-      selectedWarehouse: null,
-      selectedWarehouseChart: null,
+      warehouses: [], // array for dropdown
 
+      forecastItems: [{
+        date: String,
+        warehouseName: String,
+        productName: String,
+        expectedChange: Number,
+      }],
+
+      seperatedForecastItems: [], // array to fill with seperated forecast items per warehouse
+      combinedForecastData: [],
+
+      currentInventoryStatus: [],
+
+      projects: [{
+        name: String,
+        dueDate: String,
+        status: String,
+      }],
+
+      selectedWarehouse: "All warehouses",
+
+      selectedWarehouseChart: null,
       chartDataList: [],
-      //    chart: null,
       saveChart: null,
       chartWidth: 200,
       chartHeight: 80,
-      // xValues: ["This week", "Expected"],
-      //yValues: [0, 36],
       barColors: ["rgba(91, 46, 24, 1)"],
     };
   },
 
-  mounted() {
-    this.createChart(this.tableData);
+  async created() {
+    this.warehouses = await this.warehouseService.findAll();
+
+    this.forecastItems = [
+      {
+        date: "03-12-2023",
+        inventoryChange: 20,
+        warehouseName : "Solar Sedum",
+        productName : "Enphase IQ8+ omvormer"
+      },
+      {
+        date: "03-12-2023",
+        inventoryChange: -10,
+        warehouseName : "Solar Sedum",
+        productName : "Enphase IQ8+ omvormer"
+      },
+      {
+        date: "03-12-2023",
+        inventoryChange: 10,
+        warehouseName : "Solar Sedum",
+        productName : "Enphase IQ8+ omvormer"
+      },
+      {
+        date: "04-12-2023",
+        inventoryChange: 20,
+        warehouseName : "Solar Sedum",
+        productName : "Enphase IQ8+ omvormer"
+      },
+      {
+        date: "04-12-2023",
+        inventoryChange: 20,
+        warehouseName : "Solar Sedum",
+        productName : "Enphase IQ8+ omvormer"
+      },
+      {
+        date: "04-12-2023",
+        inventoryChange: -60,
+        warehouseName : "Solar Sedum",
+        productName : "Enphase IQ8+"
+      },
+      {
+        date: "05-12-2023",
+        inventoryChange: 15,
+        warehouseName : "Solar Sedum",
+        productName : "Enphase IQ8+"
+      },
+      {
+        date: "06-12-2023",
+        inventoryChange: 10,
+        warehouseName : "Solar Sedum",
+        productName : "Enphase IQ8+ omvormer"
+      }
+    ];
+
+    this.projects = [
+      {
+        warehouse: "Superzon",
+        name: "Plaatsing Amstelveen",
+        dueDate: "03-12-2023"
+      },
+      {
+        warehouse: "Superzon",
+        name: "Plaatsing Amstelveen",
+        dueDate: "07-12-2023"
+      },
+      {
+        warehouse: "Solar Sedum",
+        name: "Plaatsing Amstelveen",
+        dueDate: "08-12-2023"
+      }
+    ];
+
+    this.currentInventoryStatus = [
+      {
+        warehouse: "Solar Sedum",
+        productName: "Enphase IQ8+ omvormer",
+        currentStock: 30,
+        minimumStock: 10
+      },
+      {
+        warehouse: "Superzon",
+        productName: "Enphase IQ8+ omvormer",
+        currentStock: 40,
+        minimumStock: 10
+      }
+    ];
+
+    this.separateForecastData()
+
+    this.formatChartData()
+
+    this.createChart()
   },
 
+  // mounted() {
+  //   this.createChart(this.forecastItems);
+  // },
+
   computed: {
-    selectedWarehouseData(){
-      if(this.selectedWarehouse) {
-        if (this.selectedWarehouse === null) {
-          return this.tableData;
-        } else {
-          return this.tableData.filter((item) => item.Warehouse === this.selectedWarehouse);
-        }
+    selectedInventoryChanges(){
+      if(this.selectedWarehouse === "All warehouses") {
+        return this.forecastItems;
       }
-      return this.tableData;
+      else if (this.seperatedForecastItems[this.selectedWarehouse]) {
+        return this.seperatedForecastItems[this.selectedWarehouse];
+      }
+      else {
+        return [];
+      }
+    },
+
+    selectedProjectData(){
+      if(this.selectedWarehouse === "All warehouses") {
+        return this.projects;
+      }
+      else {
+        return this.projects.filter((item) => item.warehouse === this.selectedWarehouse)
+      }
     },
   },
 
   methods: {
-    createChart(data) {
+    separateForecastData(){
+      let data = this.forecastItems;
 
+      const seperatedForecastItems = {};
+
+      seperatedForecastItems["All warehouses"] = this.forecastItems;
+
+      data.forEach((item) => {
+        const warehouseName = item.warehouseName
+
+        if (!seperatedForecastItems[warehouseName]){
+          seperatedForecastItems[warehouseName] = [];
+        }
+
+        seperatedForecastItems[warehouseName].push(item);
+      })
+
+      this.seperatedForecastItems = seperatedForecastItems;
+    },
+
+    formatChartData() {
+      let originalList;
+      if (this.seperatedForecastItems[this.selectedWarehouse]){
+        originalList = this.seperatedForecastItems[this.selectedWarehouse]
+      }
+      else {
+        originalList = []
+      }
+
+      if (this.selectedWarehouse === "All warehouses"){
+        this.combinedForecastData = this.formatChartDataAllWarehouses(originalList)
+      } else {
+        this.combinedForecastData = this.formatChartDataWarehouseSpecific(originalList);
+      }
+    },
+
+    formatChartDataWarehouseSpecific(originalList) {
+      const combinedMap = new Map();
+      const combinedList = [];
+      console.log(originalList)
+
+      // Iterate through the original list
+      originalList.forEach(item => {
+        const key = `${item.date}/${item.warehouseName}/${item.productName}`;
+        // Check if the key already exists in the map
+        if (combinedMap.has(key)) {
+          // If exists, update the inventoryChange value
+          combinedMap.set(key, combinedMap.get(key) + item.inventoryChange);
+        } else {
+          // If not exists, add a new entry in the map
+          combinedMap.set(key, item.inventoryChange);
+        }
+      });
+
+      // Voeg currentStock van een product uit currentInventoryStatus toe aan die in de combined map en hou dat bij voor de volgende,
+      // waar het warehouse uit currentInventoryStatus overeenkomt met de warehouseName in de originalList
+      // en de productName uit currentInventoryStatus overeenkomt met de productName in de originalList
+
+      // Convert the map back to an array of objects
+      combinedMap.forEach((inventoryChange, key) => {
+        const [date, warehouseName, productName] = key.split('/');
+        const combinedItem = { date, warehouseName, productName, inventoryChange };
+        combinedList.push(combinedItem);
+      });
+
+      return combinedList;
+    },
+
+    formatChartDataAllWarehouses(originalList) {
+      const combinedMap = new Map();
+      const combinedList = [];
+
+      // Iterate through the original list
+      originalList.forEach(item => {
+        const key = `${item.date}/${item.productName}`;
+        // Check if the key already exists in the map
+        if (combinedMap.has(key)) {
+          // If exists, update the inventoryChange value
+          combinedMap.set(key, combinedMap.get(key) + item.inventoryChange);
+        } else {
+          // If not exists, add a new entry in the map
+          combinedMap.set(key, item.inventoryChange);
+        }
+      });
+
+      // Convert the map back to an array of objects
+      combinedMap.forEach((inventoryChange, key) => {
+        const [date, productName] = key.split('/');
+        const combinedItem = { date, productName, inventoryChange };
+        combinedList.push(combinedItem);
+      });
+
+      return combinedList;
+    },
+
+    createChart() {
       if (this.saveChart) {
         this.saveChart.destroy();
       }
 
+      const data = this.combinedForecastData;
+
       const chartWidth = this.chartWidth;
       const chartHeight = this.chartHeight;
 
-
-      const labels = data.map((item) => item.Name);
-      const qdata = data.map((item) => item.Quantity);
-      const expectedData = data.map((item) => item.Expected);
-
-      qdata.push(50);
-
       const chartData = {
-        labels: labels,
-        datasets: [
-          {
-            label: "Quantity",
-            backgroundColor: this.barColors[0],
-            data: qdata,
-          },
-          {
-            label: "Expected",
-            backgroundColor: "rgba(199, 208, 44, 1)",
-            data: expectedData,
-          },
-        ],
+        labels: Array.from(new Set(data.map(item => item.date))),
+        datasets: Array.from(new Set(data.map(item => item.productName))).map(productName => ({
+          label: productName,
+          data: data.filter(item => item.productName === productName).map(item => item.inventoryChange),
+          fill: false,
+          borderColor: this.getRandomColor(), // You can use a function to generate different colors
+        })),
       };
 
       const chartOptions = {
         legend: {display: false},
         title: {
           display: true,
-          text: "Inventory Chart",
+          text: "Forecast Chart",
         },
         width: chartWidth,
         height: chartHeight,
-        // responsive: true,
-        // maintainAspectRatio: false,
         scales: {
           y: {
             beginAtZero: true,
@@ -191,28 +362,29 @@ export default {
       };
 
      this.saveChart = new Chart(this.$refs.combinedChart, {
-        type: "bar",
+        type: "line",
         data: chartData,
         options: chartOptions,
       });
 
     },
 
-    warehouseSelect(nameOfTheWarehouse){
-      this.selectedWarehouse = nameOfTheWarehouse;
-      this.createChart(this.selectedWarehouseData);
+    getRandomColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
 
+      return color;
     },
 
-
+    warehouseSelect(nameOfTheWarehouse){
+      this.selectedWarehouse = nameOfTheWarehouse;
+      this.formatChartData()
+      this.createChart();
+    },
   },
-
-
-
-  // watch: {
-  //   xValues: "createChart",
-  //   yValues: "createChart",
-  // },
 };
 </script>
 

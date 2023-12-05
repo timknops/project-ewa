@@ -22,6 +22,7 @@ import { WarehouseAdaptor } from "@/service/warehouseAdaptor";
 import { UserAdaptor } from "@/service/userAdaptor";
 import { TeamAdaptor } from "@/service/teamAdaptor";
 import { ProjectAdaptor } from "@/service/projectAdaptor";
+import { DashboardAdaptor } from "@/service/dashboardAdaptor";
 
 localStorage.setItem("loggedIn", true);
 export default {
@@ -38,6 +39,7 @@ export default {
   },
   provide() {
     return {
+      dashboardService: new DashboardAdaptor(`${appConfig.BACKEND_URL}/forecast`),
       productService: new ProductAdaptor(`${appConfig.BACKEND_URL}/products`),
       warehouseService: new WarehouseAdaptor(
         `${appConfig.BACKEND_URL}/warehouses`
