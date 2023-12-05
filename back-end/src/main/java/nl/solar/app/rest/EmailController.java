@@ -24,7 +24,7 @@ public class EmailController {
         String name = bodySplitter[1];
         String id = bodySplitter[2];
 
-        String resetLink = "http://localhost:8080/#/loginReset/" + email + "_" + name + "_" + id;
+        String resetLink = "https://front-end-8cvv.onrender.com/#/loginReset/" + email + "_" + name + "_" + id;
 
         fullEmail.setReceiver(email);
         fullEmail.setEmailBody("A login request for this email address was requested on " + resetLink);

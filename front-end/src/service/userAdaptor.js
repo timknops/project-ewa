@@ -4,7 +4,6 @@ export class UserAdaptor {
 
     constructor() {
         this.resourceUrl = process.env.VUE_APP_API_URL + '/users';
-        console.log(this.resourceUrl);
     }
 
     async fetchJson(url, options = null) {

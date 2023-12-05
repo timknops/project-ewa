@@ -7,10 +7,9 @@ export class ProjectAdaptor {
 
   /**
    * Constructs a new ProjectAdaptor instance.
-   * @param {string} resourceUrl The URL of the project resource.
    */
-  constructor(resourceUrl) {
-    this.resourceUrl = resourceUrl;
+  constructor() {
+    this.resourceUrl = process.env.VUE_APP_API_URL + '/projects';
   }
 
   /**

@@ -3,7 +3,6 @@ export class ProductAdaptor {
 
   constructor() {
     this.resourceUrl = process.env.VUE_APP_API_URL + '/products';
-    console.log(this.resourceUrl);
   }
 
   async fetchJSON(url, options = null) {

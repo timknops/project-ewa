@@ -63,7 +63,7 @@ public class User {
         return new User(userId, teamId, fullRandomName, randomEmail, randomPassword, randomUserType.toString());
     }
     public static User createStaticAdmin(){
-        return new User(1, 1, "Julian", "Julian@gmail.com", "password", "ADMIN");
+        return new User(1, 1, "Julian", "nashonwoldai@gmail.com", "password", "ADMIN");
     }
 
     /**

@@ -3,7 +3,6 @@ export class WarehouseAdaptor{
 
     constructor() {
         this.resourceURL = process.env.VUE_APP_API_URL + '/warehouses';
-        console.log(this.resourceURL);
     }
 
     async fetchJSON(url, options = null) {

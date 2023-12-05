@@ -6,8 +6,9 @@
 export class OrderAdaptor {
   resourceUrl;
 
-  constructor(resourceUrl) {
-    this.resourceUrl = resourceUrl;
+  constructor() {
+    this.resourceUrl = process.env.VUE_APP_API_URL + '/orders';
+    console.log(this.resourceUrl);
   }
 
   async fetchJSON(url, options = null) {
