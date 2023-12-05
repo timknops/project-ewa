@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 /* import specific icons
  * */
-import { faXmark} from "@fortawesome/free-solid-svg-icons";
+import {faTruckFast, faXmark} from "@fortawesome/free-solid-svg-icons";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import { faHouse } from "@fortawesome/free-solid-svg-icons";
 import { faBoxesStacked } from "@fortawesome/free-solid-svg-icons";
@@ -51,6 +51,7 @@ library.add(
   faEnvelope,
   faArrowRightFromBracket,
   faPlus,
+  faTruckFast,
 );
 
 /* import bootstrap */

@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from "vue-router";
+import {createRouter, createWebHashHistory} from "vue-router";
 import Dashboard from "@/components/Dashboard";
 import ProductOverview from "@/components/ProductOverview.vue";
 import loginPage from "@/components/LoginPage.vue";
@@ -8,6 +8,7 @@ import ProjectsOverview from "@/components/ProjectsOverview.vue";
 import InventoryOverview from "@/components/InventoryOverview.vue";
 import WarehouseOverview from "@/components/WarehouseOverview.vue";
 import loginResetPage from "@/components/LoginResetComponent.vue";
+import OrderOverview from "@/components/OrderOverview.vue";
 
 export const router = createRouter({
   history: createWebHashHistory(),
@@ -44,7 +45,7 @@ export const router = createRouter({
     {
       path: "/products",
       component: ProductOverview,
-      meta: {icon: "fa-solid fa-box-open",
+      meta: { icon: "fa-solid fa-box-open",
         requiresLogin: true}
     },
     {
@@ -59,6 +60,7 @@ export const router = createRouter({
       meta: { icon: "fa-solid fa-user",
         requiresLogin: true},
     },
+    { path: "/loginPage", component: loginPage },
     {
       path: "/user",
       component: UserOverview,
@@ -77,8 +79,15 @@ export const router = createRouter({
       meta: {icon: "fa-solid fa-warehouse",
         requiresLogin: true}
     },
+    {
+      path: "/orders",
+      component: OrderOverview,
+      meta: {icon: "fa-solid fa-truck-fast",
+        requiresLogin: true},
+      children: [{path: ":warehouse", component: OrderOverview}]
+    },
     // add paths to other components here
-    { path: "/:pathMatch(.*)", redirect: "dashboard",
+    { path: "/:pathMatch(.*)", redirect: "/dashboard",
       meta: {
         requiresLogin: true}
     }, // redirect non-existing path to dashboard

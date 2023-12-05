@@ -12,7 +12,7 @@
           :class="{'border-danger': noProductSelectedError}"
           id="product"
           aria-label="product"
-          @change="noProductSelectedError = false"
+          @change="validateProduct"
       >
         <option v-for="product in products" :key="product.id" :value="product.id">
           {{product.productName}}
@@ -57,7 +57,7 @@ export default {
       products: Array,
       decimalError: false,
       emptyQuantityError: false,
-      noProductSelectedError: true,
+      noProductSelectedError: false,
     }
   },
   computed: {
@@ -66,7 +66,9 @@ export default {
      * @return {boolean} true if an error has occurred, otherwise false
      */
     hasError() {
-      return this.noProductSelectedError && this.emptyQuantityError && this.decimalError
+      this.validateProduct();
+      this.validateQuantity()
+      return this.noProductSelectedError || this.emptyQuantityError || this.decimalError
     }
   },
   inject: ["inventoryService"],
@@ -86,6 +88,9 @@ export default {
         this.emptyQuantityError = false
         this.decimalError = false
       }
+    },
+    validateProduct() {
+      this.noProductSelectedError = this.modalItem.product.id === null
     }
   },
   created() {

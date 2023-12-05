@@ -22,6 +22,7 @@ import {InventoryAdaptor} from "@/service/inventoryAdaptor";
 import { TeamAdaptor } from "@/service/teamAdaptor";
 import {EmailAdaptor} from "@/service/emailAdaptor";
 import { ProjectAdaptor } from "@/service/projectAdaptor";
+import {OrderAdaptor} from "@/service/orderAdaptor";
 
 
 localStorage.setItem("loggedIn", false);
@@ -48,6 +49,7 @@ export default {
       teamsService: new TeamAdaptor(`${appConfig.BACKEND_URL}/teams`),
       emailService: new EmailAdaptor(`${appConfig.BACKEND_URL}`),
       projectService: new ProjectAdaptor(`${appConfig.BACKEND_URL}/projects`),
+      orderService: new OrderAdaptor(`${appConfig.BACKEND_URL}/orders`)
     };
   },
   methods: {

@@ -35,6 +35,14 @@
         </router-link>
       </li>
       <li class="nav-item">
+        <router-link to="/orders" class="nav-link" active-class="active">
+          <font-awesome-icon
+              icon="fa-solid fa-truck-fast"
+              class="sidebar-icons"
+          /> Orders
+        </router-link>
+      </li>
+      <li class="nav-item">
         <router-link to="/projects" class="nav-link" active-class="active">
           <font-awesome-icon
             icon="fa-solid fa-diagram-project"
