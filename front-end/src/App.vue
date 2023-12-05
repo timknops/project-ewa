@@ -24,7 +24,6 @@ import {EmailAdaptor} from "@/service/emailAdaptor";
 import { ProjectAdaptor } from "@/service/projectAdaptor";
 
 
-localStorage.setItem("loggedIn", false);
 export default {
   name: "App",
   components: {

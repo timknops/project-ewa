@@ -66,7 +66,6 @@
 <script>
 import {userLogin} from "@/models/userLogin";
 
-localStorage.setItem("loggedIn", true);
 export default {
   name: "LoginPage",
   data() {
