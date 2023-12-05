@@ -25,7 +25,6 @@ import { ProjectAdaptor } from "@/service/projectAdaptor";
 import {OrderAdaptor} from "@/service/orderAdaptor";
 
 
-localStorage.setItem("loggedIn", false);
 export default {
   name: "App",
   components: {
