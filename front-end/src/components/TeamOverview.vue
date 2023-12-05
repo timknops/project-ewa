@@ -1,18 +1,19 @@
 <template>
   <div>
-    <table-component
-        :amount-to-display="5"
-        :table-data="teams"
+    <TableComponent
+        v-if="!teamsAreLoading"
+        :amount-to-display="4"
         :has-add-button="true"
         :has-delete-button="true"
         :has-edit-button="true"
-        :hide-id-column="true"
+        :table-data="teams"
         @edit="showEditModal"
         @delete="showDeleteModal"
         @add="showAddModal"
     />
+    <SpinnerComponent v-else />
     <Transition>
-      <modal-component
+      <ModalComponent
           v-if="showModal"
           :title="modalTitle"
           :active-modal="modalBodyComponent"
@@ -27,23 +28,18 @@
 </template>
 
 <script>
-import TableComponent from "@/components/table/TableComponent";
-import ModalComponent from "@/components/modal/ModalComponent";
-
+import TableComponent from "@/components/table/TableComponent.vue";
+import ModalComponent from "@/components/modal/ModalComponent.vue";
+import SpinnerComponent from "@/components/util/SpinnerComponent.vue";
 
 export default {
   name: "TeamOverview",
-  components: {TableComponent, ModalComponent},
+  components: {TableComponent, ModalComponent, SpinnerComponent},
   inject: ['teamsService'],
 
   data() {
     return {
-      teams: [{
-        id: Number,
-        teamName: String,
-        warehouse: String,
-        type: String,
-      }],
+      teams: [],
       showModal: false,
       modalTitle: "",
       modalBodyComponent: "",
@@ -58,7 +54,8 @@ export default {
         ADD: "add-team-modal",
         UPDATE: "update-team-modal",
         DELETE: "delete-team-modal",
-      })
+      }),
+      teamsAreLoading: true,
     };
   },
   methods: {
@@ -69,10 +66,10 @@ export default {
       this.showModal = true
     },
 
-    showEditModal(team) {
+    async showEditModal(team) {
       this.modalTitle = "Update team"
       this.modalBodyComponent = this.MODAL_TYPES.UPDATE
-      this.modalTeam = team
+      this.modalTeam = await this.teamsService.findById(team.id)
       this.okBtnText = "Save"
       this.showModal = true;
     },
@@ -128,11 +125,42 @@ export default {
       } catch (exception) {
         console.log(exception)
       }
-    }
+    },
+
+    formatTeamForTable(team) {
+      return {
+        id: team.id,
+        teamName: team.team,
+        warehouse: team.warehouse.warehouse,
+        type: team.type,
+      };
+    },
+
+    formatEmptyTableData() {
+      return {
+        id: "",
+        teamName: "",
+        warehouse: "",
+        type: "",
+      };
+    },
   },
 
   async created() {
-    this.teams = await this.teamsService.findAll();
+    const data = await this.teamsService.findAll();
+
+    if (data.length === 0) {
+      this.teams = [this.formatEmptyTableData()];
+
+      this.teamsAreLoading = false;
+      return;
+    }
+
+    this.teams = data.map((team) => {
+      return this.formatTeamForTable(team);
+    });
+
+    this.teamsAreLoading = false;
   },
 };
 </script>

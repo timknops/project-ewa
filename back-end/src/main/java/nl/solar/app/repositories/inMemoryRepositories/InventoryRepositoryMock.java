@@ -1,23 +1,22 @@
-package nl.solar.app.repositories;
+package nl.solar.app.repositories.inMemoryRepositories;
 
 import nl.solar.app.models.Product;
 import nl.solar.app.models.Inventory;
 import nl.solar.app.models.Warehouse;
-import org.springframework.beans.factory.annotation.Autowired;
+import nl.solar.app.repositories.EntityRepository;
+import nl.solar.app.repositories.InventoryRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Repository("RESOURCES.INMEMORY")
+@Repository("INVENTORY.INMEMORY")
 public class InventoryRepositoryMock implements InventoryRepository {
     private List<Inventory> inventoryList;
-
 
     private final EntityRepository<Product> productRepo;
     private final EntityRepository<Warehouse> warehouseRepo;
 
-    @Autowired
     public InventoryRepositoryMock(EntityRepository<Product> productRepo, EntityRepository<Warehouse> warehouseRepo) {
         this.productRepo = productRepo;
         this.warehouseRepo = warehouseRepo;
@@ -25,8 +24,8 @@ public class InventoryRepositoryMock implements InventoryRepository {
         List<Product> products = this.productRepo.findAll();
         List<Warehouse> warehouses = this.warehouseRepo.findAll();
 
-        for (Warehouse warehouse: warehouses) {
-            for (Product product: products) {
+        for (Warehouse warehouse : warehouses) {
+            for (Product product : products) {
                 Inventory inventory = Inventory.createDummyResource(warehouse, product);
                 inventoryList.add(inventory);
             }
@@ -47,26 +46,14 @@ public class InventoryRepositoryMock implements InventoryRepository {
     @Override
     public Inventory findByIds(long warehouseId, long productId) {
         return inventoryList.stream()
-                .filter(resource -> resource.getWarehouse().getId() == warehouseId && resource.getProduct().getId() == productId)
+                .filter(resource -> resource.getWarehouse().getId() == warehouseId
+                        && resource.getProduct().getId() == productId)
                 .findFirst().orElse(null);
     }
 
     @Override
-    public void addInventoryForProduct(Product product) {
-        for (Warehouse warehouse: warehouseRepo.findAll()) {
-            Inventory inventory = Inventory.createDummyResource(warehouse, product);
-            inventory.setQuantity(0);
-            inventoryList.add(inventory);
-        }
-    }
-
-    @Override
-    public void addInventoryForWarehouse(Warehouse warehouse) {
-        for (Product product: productRepo.findAll()) {
-            Inventory inventory = Inventory.createDummyResource(warehouse, product);
-            inventory.setQuantity(0);
-            inventoryList.add(inventory);
-        }
+    public List<Product> findProductsWithoutInventory(long warehouseId) {
+        return null;
     }
 
     @Override

@@ -1,6 +1,7 @@
 <template>
   <div>
     <table-component
+      v-if="!wareHousesAreLoading"
       :amount-to-display="5"
       :has-add-button="true"
       :has-delete-button="true"
@@ -10,6 +11,7 @@
       @delete="showDeleteModal"
       @add="showAddModal"
     />
+    <SpinnerComponent v-else />
     <Transition>
       <modal-component
         v-if="showModal"
@@ -28,10 +30,11 @@
 <script>
 import TableComponent from "@/components/table/TableComponent.vue";
 import ModalComponent from "@/components/modal/ModalComponent.vue";
+import SpinnerComponent from "@/components/util/SpinnerComponent.vue";
 
 export default {
   name: "WarehouseOverview",
-  components: { ModalComponent, TableComponent },
+  components: { ModalComponent, TableComponent, SpinnerComponent },
   inject: ["warehouseService"],
   data() {
     return {
@@ -56,6 +59,7 @@ export default {
         UPDATE: "update-warehouse-modal",
         ADD: "add-warehouse-modal",
       }),
+      wareHousesAreLoading: true,
     };
   },
   methods: {
@@ -125,9 +129,27 @@ export default {
         console.log(e);
       }
     },
+
+    formatEmptyWarehouseData() {
+      return {
+        id: "",
+        name: "",
+        location: "",
+      };
+    },
   },
   async created() {
-    this.warehouses = await this.warehouseService.findAll();
+    const data = await this.warehouseService.findAll();
+
+    if (data.length === 0) {
+      this.warehouses = [this.formatEmptyWarehouseData()];
+
+      this.wareHousesAreLoading = false;
+      return;
+    }
+
+    this.warehouses = data;
+    this.wareHousesAreLoading = false;
   },
 };
 </script>
