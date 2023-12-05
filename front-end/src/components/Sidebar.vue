@@ -35,6 +35,14 @@
         </router-link>
       </li>
       <li class="nav-item">
+        <router-link to="/orders" class="nav-link" active-class="active">
+          <font-awesome-icon
+              icon="fa-solid fa-truck-fast"
+              class="sidebar-icons"
+          /> Orders
+        </router-link>
+      </li>
+      <li class="nav-item">
         <router-link to="/projects" class="nav-link" active-class="active">
           <font-awesome-icon
             icon="fa-solid fa-diagram-project"
@@ -94,6 +102,16 @@
           />Users
         </router-link>
       </li>
+      <li class="nav-item">
+        <router-link to="/loginPage" class="nav-link" active-class="active"
+        @click="logOut"
+        >
+          <font-awesome-icon
+            icon="fa-solid fa-arrow-right-from-bracket"
+            class="sidebar-icons"
+            />Log out
+        </router-link>
+      </li>
     </ul>
   </nav>
 </template>
@@ -108,6 +126,12 @@ export default {
       submenuProjects: false,
     };
   },
+  methods: {
+    logOut(){
+      localStorage.setItem("loggedIn", false);
+      this.$emit("updateLoggedIn", true);
+    }
+  }
 };
 </script>
 
