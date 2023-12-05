@@ -62,6 +62,9 @@ import DeleteProjectModal from "@/components/modal/project/DeleteProjectModal.vu
 import AddProjectModal from "./project/AddProjectModal.vue";
 import UpdateProjectModal from "./project/UpdateProjectModal.vue";
 import AddInventoryModal from "@/components/modal/inventory/AddInventoryModal.vue";
+import AddOrderModal from "@/components/modal/order/AddOrderModal.vue";
+import UpdateOrderModal from "@/components/modal/order/UpdateOrderModal.vue";
+import DeleteOrderModal from "@/components/modal/order/DeleteOrderModal.vue";
 
 /**
  * General modal component, for the styling of the header and footer,
@@ -93,6 +96,9 @@ export default {
     DeleteProjectModal,
     UpdateProjectModal,
     AddProjectModal,
+    AddOrderModal,
+    UpdateOrderModal,
+    DeleteOrderModal,
   },
   /**
    * props

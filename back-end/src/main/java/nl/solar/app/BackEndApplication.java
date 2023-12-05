@@ -1,36 +1,23 @@
 package nl.solar.app;
 
-import java.util.List;
-
+import jakarta.transaction.Transactional;
 import nl.solar.app.models.*;
+import nl.solar.app.repositories.EntityRepository;
 import nl.solar.app.repositories.InventoryRepository;
+import nl.solar.app.repositories.ItemRepository;
 import nl.solar.app.repositories.ResourceRepository;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import jakarta.transaction.Transactional;
-import nl.solar.app.repositories.EntityRepository;
+import java.util.List;
+import java.util.Random;
 
 @SpringBootApplication
 public class BackEndApplication implements CommandLineRunner {
-
-    public static void main(String[] args) {
-        SpringApplication.run(BackEndApplication.class, args);
-    }
-
-    @Override
-    @Transactional
-    public void run(String... args) throws Exception {
-        this.createSampleWarehouse();
-        this.createSampleTeams();
-        this.createSampleProjects();
-        this.createSampleProducts();
-        this.createSampleResources();
-        this.createDummyInventory();
-    }
 
     // All repositories.
     @Autowired
@@ -38,6 +25,9 @@ public class BackEndApplication implements CommandLineRunner {
 
     @Autowired
     EntityRepository<Team> teamsRepo;
+
+    @Autowired
+    EntityRepository<Order> orderRepo;
 
     @Autowired
     EntityRepository<Project> projectsRepo;
@@ -50,6 +40,28 @@ public class BackEndApplication implements CommandLineRunner {
 
     @Autowired
     InventoryRepository inventoryRepo;
+
+    @Autowired
+    ItemRepository itemRepo;
+
+
+
+    public static void main(String[] args) {
+        SpringApplication.run(BackEndApplication.class, args);
+    }
+
+    @Override
+    @Transactional
+    public void run(String... args) throws Exception {
+        this.createSampleWarehouse();
+        this.createSampleTeams();
+        this.createSampleOrders();
+        this.createSampleProjects();
+        this.createSampleProducts();
+        this.createSampleResources();
+        this.createDummyInventory();
+        this.createDummyItems();
+    }
 
     /**
      * Create sample data for warehouse
@@ -86,7 +98,7 @@ public class BackEndApplication implements CommandLineRunner {
 
     /**
      * Creates sample teams.
-     * 
+     *
      * @author Tim Knops
      */
     private void createSampleTeams() {
@@ -104,8 +116,36 @@ public class BackEndApplication implements CommandLineRunner {
     }
 
     /**
+     * Creates sample orders
+     *
+     * @author Julian Kruithof
+     */
+    private void createSampleOrders() {
+        List<Order> orders = this.orderRepo.findAll();
+
+        if (!orders.isEmpty()) return;
+
+        List<Warehouse> warehouses = this.warehouseRepo.findAll();
+        for (Warehouse warehouse : warehouses) {
+            Random random = new Random();
+            int randomInt = random.nextInt(5) + 1;
+
+            for (int i = 0; i < randomInt; i++) {
+                Order order = Order.createDummyOrder(warehouse);
+
+                this.orderRepo.save(order);
+
+                //bidirectional
+                warehouse.getOrders().add(order);
+            }
+
+        }
+
+    }
+
+    /**
      * Creates sample projects and assigns them to a random team.
-     * 
+     *
      * @throws RuntimeException if there are no teams.
      * @author Tim Knops
      */
@@ -138,7 +178,7 @@ public class BackEndApplication implements CommandLineRunner {
 
     /**
      * Creates sample products.
-     * 
+     *
      * @author Tim Knops
      */
     private void createSampleProducts() {
@@ -166,7 +206,7 @@ public class BackEndApplication implements CommandLineRunner {
 
     /**
      * Creates sample resources.
-     * 
+     *
      * @author Tim Knops
      */
     private void createSampleResources() {
@@ -225,4 +265,37 @@ public class BackEndApplication implements CommandLineRunner {
         }
     }
 
+    private void createDummyItems() {
+        List<Item> items = itemRepo.findAll();
+
+        if (!items.isEmpty()) return;
+        List<Product> products = this.productsRepo.findAll();
+        List<Order> orders = this.orderRepo.findAll();
+        Random random = new Random();
+
+        //ensure every order has at least one item
+        for (Order order : orders) {
+            Item item = new Item();
+            item.setOrder(order);
+            Product product = products.get(random.nextInt(products.size()));
+            item.setProduct(product);
+            item.setQuantity(random.nextLong(50L) + 1);
+
+            order.getItems().add(item);
+            product.getItems().add(item);
+        }
+
+        //add 10 items to random orders
+        for (int i = 0; i < 10; i++) {
+            Item item = new Item();
+            Order order = orders.get(random.nextInt(orders.size()));
+            item.setOrder(order);
+            Product product = products.get(random.nextInt(products.size()));
+            item.setProduct(product);
+            item.setQuantity(random.nextLong(50L));
+
+            order.getItems().add(item);
+            product.getItems().add(item);
+        }
+    }
 }
