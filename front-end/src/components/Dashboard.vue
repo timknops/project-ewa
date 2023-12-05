@@ -3,13 +3,13 @@
 
     <!--Dropdown-->
     <div class="btn-group dropdown-color">
-      <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Choose warehouse
+      <button class="btn dropdown-toggle background-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        {{selectedWarehouse ? selectedWarehouse : " Choose warehouse"}}
       </button>
 
       <div class="dropdown-menu">
         <a class="dropdown-item" :key="null" @click="warehouseSelect(null)">All warehouses</a>
-        <a class="dropdown-item" v-for="item in tableData" :key="item.Name" @click="warehouseSelect(item.Name)">{{item.Name}}</a>
+        <a  v-for="warehouse in wareHouseNameData" :key="warehouse" class="dropdown-item" @click="warehouseSelect(warehouse)">{{warehouse}}</a>
 
     </div>
     </div>
@@ -18,7 +18,7 @@
     <TableComponent
       :tableWidth="'100%'"
       :boldFirstColumn="true"
-      :amountToDisplay="3"
+      :amountToDisplay="4"
       :tableData="selectedWarehouseData"
       :arrayAmountToDisplay="10"
       table-title="Inventory"
@@ -26,9 +26,29 @@
     >
     </TableComponent>
 
+
+
+
+
     <div class="table-container mb-5 gap-5 d-flex w-100">
       <!--Forecast-->
       <div class="user-table-overview-left card border-0">
+
+<!--            Dropdown for months-->
+        <div class="btn-group dropdown-color">
+          <a class="btn dropdown-toggle background-dropdown"  aria-haspopup="true" aria-expanded="false">
+            {{ selectedMonth ? selectedMonth : currentMonth }}
+          </a>
+
+
+          <div class="dropdown-menu position-absolute">
+<!--            <a v-for="(month, index) in allMonths" :key="index" class="dropdown-item" @click="selectMonth(month)">{{ month }}</a>-->
+
+          </div>
+        </div>
+
+
+
         <div class="table-container card-body align-items-center d-flex">
           <canvas
             ref="combinedChart"
@@ -44,7 +64,7 @@
         tableWidth="60%"
         :boldFirstColumn="true"
         :amountToDisplay="4"
-        :tableData="userData"
+        :tableData="selectedWarehouseUserData"
         table-title="Users"
         sub-title="Current active users"
       >
@@ -69,68 +89,193 @@ export default {
     return {
       tableData: [
         {
+          Warehouse: "Solar Clarity",
           Name: "enphase",
           Quantity: 9,
           Expected: 32,
+          Month: "December",
+          Date: 4,
+        },
+
+        {
+          Warehouse: "Solar Clarity",
+          Name: "enphase",
+          Quantity: 15,
+          Expected: 32,
+          Month: "December",
+          Date: 5,
         },
         {
-          Name: "Gateway",
-          Quantity: 18,
-          Expected: 30,
+          Warehouse: "Solar Clarity",
+          Name: "enphase",
+          Quantity: 6,
+          Expected: 32,
+          Month: "December",
+          Date: 20,
         },
+
+
         {
+          Warehouse: "4Blue",
           Name: "MB 385 (white)",
           Quantity: 18,
           Expected: 30,
+          Month: "December",
+          Date: 5
         },
+        {
+          Warehouse: "4Blue",
+          Name: "MB 385 (white)",
+          Quantity: 15,
+          Expected: 30,
+          Month: "December",
+          Date: 10
+        },
+        {
+          Warehouse: "4Blue",
+          Name: "MB 385 (white)",
+          Quantity: 15,
+          Expected: 30,
+          Month: "December",
+          Date: 20
+        },
+
+
+
+        {
+          Warehouse: "4Blue",
+          Name: "Gateway",
+          Quantity: 11,
+          Expected: 30,
+          Month: "December",
+          Date: 5
+        },
+        {
+          Warehouse: "4Blue",
+          Name: "Gateway",
+          Quantity: 19,
+          Expected: 30,
+          Month: "December",
+          Date: 10
+        },
+        {
+          Warehouse: "4Blue",
+          Name: "Gateway",
+          Quantity: 33,
+          Expected: 30,
+          Month: "December",
+          Date: 20
+        },
+
+
       ],
       userData: [
         {
           Username: "hx",
-          Warehouse: "Solar clarity",
+          Warehouse: "Solar Clarity",
+          Project: "Team 1"
         },
+        {
+          Username: "test",
+          Warehouse: "4Blue",
+          Project: "Team 2"
+        },
+        {
+          Username: "hi",
+          Warehouse: "Solar Clarity",
+          Project: "Team 3"
+        },
+
+
       ],
       forecastData: [
         {
           Forecast: "",
         },
       ],
-      wareHouseNameData:[
-      ],
+      wareHouseNameData:["Solar Clarity", "4Blue"],
       selectedWarehouse: null,
       selectedWarehouseChart: null,
 
+      //dropdown chart
+      selectedMonth: null,
+      currentMonth: "",
+      allMonths: [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+      ],
       chartDataList: [],
       //    chart: null,
       saveChart: null,
       chartWidth: 200,
       chartHeight: 80,
       // xValues: ["This week", "Expected"],
-      //yValues: [0, 36],
+      // yValues: [0, 36],
       barColors: ["rgba(91, 46, 24, 1)"],
     };
   },
 
   mounted() {
+    this.currentMonth = this.getMonthName(new Date().getMonth() + 1);
+    this.selectedMonth = this.currentMonth;
     this.createChart(this.tableData);
   },
 
   computed: {
     selectedWarehouseData(){
-      if(this.selectedWarehouse) {
+
+      const currentDate = new Date();
+      // eslint-disable-next-line no-unused-vars
+      const dateFormat = `${currentDate.getDate()}/${currentDate.getMonth() + 1}`;
+
+      if (this.selectedWarehouse) {
+        return this.tableData
+            .filter(item => item.Warehouse === this.selectedWarehouse && item.Date === currentDate.getDate() && item.Month === this.getMonthName(currentDate.getMonth() + 1))
+            .map(item => ({
+              Warehouse: item.Warehouse,
+              Name: item.Name,
+              Quantity: item.Quantity,
+            }));
+      }
+
+      return this.tableData
+          .filter(item => item.Date === currentDate.getDate() && item.Month === this.getMonthName(currentDate.getMonth() + 1))
+          .map(item => ({
+            Warehouse: item.Warehouse,
+            Name: item.Name,
+            Quantity: item.Quantity,
+          }));
+
+
+    },
+
+    selectedWarehouseUserData() {
+      if (this.selectedWarehouse) {
         if (this.selectedWarehouse === null) {
-          return this.tableData;
+          return this.userData;
         } else {
-          return this.tableData.filter((item) => item.Name === this.selectedWarehouse);
+          return this.userData.filter(
+              (user) => user.Warehouse === this.selectedWarehouse
+          );
         }
       }
-      return this.tableData;
+      return this.userData;
     },
-  },
+    },
+
 
   methods: {
-    createChart(data) {
+    selectMonth(monthIsSelected){
+      this.selectedMonth = monthIsSelected;
+      this.createChart();
+    },
 
+    getMonthName(monthI){
+      return this.allMonths[monthI - 1]
+    },
+
+
+    createChart() {
       if (this.saveChart) {
         this.saveChart.destroy();
       }
@@ -138,28 +283,50 @@ export default {
       const chartWidth = this.chartWidth;
       const chartHeight = this.chartHeight;
 
+      const colorLegend = [
+          'rgba(199, 208, 44, 1)',
+          'rgba(91, 46, 24, 1)',
+          '#000000FF'
+      ];
+      const dateOfTheDay = new Date();
+      const dataBasedOnTheMonth = this.tableData.filter( item => (!this.selectedWarehouse || item.Warehouse === this.selectedWarehouse) && item.Month === this.selectedMonth && item.Date >= dateOfTheDay.getDate());
 
-      const labels = data.map((item) => item.Name);
-      const qdata = data.map((item) => item.Quantity);
-      const expectedData = data.map((item) => item.Expected);
+      const nameLegend = [...new Set(dataBasedOnTheMonth.map(item => item.Name))];
+      const datasets = nameLegend.map((name, index) => {
+            const qdata = dataBasedOnTheMonth
+                .filter(item => item.Name === name)
+                .map(item => ({
+                      x: `${item.Date}/${this.allMonths.indexOf(item.Month) + 1}`,
+                      y: item.Quantity
+                    })
+                );
 
-      qdata.push(50);
+        // const backgroundColor = colorLegend[index % colorLegend.length];
+
+          return {
+            label: name,
+            backgroundColor: colorLegend[index % colorLegend.length],
+            borderColor: colorLegend[index % colorLegend.length],
+            data: qdata,
+
+          };
+        });
+
+      // const currentDate = new Date();
+      const dateLabels = Array.from({ length: 14 }, (_, index) => {
+        const nextDate = new Date(dateOfTheDay);
+        nextDate.setDate(dateOfTheDay.getDate() + index);
+        const day = nextDate.getDate();
+        const month = nextDate.getMonth() + 1;
+        return `${day}/${month}`;
+      });
+
 
       const chartData = {
-        labels: labels,
-        datasets: [
-          {
-            label: "Quantity",
-            backgroundColor: this.barColors[0],
-            data: qdata,
-          },
-          {
-            label: "Expected",
-            backgroundColor: "rgba(199, 208, 44, 1)",
-            data: expectedData,
-          },
-        ],
+        labels:  dateLabels,
+        datasets: datasets,
       };
+
 
       const chartOptions = {
         legend: {display: false},
@@ -169,8 +336,6 @@ export default {
         },
         width: chartWidth,
         height: chartHeight,
-        // responsive: true,
-        // maintainAspectRatio: false,
         scales: {
           y: {
             beginAtZero: true,
@@ -179,38 +344,36 @@ export default {
         plugins: {
           tooltip: {
             enabled: true,
+            callbacks: {
+              label: (context) => {
+                const item = context.dataset.data[context.dataIndex];
+                return `${context.dataset.label}: ${item.y}`;
+              }
+            }
           },
         },
         elements: {
-          bar: {
-            borderRadius: 30,
-          },
+          // bar: {
+          //   borderRadius: 30,
+          // },
+          line: {
+            tension: 0,
+          }
         },
       };
 
      this.saveChart = new Chart(this.$refs.combinedChart, {
-        type: "bar",
+        type: "line",
         data: chartData,
         options: chartOptions,
       });
-
     },
 
     warehouseSelect(nameOfTheWarehouse){
       this.selectedWarehouse = nameOfTheWarehouse;
       this.createChart(this.selectedWarehouseData);
-
     },
-
-
   },
-
-
-
-  // watch: {
-  //   xValues: "createChart",
-  //   yValues: "createChart",
-  // },
 };
 </script>
 
@@ -231,7 +394,6 @@ h2 {
 .my-chart {
   width: 100%;
   height: auto;
-  /*box-shadow: var(--custom-box-shadow);*/
 }
 
 .table-container {
@@ -246,5 +408,9 @@ h2 {
   margin-top: 50px;
   box-shadow: var(--custom-box-shadow);
   border-radius: 0.5rem;
+}
+
+.background-dropdown {
+  background-color: rgba(199, 208, 44, 1);
 }
 </style>
