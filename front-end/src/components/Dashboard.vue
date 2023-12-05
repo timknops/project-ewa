@@ -64,9 +64,9 @@
         tableWidth="60%"
         :boldFirstColumn="true"
         :amountToDisplay="4"
-        :tableData="selectedWarehouseUserData"
-        table-title="Users"
-        sub-title="Current active users"
+        :tableData="selectedProjectData"
+        table-title="Projects"
+        sub-title="Upcoming projects"
       >
       </TableComponent>
     </div>
@@ -139,9 +139,6 @@ export default {
           Month: "December",
           Date: 20
         },
-
-
-
         {
           Warehouse: "4Blue",
           Name: "Gateway",
@@ -169,24 +166,22 @@ export default {
 
 
       ],
-      userData: [
+      projects: [
         {
-          Username: "hx",
-          Warehouse: "Solar Clarity",
-          Project: "Team 1"
-        },
-        {
-          Username: "test",
           Warehouse: "4Blue",
-          Project: "Team 2"
+          Name: "Plaatsing Amstelveen",
+          DueDate: "03-12-2023"
         },
         {
-          Username: "hi",
-          Warehouse: "Solar Clarity",
-          Project: "Team 3"
+          Warehouse: "4Blue",
+          Name: "Plaatsing Amstelveen",
+          DueDate: "07-12-2023"
         },
-
-
+        {
+          Warehouse: "Solar Clarity",
+          Name: "Plaatsing Amstelveen",
+          DueDate: "08-12-2023"
+        }
       ],
       forecastData: [
         {
@@ -249,17 +244,17 @@ export default {
 
     },
 
-    selectedWarehouseUserData() {
+    selectedProjectData() {
       if (this.selectedWarehouse) {
         if (this.selectedWarehouse === null) {
-          return this.userData;
+          return this.projects;
         } else {
-          return this.userData.filter(
-              (user) => user.Warehouse === this.selectedWarehouse
+          return this.projects.filter(
+              (project) => project.Warehouse === this.selectedWarehouse
           );
         }
       }
-      return this.userData;
+      return this.projects;
     },
     },
 
