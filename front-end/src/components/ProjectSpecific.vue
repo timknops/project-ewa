@@ -1,45 +1,56 @@
 <template>
-  <div class="grid row gap-5">
-    <div class="card border-0 d-flex col-xl-4 p-4">
-      <div v-if="projectLoaded" class="px-1">
-        <h3 class="fw-bold fs-2 project-title">
-          {{ project.projectName }}
-        </h3>
-        <span class="badge mb-4" :class="STATUS_OPTIONS[project.status]">{{
-          projectStatus
-        }}</span>
-        <p class="fw-bold mb-2">
-          Client: <span class="fw-normal">{{ project.client }}</span>
-        </p>
-        <p class="fw-bold mb-2">
-          Due Date:
-          <span class="fw-normal">{{ dueDate }}</span>
-        </p>
-        <p class="fw-bold mb-2">
-          Assigned Team: <span class="fw-normal">{{ project.teamName }}</span>
-        </p>
-        <p class="fw-bold">
-          Description:
-          <span class="fw-normal">{{ description }}</span>
-        </p>
+  <div>
+    <div v-if="!showErrorMessage" class="grid row gap-5">
+      <div class="card border-0 d-flex col-xl-4 p-4">
+        <div v-if="projectLoaded" class="px-1">
+          <h3 class="fw-bold fs-2 project-title">
+            {{ project.projectName }}
+          </h3>
+          <span class="badge mb-4" :class="STATUS_OPTIONS[project.status]">{{
+            projectStatus
+          }}</span>
+          <p class="fw-bold mb-2">
+            Client: <span class="fw-normal">{{ project.client }}</span>
+          </p>
+          <p class="fw-bold mb-2">
+            Due Date:
+            <span class="fw-normal">{{ dueDate }}</span>
+          </p>
+          <p class="fw-bold mb-2">
+            Assigned Team: <span class="fw-normal">{{ project.teamName }}</span>
+          </p>
+          <p class="fw-bold">
+            Description:
+            <span class="fw-normal">{{ description }}</span>
+          </p>
+        </div>
+        <SpinnerComponent v-else />
       </div>
-      <SpinnerComponent v-else />
+
+      <div class="col-xl p-0">
+        <TableComponent
+          v-if="productsLoaded"
+          :table-data="products"
+          :amount-to-display="9"
+          table-title="Products"
+          sub-title="Current products in this project"
+        />
+        <SpinnerComponent v-else />
+      </div>
     </div>
 
-    <div class="col-xl p-0">
-      <TableComponent
-        v-if="productsLoaded"
-        :table-data="products"
-        :amount-to-display="9"
-        table-title="Products"
-        sub-title="Current products in this project"
-      />
-      <SpinnerComponent v-else />
-    </div>
+    <!-- If the project is not found, show the error message component. -->
+    <ErrorMessage
+      v-else
+      error-title="Project not found"
+      error-message="The project you are looking for does not exist."
+      hyperlink="/projects"
+    />
   </div>
 </template>
 
 <script>
+import ErrorMessage from "./ErrorMessage.vue";
 import TableComponent from "./table/TableComponent.vue";
 import SpinnerComponent from "./util/SpinnerComponent.vue";
 
@@ -55,6 +66,7 @@ export default {
   components: {
     TableComponent,
     SpinnerComponent,
+    ErrorMessage,
   },
   data() {
     return {
@@ -67,14 +79,16 @@ export default {
         IN_PROGRESS: "in-progress-badge",
         UPCOMING: "upcoming-badge",
       }),
+      showErrorMessage: false,
     };
   },
   async created() {
     // Get the specific project data by using the project id from the route.
     this.project = await this.projectService.get(this.$route.params.id);
 
+    // If the project has an error, show the error message component.
     if (this.project.error !== undefined) {
-      console.log(this.project.error); // TODO: Direct to error page.
+      this.showErrorMessage = true;
       return;
     }
 

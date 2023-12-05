@@ -8,6 +8,7 @@ import ProjectsOverview from "@/components/ProjectsOverview.vue";
 import InventoryOverview from "@/components/InventoryOverview.vue";
 import WarehouseOverview from "@/components/WarehouseOverview.vue";
 import ProjectSpecific from "@/components/ProjectSpecific.vue";
+import ErrorMessage from "@/components/ErrorMessage.vue";
 
 export const router = createRouter({
   history: createWebHashHistory(),
@@ -59,6 +60,11 @@ export const router = createRouter({
       path: "/warehouses",
       component: WarehouseOverview,
       meta: { icon: "fa-solid fa-warehouse" },
+    },
+    {
+      path: "/error",
+      component: ErrorMessage,
+      meta: { icon: "fa-solid fa-circle-exclamation" },
     },
     // add paths to other components here
     { path: "/:pathMatch(.*)", redirect: "/dashboard" }, // redirect non-existing path to dashboard

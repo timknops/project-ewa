@@ -28,6 +28,7 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { faBoxOpen } from "@fortawesome/free-solid-svg-icons";
 import { faBarsProgress } from "@fortawesome/free-solid-svg-icons";
 import { faEye } from "@fortawesome/free-solid-svg-icons";
+import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
 
 /* add icons to the library */
 library.add(
@@ -48,7 +49,8 @@ library.add(
   faBoxOpen,
   faPlus,
   faBarsProgress,
-  faEye
+  faEye,
+  faCircleExclamation
 );
 
 /* import bootstrap */
