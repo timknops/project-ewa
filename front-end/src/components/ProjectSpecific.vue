@@ -43,6 +43,12 @@
 import TableComponent from "./table/TableComponent.vue";
 import SpinnerComponent from "./util/SpinnerComponent.vue";
 
+/**
+/**
+ * This file represents the ProjectSpecific component. The component is responsible for displaying project-specific information.
+ * 
+ * @author Tim Knops
+ */
 export default {
   name: "SpecificView",
   inject: ["projectService"],
@@ -67,9 +73,10 @@ export default {
     // Get the specific project data by using the project id from the route.
     this.project = await this.projectService.get(this.$route.params.id);
 
-    // TODO: Error handling if project was not found.
-
-    console.log(this.project);
+    if (this.project.error !== undefined) {
+      console.log(this.project.error); // TODO: Direct to error page.
+      return;
+    }
 
     this.formatProducts();
 
@@ -98,10 +105,12 @@ export default {
   methods: {
     /** Formats the resources so that they can be displayed in the table. */
     formatProducts() {
-      if (!this.project.resources) {
-        return; // TODO: Add empty table values.
+      if (this.project.resources.length === 0) {
+        this.products = [this.formatEmptyTableData()];
+        return;
       }
 
+      // For each resource, add the product name and quantity to the products array.
       this.project.resources.forEach((resource) => {
         this.products.push({
           id: resource.product.id,
@@ -109,6 +118,18 @@ export default {
           quantity: resource.quantity,
         });
       });
+    },
+
+    /**
+     * Formats the table data when there are no products.
+     * @returns {Object} The formatted table data.
+     */
+    formatEmptyTableData() {
+      return {
+        id: "",
+        product: "",
+        quantity: "",
+      };
     },
   },
 };

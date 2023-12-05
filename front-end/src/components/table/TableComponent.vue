@@ -161,6 +161,18 @@
               />
             </tr>
           </tbody>
+
+          <!-- If the table data is empty, show an empty table. -->
+          <tbody v-else-if="showEmptyTable">
+            <tr>
+              <td
+                class="py-3 px-3 px-lg-4 text-center empty-text"
+                colspan="100%"
+              >
+                No data available
+              </td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>
@@ -511,5 +523,9 @@ button:active {
 .upcoming-badge {
   color: #1d4ed8;
   background-color: #bfdbfe;
+}
+
+.empty-text {
+  color: var(--bs-gray-700);
 }
 </style>
