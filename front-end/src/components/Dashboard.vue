@@ -85,8 +85,14 @@ export default {
   components: {
     TableComponent,
   },
+  inject: ["warehouseService"],
   data() {
     return {
+      warehouses:[
+        {
+          name: String,
+        },
+      ],
       tableData: [
         {
           Warehouse: "Solar Clarity",
@@ -94,7 +100,7 @@ export default {
           Quantity: 9,
           Expected: 32,
           Month: "December",
-          Date: 4,
+          Date: 12,
         },
 
         {
@@ -103,7 +109,7 @@ export default {
           Quantity: 15,
           Expected: 32,
           Month: "December",
-          Date: 5,
+          Date: 15,
         },
         {
           Warehouse: "Solar Clarity",
@@ -121,7 +127,7 @@ export default {
           Quantity: 18,
           Expected: 30,
           Month: "December",
-          Date: 5
+          Date: 15
         },
         {
           Warehouse: "4Blue",
@@ -129,7 +135,7 @@ export default {
           Quantity: 15,
           Expected: 30,
           Month: "December",
-          Date: 10
+          Date: 16
         },
         {
           Warehouse: "4Blue",
@@ -145,7 +151,7 @@ export default {
           Quantity: 11,
           Expected: 30,
           Month: "December",
-          Date: 5
+          Date: 20
         },
         {
           Warehouse: "4Blue",
@@ -153,7 +159,7 @@ export default {
           Quantity: 19,
           Expected: 30,
           Month: "December",
-          Date: 10
+          Date: 20
         },
         {
           Warehouse: "4Blue",
@@ -161,7 +167,7 @@ export default {
           Quantity: 33,
           Expected: 30,
           Month: "December",
-          Date: 20
+          Date: 11
         },
 
 
@@ -214,6 +220,7 @@ export default {
     this.currentMonth = this.getMonthName(new Date().getMonth() + 1);
     this.selectedMonth = this.currentMonth;
     this.createChart(this.tableData);
+    this.fetchWarehouseData();
   },
 
   computed: {
@@ -260,6 +267,15 @@ export default {
 
 
   methods: {
+    async fetchWarehouseData(){
+    try {
+      const warehouses = await this.warehouseService.findAll();
+      this.wareHouseNameData = warehouses.map(warehouse => warehouse.name);
+    } catch (error) {
+      console.error("Error fetching warehouse data:", error);
+    }
+  },
+
     selectMonth(monthIsSelected){
       this.selectedMonth = monthIsSelected;
       this.createChart();
