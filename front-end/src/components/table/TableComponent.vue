@@ -134,7 +134,10 @@
                   v-else-if="
                     fieldData === 'COMPLETED' ||
                     fieldData === 'IN_PROGRESS' ||
-                    fieldData === 'UPCOMING'
+                    fieldData === 'UPCOMING' ||
+                    fieldData === 'PENDING'||
+                    fieldData === 'CANCELED' ||
+                    fieldData === 'DELIVERED'
                   "
                   class="py-3 px-3 px-lg-4"
                 >
@@ -276,6 +279,9 @@ export default {
         COMPLETED: "success-badge",
         IN_PROGRESS: "in-progress-badge",
         UPCOMING: "upcoming-badge",
+        PENDING: "pending-badge",
+        DELIVERED: "delivered-badge",
+        CANCELED: "canceled-badge"
       }),
       /** shallow Copy of the table data, used for sorting. */
       tableDataSorted: this.tableData,
@@ -555,6 +561,23 @@ button:active {
   color: #1d4ed8;
   background-color: #bfdbfe;
 }
+
+.canceled-badge {
+  color: #5d0101;
+  background-color: #e85a60;
+}
+
+.pending-badge {
+  color: #9b5f09;
+  background-color: #fef08a;
+}
+
+.delivered-badge {
+  color: #127235;
+  background-color: #bbf7d0;
+}
+
+
 
 .empty-text {
   color: var(--bs-gray-700);
