@@ -69,7 +69,7 @@ public class OrderController {
             throw new BadRequestException("An order should be placed for a warehouse!");
         }
 
-        if (Request.getOrder().getDeliverDate().isBefore(Request.getOrder().getOrderDate())) {
+        if (Request.getOrder().getDeliverDate().isBefore(Request.getOrder().getOrderDate().toLocalDate())) {
             throw new BadRequestException("An order can not be delivered in the past!");
         }
 
@@ -101,7 +101,7 @@ public class OrderController {
 
         Order existingOrder = this.orderRepo.findById(id);
 
-        if (order.getDeliverDate().isBefore(existingOrder.getOrderDate())) {
+        if (order.getDeliverDate().isBefore(existingOrder.getOrderDate().toLocalDate())) {
             throw new BadRequestException("An order can not be delivered in the past!");
         }
         order.setOrderDate(existingOrder.getOrderDate());

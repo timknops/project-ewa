@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import nl.solar.app.enums.OrderStatus;
 import nl.solar.app.models.utils.RandomDate;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
@@ -36,7 +37,7 @@ public class Order {
     @JsonIgnore
     private LocalDateTime orderDate;
 
-    private LocalDateTime deliverDate;
+    private LocalDate deliverDate;
 
     @Enumerated(value = EnumType.STRING)
     private OrderStatus orderStatus;
@@ -58,9 +59,9 @@ public class Order {
         order.setId(0);
         order.setWarehouse(warehouse);
         order.orderDate = RandomDate.randomLocalDateTime(MINIMUM_START, LocalDateTime.now());
-        order.deliverDate = RandomDate.randomLocalDateTime(order.orderDate, MAXIMUM_END);
+        order.deliverDate = RandomDate.randomLocalDate(order.orderDate.toLocalDate(), MAXIMUM_END.toLocalDate());
 
-        if (order.deliverDate.isBefore(LocalDateTime.now())) {
+        if (order.deliverDate.isBefore(LocalDate.now())) {
             order.orderStatus = OrderStatus.DELIVERED;
         } else {
             order.orderStatus = OrderStatus.PENDING;
@@ -92,11 +93,11 @@ public class Order {
         this.orderDate = orderDate;
     }
 
-    public LocalDateTime getDeliverDate() {
+    public LocalDate getDeliverDate() {
         return deliverDate;
     }
 
-    public void setDeliverDate(LocalDateTime deliverDate) {
+    public void setDeliverDate(LocalDate deliverDate) {
         this.deliverDate = deliverDate;
     }
 
