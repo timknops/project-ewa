@@ -14,7 +14,7 @@
         <label for="deliver-date" class="form-label fw-bold">Deliver date</label>
         <input
             id="deliver-date"
-            type="datetime-local"
+            type="date"
             class="form-control"
             :class="{'border-danger': incorrectDate}"
             v-model.trim="modalItem.order.deliverDate"
