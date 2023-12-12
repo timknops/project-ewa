@@ -1,5 +1,5 @@
 <template>
-  <form >
+  <form>
     <div class="mb-3">
       <label for="warehouse" class="form-label fw-bold">Warehouse</label>
       <input
@@ -10,17 +10,28 @@
           disabled
       />
     </div>
-      <div class="mb-3">
-        <label for="deliver-date" class="form-label fw-bold">Deliver date</label>
-        <input
-            id="deliver-date"
-            type="date"
-            class="form-control"
-            :class="{'border-danger': incorrectDate}"
-            v-model.trim="modalItem.order.deliverDate"
-            @blur="validateDeliverDate"
-        >
-        <small v-if="incorrectDate" class="text-danger"> A deliver date can't be in the past</small>
+    <div class="mb-3">
+      <label for="tag" class="form-label fw-bold">Tag</label>
+      <input
+          type="text"
+          id="tag"
+          class="form-control"
+          :class="{'border-danger': emptyTag}"
+          v-model.trim="modalItem.order.tag"
+          @blur="validateTag"
+      >
+    </div>
+    <div class="mb-3">
+      <label for="deliver-date" class="form-label fw-bold">Deliver date</label>
+      <input
+          id="deliver-date"
+          type="date"
+          class="form-control"
+          :class="{'border-danger': incorrectDate}"
+          v-model.trim="modalItem.order.deliverDate"
+          @blur="validateDeliverDate"
+      >
+      <small v-if="incorrectDate" class="text-danger"> A deliver date can't be in the past</small>
     </div>
     <hr>
 
@@ -39,7 +50,7 @@
               class="btn py-1 custom-btn"
               type="button"
           >
-            <FontAwesomeIcon icon="fa-solid fa-trash" size="sm" />
+            <FontAwesomeIcon icon="fa-solid fa-trash" size="sm"/>
           </button>
         </div>
       </div>
@@ -79,7 +90,8 @@
                     {{ product.productName }}
                   </option>
                 </select>
-                <small v-if="itemNotFilled && item.product.id === undefined" class="text-danger">Select a product!</small>
+                <small v-if="itemNotFilled && item.product.id === undefined" class="text-danger">Select a
+                  product!</small>
               </td>
 
               <td>
@@ -112,7 +124,8 @@
 </template>
 
 <script>
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+
 export default {
   name: "AddOrderModal",
   components: {FontAwesomeIcon},
@@ -130,6 +143,7 @@ export default {
       STATUS: ["delivered", "pending", "canceled"],
       incorrectDate: false,
       itemNotFilled: false,
+      emptyTag: false,
       //track items which are added in modal
       itemsList: []
     }
@@ -146,7 +160,7 @@ export default {
       const isEmpty = this.emptyItems;
       this.validateDeliverDate()
       this.validateItems()
-
+      this.validateTag()
 
       return this.incorrectDate || isEmpty || this.itemNotFilled
     }
@@ -159,6 +173,10 @@ export default {
       } else {
         this.incorrectDate = true;
       }
+    },
+
+    validateTag() {
+      this.emptyTag = this.modalItem.order.tag === ""
     },
 
     validateItems() {
@@ -218,6 +236,7 @@ label {
 .custom-btn {
   background-color: var(--bs-gray-200) !important;
 }
+
 .custom-btn:hover {
   background-color: var(--bs-gray-400) !important;
 }

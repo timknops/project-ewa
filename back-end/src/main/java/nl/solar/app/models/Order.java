@@ -37,12 +37,13 @@ public class Order {
     @JsonIgnore
     private LocalDateTime orderDate;
 
-    private LocalDate deliverDate;
-
     private String tag;
 
+    private LocalDate deliverDate;
+
+
     @Enumerated(value = EnumType.STRING)
-    private OrderStatus orderStatus;
+    private OrderStatus status;
 
     public Order() {
 
@@ -65,9 +66,9 @@ public class Order {
         order.deliverDate = RandomDate.randomLocalDate(order.orderDate.toLocalDate(), MAXIMUM_END.toLocalDate());
 
         if (order.deliverDate.isBefore(LocalDate.now())) {
-            order.orderStatus = OrderStatus.DELIVERED;
+            order.status = OrderStatus.DELIVERED;
         } else {
-            order.orderStatus = OrderStatus.PENDING;
+            order.status = OrderStatus.PENDING;
         }
         return order;
     }
@@ -104,12 +105,12 @@ public class Order {
         this.deliverDate = deliverDate;
     }
 
-    public OrderStatus getOrderStatus() {
-        return orderStatus;
+    public OrderStatus getStatus() {
+        return status;
     }
 
-    public void setOrderStatus(OrderStatus orderStatus) {
-        this.orderStatus = orderStatus;
+    public void setStatus(OrderStatus orderStatus) {
+        this.status = orderStatus;
     }
 
     public Set<Item> getItems() {

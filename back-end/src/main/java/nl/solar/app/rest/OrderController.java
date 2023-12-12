@@ -63,7 +63,7 @@ public class OrderController {
     public ResponseEntity<Order> addOrder(@RequestBody OrderRequestDTO Request) {
         //set the order date to the current datetime
         Request.getOrder().setOrderDate(LocalDateTime.now().withNano(0));
-        Request.getOrder().setOrderStatus(OrderStatus.PENDING);
+        Request.getOrder().setStatus(OrderStatus.PENDING);
 
         if (Request.getOrder().getWarehouse() == null) {
             throw new BadRequestException("An order should be placed for a warehouse!");

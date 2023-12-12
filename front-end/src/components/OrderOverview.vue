@@ -104,7 +104,7 @@ export default {
             id: order.id,
             tag: order.tag,
             deliverDate: this.formatDate(order.deliverDate),
-            orderStatus: order.orderStatus
+            status: order.status
           }))
 
     },
@@ -131,7 +131,7 @@ export default {
         id: "",
         warehouse: "",
         deliverDate: "",
-        orderStatus: "",
+        status: "",
       };
     },
 
@@ -144,7 +144,7 @@ export default {
       this.modalBodyComponent = this.MODAL_TYPES.DELETE;
       this.modalOrderInfo = {
           id: order.id,
-          warehouseName: order.warehouse
+          warehouseName: this.activeWarehouse.name
       };
       this.okBtnText = "Delete";
       this.showModal = true;
@@ -206,7 +206,8 @@ export default {
       try {
         const updated = await this.orderService.update(order);
         const formatted = { ...updated}
-        formatted.warehouse = updated.warehouse.name
+        delete formatted.warehouse // remove warehouse from formatted object
+
         formatted.deliverDate = this.formatDate(updated.deliverDate)
         this.orders = this.orders.map((order) =>
             order.id === formatted.id ? formatted : order
@@ -225,8 +226,9 @@ export default {
       try {
         const added = await this.orderService.add(order);
         const formatted = {...added}
-        formatted.warehouse = added.warehouse.name
+        delete formatted.warehouse;
         formatted.deliverDate = this.formatDate(added.deliverDate)
+
         this.orders.push(formatted);
         this.showModal = false;
         this.showTimedToast(
