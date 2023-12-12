@@ -39,6 +39,8 @@ public class Order {
 
     private LocalDate deliverDate;
 
+    private String tag;
+
     @Enumerated(value = EnumType.STRING)
     private OrderStatus orderStatus;
 
@@ -57,6 +59,7 @@ public class Order {
 
         Order order = new Order();
         order.setId(0);
+        order.setTag(String.format("Ordered ... for %s", warehouse.getName()));
         order.setWarehouse(warehouse);
         order.orderDate = RandomDate.randomLocalDateTime(MINIMUM_START, LocalDateTime.now());
         order.deliverDate = RandomDate.randomLocalDate(order.orderDate.toLocalDate(), MAXIMUM_END.toLocalDate());
@@ -115,6 +118,14 @@ public class Order {
 
     public void setItems(Set<Item> items) {
         this.items = items;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 
     @Override

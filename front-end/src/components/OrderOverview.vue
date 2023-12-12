@@ -102,7 +102,7 @@ export default {
       return this.totalOrders.filter((order) => order.warehouse.id === warehouse.id)
           .map(order => ({
             id: order.id,
-            warehouse: order.warehouse.name,
+            tag: order.tag,
             deliverDate: this.formatDate(order.deliverDate),
             orderStatus: order.orderStatus
           }))
@@ -120,11 +120,6 @@ export default {
         month: "short",
         day: "numeric",
         year: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-        second: "numeric",
-        hour12: false
-
       });
     },
 
