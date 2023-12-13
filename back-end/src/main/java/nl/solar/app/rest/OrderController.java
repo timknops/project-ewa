@@ -98,16 +98,7 @@ public class OrderController {
 
         //add all the items and manage bidirectional relationships
         for (Item item : order.getItems()) {
-            Product product = productRepo.findById(item.getProduct().getId()); // find the correct persisted product.
-
-            //create the bidirectional relationships
-            Item newItem = new Item();
-            newItem.setProduct(product);
-            newItem.setOrder(savedOrder);
-            newItem.setQuantity(item.getQuantity());
-
-            product.getItems().add(newItem);
-            savedOrder.getItems().add(newItem);
+            item.setOrder(savedOrder);
         }
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedOrder.getId()).toUri();
