@@ -17,7 +17,7 @@
           id="tag"
           class="form-control"
           :class="{'border-danger': emptyTag}"
-          v-model.trim="modalItem.order.tag"
+          v-model.trim="modalItem.tag"
           @blur="validateTag"
       >
     </div>
@@ -28,7 +28,7 @@
           type="date"
           class="form-control"
           :class="{'border-danger': incorrectDate}"
-          v-model.trim="modalItem.order.deliverDate"
+          v-model.trim="modalItem.deliverDate"
           @blur="validateDeliverDate"
       >
       <small v-if="incorrectDate" class="text-danger"> A deliver date can't be in the past</small>
@@ -134,9 +134,7 @@ export default {
   data() {
     return {
       modalItem: {
-        order: {
-          warehouse: this.item.warehouse
-        },
+        warehouse: this.item.warehouse,
         items: []
       },
       products: {},
@@ -168,15 +166,15 @@ export default {
   methods: {
     validateDeliverDate() {
 
-      if (this.modalItem.order.deliverDate) {
-        this.incorrectDate = Date.now() > Date.parse(this.modalItem.order.deliverDate)
+      if (this.modalItem.deliverDate) {
+        this.incorrectDate = Date.now() > Date.parse(this.modalItem.deliverDate)
       } else {
         this.incorrectDate = true;
       }
     },
 
     validateTag() {
-      this.emptyTag = this.modalItem.order.tag === ""
+      this.emptyTag = this.modalItem.tag === ""
     },
 
     validateItems() {
@@ -203,6 +201,9 @@ export default {
 
     addProduct(product) {
       this.modalItem.items.push({
+        order: {
+          id: 0 // set to zero, back-end shall handle setting the correct id
+        },
         product: {
           id: product.id
         },
