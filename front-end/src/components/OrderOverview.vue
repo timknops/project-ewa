@@ -266,10 +266,10 @@ export default {
         console.log(order)
         const added = await this.orderService.add(order);
         const formatted = {...added}
-        // delete formatted.warehouse;
+        delete formatted.warehouse;
         formatted.deliverDate = this.formatDate(added.deliverDate)
 
-        this.orders.push(formatted);
+        this.orders.unshift(formatted);
         this.showModal = false;
         this.showTimedToast(
             "Order added",
