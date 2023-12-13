@@ -1,6 +1,5 @@
 package nl.solar.app.repositories;
 
-import nl.solar.app.DTO.ItemDTO;
 import nl.solar.app.models.Item;
 
 import java.util.List;

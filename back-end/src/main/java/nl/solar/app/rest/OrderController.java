@@ -1,8 +1,6 @@
 package nl.solar.app.rest;
 
 import jakarta.transaction.Transactional;
-import nl.solar.app.DTO.ItemDTO;
-import nl.solar.app.DTO.OrderRequestDTO;
 import nl.solar.app.enums.OrderStatus;
 import nl.solar.app.exceptions.BadRequestException;
 import nl.solar.app.exceptions.PreConditionFailedException;
