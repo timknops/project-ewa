@@ -20,6 +20,7 @@
           v-model.trim="modalItem.tag"
           @blur="validateTag"
       >
+      <small v-if="emptyTag" class="text-danger">The tag can't be empty</small>
     </div>
     <div class="mb-3">
       <label for="deliver-date" class="form-label fw-bold">Deliver date</label>
@@ -102,7 +103,7 @@
                     :class="{
                       'border-danger': itemNotFilled && validateQuantity(item)}"
                 />
-                <small v-if="negativeQuantity" class="text-danger"> Quantity can't be negative</small>
+                <small v-if="negativeQuantity" class="text-danger"> Quantity can't be negative or 0</small>
                 <small v-else-if="itemNotFilled && validateQuantity(item)" class="text-danger"> Fill in a quantity!</small>
               </td>
 
@@ -135,6 +136,8 @@ export default {
   data() {
     return {
       modalItem: {
+        tag: "",
+        deliverDate: null,
         warehouse: this.item.warehouse,
         items: []
       },
@@ -162,7 +165,7 @@ export default {
       this.validateItems()
       this.validateTag()
 
-      return this.incorrectDate || isEmpty || this.itemNotFilled
+      return this.incorrectDate || isEmpty || this.itemNotFilled || this.emptyTag
     }
   },
   methods: {
@@ -177,6 +180,7 @@ export default {
 
     validateTag() {
       this.emptyTag = this.modalItem.tag === ""
+      console.log(this.emptyTag)
     },
 
     validateItems() {
@@ -194,7 +198,7 @@ export default {
     },
 
     validateQuantity(item) {
-      this.negativeQuantity = parseInt(item.quantity) < 0;
+      this.negativeQuantity = parseInt(item.quantity) <= 0;
       return item.quantity === "" || item.quantity === undefined || this.negativeQuantity
     },
 
