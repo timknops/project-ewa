@@ -1,7 +1,6 @@
 <template>
   <div>
     <warehouse-header-display
-        v-if="ordersAreLoaded"
         :has-no-total-option="true"
         :active-warehouse="activeWarehouse"
         :active-user="activeUser"
@@ -59,7 +58,7 @@ import ToastComponent from "@/components/util/ToastComponent.vue";
 export default {
   name: "orderOverview",
   components: {ToastComponent, ModalComponent, SpinnerComponent, TableComponent, WarehouseHeaderDisplay},
-  inject: ["orderService"],
+  inject: ["orderService", "warehouseService"],
   data() {
     return {
       activeWarehouse: {},
@@ -104,25 +103,26 @@ export default {
      * Set the active warehouse and get the orders for that warehouse
      * @param warehouse
      */
-    setActiveWarehouse(warehouse) {
+    async setActiveWarehouse(warehouse) {
       this.activeWarehouse = warehouse
       this.$router.push("/orders/" + warehouse.name)
-      this.orders = this.getOrdersForWarehouse(this.activeWarehouse)
+      this.orders = await this.getOrdersForWarehouse(this.activeWarehouse.id)
+      this.ordersAreLoaded = true //set to true, after first load. Thereafter, this will always be true.
     },
 
     /**
-     * get the orders for a specific warehouse and format it to the correct data for the Table display
-     * @param warehouse
-     * @return {{deliverDate: *, id: *, tag: *, status: *}[]}
+     * get the orders for the active warehouse and format it to the correct table format
+     * @param id the id of the current active warehouse
+     * @return * returns a list of all orders for a warehouse
      */
-    getOrdersForWarehouse(warehouse) {
-      return this.totalOrders.filter((order) => order.warehouse.id === warehouse.id)
-          .map(order => ({
-            id: order.id,
-            tag: order.tag,
-            deliverDate: this.formatDate(order.deliverDate),
-            status: order.status
-          }))
+    async getOrdersForWarehouse(id) {
+      const data = await this.warehouseService.findOrdersForWarehouse(id);
+      return data.map(order => ({
+        id: order.id,
+        tag: order.tag,
+        deliverDate: this.formatDate(order.deliverDate),
+        status: order.status
+      }))
 
     },
 
@@ -160,8 +160,8 @@ export default {
       this.modalTitle = "Delete Order";
       this.modalBodyComponent = this.MODAL_TYPES.DELETE;
       this.modalOrderInfo = {
-          id: order.id,
-          warehouseName: this.activeWarehouse.name
+        id: order.id,
+        warehouseName: this.activeWarehouse.name
       };
       this.okBtnText = "Delete";
       this.showModal = true;
@@ -238,7 +238,7 @@ export default {
     async updateOrder(order) {
       try {
         const updated = await this.orderService.update(order);
-        const formatted = { ...updated}
+        const formatted = {...updated}
         delete formatted.warehouse // remove warehouse from formatted object
 
         formatted.deliverDate = this.formatDate(updated.deliverDate)
@@ -263,7 +263,6 @@ export default {
      */
     async addOrder(order) {
       try {
-        console.log(order)
         const added = await this.orderService.add(order);
         const formatted = {...added}
         delete formatted.warehouse;
@@ -295,14 +294,6 @@ export default {
       setTimeout(() => this.showToast = false, 4000)
     },
   },
-
-  async created() {
-    const data = await this.orderService.findAll();
-    this.totalOrders = data
-    this.orders = [this.formatEmptyTableData()] //at the beginning table is empty. When header is loaded in, orders will be changed
-    this.ordersAreLoaded = true
-  }
-
 }
 </script>
 

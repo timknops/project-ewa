@@ -233,6 +233,7 @@ export default {
     TableFooter,
     TableButtons,
   },
+  emits: ['add', 'edit', 'delete'],
   props: {
     tableWidth: String,
     boldFirstColumn: Boolean,

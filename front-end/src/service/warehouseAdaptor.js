@@ -23,6 +23,10 @@ export class WarehouseAdaptor{
         return await this.fetchJSON(`${this.resourceURL}/${id}`);
     }
 
+    async findOrdersForWarehouse(id) {
+        return await this.fetchJSON(`${this.resourceURL}/${id}/orders`);
+    }
+
     async delete(id) {
         try {
             return await this.fetchJSON(`${this.resourceURL}/${id}`, {

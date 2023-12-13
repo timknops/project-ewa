@@ -5,6 +5,7 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import nl.solar.app.models.Order;
 import nl.solar.app.repositories.EntityRepository;
+import nl.solar.app.repositories.OrderRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.List;
  */
 @Repository
 @Transactional
-public class OrderRepositoryJpa implements EntityRepository<Order> {
+public class OrderRepositoryJpa implements OrderRepository {
 
     @PersistenceContext
     EntityManager entityManager;
@@ -38,6 +39,17 @@ public class OrderRepositoryJpa implements EntityRepository<Order> {
     @Override
     public Order findById(long id) {
         return entityManager.find(Order.class, id);
+    }
+
+    /**
+     * Find all orders for a specific warehouse
+     * @param wId the id of a warehouse
+     * @return a list of orders
+     */
+    @Override
+    public List<Order> findOrdersWarehouse(long wId) {
+        return entityManager.createQuery("SELECT o FROM Order o WHERE o.warehouse.id = ?1", Order.class)
+                .setParameter(1, wId).getResultList();
     }
 
     /**
