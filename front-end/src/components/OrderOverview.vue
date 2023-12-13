@@ -215,7 +215,7 @@ export default {
      * Delete an order
      * @param order the order which is deleted
      */
-    async deleteOrder(order){
+    async deleteOrder(order) {
       try {
         const deleted = await this.orderService.delete(order.id);
         this.orders = this.orders.filter(order => order.id !== deleted.id)
@@ -224,7 +224,9 @@ export default {
             "Order Deleted",
             `Successfully deleted an order with id: ${deleted.id} for warehouse ${this.activeWarehouse.name}`)
       } catch (e) {
-        console.error(e)
+        this.showTimedToast(
+            "Oops!",
+            `Something went wrong trying to delete an order with id: ${order.id} for ware ${this.activeWarehouse.name}`)
       }
     },
 
@@ -249,7 +251,9 @@ export default {
             `Successfully updated an order with id: ${updated.id} for warehouse ${this.activeWarehouse.name}`
         )
       } catch (e) {
-        console.log(e);
+        this.showTimedToast(
+            "Oops!",
+            `Something went wrong trying to update an order with id: ${order.id} for ware ${this.activeWarehouse.name}`)
       }
     },
 
@@ -259,9 +263,10 @@ export default {
      */
     async addOrder(order) {
       try {
+        console.log(order)
         const added = await this.orderService.add(order);
         const formatted = {...added}
-        delete formatted.warehouse;
+        // delete formatted.warehouse;
         formatted.deliverDate = this.formatDate(added.deliverDate)
 
         this.orders.push(formatted);
@@ -270,7 +275,9 @@ export default {
             "Order added",
             `Successfully added an order with id: ${added.id} from warehouse ${this.activeWarehouse.name}`)
       } catch (e) {
-        console.log(e);
+        this.showTimedToast(
+            "Oops!",
+            `Something went wrong trying to add an order with id: ${order.id} for ware ${this.activeWarehouse.name}`)
       }
     },
 
@@ -285,7 +292,7 @@ export default {
       this.showToast = true
 
       // after 4 seconds remove the toast from view
-      setTimeout(()=> this.showToast = false, 4000)
+      setTimeout(() => this.showToast = false, 4000)
     },
   },
 

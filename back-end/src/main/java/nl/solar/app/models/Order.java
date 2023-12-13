@@ -30,7 +30,7 @@ public class Order {
     @JsonIncludeProperties({"id", "name"})
     private Warehouse warehouse;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     Set<Item> items = new HashSet<>();
 

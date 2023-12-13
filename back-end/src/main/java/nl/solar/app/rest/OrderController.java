@@ -1,6 +1,8 @@
 package nl.solar.app.rest;
 
 import jakarta.transaction.Transactional;
+import nl.solar.app.DTO.ItemDTO;
+import nl.solar.app.DTO.OrderRequestDTO;
 import nl.solar.app.enums.OrderStatus;
 import nl.solar.app.exceptions.BadRequestException;
 import nl.solar.app.exceptions.PreConditionFailedException;
@@ -79,24 +81,29 @@ public class OrderController {
      */
     @Transactional
     @PostMapping(produces = "application/json")
-    public ResponseEntity<Order> addOrder(@RequestBody Order order) {
+    public ResponseEntity<Order> addOrder(@RequestBody OrderRequestDTO order) {
+        Order newOrder = new Order();
         //set the order date to the current datetime
-        order.setOrderDate(LocalDateTime.now().withNano(0));
-        order.setStatus(OrderStatus.PENDING);
+        newOrder.setOrderDate(LocalDateTime.now().withNano(0));
+        newOrder.setStatus(OrderStatus.PENDING);
+        newOrder.setDeliverDate(order.getDeliverDate());
+        newOrder.setTag(order.getTag());
+        newOrder.setWarehouse(order.getWarehouse());
 
         if (order.getWarehouse() == null) {
             throw new BadRequestException("An order should be placed for a warehouse!");
         }
 
-        if (order.getDeliverDate().isBefore(order.getOrderDate().toLocalDate())) {
+        if (order.getDeliverDate().isBefore(newOrder.getOrderDate().toLocalDate())) {
             throw new BadRequestException("An order can not be delivered in the past!");
         }
-
-        Order savedOrder = this.orderRepo.save(order);
+        Order savedOrder = this.orderRepo.save(newOrder);
 
         //add all the items and manage bidirectional relationships
-        for (Item item : order.getItems()) {
-            item.setOrder(savedOrder);
+        for (ItemDTO item : order.getItems()) {
+            Item newItem = new Item(item.getProduct(), newOrder, item.getQuantity());
+            item.getProduct().getItems().add(newItem);
+            newOrder.getItems().add(newItem);
         }
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedOrder.getId()).toUri();

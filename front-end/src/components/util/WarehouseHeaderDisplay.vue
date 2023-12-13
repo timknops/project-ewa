@@ -82,8 +82,9 @@ export default {
    */
   async created() {
     if (this.activeUser.role === "viewer") return;
-
     this.warehouses = await this.warehouseService.findAll();
+    console.log(this.warehouses)
+    console.log(this.$route.params.warehouse)
     if (this.$route.params.warehouse) {
       const warehouse = this.findWarehouseByName(this.$route.params.warehouse);
       //if a warehouse is found in the route, set is as the active warehouse

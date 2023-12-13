@@ -102,7 +102,8 @@
                     :class="{
                       'border-danger': itemNotFilled && validateQuantity(item)}"
                 />
-                <small v-if="itemNotFilled && validateQuantity(item)" class="text-danger"> Fill in a quantity!</small>
+                <small v-if="negativeQuantity" class="text-danger"> Quantity can't be negative</small>
+                <small v-else-if="itemNotFilled && validateQuantity(item)" class="text-danger"> Fill in a quantity!</small>
               </td>
 
               <td>
@@ -142,6 +143,7 @@ export default {
       incorrectDate: false,
       itemNotFilled: false,
       emptyTag: false,
+      negativeQuantity: false,
       //track items which are added in modal
       itemsList: []
     }
@@ -192,7 +194,8 @@ export default {
     },
 
     validateQuantity(item) {
-      return item.quantity === "" || item.quantity === undefined
+      this.negativeQuantity = parseInt(item.quantity) < 0;
+      return item.quantity === "" || item.quantity === undefined || this.negativeQuantity
     },
 
     productSelected(item) {
@@ -201,9 +204,6 @@ export default {
 
     addProduct(product) {
       this.modalItem.items.push({
-        order: {
-          id: 0 // set to zero, back-end shall handle setting the correct id
-        },
         product: {
           id: product.id
         },
