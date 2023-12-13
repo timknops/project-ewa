@@ -108,9 +108,16 @@ public class BackEndApplication implements CommandLineRunner {
             return;
         }
 
+        List<Warehouse> warehouses = warehouseRepo.findAll();
+
         final int AMOUNT_OF_TEAMS = 6;
         for (int i = 0; i < AMOUNT_OF_TEAMS; i++) {
+            Warehouse randomWarehouse = warehouses.get((int) (Math.random() * warehouses.size()));
             Team team = Team.createDummyTeam();
+
+            // Set the warehouse for the team.
+            team.setWarehouse(randomWarehouse);
+
             teamsRepo.save(team);
         }
     }
@@ -138,9 +145,7 @@ public class BackEndApplication implements CommandLineRunner {
                 //bidirectional
                 warehouse.getOrders().add(order);
             }
-
         }
-
     }
 
     /**

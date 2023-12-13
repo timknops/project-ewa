@@ -31,6 +31,10 @@ public class Warehouse {
     @JsonIgnore
     Set<Order> orders = new HashSet<>();
 
+    @OneToOne
+    @JoinColumn(name = "team_id")
+    private Team team;
+
     public Warehouse(long id, String name, String location) {
         this.id = id;
         this.name = name;
@@ -85,6 +89,14 @@ public class Warehouse {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
     }
 
     @Override

@@ -19,14 +19,18 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import nl.solar.app.DTO.ProjectResourceDTO;
+import nl.solar.app.enums.ProjectStatus;
 import nl.solar.app.exceptions.PreConditionFailedException;
 import nl.solar.app.exceptions.ResourceNotFoundException;
+import nl.solar.app.models.Inventory;
 import nl.solar.app.models.Project;
 import nl.solar.app.models.Resource;
 import nl.solar.app.models.Team;
+import nl.solar.app.models.Warehouse;
 import nl.solar.app.models.views.ProjectView;
 import nl.solar.app.models.wrappers.ProjectRequestWrapper;
 import nl.solar.app.repositories.EntityRepository;
+import nl.solar.app.repositories.InventoryRepository;
 import nl.solar.app.repositories.ProjectRepository;
 import nl.solar.app.repositories.ResourceRepository;
 
@@ -48,6 +52,9 @@ public class ProjectController {
 
     @Autowired
     EntityRepository<Team> teamRepo;
+
+    @Autowired
+    InventoryRepository inventoryRepo;
 
     /**
      * Retrieves a list of all projects specifically for the overview of the
@@ -187,6 +194,20 @@ public class ProjectController {
         // Add back the resources that are still in the projectWrapper.
         for (ProjectResourceDTO resource : projectWrapper.getResources()) {
             this.resourceRepo.save(new Resource(updatedProject, resource.getProduct(), resource.getQuantity()));
+        }
+
+        // Check if the status of the updated project went from upcoming to in progress.
+        // If this is the case, the inventory of the warehouse is updated.
+        if (project.getStatus() == ProjectStatus.UPCOMING
+                && updatedProject.getStatus() == ProjectStatus.IN_PROGRESS) {
+
+            // Get the team of the project.
+            Team team = this.teamRepo.findById(updatedProject.getTeam().getId());
+
+            // Get the warehouse of the team.
+            Warehouse warehouse = team.getWarehouse();
+
+
         }
 
         // Create the URI for the updated project.
