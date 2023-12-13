@@ -75,30 +75,29 @@ public class OrderController {
 
     /**
      * Add an order and the items belonging to the order to the database.
-     * @param Request a request received from the backend. Since the order id isn't known beforehand, the list of
-     *                items is sent in differently than normal to the back-end. <br> see {@link OrderRequestDTO}
+     * @param order the order which is added.
      *
      * @return The order which is added
      */
     @Transactional
     @PostMapping(produces = "application/json")
-    public ResponseEntity<Order> addOrder(@RequestBody OrderRequestDTO Request) {
+    public ResponseEntity<Order> addOrder(@RequestBody Order order) {
         //set the order date to the current datetime
-        Request.getOrder().setOrderDate(LocalDateTime.now().withNano(0));
-        Request.getOrder().setStatus(OrderStatus.PENDING);
+        order.setOrderDate(LocalDateTime.now().withNano(0));
+        order.setStatus(OrderStatus.PENDING);
 
-        if (Request.getOrder().getWarehouse() == null) {
+        if (order.getWarehouse() == null) {
             throw new BadRequestException("An order should be placed for a warehouse!");
         }
 
-        if (Request.getOrder().getDeliverDate().isBefore(Request.getOrder().getOrderDate().toLocalDate())) {
+        if (order.getDeliverDate().isBefore(order.getOrderDate().toLocalDate())) {
             throw new BadRequestException("An order can not be delivered in the past!");
         }
 
-        Order savedOrder = this.orderRepo.save(Request.getOrder());
+        Order savedOrder = this.orderRepo.save(order);
 
         //add all the items and manage bidirectional relationships
-        for (ItemDTO item : Request.getItems()) {
+        for (Item item : order.getItems()) {
             Product product = productRepo.findById(item.getProduct().getId()); // find the correct persisted product.
 
             //create the bidirectional relationships
