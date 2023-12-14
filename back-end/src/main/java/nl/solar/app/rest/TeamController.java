@@ -4,21 +4,24 @@ import nl.solar.app.exceptions.BadRequestException;
 import nl.solar.app.exceptions.PreConditionFailedException;
 import nl.solar.app.exceptions.ResourceNotFoundException;
 import nl.solar.app.models.Team;
-import nl.solar.app.repositories.EntityRepository;
+import nl.solar.app.repositories.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 
 @RestController
 @RequestMapping("/teams")
 public class TeamController {
 
     @Autowired
-    EntityRepository<Team> teamRepo;
+    TeamRepository teamRepo;
 
     @GetMapping(produces = "application/json")
     public List<Team> getAll() {
@@ -64,5 +67,15 @@ public class TeamController {
 
         Team updated = this.teamRepo.save(team);
         return ResponseEntity.ok(updated);
+    }
+
+    @GetMapping(path = "/modal", produces = "application/json")
+    public ResponseEntity<Map<String, Object>> getAddModalInfo() throws ResourceNotFoundException {
+        List<Map<String, Object>> teamsInfo = this.teamRepo.getWarehousesInfo();
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("warehouses", teamsInfo);
+
+        return ResponseEntity.ok(response);
     }
 }

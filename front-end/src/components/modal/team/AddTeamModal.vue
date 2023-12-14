@@ -16,11 +16,11 @@
           id="warehouse"
           class="form-select"
           :class="{'border-danger': warehouseEmpty}"
-          v-model.lazy.trim="modalItem.warehouse"
+          v-model="modalItem.warehouse"
           @blur="validateWarehouse">
         <option value="" disabled>Select a warehouse</option>
-        <option v-for="(warehouse, index) in warehouseOptions" :key="index" :value="warehouse">
-          {{ warehouse }}
+        <option v-for="warehouse in warehouseOptions" :key="warehouse.id" :value="warehouse.id">
+          {{ warehouse.warehouse }}
         </option>
       </select>
       <p v-if="warehouseEmpty" class="text-danger">The warehouse can't be empty!</p>
@@ -31,7 +31,7 @@
 <script>
 export default {
   name: "AddTeamModal",
-
+  inject: ['teamsService'],
   data() {
     return {
       modalItem:{
@@ -40,7 +40,7 @@ export default {
       },
       teamEmpty: false,
       warehouseEmpty: false,
-      warehouseOptions: ["Solar Sedum", "Superzon", "The switch", "Induct", "EHES"]
+      warehouseOptions: [],
     }
   },
 
@@ -60,7 +60,12 @@ export default {
       this.warehouseEmpty = this.modalItem.warehouse.length === 0;
       this.hasError = this.modalItem.warehouse.length === 0;
     }
-  }
+  },
+  async created() {
+    const data = await this.teamsService.getTeamModalData();
+
+    this.warehouseOptions = data.warehouses;
+  },
 }
 </script>
 

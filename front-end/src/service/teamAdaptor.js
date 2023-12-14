@@ -52,4 +52,7 @@ export class TeamAdaptor {
             return Promise.reject(e);
         }
     }
+    async getTeamModalData() {
+        return await this.fetchJSON(`${this.resourceUrl}/modal`);
+    }
 }

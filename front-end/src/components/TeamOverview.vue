@@ -132,7 +132,7 @@ export default {
       return {
         id: team.id,
         teamName: team.team,
-        warehouse: team.warehouse.warehouse,
+        warehouse: team.warehouse.name,
         type: team.type,
       };
     },

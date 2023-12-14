@@ -1,8 +1,9 @@
 package nl.solar.app.repositories.jpaRepositories;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-import nl.solar.app.repositories.EntityRepository;
 import nl.solar.app.repositories.TeamRepository;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
@@ -55,5 +56,20 @@ public class TeamRepositoryJpa implements TeamRepository {
                 .createQuery("SELECT t FROM Team t WHERE t.warehouse.id = :warehouse_id", Team.class)
                 .setParameter("warehouse_id", warehouseId)
                 .getResultList();
+    }
+
+    private List<Map<String, Object>> executeQuery(String queryString, String idField, String nameField) {
+        List<Object[]> queryResult = entityManager.createQuery(queryString, Object[].class)
+                .getResultList();
+
+        // Format the query result to a list of maps.
+        return queryResult.stream()
+                .map(row -> Map.of("id", row[0], nameField, row[1]))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Map<String, Object>> getWarehousesInfo() {
+        return executeQuery("SELECT w.id, w.name FROM Warehouse w", "warehouse", "warehouse");
     }
 }
