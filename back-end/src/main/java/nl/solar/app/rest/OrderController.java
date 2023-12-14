@@ -12,6 +12,7 @@ import nl.solar.app.models.Order;
 import nl.solar.app.models.Product;
 import nl.solar.app.repositories.EntityRepository;
 import nl.solar.app.repositories.ItemRepository;
+import nl.solar.app.service.InventoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,11 +32,14 @@ import java.util.List;
 public class OrderController {
 
     @Autowired
-    EntityRepository<Product> productRepo;
+    private EntityRepository<Product> productRepo;
     @Autowired
-    ItemRepository itemRepo;
+    private ItemRepository itemRepo;
     @Autowired
     private EntityRepository<Order> orderRepo;
+
+    @Autowired
+    private InventoryService inventoryService;
 
     /**
      * Get a list of all orders found
@@ -132,7 +136,10 @@ public class OrderController {
         }
         order.setOrderDate(existingOrder.getOrderDate());
 
-        //TODO handle updating the inventory for the given items
+        //If the new order is set to delivered update the Inventory
+        if (existingOrder.getStatus() == OrderStatus.PENDING && order.getStatus() == OrderStatus.DELIVERED) {
+            this.inventoryService.updateInventory(order.getItems(), order.getWarehouse());
+        }
 
         Order updated = this.orderRepo.save(order);
         return ResponseEntity.ok(updated);
