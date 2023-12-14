@@ -46,33 +46,12 @@
     >
     </TableComponent>
 
-    <!-- Item Dropdown -->
-    <div class="btn-group dropdown-color mt-3">
-      <button
-          class="btn dropdown-toggle background-dropdown"
-          data-bs-toggle="dropdown"
-          aria-haspopup="true"
-          aria-expanded="false"
-      >
-        {{ selectedItem ? selectedItem : " Choose item" }}
-      </button>
-      <div class="dropdown-menu">
-        <a
-            v-for="item in uniqueItemNames"
-            :key="item"
-            class="dropdown-item"
-            @click="itemSelect(item)"
-        >
-          {{ item }}
-        </a>
-      </div>
-    </div>
 
     <!--Chart forecasting-->
-    <div class="table-container mb-5 gap-5 d-flex w-100">
+    <div class="table-container mb-5 gap-5 d-flex w-100 ">
       <div class="user-table-overview-left card border-0">
-        <div class="table-container card-body align-items-center d-flex">
-          <canvas ref="combinedChart" style="width: calc(50vw - 23rem); height: 100%" class="my-chart"></canvas>
+        <div class="table-container card-body align-items-center d-flex chart-container">
+          <canvas ref="combinedChart"  class="my-chart"></canvas>
         </div>
       </div>
     </div>
@@ -96,12 +75,18 @@ export default {
     return {
       inventoryData: [],
       selectedWarehouse: "Solar Sedum", //default warehouse
-      selectedItem: null,
+      // selectedItem: null,
       chart: null,
     };
   },
   mounted() {
-    this.initializeChart();
+    this.updateChart();
+    this.fetchInventoryData();
+    // this.warehouseSelect(this.selectedWarehouse);
+
+  },
+  watch: {
+    selectedWarehouse: 'updateChartOnWarehouseChange',
   },
   computed: {
     //table only shows the ones that have an upcoming date
@@ -125,140 +110,131 @@ export default {
       return Array.from(new Set(this.inventoryData.map((item) => item.warehouseName)));
     },
     uniqueItemNames() {
-      const itemsForSelectedWarehouse = this.inventoryData
-          .filter(
-              (item) =>
-                  this.selectedWarehouse === null ||
-                  item.warehouseName === this.selectedWarehouse
-          )
-          .map((item) => item.itemName);
-
-      return Array.from(new Set(itemsForSelectedWarehouse));
+      return Array.from(new Set(this.inventoryData.map((item) => item.itemName)));
     },
   },
   created() {
     this.fetchInventoryData();
-    this.initializeChart();
+    this.updateChart();
   },
   methods: {
     async fetchInventoryData() {
       try {
         this.inventoryData = await this.dashboardService.findAll();
 
-        this.setDefaultItem();
+        // this.setDefaultItem();
       } catch (error) {
         console.error("Error fetching inventory data:", error);
       }
     },
-    warehouseSelect(warehouse) {
-      this.selectedWarehouse = warehouse;
-      this.setDefaultItem();
-      // this.updateChart();
-    },
-    itemSelect(item) {
-      this.selectedItem = item;
+    updateChartOnWarehouseChange() {
       this.updateChart();
     },
-    setDefaultItem() {
-      const itemsForSelectedWarehouse = this.inventoryData
-          .filter(
-              (item) =>
-                  this.selectedWarehouse === null ||
-                  item.warehouseName === this.selectedWarehouse
-          )
-          .map((item) => item.itemName);
 
-      // The first item as the default value
-      this.selectedItem = itemsForSelectedWarehouse.length ? itemsForSelectedWarehouse[0] : null;
+    warehouseSelect(warehouse) {
+      this.selectedWarehouse = warehouse;
+      // this.setDefaultItem();
+      this.updateChart();
     },
 
-    initializeChart() {
-      const chartCanvas = this.$refs.combinedChart;
-      if (!chartCanvas) {
-        console.error("Canvas context is not available");
-        return;
+
+    updateChart() {
+      if (this.saveChart) {
+        this.saveChart.destroy();
       }
 
-      const ctx = chartCanvas.getContext("2d");
-
-      if (!ctx) {
-        console.error("Canvas context is not available");
-        return;
-      }
-
-      // max. quantity dor the y-as
-      const maxQuantity = Math.max(...this.inventoryData.map(item => item.quantity));
-
-      /**
-       * Returns the dates on the x-as
-       * @type {Date}
-       */
+      const colorLegend = [
+        'rgba(199, 208, 44, 1)',
+        'rgba(91, 46, 24, 1)',
+        '#000000FF'
+      ];
       const currentDate = new Date();
-      const labels = [];
-      for (let i = 0; i < 20; i++) {
-        const date = new Date(currentDate);
-        date.setDate(currentDate.getDate() + i);
-        const formattedDate = date.toISOString().split("T")[0];
-        labels.push(formattedDate);
-      }
+      const dataBasedOnTheMonth = this.filteredInventoryData;
 
-      const datasets = this.uniqueWarehouseNames.map(warehouse => {
-        const data = this.filteredInventoryData
-            .filter(item => item.warehouseName === warehouse)
-            .map(item => item.quantity);
+      const nameLegend = [...new Set(dataBasedOnTheMonth.map(item => item.itemName))];
+      const datasets = nameLegend.map((name, index) => {
+        const qdata = dataBasedOnTheMonth
+            .filter(item => item.itemName === name)
+            .map(item => ({
+              x: item.deliverDate,
+              y: item.quantity
+            }));
+
         return {
-          label: warehouse,
-          data,
-          borderColor: "black",
+          label: name,
+          backgroundColor: colorLegend[index % colorLegend.length],
+          borderColor: colorLegend[index % colorLegend.length],
+          data: qdata,
         };
       });
 
-      /**
-       *
-       * @type {Chart<ChartType, DefaultDataPoint<ChartType>, *>}
-       */
-      this.chart = new Chart(ctx, {
-        type: "line",
-        data: {
-          labels: labels, //  labels (days)
-          datasets: datasets, // datasets (item quantities)
+      const dateLabels = Array.from({ length: 21 }, (_, index) => {
+        const nextDate = new Date(currentDate);
+        nextDate.setDate(currentDate.getDate() + index);
+        const formattedDate = nextDate.toISOString().split("T")[0];
+        return formattedDate;
+      });
+
+      const chartData = {
+        labels: dateLabels,
+        datasets: datasets,
+      };
+
+      const chartOptions = {
+        // legend: { display: false },
+        plugins: {
+          title: {
+            display: true,
+            text: "Forecasting",
+          },
         },
-        options: {
-          responsive: true,
-          plugins: {
+        legend: {
+          display: true,
+          labels: {
+            filter: function (item, chart) {
+              // Filter legend items based on selected warehouse
+              const warehouseName = chart.data.datasets[item.datasetIndex].label;
+              return !this.selectedWarehouse || warehouseName === this.selectedWarehouse;
+            }.bind(this),
+          },
+        },
+        // width: chartWidth,
+        // height: chartHeight,
+        scales: {
+          x: {
+            type: "category",
             title: {
               display: true,
-              text: "Forecasting",
+              text: "Days",
             },
           },
-          scales: {
-            x: {
-              type: "category",
-              labels: labels, //Date
-              title: {
-                display: true,
-                text: "Days",
-              },
-            },
-            y: {
-              type: 'linear',
-              title: {
-                display: true,
-                text: "Amount",
-              },
-              min: 0,
-              max: maxQuantity + 10,
-              ticks: {
-                stepSize: Math.ceil(maxQuantity / 10),
-                beginAtZero: true,
-              },
-            },
+          y: {
+            beginAtZero: true,
           },
         },
+
+          tooltip: {
+            enabled: true,
+            callbacks: {
+              label: (context) => {
+                const item = context.dataset.data[context.dataIndex];
+                return `${context.dataset.label}: ${item.y}`;
+              }
+          },
+        },
+        elements: {
+          line: {
+            tension: 0,
+          }
+        },
+      };
+
+      this.saveChart = new Chart(this.$refs.combinedChart, {
+        type: "line",
+        data: chartData,
+        options: chartOptions,
       });
-    },
-
-
+    }
   },
 }
 </script>
@@ -299,5 +275,12 @@ h2 {
 
 .background-dropdown {
   background-color: rgba(199, 208, 44, 1);
+}
+.chart-container{
+  //width: 100%;
+  width: 800px;
+  height: 450px;
+  margin: 0 auto;
+
 }
 </style>
