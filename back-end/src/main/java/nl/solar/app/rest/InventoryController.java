@@ -51,22 +51,11 @@ public class InventoryController {
     @JsonView(ResourceView.Complete.class)
     @GetMapping(path = "/inventory", produces = "application/json")
     public ResponseEntity<List<InventoryDTO>> getInventory() {
-        List<Inventory> inventories = inventoryRepo.findAll();
-        List<InventoryDTO> formattedResources = new ArrayList<>();
-        Map<Warehouse, List<InventoryProductDTO>> GroupedByWarehouse = new HashMap<>();
-
-        for (Inventory inventory : inventories) {
-            InventoryProductDTO productFormat = formatProductObject(inventory);
-
-            // add product to a list of the warehouse of the current resources.
-            GroupedByWarehouse.computeIfAbsent(inventory.getWarehouse(), k -> new ArrayList<>()).add(productFormat);
+        List<InventoryDTO> inventory = new ArrayList<>();
+        for (Warehouse warehouse : warehouseRepo.findAll()) {
+            inventory.add(new InventoryDTO(warehouse, inventoryRepo.findInventoryForWarehouse(warehouse.getId())));
         }
-
-        for (Map.Entry<Warehouse, List<InventoryProductDTO>> entry : GroupedByWarehouse.entrySet()) {
-            InventoryDTO formattedResource = new InventoryDTO(entry.getKey(), entry.getValue());
-            formattedResources.add(formattedResource);
-        }
-        return ResponseEntity.ok(formattedResources);
+        return ResponseEntity.ok(inventory);
     }
 
     /**
@@ -81,11 +70,12 @@ public class InventoryController {
     @GetMapping(path = "/warehouses/{id}/inventory", produces = "application/json")
     public ResponseEntity<List<InventoryProductDTO>> getInventoryForWarehouse(@PathVariable long id)
             throws ResourceNotFoundException {
-        List<InventoryProductDTO> inventories = this.inventoryRepo.findInventoryForWarehouse(id);
-
-        if (inventories.isEmpty()) {
+        if (warehouseRepo.findById(id) == null) {
             throw new ResourceNotFoundException("Warehouse doesn't exist");
         }
+
+        List<InventoryProductDTO> inventories = this.inventoryRepo.findInventoryForWarehouse(id);
+
         return ResponseEntity.ok(inventories);
     }
 
