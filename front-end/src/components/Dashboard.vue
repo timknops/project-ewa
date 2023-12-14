@@ -14,13 +14,6 @@
 
       <div class="dropdown-menu">
         <a
-            class="dropdown-item"
-            :key="null"
-            @click="warehouseSelect(null)"
-        >
-          All warehouses
-        </a>
-        <a
             v-for="warehouse in uniqueWarehouseNames"
             :key="warehouse"
             class="dropdown-item"
@@ -50,7 +43,7 @@
     <div class="table-container mb-5 gap-5 d-flex w-100 ">
       <div class="user-table-overview-left card border-0">
         <div class="table-container card-body align-items-center d-flex chart-container">
-          <canvas ref="combinedChart"  class="my-chart"></canvas>
+          <canvas ref="combinedChart" class="my-chart"></canvas>
         </div>
       </div>
     </div>
@@ -142,7 +135,8 @@ export default {
         '#000000FF',
         '#7a7272',
         '#444b65',
-        '#988960'
+        '#988960',
+        '#7c7321'
 
 
       ];
@@ -166,7 +160,7 @@ export default {
         };
       });
 
-      const dateLabels = Array.from({ length: 21 }, (_, index) => {
+      const dateLabels = Array.from({length: 21}, (_, index) => {
         const nextDate = new Date(currentDate);
         nextDate.setDate(currentDate.getDate() + index);
         const formattedDate = nextDate.toISOString().split("T")[0];
@@ -206,16 +200,20 @@ export default {
           },
           y: {
             beginAtZero: true,
+            title: {
+              display: true,
+              text: "Quantity",
+            },
           },
         },
 
-          tooltip: {
-            enabled: true,
-            callbacks: {
-              label: (context) => {
-                const item = context.dataset.data[context.dataIndex];
-                return `${context.dataset.label}: ${item.y}`;
-              }
+        tooltip: {
+          enabled: true,
+          callbacks: {
+            label: (context) => {
+              const item = context.dataset.data[context.dataIndex];
+              return `${context.dataset.label}: ${item.y}`;
+            }
           },
         },
         elements: {
@@ -272,15 +270,15 @@ h2 {
 .background-dropdown {
   background-color: rgba(199, 208, 44, 1);
 }
-.chart-container{
-  //width: 100%;
-  width: 800px;
+
+.chart-container {
+//width: 100%; width: 800px;
   height: 450px;
   margin: 0 auto;
 }
 
-.colorTest{
-  color: #988960;
+.colorTest {
+  color: #7c7321;
 }
 
 </style>
