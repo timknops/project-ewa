@@ -1,5 +1,6 @@
 package nl.solar.app.repositories.inMemoryRepositories;
 
+import nl.solar.app.DTO.InventoryProductDTO;
 import nl.solar.app.models.Product;
 import nl.solar.app.models.Inventory;
 import nl.solar.app.models.Warehouse;
@@ -39,8 +40,13 @@ public class InventoryRepositoryMock implements InventoryRepository {
     }
 
     @Override
-    public List<Inventory> findInventoryForWarehouse(long warehouseId) {
-        return inventoryList.stream().filter(resource -> resource.getWarehouse().getId() == warehouseId).toList();
+    public List<InventoryProductDTO> findInventoryForWarehouse(long warehouseId) {
+        return inventoryList.stream().filter(resource -> resource.getWarehouse().getId() == warehouseId)
+                .map(inventory -> new InventoryProductDTO(
+                        inventory.getProduct().getId(),
+                        inventory.getProduct().getProductName(),
+                        inventory.getProduct().getDescription(),
+                        inventory.getQuantity())).toList();
     }
 
     @Override

@@ -9,6 +9,7 @@ import nl.solar.app.models.Inventory;
 import nl.solar.app.models.Product;
 import nl.solar.app.models.Warehouse;
 import nl.solar.app.models.views.ResourceView;
+import nl.solar.app.repositories.EntityRepository;
 import nl.solar.app.repositories.InventoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +33,9 @@ public class InventoryController {
 
     @Autowired
     InventoryRepository inventoryRepo;
+
+    @Autowired
+    EntityRepository<Warehouse> warehouseRepo;
 
     @JsonView(ResourceView.Complete.class)
     @GetMapping("/inventory/test")
@@ -77,17 +81,12 @@ public class InventoryController {
     @GetMapping(path = "/warehouses/{id}/inventory", produces = "application/json")
     public ResponseEntity<List<InventoryProductDTO>> getInventoryForWarehouse(@PathVariable long id)
             throws ResourceNotFoundException {
-        List<Inventory> inventories = this.inventoryRepo.findInventoryForWarehouse(id);
+        List<InventoryProductDTO> inventories = this.inventoryRepo.findInventoryForWarehouse(id);
 
         if (inventories.isEmpty()) {
             throw new ResourceNotFoundException("Warehouse doesn't exist");
         }
-
-        List<InventoryProductDTO> formattedProducts = new ArrayList<>();
-        for (Inventory inventory : inventories) {
-            formattedProducts.add(formatProductObject(inventory));
-        }
-        return ResponseEntity.ok(formattedProducts);
+        return ResponseEntity.ok(inventories);
     }
 
     /**
