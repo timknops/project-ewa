@@ -2,9 +2,9 @@
   <div>
 
     <!-- Warehouse Dropdown-->
-    <div class="btn-group dropdown-color">
+    <div class="btn-group dropdown-color mb-3 w-100">
       <button
-          class="btn dropdown-toggle background-dropdown"
+          class="btn dropdown-toggle background-dropdown "
           data-bs-toggle="dropdown"
           aria-haspopup="true"
           aria-expanded="false"
