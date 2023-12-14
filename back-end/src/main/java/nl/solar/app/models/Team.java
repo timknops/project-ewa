@@ -6,14 +6,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.*;
 import nl.solar.app.models.views.ProjectView;
 
 @Entity
@@ -28,6 +21,9 @@ public class Team {
     @JsonView(ProjectView.Overview.class)
     private String team;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "warehouse_id")
+    @JsonView(ProjectView.Overview.class)
     private Warehouse warehouse;
 
     @Enumerated(EnumType.STRING)
@@ -50,13 +46,12 @@ public class Team {
     public Team() {
     }
 
-    public static Team createDummyTeam() {
-        String randomTeamName = "Team " + (int) (Math.random() * 10);
-        return new Team(0, randomTeamName, Warehouse.SolarSedum, TeamType.Internal);
-    }
-
-    public enum Warehouse {
-        SolarSedum, Superzon, Theswitch, Induct, EHES
+    public static Team createDummyTeam(Warehouse warehouse, String teamName, TeamType teamType) {
+        Team team = new Team();
+        team.setWarehouse(warehouse);
+        team.setTeam(teamName);
+        team.setType(teamType);
+        return team;
     }
 
     public enum TeamType {

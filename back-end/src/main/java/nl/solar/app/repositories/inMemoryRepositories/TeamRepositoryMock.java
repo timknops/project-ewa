@@ -14,12 +14,12 @@ public class TeamRepositoryMock implements EntityRepository<Team> {
 
     public TeamRepositoryMock() {
         teams = new ArrayList<>();
-        currentId = 1;
-        teams.add(new Team(currentId++, "Team 1", Team.Warehouse.SolarSedum, Team.TeamType.Internal));
-        teams.add(new Team(currentId++, "Team 2", Team.Warehouse.Superzon, Team.TeamType.External));
-        teams.add(new Team(currentId++, "Team 3", Team.Warehouse.Theswitch, Team.TeamType.External));
-        teams.add(new Team(currentId++, "Team 4", Team.Warehouse.Induct, Team.TeamType.External));
-        teams.add(new Team(currentId++, "Team 5", Team.Warehouse.EHES, Team.TeamType.External));
+//        currentId = 1;
+//        teams.add(new Team(currentId++, "Team 1", Team.Warehouse.SolarSedum, Team.TeamType.Internal));
+//        teams.add(new Team(currentId++, "Team 2", Team.Warehouse.Superzon, Team.TeamType.External));
+//        teams.add(new Team(currentId++, "Team 3", Team.Warehouse.Theswitch, Team.TeamType.External));
+//        teams.add(new Team(currentId++, "Team 4", Team.Warehouse.Induct, Team.TeamType.External));
+//        teams.add(new Team(currentId++, "Team 5", Team.Warehouse.EHES, Team.TeamType.External));
     }
 
     @Override
@@ -44,11 +44,11 @@ public class TeamRepositoryMock implements EntityRepository<Team> {
 
     @Override
     public Team save(Team item) {
-        if (item.getWarehouse() == Team.Warehouse.SolarSedum) {
-            item.setType(Team.TeamType.Internal);
-        } else {
-            item.setType(Team.TeamType.External);
-        }
+//        if (item.getWarehouse() == Team.Warehouse.SolarSedum) {
+//            item.setType(Team.TeamType.Internal);
+//        } else {
+//            item.setType(Team.TeamType.External);
+//        }
 
         int index = teams.indexOf(item);
         if (index != -1) {
