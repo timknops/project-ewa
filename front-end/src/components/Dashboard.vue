@@ -1,376 +1,268 @@
 <template>
   <div>
 
-    <!--Dropdown-->
+    <!-- Warehouse Dropdown-->
     <div class="btn-group dropdown-color">
-      <button class="btn dropdown-toggle background-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        {{selectedWarehouse ? selectedWarehouse : " Choose warehouse"}}
+      <button
+          class="btn dropdown-toggle background-dropdown"
+          data-bs-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+      >
+        {{ selectedWarehouse ? selectedWarehouse : " Choose warehouse" }}
       </button>
 
       <div class="dropdown-menu">
-        <a class="dropdown-item" :key="null" @click="warehouseSelect(null)">All warehouses</a>
-        <a  v-for="warehouse in wareHouseNameData" :key="warehouse" class="dropdown-item" @click="warehouseSelect(warehouse)">{{warehouse}}</a>
+        <a
+            class="dropdown-item"
+            :key="null"
+            @click="warehouseSelect(null)"
+        >
+          All warehouses
+        </a>
+        <a
+            v-for="warehouse in uniqueWarehouseNames"
+            :key="warehouse"
+            class="dropdown-item"
+            @click="warehouseSelect(warehouse)"
+        >
+          {{ warehouse }}
+        </a>
 
-    </div>
+      </div>
     </div>
 
     <!--Inventory-->
     <TableComponent
-      :tableWidth="'100%'"
-      :boldFirstColumn="true"
-      :amountToDisplay="4"
-      :tableData="selectedWarehouseData"
-      :arrayAmountToDisplay="10"
-      table-title="Inventory"
-      sub-title="Current inventory of my warehouse"
+        v-if="inventoryData.length > 0"
+        :tableWidth="'100%'"
+        :boldFirstColumn="true"
+        :amountToDisplay="4"
+        :tableData="filteredInventoryData"
+        :arrayAmountToDisplay="10"
+        table-title="Inventory"
+        sub-title="Current inventory of my warehouse"
+        hasSearchBar="true"
     >
     </TableComponent>
 
-
-
-
-
-    <div class="table-container mb-5 gap-5 d-flex w-100">
-      <!--Forecast-->
-      <div class="user-table-overview-left card border-0">
-
-<!--            Dropdown for months-->
-        <div class="btn-group dropdown-color">
-          <a class="btn dropdown-toggle background-dropdown"  aria-haspopup="true" aria-expanded="false">
-            {{ selectedMonth ? selectedMonth : currentMonth }}
-          </a>
-
-
-          <div class="dropdown-menu position-absolute">
-<!--            <a v-for="(month, index) in allMonths" :key="index" class="dropdown-item" @click="selectMonth(month)">{{ month }}</a>-->
-
-          </div>
-        </div>
-
-
-
-        <div class="table-container card-body align-items-center d-flex">
-          <canvas
-            ref="combinedChart"
-            style="width: calc(50vw - 23rem); height: 100%"
-            class="my-chart"
-          ></canvas>
-        </div>
-      </div>
-
-      <!--User information-->
-      <TableComponent
-        class="user-table-overview-right"
-        tableWidth="60%"
-        :boldFirstColumn="true"
-        :amountToDisplay="4"
-        :tableData="selectedProjectData"
-        table-title="Projects"
-        sub-title="Upcoming projects"
+    <!-- Item Dropdown -->
+    <div class="btn-group dropdown-color mt-3">
+      <button
+          class="btn dropdown-toggle background-dropdown"
+          data-bs-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
       >
-      </TableComponent>
+        {{ selectedItem ? selectedItem : " Choose item" }}
+      </button>
+      <div class="dropdown-menu">
+        <a
+            v-for="item in uniqueItemNames"
+            :key="item"
+            class="dropdown-item"
+            @click="itemSelect(item)"
+        >
+          {{ item }}
+        </a>
+      </div>
     </div>
 
+    <!--Chart forecasting-->
+    <div class="table-container mb-5 gap-5 d-flex w-100">
+      <div class="user-table-overview-left card border-0">
+        <div class="table-container card-body align-items-center d-flex">
+          <canvas ref="combinedChart" style="width: calc(50vw - 23rem); height: 100%" class="my-chart"></canvas>
+        </div>
+      </div>
+    </div>
 
   </div>
 </template>
 
 <script>
-import TableComponent from "@/components/table/TableComponent.vue";
 import Chart from "chart.js/auto";
+import TableComponent from "@/components/table/TableComponent.vue";
+
 
 export default {
   // eslint-disable-next-line
   name: "Dashboard",
   components: {
-    TableComponent,
+    TableComponent
   },
+  inject: ["dashboardService"],
   data() {
     return {
-      tableData: [
-        {
-          Warehouse: "Solar Clarity",
-          Name: "enphase",
-          Quantity: 9,
-          Expected: 32,
-          Month: "December",
-          Date: 4,
-        },
-
-        {
-          Warehouse: "Solar Clarity",
-          Name: "enphase",
-          Quantity: 15,
-          Expected: 32,
-          Month: "December",
-          Date: 5,
-        },
-        {
-          Warehouse: "Solar Clarity",
-          Name: "enphase",
-          Quantity: 6,
-          Expected: 32,
-          Month: "December",
-          Date: 20,
-        },
-
-
-        {
-          Warehouse: "4Blue",
-          Name: "MB 385 (white)",
-          Quantity: 18,
-          Expected: 30,
-          Month: "December",
-          Date: 5
-        },
-        {
-          Warehouse: "4Blue",
-          Name: "MB 385 (white)",
-          Quantity: 15,
-          Expected: 30,
-          Month: "December",
-          Date: 10
-        },
-        {
-          Warehouse: "4Blue",
-          Name: "MB 385 (white)",
-          Quantity: 15,
-          Expected: 30,
-          Month: "December",
-          Date: 20
-        },
-        {
-          Warehouse: "4Blue",
-          Name: "Gateway",
-          Quantity: 11,
-          Expected: 30,
-          Month: "December",
-          Date: 5
-        },
-        {
-          Warehouse: "4Blue",
-          Name: "Gateway",
-          Quantity: 19,
-          Expected: 30,
-          Month: "December",
-          Date: 10
-        },
-        {
-          Warehouse: "4Blue",
-          Name: "Gateway",
-          Quantity: 33,
-          Expected: 30,
-          Month: "December",
-          Date: 20
-        },
-
-
-      ],
-      projects: [
-        {
-          Warehouse: "4Blue",
-          Name: "Plaatsing Amstelveen",
-          DueDate: "03-12-2023"
-        },
-        {
-          Warehouse: "4Blue",
-          Name: "Plaatsing Amstelveen",
-          DueDate: "07-12-2023"
-        },
-        {
-          Warehouse: "Solar Clarity",
-          Name: "Plaatsing Amstelveen",
-          DueDate: "08-12-2023"
-        }
-      ],
-      forecastData: [
-        {
-          Forecast: "",
-        },
-      ],
-      wareHouseNameData:["Solar Clarity", "4Blue"],
-      selectedWarehouse: null,
-      selectedWarehouseChart: null,
-
-      //dropdown chart
-      selectedMonth: null,
-      currentMonth: "",
-      allMonths: [
-        'January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'
-      ],
-      chartDataList: [],
-      //    chart: null,
-      saveChart: null,
-      chartWidth: 200,
-      chartHeight: 80,
-      // xValues: ["This week", "Expected"],
-      // yValues: [0, 36],
-      barColors: ["rgba(91, 46, 24, 1)"],
+      inventoryData: [],
+      selectedWarehouse: "Solar Sedum", //default warehouse
+      selectedItem: null,
+      chart: null,
     };
   },
-
   mounted() {
-    this.currentMonth = this.getMonthName(new Date().getMonth() + 1);
-    this.selectedMonth = this.currentMonth;
-    this.createChart(this.tableData);
+    this.initializeChart();
   },
-
   computed: {
-    selectedWarehouseData(){
-
+    //table only shows the ones that have an upcoming date
+    filteredInventoryData() {
       const currentDate = new Date();
-      // eslint-disable-next-line no-unused-vars
-      const dateFormat = `${currentDate.getDate()}/${currentDate.getMonth() + 1}`;
-
-      if (this.selectedWarehouse) {
-        return this.tableData
-            .filter(item => item.Warehouse === this.selectedWarehouse && item.Date === currentDate.getDate() && item.Month === this.getMonthName(currentDate.getMonth() + 1))
-            .map(item => ({
-              Warehouse: item.Warehouse,
-              Name: item.Name,
-              Quantity: item.Quantity,
-            }));
-      }
-
-      return this.tableData
-          .filter(item => item.Date === currentDate.getDate() && item.Month === this.getMonthName(currentDate.getMonth() + 1))
-          .map(item => ({
-            Warehouse: item.Warehouse,
-            Name: item.Name,
-            Quantity: item.Quantity,
+      return this.inventoryData.filter((item) => {
+        const deliverDate = new Date(item.deliverDate);
+        return (
+            (this.selectedWarehouse === null ||
+                item.warehouseName === this.selectedWarehouse) &&
+            deliverDate > currentDate
+        );
+      })
+          .map(({itemName, quantity, deliverDate}) => ({
+            itemName,
+            quantity,
+            deliverDate,
           }));
-
-
     },
-
-    selectedProjectData() {
-      if (this.selectedWarehouse) {
-        if (this.selectedWarehouse === null) {
-          return this.projects;
-        } else {
-          return this.projects.filter(
-              (project) => project.Warehouse === this.selectedWarehouse
-          );
-        }
-      }
-      return this.projects;
+    uniqueWarehouseNames() {
+      return Array.from(new Set(this.inventoryData.map((item) => item.warehouseName)));
     },
-    },
+    uniqueItemNames() {
+      const itemsForSelectedWarehouse = this.inventoryData
+          .filter(
+              (item) =>
+                  this.selectedWarehouse === null ||
+                  item.warehouseName === this.selectedWarehouse
+          )
+          .map((item) => item.itemName);
 
-
-  methods: {
-    selectMonth(monthIsSelected){
-      this.selectedMonth = monthIsSelected;
-      this.createChart();
-    },
-
-    getMonthName(monthI){
-      return this.allMonths[monthI - 1]
-    },
-
-
-    createChart() {
-      if (this.saveChart) {
-        this.saveChart.destroy();
-      }
-
-      const chartWidth = this.chartWidth;
-      const chartHeight = this.chartHeight;
-
-      const colorLegend = [
-          'rgba(199, 208, 44, 1)',
-          'rgba(91, 46, 24, 1)',
-          '#000000FF'
-      ];
-      const dateOfTheDay = new Date();
-      const dataBasedOnTheMonth = this.tableData.filter( item => (!this.selectedWarehouse || item.Warehouse === this.selectedWarehouse) && item.Month === this.selectedMonth && item.Date >= dateOfTheDay.getDate());
-
-      const nameLegend = [...new Set(dataBasedOnTheMonth.map(item => item.Name))];
-      const datasets = nameLegend.map((name, index) => {
-            const qdata = dataBasedOnTheMonth
-                .filter(item => item.Name === name)
-                .map(item => ({
-                      x: `${item.Date}/${this.allMonths.indexOf(item.Month) + 1}`,
-                      y: item.Quantity
-                    })
-                );
-
-        // const backgroundColor = colorLegend[index % colorLegend.length];
-
-          return {
-            label: name,
-            backgroundColor: colorLegend[index % colorLegend.length],
-            borderColor: colorLegend[index % colorLegend.length],
-            data: qdata,
-
-          };
-        });
-
-      // const currentDate = new Date();
-      const dateLabels = Array.from({ length: 14 }, (_, index) => {
-        const nextDate = new Date(dateOfTheDay);
-        nextDate.setDate(dateOfTheDay.getDate() + index);
-        const day = nextDate.getDate();
-        const month = nextDate.getMonth() + 1;
-        return `${day}/${month}`;
-      });
-
-
-      const chartData = {
-        labels:  dateLabels,
-        datasets: datasets,
-      };
-
-
-      const chartOptions = {
-        legend: {display: false},
-        title: {
-          display: true,
-          text: "Inventory Chart",
-        },
-        width: chartWidth,
-        height: chartHeight,
-        scales: {
-          y: {
-            beginAtZero: true,
-          },
-        },
-        plugins: {
-          tooltip: {
-            enabled: true,
-            callbacks: {
-              label: (context) => {
-                const item = context.dataset.data[context.dataIndex];
-                return `${context.dataset.label}: ${item.y}`;
-              }
-            }
-          },
-        },
-        elements: {
-          // bar: {
-          //   borderRadius: 30,
-          // },
-          line: {
-            tension: 0,
-          }
-        },
-      };
-
-     this.saveChart = new Chart(this.$refs.combinedChart, {
-        type: "line",
-        data: chartData,
-        options: chartOptions,
-      });
-    },
-
-    warehouseSelect(nameOfTheWarehouse){
-      this.selectedWarehouse = nameOfTheWarehouse;
-      this.createChart(this.selectedWarehouseData);
+      return Array.from(new Set(itemsForSelectedWarehouse));
     },
   },
-};
+  created() {
+    this.fetchInventoryData();
+    this.initializeChart();
+  },
+  methods: {
+    async fetchInventoryData() {
+      try {
+        this.inventoryData = await this.dashboardService.findAll();
+
+        this.setDefaultItem();
+      } catch (error) {
+        console.error("Error fetching inventory data:", error);
+      }
+    },
+    warehouseSelect(warehouse) {
+      this.selectedWarehouse = warehouse;
+      this.setDefaultItem();
+      // this.updateChart();
+    },
+    itemSelect(item) {
+      this.selectedItem = item;
+      this.updateChart();
+    },
+    setDefaultItem() {
+      const itemsForSelectedWarehouse = this.inventoryData
+          .filter(
+              (item) =>
+                  this.selectedWarehouse === null ||
+                  item.warehouseName === this.selectedWarehouse
+          )
+          .map((item) => item.itemName);
+
+      // The first item as the default value
+      this.selectedItem = itemsForSelectedWarehouse.length ? itemsForSelectedWarehouse[0] : null;
+    },
+
+    initializeChart() {
+      const chartCanvas = this.$refs.combinedChart;
+      if (!chartCanvas) {
+        console.error("Canvas context is not available");
+        return;
+      }
+
+      const ctx = chartCanvas.getContext("2d");
+
+      if (!ctx) {
+        console.error("Canvas context is not available");
+        return;
+      }
+
+      // max. quantity dor the y-as
+      const maxQuantity = Math.max(...this.inventoryData.map(item => item.quantity));
+
+      /**
+       * Returns the dates on the x-as
+       * @type {Date}
+       */
+      const currentDate = new Date();
+      const labels = [];
+      for (let i = 0; i < 20; i++) {
+        const date = new Date(currentDate);
+        date.setDate(currentDate.getDate() + i);
+        const formattedDate = date.toISOString().split("T")[0];
+        labels.push(formattedDate);
+      }
+
+      const datasets = this.uniqueWarehouseNames.map(warehouse => {
+        const data = this.filteredInventoryData
+            .filter(item => item.warehouseName === warehouse)
+            .map(item => item.quantity);
+        return {
+          label: warehouse,
+          data,
+          borderColor: "black",
+        };
+      });
+
+      /**
+       *
+       * @type {Chart<ChartType, DefaultDataPoint<ChartType>, *>}
+       */
+      this.chart = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: labels, //  labels (days)
+          datasets: datasets, // datasets (item quantities)
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: "Forecasting",
+            },
+          },
+          scales: {
+            x: {
+              type: "category",
+              labels: labels, //Date
+              title: {
+                display: true,
+                text: "Days",
+              },
+            },
+            y: {
+              type: 'linear',
+              title: {
+                display: true,
+                text: "Amount",
+              },
+              min: 0,
+              max: maxQuantity + 10,
+              ticks: {
+                stepSize: Math.ceil(maxQuantity / 10),
+                beginAtZero: true,
+              },
+            },
+          },
+        },
+      });
+    },
+
+
+  },
+}
 </script>
+
 
 <style scoped>
 h2 {
