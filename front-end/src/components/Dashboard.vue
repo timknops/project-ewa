@@ -46,7 +46,6 @@
     >
     </TableComponent>
 
-
     <!--Chart forecasting-->
     <div class="table-container mb-5 gap-5 d-flex w-100 ">
       <div class="user-table-overview-left card border-0">
@@ -63,7 +62,6 @@
 import Chart from "chart.js/auto";
 import TableComponent from "@/components/table/TableComponent.vue";
 
-
 export default {
   // eslint-disable-next-line
   name: "Dashboard",
@@ -79,13 +77,15 @@ export default {
     };
   },
   mounted() {
-    this.updateChart();
+    // this.updateChart();
     this.fetchInventoryData();
-
-
   },
   watch: {
     selectedWarehouse: 'updateChartOnWarehouseChange',
+    inventoryData: {
+      handler: 'updateChart',
+      immediate: true, // Trigger the handler immediately on component mount
+    },
   },
   computed: {
     //table only shows the ones that have an upcoming date
