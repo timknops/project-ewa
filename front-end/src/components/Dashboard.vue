@@ -146,7 +146,12 @@ export default {
       const colorLegend = [
         'rgba(199, 208, 44, 1)',
         'rgba(91, 46, 24, 1)',
-        '#000000FF'
+        '#000000FF',
+        '#7a7272',
+        '#444b65',
+        '#988960'
+
+
       ];
       const currentDate = new Date();
       const dataBasedOnTheMonth = this.filteredInventoryData;
@@ -281,6 +286,10 @@ h2 {
   width: 800px;
   height: 450px;
   margin: 0 auto;
-
 }
+
+.colorTest{
+  color: #988960;
+}
+
 </style>
