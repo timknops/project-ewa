@@ -128,8 +128,21 @@ public class OrderController {
             throw new PreConditionFailedException("The id's in the path and body don't match");
         }
 
+        //check if a tag is empty
+        if (order.getTag() == null) {
+            throw new BadRequestException("The order tag should not be empty");
+        }
+
+        if (order.getItems().stream().anyMatch(item -> item.getQuantity() <= 0)) {
+            throw new BadRequestException("An item quantity can't be negative or 0!");
+        }
+
         //find the existing order to handle some change checks.
         Order existingOrder = this.orderRepo.findById(id);
+
+        if (existingOrder.getStatus() == OrderStatus.DELIVERED && order.getStatus() != OrderStatus.DELIVERED) {
+            throw new BadRequestException("You can't change the status of an order that is already delivered ");
+        }
 
         if (order.getDeliverDate().isBefore(existingOrder.getOrderDate().toLocalDate())) {
             throw new BadRequestException("An order can not be delivered in the past!");
