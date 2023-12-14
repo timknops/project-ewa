@@ -75,14 +75,13 @@ export default {
     return {
       inventoryData: [],
       selectedWarehouse: "Solar Sedum", //default warehouse
-      // selectedItem: null,
       chart: null,
     };
   },
   mounted() {
     this.updateChart();
     this.fetchInventoryData();
-    // this.warehouseSelect(this.selectedWarehouse);
+
 
   },
   watch: {
@@ -109,9 +108,6 @@ export default {
     uniqueWarehouseNames() {
       return Array.from(new Set(this.inventoryData.map((item) => item.warehouseName)));
     },
-    uniqueItemNames() {
-      return Array.from(new Set(this.inventoryData.map((item) => item.itemName)));
-    },
   },
   created() {
     this.fetchInventoryData();
@@ -121,8 +117,6 @@ export default {
     async fetchInventoryData() {
       try {
         this.inventoryData = await this.dashboardService.findAll();
-
-        // this.setDefaultItem();
       } catch (error) {
         console.error("Error fetching inventory data:", error);
       }
@@ -133,7 +127,6 @@ export default {
 
     warehouseSelect(warehouse) {
       this.selectedWarehouse = warehouse;
-      // this.setDefaultItem();
       this.updateChart();
     },
 
@@ -203,8 +196,6 @@ export default {
             }.bind(this),
           },
         },
-        // width: chartWidth,
-        // height: chartHeight,
         scales: {
           x: {
             type: "category",
