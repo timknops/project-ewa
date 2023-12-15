@@ -17,6 +17,7 @@ export class DashboardAdaptor {
 
     async findAll() {
        const data = await this.fetchJSON(this.resourceURL);
+        console.log('Fetched data:', data);
         return data.map(item => ({
             warehouseName: item.warehouseName,
             productName: item.productName,

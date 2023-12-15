@@ -79,6 +79,7 @@ export default {
       handler: 'updateChart',
       immediate: true, // Trigger the handler on component mount
     },
+    immediate: true,
   },
   computed: {
     //table only shows the ones that have an upcoming date
@@ -92,13 +93,15 @@ export default {
             deliverDate > currentDate
         );
       })
-          .map(({productName, quantity, deliverDate}) => ({
+          .map(({productName, quantity, deliverDate, inventoryQuantity }) => ({
             productName,
             quantity,
-            deliverDate
-          }))
-          ;
+            deliverDate,
+            inventoryQuantity,
+          }));
+
     },
+
     uniqueWarehouseNames() {
       return Array.from(new Set(this.inventoryData.map((item) => item.warehouseName)));
     },
@@ -141,36 +144,37 @@ export default {
 
 
       ];
-      const currentDate = new Date();
+      // const currentDate = new Date();
+
+
+      const currentDateFormattedValueTrimmed = new Date().toISOString().split("T")[0].trim();
       const dataBasedOnTheMonth = this.filteredInventoryData;
 
+
+      const currentInventoryMap = {};
+      dataBasedOnTheMonth.forEach(item => {
+          currentInventoryMap[item.productName] = item.inventoryQuantity;
+      });
+
+
       const nameLegend = [...new Set(dataBasedOnTheMonth.map(item => item.productName))];
+
       const datasets = nameLegend.map((name, index) => {
-        const inventoryQuantityItem = dataBasedOnTheMonth
-            .filter(item => item.productName === name && item.deliverDate === currentDate.toISOString().split("T")[0])[0];
-            // .map(item => ({
-            //   x: item.deliverDate,
-            //   y: item.quantity
-            // }))[0] || { x: currentDate.toISOString().split("T")[0], y: 0 };
-        const currentInventoryQuantity = {
-          x: currentDate.toISOString().split("T")[0],
-          y: inventoryQuantityItem ? inventoryQuantityItem.inventoryQuantity : 0
-        };
-
-
         const quantityData = dataBasedOnTheMonth
-            .filter(item => item.productName === name && item.deliverDate > currentDate.toISOString().split("T")[0] )
+            .filter(item => item.productName === name)
             .map(item => ({
               x: item.deliverDate,
-              y: currentInventoryQuantity.y + item.quantity
+              y: item.quantity
             }));
 
-        // const quantityData = dataBasedOnTheMonth
-        //     .filter(item => item.productName === name && item.deliverDate > currentDate.toISOString().split("T")[0])
-        //     .map(item => ({
-        //       x: item.deliverDate,
-        //       y: currentInventoryQuantity.y + item.quantity
-        //     }));
+        const currentDateFormattedValue = currentDateFormattedValueTrimmed;
+
+        const currentInventoryQuantity = {
+          x: currentDateFormattedValue,
+          y: currentInventoryMap[name] || 0,
+        };
+
+        console.log('Dataset for', name, ':', [currentInventoryQuantity, ...quantityData]);
 
         return {
           label: name,
@@ -178,13 +182,12 @@ export default {
           borderColor: colorLegend[index % colorLegend.length],
           data: [currentInventoryQuantity, ...quantityData],
           fill: false,
-          // data: qdata,
         };
       });
 
       const dateLabels = Array.from({length: 21}, (_, index) => {
-        const nextDate = new Date(currentDate);
-        nextDate.setDate(currentDate.getDate() + index);
+        const nextDate = new Date(currentDateFormattedValueTrimmed);
+        nextDate.setDate(nextDate.getDate() + index);
         const formattedDate = nextDate.toISOString().split("T")[0];
         return formattedDate;
       });
@@ -221,7 +224,7 @@ export default {
             },
           },
           y: {
-            beginAtZero: true,
+            beginAtZero: false,
             title: {
               display: true,
               text: "Quantity",
@@ -245,11 +248,14 @@ export default {
         },
       };
 
+      console.log('Chart Data:', chartData);
+
       this.saveChart = new Chart(this.$refs.combinedChart, {
         type: "line",
         data: chartData,
         options: chartOptions,
       });
+
     }
   },
 }
