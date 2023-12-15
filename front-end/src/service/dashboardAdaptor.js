@@ -19,8 +19,9 @@ export class DashboardAdaptor {
        const data = await this.fetchJSON(this.resourceURL);
         return data.map(item => ({
             warehouseName: item.warehouseName,
-            itemName: item.itemName,
+            productName: item.productName,
             quantity: item.quantity,
+            inventoryQuantity: item.inventoryQuantity,
             deliverDate: item.deliverDate,
         }));
     }
@@ -32,5 +33,6 @@ export class DashboardAdaptor {
             warehouseName: warehouseName,
         }));
     }
+
 
 }

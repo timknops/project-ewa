@@ -34,7 +34,7 @@
         :tableData="filteredInventoryData"
         :arrayAmountToDisplay="10"
         table-title="Inventory"
-        sub-title="Current inventory of my warehouse"
+        sub-title="Future deliveries of my warehouse"
         hasSearchBar="true"
     >
     </TableComponent>
@@ -77,7 +77,7 @@ export default {
     selectedWarehouse: 'updateChartOnWarehouseChange',
     inventoryData: {
       handler: 'updateChart',
-      immediate: true, // Trigger the handler immediately on component mount
+      immediate: true, // Trigger the handler on component mount
     },
   },
   computed: {
@@ -92,11 +92,12 @@ export default {
             deliverDate > currentDate
         );
       })
-          .map(({itemName, quantity, deliverDate}) => ({
-            itemName,
+          .map(({productName, quantity, deliverDate}) => ({
+            productName,
             quantity,
-            deliverDate,
-          }));
+            deliverDate
+          }))
+          ;
     },
     uniqueWarehouseNames() {
       return Array.from(new Set(this.inventoryData.map((item) => item.warehouseName)));
@@ -143,20 +144,41 @@ export default {
       const currentDate = new Date();
       const dataBasedOnTheMonth = this.filteredInventoryData;
 
-      const nameLegend = [...new Set(dataBasedOnTheMonth.map(item => item.itemName))];
+      const nameLegend = [...new Set(dataBasedOnTheMonth.map(item => item.productName))];
       const datasets = nameLegend.map((name, index) => {
-        const qdata = dataBasedOnTheMonth
-            .filter(item => item.itemName === name)
+        const inventoryQuantityItem = dataBasedOnTheMonth
+            .filter(item => item.productName === name && item.deliverDate === currentDate.toISOString().split("T")[0])[0];
+            // .map(item => ({
+            //   x: item.deliverDate,
+            //   y: item.quantity
+            // }))[0] || { x: currentDate.toISOString().split("T")[0], y: 0 };
+        const currentInventoryQuantity = {
+          x: currentDate.toISOString().split("T")[0],
+          y: inventoryQuantityItem ? inventoryQuantityItem.inventoryQuantity : 0
+        };
+
+
+        const quantityData = dataBasedOnTheMonth
+            .filter(item => item.productName === name && item.deliverDate > currentDate.toISOString().split("T")[0] )
             .map(item => ({
               x: item.deliverDate,
-              y: item.quantity
+              y: currentInventoryQuantity.y + item.quantity
             }));
+
+        // const quantityData = dataBasedOnTheMonth
+        //     .filter(item => item.productName === name && item.deliverDate > currentDate.toISOString().split("T")[0])
+        //     .map(item => ({
+        //       x: item.deliverDate,
+        //       y: currentInventoryQuantity.y + item.quantity
+        //     }));
 
         return {
           label: name,
           backgroundColor: colorLegend[index % colorLegend.length],
           borderColor: colorLegend[index % colorLegend.length],
-          data: qdata,
+          data: [currentInventoryQuantity, ...quantityData],
+          fill: false,
+          // data: qdata,
         };
       });
 
