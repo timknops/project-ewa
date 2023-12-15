@@ -185,6 +185,9 @@ public class ProjectController {
             throw new ResourceNotFoundException("Project with id: " + id + " was not found");
         }
 
+        // Save the old status of the project.
+        ProjectStatus oldStatus = project.getStatus();
+
         // Update the project.
         Project updatedProject = this.projectRepo.save(projectWrapper.getProject());
 
@@ -196,10 +199,10 @@ public class ProjectController {
             this.resourceRepo.save(new Resource(updatedProject, resource.getProduct(), resource.getQuantity()));
         }
 
-        // Check if the status of the updated project went from upcoming to in progress.
-        // If this is the case, the inventory of the warehouse is updated.
-        if (project.getStatus() == ProjectStatus.UPCOMING
-                && updatedProject.getStatus() == ProjectStatus.IN_PROGRESS) {
+        // Check if the project went from upcoming to in progress. If so, update the
+        // inventory.
+        if (oldStatus == ProjectStatus.UPCOMING && updatedProject.getStatus() == ProjectStatus.IN_PROGRESS) {
+            System.out.println("Project went from upcoming to in progress");
 
             // Get the team of the project.
             Team team = this.teamRepo.findById(updatedProject.getTeam().getId());
@@ -207,7 +210,26 @@ public class ProjectController {
             // Get the warehouse of the team.
             Warehouse warehouse = team.getWarehouse();
 
+            // Get all the resources of the project.
+            List<ProjectResourceDTO> resources = this.resourceRepo.getProjectResources(updatedProject.getId());
 
+            // Update the inventory of the warehouse.
+            for (ProjectResourceDTO resource : resources) {
+                System.out.println("Updating inventory for product with id: " + resource.getProduct().getId());
+                System.out.println("Warehouse id: " + warehouse.getId());
+                System.out.println("Quantity: " + resource.getQuantity());
+
+                Inventory existingInventory = this.inventoryRepo.findByIds(warehouse.getId(),
+                        resource.getProduct().getId());
+
+                if (existingInventory == null) {
+                    throw new ResourceNotFoundException("Inventory with warehouse id: " + warehouse.getId()
+                            + " and product id: " + resource.getProduct().getId() + " was not found");
+                }
+
+                existingInventory.setQuantity(existingInventory.getQuantity() - resource.getQuantity());
+                this.inventoryRepo.save(existingInventory);
+            }
         }
 
         // Create the URI for the updated project.

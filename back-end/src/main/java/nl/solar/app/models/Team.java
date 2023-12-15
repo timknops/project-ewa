@@ -22,7 +22,8 @@ public class Team {
     @JsonView(ProjectView.Overview.class)
     private String team;
 
-    @OneToOne(mappedBy = "team")
+    @ManyToOne
+    @JoinColumn(name = "warehouse_id", nullable = false)
     @JsonIncludeProperties
     private Warehouse warehouse;
 

@@ -7,7 +7,6 @@ import nl.solar.app.repositories.InventoryRepository;
 import nl.solar.app.repositories.ItemRepository;
 import nl.solar.app.repositories.ResourceRepository;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -43,8 +42,6 @@ public class BackEndApplication implements CommandLineRunner {
 
     @Autowired
     ItemRepository itemRepo;
-
-
 
     public static void main(String[] args) {
         SpringApplication.run(BackEndApplication.class, args);
@@ -91,7 +88,7 @@ public class BackEndApplication implements CommandLineRunner {
         };
 
         for (int i = 0; i < names.length; i++) {
-            Warehouse warehouse = new Warehouse(0, names[i], locations[i]);
+            Warehouse warehouse = Warehouse.createDummyWarehouse(names[i], locations[i]);
             warehouseRepo.save(warehouse);
         }
     }
@@ -130,7 +127,8 @@ public class BackEndApplication implements CommandLineRunner {
     private void createSampleOrders() {
         List<Order> orders = this.orderRepo.findAll();
 
-        if (!orders.isEmpty()) return;
+        if (!orders.isEmpty())
+            return;
 
         List<Warehouse> warehouses = this.warehouseRepo.findAll();
         for (Warehouse warehouse : warehouses) {
@@ -142,7 +140,7 @@ public class BackEndApplication implements CommandLineRunner {
 
                 this.orderRepo.save(order);
 
-                //bidirectional
+                // bidirectional
                 warehouse.getOrders().add(order);
             }
         }
@@ -281,12 +279,13 @@ public class BackEndApplication implements CommandLineRunner {
     private void createDummyItems() {
         List<Item> items = itemRepo.findAll();
 
-        if (!items.isEmpty()) return;
+        if (!items.isEmpty())
+            return;
         List<Product> products = this.productsRepo.findAll();
         List<Order> orders = this.orderRepo.findAll();
         Random random = new Random();
 
-        //ensure every order has at least one item
+        // ensure every order has at least one item
         for (Order order : orders) {
             Item item = new Item();
             item.setOrder(order);
@@ -298,7 +297,7 @@ public class BackEndApplication implements CommandLineRunner {
             product.getItems().add(item);
         }
 
-        //add 10 items to random orders
+        // add 10 items to random orders
         for (int i = 0; i < 10; i++) {
             Item item = new Item();
             Order order = orders.get(random.nextInt(orders.size()));
