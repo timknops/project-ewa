@@ -8,15 +8,17 @@ public class DashboardDTO {
     private String warehouseName;
     private String itemName;
     private int quantity;
+    private int inventoryQuantity;
 //    private Long orderId;
 //    private Long orderWarehouseId;
     private LocalDate deliverDate;
 
-    public DashboardDTO(Long warehouseId, String warehouseName, String itemName, int quantity, LocalDate deliverDate) {
+    public DashboardDTO(Long warehouseId, String warehouseName, String itemName, int quantity, int inventoryQuantity, LocalDate deliverDate) {
         this.warehouseId = warehouseId;
         this.warehouseName = warehouseName;
         this.itemName = itemName;
         this.quantity = quantity;
+        this.inventoryQuantity = inventoryQuantity;
 //        this.orderId = orderId;
 //        this.orderWarehouseId = orderWarehouseId;
         this.deliverDate = deliverDate;
@@ -50,7 +52,22 @@ public class DashboardDTO {
         this.quantity = quantity;
     }
 
-//    public Long getOrderId() {
+    public void setWarehouseId(Long warehouseId) {
+        this.warehouseId = warehouseId;
+    }
+
+    public int getInventoryQuantity() {
+        return inventoryQuantity;
+    }
+
+    public void setInventoryQuantity(int inventoryQuantity) {
+        this.inventoryQuantity = inventoryQuantity;
+    }
+
+    public void setDeliverDate(LocalDate deliverDate) {
+        this.deliverDate = deliverDate;
+    }
+    //    public Long getOrderId() {
 //        return orderId;
 //    }
 //

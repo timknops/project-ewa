@@ -19,12 +19,13 @@ public class DashboardRepositoryJpa  {
     private EntityManager entityManager;
     public List<DashboardDTO> getDashboardItems() {
             List<Object[]> results = entityManager.createQuery(
-                            "SELECT  w.id AS warehouseId, w.name AS warehouseName, p.productName AS productName, i.quantity AS quantity, " +
+                            "SELECT  w.id AS warehouseId, w.name AS warehouseName, p.productName AS productName, i.quantity AS itemQuantity, inv.quantity AS inventoryQuantity, " +
                                     "CAST(o.deliverDate AS DATE) AS deliverDate " +
                                     "FROM Item  i " +
                                     "JOIN Order o ON i.order.id = o.id " +
                                     "JOIN Product p ON i.product.id = p.id " +
-                                    "JOIN Warehouse w ON o.warehouse.id = w.id"
+                                    "JOIN Warehouse w ON o.warehouse.id = w.id " +
+                                    "LEFT JOIN Inventory inv ON p.id = inv.product.id AND w.id = inv.warehouse.id"
                             , Object[].class)
                     .getResultList();
 
@@ -34,8 +35,9 @@ public class DashboardRepositoryJpa  {
                             (Long) result[0], //warehouseId
                             (String) result[1], // warehouseName
                             (String) result[2], // productName
-                            ((Number) result[3]).intValue(), // quantity
-                            ((java.sql.Date) result[4]).toLocalDate() // deliverDate
+                            ((Number) result[3]).intValue(),// quantity
+                            ((Number) result[4]).intValue(), //inventoryQuantity
+                            ((java.sql.Date) result[5]).toLocalDate() // deliverDate
                     ))
                     .collect(Collectors.toList());
 
