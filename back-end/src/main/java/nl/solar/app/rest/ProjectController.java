@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -202,34 +203,24 @@ public class ProjectController {
         // Check if the project went from upcoming to in progress. If so, update the
         // inventory.
         if (oldStatus == ProjectStatus.UPCOMING && updatedProject.getStatus() == ProjectStatus.IN_PROGRESS) {
-            System.out.println("Project went from upcoming to in progress");
-
             // Get the team of the project.
             Team team = this.teamRepo.findById(updatedProject.getTeam().getId());
+
+            if (team == null) {
+                throw new ResourceNotFoundException(
+                        "Team with id: " + updatedProject.getTeam().getId() + " was not found");
+            }
 
             // Get the warehouse of the team.
             Warehouse warehouse = team.getWarehouse();
 
-            // Get all the resources of the project.
-            List<ProjectResourceDTO> resources = this.resourceRepo.getProjectResources(updatedProject.getId());
-
-            // Update the inventory of the warehouse.
-            for (ProjectResourceDTO resource : resources) {
-                System.out.println("Updating inventory for product with id: " + resource.getProduct().getId());
-                System.out.println("Warehouse id: " + warehouse.getId());
-                System.out.println("Quantity: " + resource.getQuantity());
-
-                Inventory existingInventory = this.inventoryRepo.findByIds(warehouse.getId(),
-                        resource.getProduct().getId());
-
-                if (existingInventory == null) {
-                    throw new ResourceNotFoundException("Inventory with warehouse id: " + warehouse.getId()
-                            + " and product id: " + resource.getProduct().getId() + " was not found");
-                }
-
-                existingInventory.setQuantity(existingInventory.getQuantity() - resource.getQuantity());
-                this.inventoryRepo.save(existingInventory);
+            if (warehouse == null) {
+                throw new ResourceNotFoundException(
+                        "Warehouse with id: " + team.getWarehouse().getId() + " was not found");
             }
+
+            // Update the inventory asynchronously.
+            updateInventory(updatedProject, warehouse);
         }
 
         // Create the URI for the updated project.
@@ -237,6 +228,37 @@ public class ProjectController {
                 .buildAndExpand(updatedProject.getId()).toUri();
 
         return ResponseEntity.created(location).body(updatedProject);
+    }
+
+    /**
+     * Asynchronously updates the inventory of a warehouse based on the resources.
+     * 
+     * @param updatedProject the updated project
+     * @param warehouse      the warehouse of the team
+     */
+    @Async
+    public void updateInventory(Project updatedProject, Warehouse warehouse) {
+        // Get all the resources of the project and the inventories of the warehouse.
+        List<ProjectResourceDTO> resources = this.resourceRepo.getProjectResources(updatedProject.getId());
+        List<Inventory> inventories = this.inventoryRepo.findInventoryForWarehouse(warehouse.getId());
+
+        // Map for efficient lookup of inventories based on product ID.
+        Map<Long, Inventory> inventoryMap = new HashMap<>();
+        for (Inventory inventory : inventories) {
+            inventoryMap.put(inventory.getId().getProductId(), inventory);
+        }
+
+        // Update the inventories based on resources.
+        for (ProjectResourceDTO resource : resources) {
+            Long productId = resource.getProduct().getId();
+            Inventory inventory = inventoryMap.get(productId);
+
+            if (inventory != null) {
+                long newQuantity = inventory.getQuantity() - resource.getQuantity();
+                inventory.setQuantity(newQuantity);
+                this.inventoryRepo.save(inventory);
+            }
+        }
     }
 
     /**
