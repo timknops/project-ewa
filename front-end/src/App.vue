@@ -1,7 +1,7 @@
 <template>
   <div v-if="loggedInActive === 'false'">
     <router-view
-    @update-logged-in="updateLoggedIn"
+        @update-logged-in="updateLoggedIn"
     ></router-view>
   </div>
   <div v-else class="view">
@@ -19,9 +19,9 @@ import {ProductAdaptor} from "@/service/productAdaptor";
 import {WarehouseAdaptor} from "@/service/warehouseAdaptor";
 import {UserAdaptor} from "@/service/userAdaptor";
 import {InventoryAdaptor} from "@/service/inventoryAdaptor";
-import { TeamAdaptor } from "@/service/teamAdaptor";
+import {TeamAdaptor} from "@/service/teamAdaptor";
 import {EmailAdaptor} from "@/service/emailAdaptor";
-import { ProjectAdaptor } from "@/service/projectAdaptor";
+import {ProjectAdaptor} from "@/service/projectAdaptor";
 import {OrderAdaptor} from "@/service/orderAdaptor";
 
 
@@ -33,15 +33,14 @@ export default {
   },
   data() {
     return {
-      loggedInActive: {},
-      resetLogin: {}
+      loggedInActive: {}
     };
   },
   provide() {
     return {
       productService: new ProductAdaptor(`${appConfig.BACKEND_URL}/products`),
       warehouseService: new WarehouseAdaptor(
-        `${appConfig.BACKEND_URL}/warehouses`
+          `${appConfig.BACKEND_URL}/warehouses`
       ),
       userService: new UserAdaptor(`${appConfig.BACKEND_URL}/users`),
       inventoryService: new InventoryAdaptor(appConfig.BACKEND_URL),
