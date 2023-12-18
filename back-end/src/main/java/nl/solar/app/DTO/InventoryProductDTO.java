@@ -18,7 +18,7 @@ public class InventoryProductDTO {
     private String productName;
 
     @JsonView(ResourceView.Complete.class)
-    private String description;
+    private Integer minimum;
 
     @JsonView(ResourceView.Complete.class)
     private Long quantity;
@@ -31,10 +31,10 @@ public class InventoryProductDTO {
      * @param description  The description of the product.
      * @param quantity     The quantity of the product.
      */
-    public InventoryProductDTO(Long id, String productName, String description, Long quantity) {
+    public InventoryProductDTO(Long id, String productName, Integer minimum, Long quantity) {
         this.id = id;
         this.productName = productName;
-        this.description = description;
+        this.minimum = minimum;
         this.quantity = quantity;
     }
 }

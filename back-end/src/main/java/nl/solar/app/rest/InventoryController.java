@@ -183,7 +183,7 @@ public class InventoryController {
     private InventoryProductDTO formatProductObject(Inventory inventory) {
         return new InventoryProductDTO(inventory.getProduct().getId(),
                 inventory.getProduct().getProductName(),
-                inventory.getProduct().getDescription(),
+                inventory.getMinimum(),
                 inventory.getQuantity());
     }
 }

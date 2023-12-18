@@ -45,7 +45,7 @@ public class InventoryRepositoryMock implements InventoryRepository {
                 .map(inventory -> new InventoryProductDTO(
                         inventory.getProduct().getId(),
                         inventory.getProduct().getProductName(),
-                        inventory.getProduct().getDescription(),
+                        inventory.getMinimum(),
                         inventory.getQuantity())).toList();
     }
 

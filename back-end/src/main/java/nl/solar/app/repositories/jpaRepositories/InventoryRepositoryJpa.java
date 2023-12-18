@@ -67,7 +67,7 @@ public class InventoryRepositoryJpa implements InventoryRepository {
     @Override
     public List<InventoryProductDTO> findInventoryForWarehouse(long warehouseId) {
         return entityManager
-                .createQuery("SELECT new nl.solar.app.DTO.InventoryProductDTO(i.product.id, i.product.productName, i.product.description, i.quantity)" +
+                .createQuery("SELECT new nl.solar.app.DTO.InventoryProductDTO(i.product.id, i.product.productName, i.minimum, i.quantity)" +
                         " FROM Inventory i WHERE i.id.warehouseId = :warehouse_id", InventoryProductDTO.class)
                 .setParameter("warehouse_id", warehouseId)
                 .getResultList();
