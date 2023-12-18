@@ -27,12 +27,21 @@
         @ok-modal-btn="handleOk"
       />
     </Transition>
+
+    <transition>
+      <toast-component
+          v-if="showToast"
+          :toast-message="toastMessage"
+          :toast-title="toastTitle"
+      ></toast-component>
+    </transition>
   </div>
 </template>
 <script>
 import TableComponent from "@/components/table/TableComponent.vue";
 import ModalComponent from "@/components/modal/ModalComponent.vue";
 import SpinnerComponent from "@/components/util/SpinnerComponent.vue";
+import ToastComponent from "@/components/util/ToastComponent.vue";
 
 /**
  * Component for the product overview. This overview give info about the different products of solar sedum.
@@ -44,7 +53,7 @@ import SpinnerComponent from "@/components/util/SpinnerComponent.vue";
  */
 export default {
   name: "ProductOverview",
-  components: { SpinnerComponent, ModalComponent, TableComponent },
+  components: {ToastComponent, SpinnerComponent, ModalComponent, TableComponent },
   inject: ["productService"],
   data() {
     return {
@@ -70,6 +79,11 @@ export default {
         ADD: "add-product-modal",
       }),
       productsAreLoading: true,
+
+      //toast variables
+      showToast: false,
+      toastTitle: "",
+      toastMessage: ""
     };
   },
   methods: {
@@ -139,8 +153,9 @@ export default {
           (product) => product.id !== deleted.id
         );
         this.showModal = false;
+        this.showTimedToast("Deleted product", `Successfully deleted the product: ${deleted.productName}`)
       } catch (exception) {
-        console.log(exception);
+        this.showTimedToast("Oops!", "Something went wrong trying to delete the product")
       }
     },
 
@@ -156,9 +171,9 @@ export default {
           product.id === updated.id ? updated : product
         );
         this.showModal = false;
+        this.showTimedToast("Updated Product", `Successfully updated the product: ${updated.productName}`)
       } catch (e) {
-        //TODO give user error feedback
-        console.log(e);
+        this.showTimedToast("Oops!", "Something went wrong trying to update the product")
       }
     },
 
@@ -170,10 +185,11 @@ export default {
     async addProduct(product) {
       try {
         const added = await this.productService.add(product);
-        this.products.push(added);
+        this.products.unshift(added);
         this.showModal = false;
+        this.showTimedToast("Added product!", `Successfully added the product: ${product.productName}`)
       } catch (e) {
-        console.log(e);
+        this.showTimedToast("Oops!", "Something went wrong trying to add the product")
       }
     },
 
@@ -189,7 +205,22 @@ export default {
         description: "",
       };
     },
+
+    /**
+     * Show a toast to give the user some information about how the Crud operation went
+     * @param title the title of the toast
+     * @param message the to show to the user
+     */
+    showTimedToast(title, message) {
+      this.toastTitle = title
+      this.toastMessage = message
+      this.showToast = true
+
+      // after 4 seconds remove the toast from view
+      setTimeout(() => this.showToast = false, 4000)
+    },
   },
+
   async created() {
     //clear the product so that the native check is deleted.
     this.products = [];

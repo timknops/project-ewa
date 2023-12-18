@@ -29,6 +29,7 @@
              v-model="modalItem.minimum"
              @blur="validateMinimum"
       >
+      <p v-if="negativeMinimum" class="text-danger"> The minimum can't be a negative number</p>
     </div>
 
     <div class="mb-3">

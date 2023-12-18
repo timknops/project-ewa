@@ -2,7 +2,7 @@
   <!--    display the current warehouse which the user is assigned to-->
   <div>
     <warehouse-header-display :active-user="activeUser" :active-warehouse="activeWarehouse" total-text="Total Inventory"
-                              @setActiveWarehouse="setActiveWarehouse">
+                              @setActiveWarehouse="setActiveWarehouse" v-if="!productsAreLoading">
     </warehouse-header-display>
     <table-component
         v-if="!productsAreLoading"
@@ -130,6 +130,7 @@ export default {
      * @param warehouse a warehouse object
      */
     setActiveWarehouse(warehouse) {
+      // console.log(warehouse)
       this.activeWarehouse = warehouse;
       if (warehouse === "Total") {
         this.products = this.getTotalProductInfo()
