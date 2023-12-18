@@ -125,17 +125,18 @@ public class InventoryController {
     @JsonView(ResourceView.Complete.class)
     @PatchMapping(path = "/warehouses/{wId}/products/{pId}", produces = "application/json")
     public ResponseEntity<Inventory> updateInventory(@PathVariable long wId, @PathVariable long pId,
-            @RequestBody Map<String, Long> partiallyUpdated)
+            @RequestBody Map<String, Number> partiallyUpdated)
             throws ResourceNotFoundException, BadRequestException {
         Inventory existingInventory = inventoryRepo.findByIds(pId, wId);
         if (existingInventory == null) {
             throw new ResourceNotFoundException("inventory Not Found");
         }
-        if (!partiallyUpdated.containsKey("quantity")) {
+        if (!partiallyUpdated.containsKey("quantity") || !partiallyUpdated.containsKey("minimum")) {
             throw new BadRequestException("Request body doesn't contain quantity");
         }
 
-        existingInventory.setQuantity(partiallyUpdated.get("quantity"));
+        existingInventory.setMinimum(partiallyUpdated.get("minimum").intValue());
+        existingInventory.setQuantity(partiallyUpdated.get("quantity").longValue());
 
         Inventory update = this.inventoryRepo.save(existingInventory);
 

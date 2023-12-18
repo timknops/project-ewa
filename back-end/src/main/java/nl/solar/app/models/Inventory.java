@@ -45,7 +45,7 @@ public class Inventory {
 
         inventory.setProduct(product);
         inventory.setWarehouse(warehouse);
-        inventory.setQuantity((int) Math.floor(Math.random() * (40 - 10) + 10));
+        inventory.setMinimum((int) Math.floor(Math.random() * (40 - 10) + 10));
         inventory.setQuantity((int) (Math.floor(Math.random() * 40)));
 
         return inventory;

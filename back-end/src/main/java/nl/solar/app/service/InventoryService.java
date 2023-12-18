@@ -26,15 +26,25 @@ public class InventoryService {
     /**
      * Update the inventory for A set of items of an order
      * The inventory products quantity will be incremented with the quantity of the item.
-     * @param items the items delivered and for which the inventory should be updated.
+     *
+     * @param items     the items delivered and for which the inventory should be updated.
      * @param warehouse the warehouse for which the inventory should be updated
      */
-    public void updateInventory(Set<Item> items , Warehouse warehouse) throws BadRequestException {
+    public void updateInventory(Set<Item> items, Warehouse warehouse) throws BadRequestException {
         for (Item item : items) {
             //find the inventory to be updated
             Inventory inventory = inventoryRepo.findByIds(item.getProduct().getId(), warehouse.getId());
-            inventory.setQuantity(inventory.getQuantity() + item.getQuantity()); //Update the quantity of the inventory
-            inventoryRepo.save(inventory); // persist changes in database
+            //if no inventory was found create a new inventory, with at the moment the minimum set to 0
+            if (inventory == null) {
+                Inventory newInventory = new Inventory();
+                newInventory.setProduct(item.getProduct());
+                newInventory.setWarehouse(warehouse);
+                newInventory.setQuantity(item.getQuantity());
+                inventoryRepo.save(newInventory);
+            } else {
+                inventory.setQuantity(inventory.getQuantity() + item.getQuantity()); //Update the quantity of the inventory
+                inventoryRepo.save(inventory); // persist changes in database
+            }
         }
     }
 }

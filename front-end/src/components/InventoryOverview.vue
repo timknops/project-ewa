@@ -35,8 +35,8 @@
     <transition>
       <toast-component
           v-if="showToast"
-          toast-message="All products have an inventory"
-          toast-title="No Inventory to be added"
+          :toast-title="toastTitle"
+          :toast-message="toastMessage"
       ></toast-component>
     </transition>
   </div>
@@ -101,6 +101,8 @@ export default {
 
       productsAreLoading: true,
       showToast: false,
+      toastMessage: "",
+      toastTitle: "",
     };
   },
 
@@ -130,8 +132,10 @@ export default {
     setActiveWarehouse(warehouse) {
       this.activeWarehouse = warehouse;
       if (warehouse === "Total") {
+        this.products = this.getTotalProductInfo()
         this.$router.push("/inventory");
       } else {
+        this.products = this.getWarehouseProductInfo(warehouse)
         this.$router.push("/inventory/" + warehouse.name);
       }
     },
@@ -181,7 +185,6 @@ export default {
             //if product doesn't exist yet initiate the object to be put into the productsObject
             productObjects[product.productName] = {
               productName: product.productName,
-              description: product.description,
               quantity: product.quantity,
             };
           }
@@ -194,7 +197,7 @@ export default {
     //   methods for modal
     /**
      * show the update modal
-     * @param {Product}inventory the inventory object on which the edit button was clicked
+     * @param inventory the inventory object on which the edit button was clicked
      *
      *
      */
@@ -213,9 +216,9 @@ export default {
         product: {
           id: inventory.id,
           productName: inventory.productName,
-          description: inventory.description,
         },
         warehouse: this.activeWarehouse,
+        minimum: inventory.minimum,
         quantity: inventory.quantity,
       };
 
@@ -229,10 +232,8 @@ export default {
               this.activeWarehouse.id
           );
       if (productsWithoutInventory.length === 0) {
-        this.showToast = true;
-
-        setTimeout(() => (this.showToast = false), 3000);
-        return;
+        this.showTimedToast("All products have an inventory", "No Inventory to be added")
+        return
       }
       this.modalTitle = "Add inventory";
       this.modalBodyComponent = this.MODAL_TYPES.ADD;
@@ -283,11 +284,13 @@ export default {
             //update the correct product
             this.totalProducts[warehouseIndex].products[productIndex].quantity =
                 updated.quantity;
+            this.totalProducts[warehouseIndex].products[productIndex].minimum = updated.minimum;
           }
         }
         this.showModal = false;
+        this.showTimedToast("Inventory updated!", `Successfully updated inventory for Product: ${updated.product.productName} and warehouse: ${updated.warehouse.name}`)
       } catch (e) {
-        console.error(e);
+        this.showTimedToast("Oops", "Something went wrong updating inventory.")
       }
     },
 
@@ -303,32 +306,36 @@ export default {
      * @param {number} inventory.quantity - The quantity of the product in the inventory.
      */
     async handleAdd(inventory) {
-      const saved = await this.inventoryService.addInventory(inventory);
-      const warehouseIndex = this.totalProducts.findIndex(
-          (inventory) => inventory.warehouse.id === saved.warehouse.id
-      );
+      try {
+        const saved = await this.inventoryService.addInventory(inventory);
+        const warehouseIndex = this.totalProducts.findIndex(
+            (inventory) => inventory.warehouse.id === saved.warehouse.id
+        );
 
-      //reformat the saved inventory object to an object used in the products list of the inventory
-      const inventoryObj = {
-        id: saved.product.id,
-        productName: saved.product.productName,
-        description: saved.product.description,
-        quantity: saved.quantity,
-      };
+        //reformat the saved inventory object to an object used in the products list of the inventory
+        const inventoryObj = {
+          id: saved.product.id,
+          productName: saved.product.productName,
+          minimum: saved.minimum,
+          quantity: saved.quantity,
+        };
 
-      if (warehouseIndex !== -1) {
-        //if warehouse already has inventory items existing add the new inventory to the list
-        this.totalProducts[warehouseIndex].products.push(inventoryObj);
-      } else {
-        //no inventory exist for the warehouse, push the correct warehouse to the total list and add inventory to the list
-        this.totalProducts.push({
-          warehouse: this.activeWarehouse,
-          products: [{...inventoryObj}],
-        });
-        this.products = [{...inventoryObj}];
+        if (warehouseIndex !== -1) {
+          //if warehouse already has inventory items existing add the new inventory to the list
+          this.totalProducts[warehouseIndex].products.unshift(inventoryObj);
+        } else {
+          //no inventory exist for the warehouse, push the correct warehouse to the total list and add inventory to the list
+          this.totalProducts.push({
+            warehouse: this.activeWarehouse,
+            products: [{...inventoryObj}],
+          });
+          this.products = [{...inventoryObj}];
+        }
+        this.showModal = false;
+        this.showTimedToast("Inventory Added", `Successfully added inventory for Product: ${inventoryObj.productName} and warehouse: ${this.activeWarehouse.name}`)
+      } catch (e) {
+        this.showTimedToast("Oops", "Something went wrong adding inventory.")
       }
-
-      this.showModal = false;
     },
 
     /**
@@ -343,18 +350,19 @@ export default {
         quantity: "",
       };
     },
-  },
 
-  watch: {
     /**
-     * If the active warehouse changes, the products array should update, so that the table gets re-rendered
+     * Show a toast to give the user some information about how the Crud operation went
+     * @param title the title of the toast
+     * @param message the to show to the user
      */
-    activeWarehouse() {
-      if (this.activeWarehouse === "Total") {
-        this.products = this.getTotalProductInfo();
-      } else {
-        this.products = this.getWarehouseProductInfo(this.activeWarehouse);
-      }
+    showTimedToast(title, message) {
+      this.toastTitle = title
+      this.toastMessage = message
+      this.showToast = true
+
+      // after 4 seconds remove the toast from view
+      setTimeout(() => this.showToast = false, 4000)
     },
   },
 
