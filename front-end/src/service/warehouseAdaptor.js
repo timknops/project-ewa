@@ -11,7 +11,7 @@ export class WarehouseAdaptor{
             return await response.json();
         } else {
             const error = await response.json();
-            return Promise.reject({code: error.status, reason: error.reason});
+            return Promise.reject({code: error.status, reason: error.message});
         }
     }
 
