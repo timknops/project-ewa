@@ -90,21 +90,16 @@ export default {
      */
     login() {
       //find the user
-      this.user = this.findUser(this.input.username1);
+      this.findUserByName(this.input.username1);
 
-      //TODO fix this monster
+      //check whether the user is correctly logging in
       if (this.input.username1 === "" || this.input.password1 === "") {
         this.errorMessage = "One of the fields is empty";
         this.correctLogin = true;
-      } else if (this.user !== undefined) {
-        if (this.user.password === this.input.password1){
+      } else if (this.user !== undefined && this.user.password === this.input.password1 ) {
           localStorage.setItem("loggedIn", true);
           this.$emit("updateLoggedIn", true);
           this.$router.push("/dashboard");
-        } else {
-          this.errorMessage = "Your login details are incorrect";
-          this.correctLogin = true;
-        }
       } else {
         this.errorMessage = "Your login details are incorrect";
         this.correctLogin = true;
@@ -118,8 +113,12 @@ export default {
       this.$emit("updateResetLogin", true);
       this.$router.push("/loginReset");
     },
-    findUser(name){
-      return this.users.find((user) => user.name === name);
+    /**
+     * Find a user from the users array based on the name that was entered in the input
+     * @param name name of the account that the user wants to log in to
+     */
+    findUserByName(name){
+      this.user = this.users.find((user) => user.name === name);
     }
   },
   async created() {
