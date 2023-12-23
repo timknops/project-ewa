@@ -58,17 +58,19 @@
 </template>
 
 <script>
-import { userLogin } from "@/models/userLogin";
 
 export default {
   name: "LoginPage",
+  inject: ["userService"],
   data() {
     return {
+      users: [],
       //input variables for the entered userdata
       input: {
         username1: "",
         password1: "",
       },
+      user: null,
       loggedInActive: {},
       user1: {},
       correctLogin: null,
@@ -87,16 +89,22 @@ export default {
      * if not then notify the user with an error message that login details are incorrect
      */
     login() {
+      //find the user
+      this.user = this.findUser(this.input.username1);
+
+      //TODO fix this monster
       if (this.input.username1 === "" || this.input.password1 === "") {
         this.errorMessage = "One of the fields is empty";
         this.correctLogin = true;
-      } else if (
-        this.input.username1 === this.user1.username &&
-        this.input.password1 === this.user1.password
-      ) {
-        localStorage.setItem("loggedIn", true);
-        this.$emit("updateLoggedIn", true);
-        this.$router.push("/dashboard");
+      } else if (this.user !== undefined) {
+        if (this.user.password === this.input.password1){
+          localStorage.setItem("loggedIn", true);
+          this.$emit("updateLoggedIn", true);
+          this.$router.push("/dashboard");
+        } else {
+          this.errorMessage = "Your login details are incorrect";
+          this.correctLogin = true;
+        }
       } else {
         this.errorMessage = "Your login details are incorrect";
         this.correctLogin = true;
@@ -110,10 +118,13 @@ export default {
       this.$emit("updateResetLogin", true);
       this.$router.push("/loginReset");
     },
+    findUser(name){
+      return this.users.find((user) => user.name === name);
+    }
   },
-  created() {
-    this.user1 = userLogin.dummyData();
-    console.log(this.user1);
+  async created() {
+    //get all users
+    this.users = await this.userService.asyncFindAll();
   },
 };
 </script>
