@@ -3,7 +3,9 @@ package nl.solar.app.repositories.jpaRepositories;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
+import nl.solar.app.enums.OrderStatus;
 import nl.solar.app.models.Order;
+import nl.solar.app.models.Warehouse;
 import nl.solar.app.repositories.EntityRepository;
 import nl.solar.app.repositories.OrderRepository;
 import org.springframework.stereotype.Repository;
@@ -50,6 +52,20 @@ public class OrderRepositoryJpa implements OrderRepository {
     public List<Order> findOrdersWarehouse(long wId) {
         return entityManager.createQuery("SELECT o FROM Order o WHERE o.warehouse.id = ?1", Order.class)
                 .setParameter(1, wId).getResultList();
+    }
+
+
+    /**
+     * Find all pending orders for a specific warehouse
+     * @param warehouse the warehouse for which the orders should be found
+     * @return a list of orders
+     */
+    @Override
+    public List<Order> findPendingOrders(Warehouse warehouse) {
+        return entityManager.createQuery("SELECT o FROM Order o WHERE o.status = ?1 AND o.warehouse.id = ?2", Order.class)
+                .setParameter(1, OrderStatus.PENDING)
+                .setParameter(2, warehouse.getId())
+                .getResultList();
     }
 
     /**

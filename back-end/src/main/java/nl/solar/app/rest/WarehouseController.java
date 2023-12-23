@@ -1,7 +1,9 @@
 package nl.solar.app.rest;
 
+import jakarta.transaction.Transactional;
 import nl.solar.app.exceptions.BadRequestException;
 import nl.solar.app.exceptions.PreConditionFailedException;
+import nl.solar.app.exceptions.ResourceConflictException;
 import nl.solar.app.exceptions.ResourceNotFoundException;
 import nl.solar.app.models.Order;
 import nl.solar.app.models.Warehouse;
@@ -52,14 +54,26 @@ public class WarehouseController {
     }
 
 
+    @Transactional
     @DeleteMapping(path = "{id}", produces = "application/json")
-    public ResponseEntity<Warehouse> deleteWarehouseById(@PathVariable long id) throws ResourceNotFoundException {
-        Warehouse warehouseToDelete = this.warehouseRepo.delete(id);
+    public ResponseEntity<Warehouse> deleteWarehouseById(@PathVariable long id) throws ResourceNotFoundException, ResourceConflictException {
+        Warehouse warehouseToDelete = this.warehouseRepo.findById(id);
 
         if (warehouseToDelete == null){
             throw new ResourceNotFoundException("Cannot delete warehouse with id: " + id + "\nWarehouse not found");
         }
-        return ResponseEntity.ok(warehouseToDelete);
+
+        // Check if warehouse has pending orders
+        if (!orderRepo.findPendingOrders(warehouseToDelete).isEmpty()){
+            throw new ResourceConflictException("Cannot delete warehouse with id: " + id + "\nWarehouse has pending orders");
+        }
+
+        // Remove warehouse from orders
+        for (Order order : warehouseToDelete.getOrders()) {
+            order.setWarehouse(null);
+        }
+        Warehouse deletedWarehouse = this.warehouseRepo.delete(id);
+        return ResponseEntity.ok(deletedWarehouse);
     }
 
     @PostMapping(produces = "application/json")
