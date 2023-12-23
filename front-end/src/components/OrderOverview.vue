@@ -224,9 +224,8 @@ export default {
             "Order Deleted",
             `Successfully deleted an order with id: ${deleted.id} for warehouse ${this.activeWarehouse.name}`)
       } catch (e) {
-        this.showTimedToast(
-            "Oops!",
-            `Something went wrong trying to delete an order with id: ${order.id} for ware ${this.activeWarehouse.name}`)
+        this.showModal = false;
+        this.handleException(e, "Oops!")
       }
     },
 
@@ -251,9 +250,8 @@ export default {
             `Successfully updated an order with id: ${updated.id} for warehouse ${this.activeWarehouse.name}`
         )
       } catch (e) {
-        this.showTimedToast(
-            "Oops!",
-            `Something went wrong trying to update an order with id: ${order.id} for ware ${this.activeWarehouse.name}`)
+        this.showModal = false;
+        this.handleException(e, "Oops!")
       }
     },
 
@@ -274,9 +272,8 @@ export default {
             "Order added",
             `Successfully added an order with id: ${added.id} from warehouse ${this.activeWarehouse.name}`)
       } catch (e) {
-        this.showTimedToast(
-            "Oops!",
-            `Something went wrong trying to add an order with id: ${order.id} for ware ${this.activeWarehouse.name}`)
+        this.showModal = false;
+        this.handleException(e, "Oops!")
       }
     },
 
@@ -293,6 +290,25 @@ export default {
       // after 4 seconds remove the toast from view
       setTimeout(() => this.showToast = false, 4000)
     },
+
+    /**
+     * Handles the exception and shows a toast to the user.
+     * @param {{code: Number, reason: String}} exception The exception to be handled.
+     * @param {String} exceptionTitle The title of the exception.
+     */
+    handleException(exception, exceptionTitle) {
+      if (exception.code >= 400 && exception.code < 500) {
+        this.showTimedToast(
+            exceptionTitle,
+            exception.reason
+        );
+      } else {
+        this.showTimedToast(
+            exceptionTitle,
+            "Something went wrong"
+        );
+      }
+    }
   },
 }
 </script>

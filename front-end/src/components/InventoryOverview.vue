@@ -291,7 +291,8 @@ export default {
         this.showModal = false;
         this.showTimedToast("Inventory updated!", `Successfully updated inventory for Product: ${updated.product.productName} and warehouse: ${updated.warehouse.name}`)
       } catch (e) {
-        this.showTimedToast("Oops", "Something went wrong updating inventory.")
+        this.showModal = false;
+        this.handleException(e, "Failed to update Inventory");
       }
     },
 
@@ -335,7 +336,8 @@ export default {
         this.showModal = false;
         this.showTimedToast("Inventory Added", `Successfully added inventory for Product: ${inventoryObj.productName} and warehouse: ${this.activeWarehouse.name}`)
       } catch (e) {
-        this.showTimedToast("Oops", "Something went wrong adding inventory.")
+        this.showModal = false;
+        this.handleException(e, "Failed to add Inventory")
       }
     },
 
@@ -365,6 +367,27 @@ export default {
       // after 4 seconds remove the toast from view
       setTimeout(() => this.showToast = false, 4000)
     },
+
+    /**
+     * Handles the exception and shows a toast to the user.
+     * @param {{code: Number, reason: String}} exception The exception to be handled.
+     * @param {String} exceptionTitle The title of the exception.
+     */
+    handleException(exception, exceptionTitle) {
+      // If the exception is a client-error, show the reason of the exception.
+      if (exception.code >= 400 && exception.code < 500) {
+        this.showTimedToast(
+            exceptionTitle,
+            exception.reason
+        );
+      } else {
+        // If the exception is a server-error, show a generic message.
+        this.showTimedToast(
+            exceptionTitle,
+            "Something went wrong"
+        );
+      }
+    }
   },
 
   async created() {

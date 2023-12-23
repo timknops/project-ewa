@@ -155,7 +155,8 @@ export default {
         this.showModal = false;
         this.showTimedToast("Deleted product", `Successfully deleted the product: ${deleted.productName}`)
       } catch (exception) {
-        this.showTimedToast("Oops!", "Something went wrong trying to delete the product")
+        this.showModal = false;
+        this.handleException(exception, "Failed to delete product");
       }
     },
 
@@ -173,7 +174,8 @@ export default {
         this.showModal = false;
         this.showTimedToast("Updated Product", `Successfully updated the product: ${updated.productName}`)
       } catch (e) {
-        this.showTimedToast("Oops!", "Something went wrong trying to update the product")
+        this.showModal = false;
+        this.handleException(e, "Failed to update product")
       }
     },
 
@@ -189,7 +191,8 @@ export default {
         this.showModal = false;
         this.showTimedToast("Added product!", `Successfully added the product: ${product.productName}`)
       } catch (e) {
-        this.showTimedToast("Oops!", "Something went wrong trying to add the product")
+        this.showModal = false;
+        this.handleException(e, "Failed to add product");
       }
     },
 
@@ -219,6 +222,27 @@ export default {
       // after 4 seconds remove the toast from view
       setTimeout(() => this.showToast = false, 4000)
     },
+
+    /**
+     * Handles the exception and shows a toast to the user.
+     * @param {{code: Number, reason: String}} exception The exception to be handled.
+     * @param {String} exceptionTitle The title of the exception.
+     */
+    handleException(exception, exceptionTitle) {
+      // If the exception is a client-error, show the reason of the exception.
+      if (exception.code >= 400 && exception.code < 500) {
+        this.showTimedToast(
+            exceptionTitle,
+            exception.reason
+        );
+      } else {
+        // If the exception is a server-error, show a generic message.
+        this.showTimedToast(
+            exceptionTitle,
+            "Something went wrong"
+        );
+      }
+    }
   },
 
   async created() {
