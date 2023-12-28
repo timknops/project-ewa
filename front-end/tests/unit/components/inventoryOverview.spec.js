@@ -322,4 +322,33 @@ describe('InventoryOverview.vue', () => {
     expect(toast.vm.toastTitle, "Toast title is not correct").toBe("Failed to add Inventory");
     expect(toast.vm.toastMessage, "Toast message is not correct").toBe("Bad request");
   })
+
+  it("empty inventory is handled correctly", async () => {
+    wrapper.vm.products = [];
+    await wrapper.vm.$nextTick();
+    const table = wrapper.findComponent({name: "TableComponent"});
+    expect(table.exists(), "Table should be rendered if there are no products").toBeTruthy();
+    expect(table.vm.tableData.length, "Table should be empty if there are no products").toBe(0);
+  })
+
+  it('table should not have buttons when active warehouse is total', () => {
+    wrapper.vm.setActiveWarehouse("Total");
+    const table = wrapper.findComponent({name: "TableComponent"});
+    expect(table.exists(), "Table should be rendered").toBeTruthy();
+    expect(table.vm.hasAddButton, "Table should not have add button when active warehouse is total").toBeFalsy();
+    expect(table.vm.hasEditButton, "Table should not have update button when active warehouse is total").toBeFalsy();
+    expect(table.vm.hasDeleteButton, "Table should not have delete button when active warehouse is total").toBeFalsy();
+  });
+
+  it('table should have buttons when active warehouse is a specific warehouse', async () => {
+    wrapper.vm.setActiveWarehouse({id: 1000, name: "Solar Sedum"});
+    await wrapper.vm.$nextTick();
+    const table = wrapper.findComponent({name: "TableComponent"});
+    console.log(table.html())
+    expect(table.exists(), "Table should be rendered").toBeTruthy();
+    expect(table.vm.hasAddButton, "Table should have add button when active warehouse is a specific warehouse").toBeTruthy();
+    expect(table.vm.hasEditButton, "Table should have update button when active warehouse is a specific warehouse").toBeTruthy();
+    expect(table.vm.hasDeleteButton, "Table should not have delete button when active warehouse is a specific warehouse").toBeFalsy();
+
+  });
 })
