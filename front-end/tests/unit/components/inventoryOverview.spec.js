@@ -1,0 +1,325 @@
+import {shallowMount} from "@vue/test-utils";
+import InventoryOverview from "@/components/InventoryOverview.vue";
+import {InventoryAdaptor} from "@/service/inventoryAdaptor.js";
+import {createRouter, createWebHashHistory} from "vue-router";
+
+
+//mock adaptor
+jest.mock('@/service/inventoryAdaptor');
+
+//mock router
+const routes = [
+  {
+    path: "/inventory",
+    component: InventoryOverview,
+    meta: {icon: "fa-solid fa-boxes-stacked", requiresLogin: true},
+    children: [{path: ":warehouse", component: InventoryOverview}],
+  },
+  {
+    path: "/",
+    redirect: "/inventory",
+  }
+]
+let wrapper;
+/**
+ *
+ * @test {InventoryOverview}
+ *
+ * test the InventoryOverview component with a mock router and adaptor.
+ *
+ * @Author Julian Kruithof
+ */
+describe('InventoryOverview.vue', () => {
+
+  beforeEach(async () => {
+    const router = createRouter({
+      history: createWebHashHistory(),
+      routes: routes
+    })
+
+    const mockInventoryAdaptor = new InventoryAdaptor();
+    //mock the findAll method
+    jest.spyOn(mockInventoryAdaptor, 'findAll').mockResolvedValue([
+      {
+        warehouse: {
+          id: 1000,
+          name: "Solar Sedum",
+        },
+        products: [
+          {
+            id: 1,
+            productName: "Enphase IQ8+ omvormer",
+            quantity: 1,
+            minimum: 1,
+          },
+          {
+            id: 2,
+            productName: "Enphase Q kabel 1 fase",
+            quantity: 2,
+            minimum: 2,
+          },
+        ],
+      },
+      {
+        warehouse: {
+          id: 1001,
+          name: "Superzon"
+        },
+        products: [
+          {
+            id: 1,
+            productName: "Enphase IQ8+ omvormer",
+            minimum: 11,
+            quantity: 18
+          },
+          {
+            id: 2,
+            productName: "Enphase Q kabel 1 fase",
+            minimum: 13,
+            quantity: 11
+          }
+        ]
+      }
+    ])
+
+    wrapper = shallowMount(InventoryOverview, {
+      global: {
+        provide: {
+          inventoryService: mockInventoryAdaptor
+        },
+        plugins: [router]
+      }
+    })
+
+    //wait for router to be ready
+    wrapper.vm.$router.push('/inventory');
+    await wrapper.vm.$router.isReady()
+    //wait for data to be loaded
+    await wrapper.vm.$nextTick();
+  })
+
+  it('overview is rendered', () => {
+    expect(wrapper.element.children.length, "Overview not rendered").toBeGreaterThan(0);
+  });
+
+  it('table is displayed', () => {
+    const table = wrapper.findComponent({name: "TableComponent"}); //find the table
+    expect(table.exists(), "Table not rendered").toBeTruthy();
+  });
+
+  it('Router changes according to active warehouse', () => {
+    const routerPushSpy = jest.spyOn(wrapper.vm.$router, 'push');
+    wrapper.vm.setActiveWarehouse({id: 1000, name: "Solar Sedum"});
+
+    expect(routerPushSpy, "Router doesn't change to the active warehouse")
+      .toHaveBeenCalledWith('/inventory/Solar Sedum');
+
+    wrapper.vm.setActiveWarehouse("Total");
+
+    expect(routerPushSpy, "Router doesn't change to the total overview")
+      .toHaveBeenCalledWith('/inventory');
+  });
+
+  it('total product list formats correctly', () => {
+    const totalInventory = wrapper.vm.getTotalProductInfo() //uses totalProduct which is equal to the mocked findAll method
+    expect(totalInventory.length, "Total product list is not formatted correctly").toBe(2);
+    expect(totalInventory).toEqual([
+      {
+        productName: "Enphase IQ8+ omvormer",
+        quantity: 19,
+      },
+      {
+        productName: "Enphase Q kabel 1 fase",
+        quantity: 13,
+      }
+    ])
+  });
+
+  it('product list is correctly formatted, for a specific warehouse', () => {
+    const products = wrapper.vm.getWarehouseProductInfo({id: 1000, name: "Solar Sedum"});
+
+    expect(products.length, "length aren't the same").toBe(2);
+    expect(products, "the product is not in the correct format").toEqual([
+      {
+        id: 1,
+        productName: "Enphase IQ8+ omvormer",
+        quantity: 1,
+        minimum: 1,
+      },
+      {
+        id: 2,
+        productName: "Enphase Q kabel 1 fase",
+        quantity: 2,
+        minimum: 2,
+      }
+    ])
+  });
+
+  it('modals are handle correctly', async () => {
+    //set active warehouse to a specific warehouse
+    wrapper.vm.setActiveWarehouse({id: 1000, name: "Solar Sedum"});
+
+    const mockedFunction = jest.spyOn(wrapper.vm.inventoryService, 'getProductWithoutInventory')
+
+    mockedFunction.mockResolvedValue([{id: 3, productName: "Enphase Q kabel 3 fase"}]);
+    await wrapper.vm.showAddModal();
+
+    await wrapper.vm.$nextTick();
+
+    //check if the modal is rendered and the correct modal is rendered with the correct data
+    const modal = wrapper.findComponent({name: "ModalComponent"});
+    expect(modal.exists(), "Add modal is not rendered").toBeTruthy();
+    expect(modal.vm.title, "Title is not correct for add modal").toBe("Add inventory");
+    expect(modal.vm.activeModal, "incorrect modal child component is rendered").toBe("add-inventory-modal");
+
+    wrapper.setData({showModal: false});
+
+    mockedFunction.mockResolvedValue([])
+    await wrapper.vm.showAddModal();
+    await wrapper.vm.$nextTick();
+    expect(modal.exists(), "Modal should not be rendered if there are no products").toBeFalsy();
+    const toast = wrapper.findComponent({name: "ToastComponent"}); //toast should be rendered if there are no products
+    expect(toast.exists(), "Toast is not rendered").toBeTruthy();
+
+    //check the update modal
+    wrapper.vm.showUpdateModal({id: 1, productName: "Enphase IQ8+ omvormer", quantity: 1, minimum: 1});
+    await wrapper.vm.$nextTick();
+
+    const updateModal = wrapper.findComponent({name: "ModalComponent"});
+    expect(updateModal.exists(), "Update modal is not rendered").toBeTruthy();
+    expect(updateModal.vm.title, "Title is not correct for update modal").toBe("Update inventory");
+    expect(updateModal.vm.activeModal, "incorrect modal child component is rendered").toBe("update-inventory-modal");
+  });
+
+  it('add inventory', async () => {
+    const mockedFunction = jest.spyOn(wrapper.vm.inventoryService, 'addInventory');
+    mockedFunction.mockResolvedValue(
+      {warehouse: {id: 1000}, product: {id: 3, productName: "enphase q kabel 3 fase"}, quantity: 30, minimum: 10});
+
+    wrapper.vm.setActiveWarehouse({id: 1000, name: "Solar Sedum"});
+
+    await wrapper.vm.handleAdd(
+      {
+        warehouse: {id: 1000},
+        product: {
+          id: 3,
+        },
+        quantity: 30,
+        minimum: 10
+      })
+
+    await wrapper.vm.$nextTick();
+    expect(mockedFunction, "service should be called").toHaveBeenCalled();
+    expect(mockedFunction, "service should be called with the correct format").toHaveBeenCalledWith({
+      warehouse: {id: 1000},
+      product: {id: 3},
+      quantity: 30,
+      minimum: 10
+    });
+
+    const products = wrapper.vm.getWarehouseProductInfo(wrapper.vm.activeWarehouse);
+    expect(products.length, "product should be added to the list").toBe(3);
+    expect(products[0], "product should be added to the front of the list").toEqual({
+      id: 3,
+      productName: "enphase q kabel 3 fase",
+      quantity: 30,
+      minimum: 10
+    });
+    expect(wrapper.vm.getWarehouseProductInfo({
+      id: 1001,
+      name: "Superzon"
+    }).length, "product should not be added to the list of not active warehouses").toBe(2);
+
+    //toast should message should be displayed
+    const toast = wrapper.findComponent({name: "ToastComponent"});
+    expect(toast.exists(), "Toast is not rendered").toBeTruthy();
+    expect(toast.vm.toastTitle, "Toast title is not correct").toBe("Inventory added!");
+    expect(toast.vm.toastMessage, "Toast message is not correct")
+      .toBe("Successfully added inventory for Product: enphase q kabel 3 fase and warehouse: " + wrapper.vm.activeWarehouse.name);
+  });
+
+  it('update inventory', async () => {
+    const mockedFunction = jest.spyOn(wrapper.vm.inventoryService, 'updateInventory');
+    mockedFunction.mockResolvedValue(
+      {warehouse: {id: 1000}, product: {id: 1, productName: "Enphase IQ8+ omvormer"}, quantity: 30, minimum: 10});
+
+    wrapper.vm.setActiveWarehouse({id: 1000, name: "Solar Sedum"});
+
+    await wrapper.vm.handleUpdate(
+      {
+        warehouse: {id: 1000},
+        product: {
+          id: 1,
+        },
+        quantity: 30,
+        minimum: 10
+      })
+
+    await wrapper.vm.$nextTick();
+
+    expect(mockedFunction, "service should be called").toHaveBeenCalled();
+    expect(mockedFunction, "service should be called with the correct format").toHaveBeenCalledWith({
+      warehouse: {id: 1000},
+      product: {id: 1},
+      quantity: 30,
+      minimum: 10
+    });
+
+    const products = wrapper.vm.getWarehouseProductInfo(wrapper.vm.activeWarehouse);
+    expect(products.length, "updating product should not change product length").toBe(2);
+    expect(products.find((product) => product.id === 1), "product should be updated").toEqual({
+      id: 1,
+      productName: "Enphase IQ8+ omvormer",
+      quantity: 30,
+      minimum: 10
+    });
+
+    //other products should not be changed
+    expect(products.find((product) => product.id === 2), "other product should not be changed").not.toEqual({
+      id: 2,
+      productName: "Enphase IQ8+ omvormer",
+      quantity: 30,
+      minimum: 10
+    });
+
+    //check if same product is not updated in other warehouses.
+    //Mock data is different from the data that is updated, so the product should be different
+    expect(wrapper.vm.getWarehouseProductInfo({id: 1001, name: "Superzon"}).find((product) => product.id === 1),
+      "product should not be updated in other warehouses").not.toEqual({
+      id: 1,
+      productName: "Enphase IQ8+ omvormer",
+      quantity: 30,
+      minimum: 10
+    });
+
+    //toast should message should be displayed
+    const toast = wrapper.findComponent({name: "ToastComponent"});
+    expect(toast.exists(), "Toast is not rendered").toBeTruthy();
+    expect(toast.vm.toastTitle, "Toast title is not correct").toBe("Inventory updated!");
+    expect(toast.vm.toastMessage, "Toast message is not correct").toBe("Successfully updated inventory for Product: Enphase IQ8+ omvormer and warehouse: " + wrapper.vm.activeWarehouse.name);
+  });
+
+  it('wrong input is handled correctly', async () => {
+    const mockedFunction = jest.spyOn(wrapper.vm.inventoryService, 'addInventory');
+    mockedFunction.mockRejectedValue({code: 400, reason: "Bad request"});
+
+    wrapper.vm.setActiveWarehouse({id: 1000, name: "Solar Sedum"});
+
+    await wrapper.vm.handleAdd(
+      {
+        warehouse: {id: 1000},
+        product: {
+          id: 3,
+        },
+        quantity: 30,
+        minimum: 10
+      })
+
+    await wrapper.vm.$nextTick();
+
+    const toast = wrapper.findComponent({name: "ToastComponent"});
+    expect(toast.exists(), "Toast is not rendered").toBeTruthy();
+    expect(toast.vm.toastTitle, "Toast title is not correct").toBe("Failed to add Inventory");
+    expect(toast.vm.toastMessage, "Toast message is not correct").toBe("Bad request");
+  })
+})
