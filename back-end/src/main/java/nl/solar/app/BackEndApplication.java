@@ -119,7 +119,7 @@ public class BackEndApplication implements CommandLineRunner {
         List<Warehouse> warehouses = warehouseRepo.findAll();
 
         for (Warehouse warehouse : warehouses) {
-            Team.TeamType teamType = (warehouse.getId() == 1000) ? Team.TeamType.Internal : Team.TeamType.External;
+            Team.TeamType teamType = (warehouse.getId() == 1000) ? Team.TeamType.INTERNAL : Team.TeamType.EXTERNAL;
 
             String teamName = names[(int) (warehouse.getId() % names.length)];
             Team team = Team.createDummyTeam(warehouse, teamName, teamType);

@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.*;
@@ -13,7 +14,7 @@ import nl.solar.app.models.views.ProjectView;
 public class Team {
 
     @Id
-    @SequenceGenerator(name = "team_id_generator", initialValue = 1)
+    @SequenceGenerator(name = "team_id_generator")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "team_id_generator")
     @JsonView(ProjectView.Overview.class)
     private long id;
@@ -21,9 +22,9 @@ public class Team {
     @JsonView(ProjectView.Overview.class)
     private String team;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "warehouse_id")
-    @JsonView(ProjectView.Overview.class)
+    @JsonIncludeProperties({"id", "name"})
     private Warehouse warehouse;
 
     @Enumerated(EnumType.STRING)
@@ -32,18 +33,15 @@ public class Team {
     @OneToMany(mappedBy = "team")
     private Set<Project> projects = new HashSet<>();
 
+    public Team() {
+
+    }
+
     public Team(long id, String team, Warehouse warehouse, TeamType type) {
         this.id = id;
         this.team = team;
         this.warehouse = warehouse;
         this.type = type;
-    }
-
-    public Team(long id) {
-        this.id = id;
-    }
-
-    public Team() {
     }
 
     public static Team createDummyTeam(Warehouse warehouse, String teamName, TeamType teamType) {
@@ -55,7 +53,7 @@ public class Team {
     }
 
     public enum TeamType {
-        Internal, External
+        INTERNAL, EXTERNAL
     }
 
     public long getId() {
@@ -79,6 +77,11 @@ public class Team {
     }
 
     public void setWarehouse(Warehouse warehouse) {
+        if ("Solar Sedum".equals(warehouse.getName())) {
+            this.type = TeamType.INTERNAL;
+        } else {
+            this.type = TeamType.EXTERNAL;
+        }
         this.warehouse = warehouse;
     }
 
