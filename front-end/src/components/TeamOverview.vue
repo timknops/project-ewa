@@ -33,6 +33,7 @@ import TableComponent from "@/components/table/TableComponent.vue";
 import ModalComponent from "@/components/modal/ModalComponent.vue";
 import SpinnerComponent from "@/components/util/SpinnerComponent.vue";
 
+
 export default {
   name: "TeamOverview",
   components: {TableComponent, ModalComponent, SpinnerComponent},
@@ -40,7 +41,14 @@ export default {
 
   data() {
     return {
-      teams: [],
+      teams: [
+        {
+          id: Number,
+          teamName: String,
+          warehouse: String,
+          type: String,
+        },
+      ],
       showModal: false,
       modalTitle: "",
       modalBodyComponent: "",
@@ -61,10 +69,14 @@ export default {
   },
   methods: {
     showAddModal() {
-      this.modalTitle = "Add team"
-      this.modalBodyComponent = this.MODAL_TYPES.ADD
-      this.okBtnText = "Add"
-      this.showModal = true
+      this.modalTitle = "Add team";
+      this.modalBodyComponent = this.MODAL_TYPES.ADD;
+      this.modalItem = {
+        team: '',
+        warehouse: '',
+      };
+      this.okBtnText = "Add";
+      this.showModal = true;
     },
 
     async showEditModal(team) {
@@ -97,16 +109,16 @@ export default {
       }
     },
 
-    async addTeam(team){
+    async addTeam(team) {
       try {
-        const added = await this.teamsService.add(team)
-        this.teams.push(added)
-        this.showModal =false;
-
-      } catch (e){
-        console.log(e)
+        const added = await this.teamsService.add(team);
+        this.teams.unshift(added);
+        this.showModal = false;
+      } catch (e) {
+        console.log("Error adding team:", e);
       }
     },
+
 
     async updateTeam(team) {
       try {
@@ -132,7 +144,7 @@ export default {
       return {
         id: team.id,
         teamName: team.team,
-        warehouse: team.warehouse.name,
+        warehouse: team.warehouseName,
         type: team.type,
       };
     },

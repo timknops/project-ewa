@@ -24,7 +24,7 @@ export class TeamAdaptor {
     }
 
     async add(team) {
-        return await this.fetchJSON(this.resourceUrl, {
+        return await this.fetchJSON(`${this.resourceUrl}`, {
             method: "POST",
             headers: {"content-type": "application/json"},
             body: JSON.stringify(team)
@@ -51,8 +51,5 @@ export class TeamAdaptor {
         } catch (e) {
             return Promise.reject(e);
         }
-    }
-    async getTeamModalData() {
-        return await this.fetchJSON(`${this.resourceUrl}/modal`);
     }
 }
