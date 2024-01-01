@@ -38,6 +38,10 @@ public class User {
         this.type = Type;
     }
 
+    public boolean checkPassword(String password){
+        return password.equals(this.password);
+    }
+
     /**
      * Creates dummy users to populate the table. The data for the dummy users is random generated
      *
