@@ -1,19 +1,24 @@
 <template>
   <!--    display the current warehouse which the user is assigned to-->
   <div>
-    <warehouse-header-display :active-user="activeUser" :active-warehouse="activeWarehouse" total-text="Total Inventory"
-                              @setActiveWarehouse="setActiveWarehouse" v-if="!productsAreLoading">
+    <warehouse-header-display
+      :active-user="activeUser"
+      :active-warehouse="activeWarehouse"
+      total-text="Total Inventory"
+      @setActiveWarehouse="setActiveWarehouse"
+      v-if="!productsAreLoading"
+    >
     </warehouse-header-display>
     <table-component
-        v-if="!productsAreLoading"
-        class="rounded-top-0 mt-0"
-        :amount-to-display="6"
-        :table-data="products"
-        :has-edit-button="activeWarehouse != null && activeWarehouse !== 'Total'"
-        :has-add-button="activeWarehouse != null && activeWarehouse !== 'Total'"
-        :hide-id-column="true"
-        @edit="showUpdateModal"
-        @add="showAddModal"
+      v-if="!productsAreLoading"
+      class="rounded-top-0 mt-0"
+      :amount-to-display="6"
+      :table-data="products"
+      :has-edit-button="activeWarehouse != null && activeWarehouse !== 'Total'"
+      :has-add-button="activeWarehouse != null && activeWarehouse !== 'Total'"
+      :hide-id-column="true"
+      @edit="showUpdateModal"
+      @add="showAddModal"
     ></table-component>
 
     <!--    Templated doesn't wait for loading so show spinner for user information-->
@@ -21,22 +26,22 @@
 
     <transition>
       <modal-component
-          v-if="showModal"
-          :title="modalTitle"
-          :active-modal="modalBodyComponent"
-          :item="modalResource"
-          :ok-btn-text="okBtnText"
-          @cancel-modal-btn="this.showModal = false"
-          @corner-close-modal-btn="this.showModal = false"
-          @ok-modal-btn="handleOk"
+        v-if="showModal"
+        :title="modalTitle"
+        :active-modal="modalBodyComponent"
+        :item="modalResource"
+        :ok-btn-text="okBtnText"
+        @cancel-modal-btn="this.showModal = false"
+        @corner-close-modal-btn="this.showModal = false"
+        @ok-modal-btn="handleOk"
       ></modal-component>
     </transition>
 
     <transition>
       <toast-component
-          v-if="showToast"
-          :toast-title="toastTitle"
-          :toast-message="toastMessage"
+        v-if="showToast"
+        :toast-title="toastTitle"
+        :toast-message="toastMessage"
       ></toast-component>
     </transition>
   </div>
@@ -83,7 +88,7 @@ export default {
       activeUser: {
         name: String,
         role: String,
-        team: {name: String, warehouse: name},
+        team: { name: String, warehouse: name },
       },
 
       activeWarehouse: "Total", //total selected by default.
@@ -124,7 +129,6 @@ export default {
       };
     },
 
-
     /**
      * Set the active warehouse
      * @param warehouse a warehouse object
@@ -133,10 +137,10 @@ export default {
       // console.log(warehouse)
       this.activeWarehouse = warehouse;
       if (warehouse === "Total") {
-        this.products = this.getTotalProductInfo()
+        this.products = this.getTotalProductInfo();
         this.$router.push("/inventory");
       } else {
-        this.products = this.getWarehouseProductInfo(warehouse)
+        this.products = this.getWarehouseProductInfo(warehouse);
         this.$router.push("/inventory/" + warehouse.name);
       }
     },
@@ -148,13 +152,13 @@ export default {
      */
     getWarehouseProductInfo(warehouse) {
       const productsObjectArray = this.totalProducts.filter(
-          (totalList) => totalList.warehouse.id === warehouse.id
+        (totalList) => totalList.warehouse.id === warehouse.id
       );
 
       // filter should return one element in the array, because there is only one warehouse active
       if (productsObjectArray.length > 1) {
         console.error(
-            "There were multiple or no warehouses trying to receive their products"
+          "There were multiple or no warehouses trying to receive their products"
         );
         return [];
       }
@@ -229,12 +233,15 @@ export default {
 
     async showAddModal() {
       const productsWithoutInventory =
-          await this.inventoryService.getProductWithoutInventory(
-              this.activeWarehouse.id
-          );
+        await this.inventoryService.getProductWithoutInventory(
+          this.activeWarehouse.id
+        );
       if (productsWithoutInventory.length === 0) {
-        this.showTimedToast("All products have an inventory", "No Inventory to be added")
-        return
+        this.showTimedToast(
+          "All products have an inventory",
+          "No Inventory to be added"
+        );
+        return;
       }
       this.modalTitle = "Add inventory";
       this.modalBodyComponent = this.MODAL_TYPES.ADD;
@@ -272,24 +279,28 @@ export default {
 
         //find the correct warehouse where a quantity is updated for
         const warehouseIndex = this.totalProducts.findIndex(
-            (resource) => resource.warehouse.id === updated.warehouse.id
+          (resource) => resource.warehouse.id === updated.warehouse.id
         );
 
         if (warehouseIndex !== -1) {
           //find the correct product to update the quantity for
           const productIndex = this.totalProducts[
-              warehouseIndex
-              ].products.findIndex((product) => product.id === updated.product.id);
+            warehouseIndex
+          ].products.findIndex((product) => product.id === updated.product.id);
 
           if (productIndex !== -1) {
             //update the correct product
             this.totalProducts[warehouseIndex].products[productIndex].quantity =
-                updated.quantity;
-            this.totalProducts[warehouseIndex].products[productIndex].minimum = updated.minimum;
+              updated.quantity;
+            this.totalProducts[warehouseIndex].products[productIndex].minimum =
+              updated.minimum;
           }
         }
         this.showModal = false;
-        this.showTimedToast("Inventory updated!", `Successfully updated inventory for Product: ${updated.product.productName} and warehouse: ${updated.warehouse.name}`)
+        this.showTimedToast(
+          "Inventory updated!",
+          `Successfully updated inventory for Product: ${updated.product.productName} and warehouse: ${updated.warehouse.name}`
+        );
       } catch (e) {
         this.showModal = false;
         this.handleException(e, "Failed to update Inventory");
@@ -311,7 +322,7 @@ export default {
       try {
         const saved = await this.inventoryService.addInventory(inventory);
         const warehouseIndex = this.totalProducts.findIndex(
-            (inventory) => inventory.warehouse.id === saved.warehouse.id
+          (inventory) => inventory.warehouse.id === saved.warehouse.id
         );
 
         //reformat the saved inventory object to an object used in the products list of the inventory
@@ -324,20 +335,23 @@ export default {
 
         if (warehouseIndex !== -1) {
           //if warehouse already has inventory items existing add the new inventory to the list
-          this.totalProducts[warehouseIndex].products.unshift(inventoryObj);
+          this.totalProducts[warehouseIndex].products.push(inventoryObj);
         } else {
           //no inventory exist for the warehouse, push the correct warehouse to the total list and add inventory to the list
           this.totalProducts.push({
             warehouse: this.activeWarehouse,
-            products: [{...inventoryObj}],
+            products: [{ ...inventoryObj }],
           });
-          this.products = [{...inventoryObj}];
+          this.products = [{ ...inventoryObj }];
         }
         this.showModal = false;
-        this.showTimedToast("Inventory Added", `Successfully added inventory for Product: ${inventoryObj.productName} and warehouse: ${this.activeWarehouse.name}`)
+        this.showTimedToast(
+          "Inventory Added",
+          `Successfully added inventory for Product: ${inventoryObj.productName} and warehouse: ${this.activeWarehouse.name}`
+        );
       } catch (e) {
         this.showModal = false;
-        this.handleException(e, "Failed to add Inventory")
+        this.handleException(e, "Failed to add Inventory");
       }
     },
 
@@ -360,12 +374,12 @@ export default {
      * @param message the to show to the user
      */
     showTimedToast(title, message) {
-      this.toastTitle = title
-      this.toastMessage = message
-      this.showToast = true
+      this.toastTitle = title;
+      this.toastMessage = message;
+      this.showToast = true;
 
       // after 4 seconds remove the toast from view
-      setTimeout(() => this.showToast = false, 4000)
+      setTimeout(() => (this.showToast = false), 4000);
     },
 
     /**
@@ -376,18 +390,12 @@ export default {
     handleException(exception, exceptionTitle) {
       // If the exception is a client-error, show the reason of the exception.
       if (exception.code >= 400 && exception.code < 500) {
-        this.showTimedToast(
-            exceptionTitle,
-            exception.reason
-        );
+        this.showTimedToast(exceptionTitle, exception.reason);
       } else {
         // If the exception is a server-error, show a generic message.
-        this.showTimedToast(
-            exceptionTitle,
-            "Something went wrong"
-        );
+        this.showTimedToast(exceptionTitle, "Something went wrong");
       }
-    }
+    },
   },
 
   async created() {
@@ -401,7 +409,7 @@ export default {
     } else {
       //only get inventory for one warehouse
       this.products = await this.inventoryService.findAllForWarehouse(
-          this.activeUser.team.warehouse.id
+        this.activeUser.team.warehouse.id
       );
     }
 
