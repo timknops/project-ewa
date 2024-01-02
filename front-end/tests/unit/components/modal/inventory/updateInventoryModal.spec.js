@@ -1,5 +1,5 @@
 import {shallowMount} from "@vue/test-utils";
-import UpdateInventoryModal from "@/components/modal/inventory/UpdateInventoryModal";
+import UpdateInventoryModal from "@/components/modal/inventory/UpdateInventoryModal.vue";
 
 describe('UpdateInventoryModal.vue', () => {
   let wrapper;
