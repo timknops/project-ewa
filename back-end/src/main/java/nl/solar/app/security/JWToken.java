@@ -13,22 +13,27 @@ public class JWToken {
 
     private static final String JWT_CALLNAME_CLAIM = "sub";
     private static final String JWT_USERID_CLAIM = "id";
-    private static final String JWT_ROLE_CLAIM = "role";
+    private static final String JWT_TYPE_CLAIM = "type";
+    private static final String JWT_ISSUER_CLAIM = "iss";
+    public static final String JWT_ATTRIBUTE_NAME = "JWTokenInfo";
 
     private String callName;
     private Long userId;
-    private String role;
+    private String type;
 
-    public JWToken(String callName, Long userId, String role) {
+    public JWToken(String callName, Long userId, String type) {
         this.callName = callName;
         this.userId = userId;
-        this.role = role;
+        this.type = type;
     }
 
     public String encode(String issuer, String passphrase, int expiration){
         Key key = getKey(passphrase);
 
-        return Jwts.builder().claim(JWT_CALLNAME_CLAIM, this.callName).claim(JWT_USERID_CLAIM, this.userId)
+        return Jwts.builder()
+                .claim(JWT_CALLNAME_CLAIM, this.callName)
+                .claim(JWT_USERID_CLAIM, this.userId)
+                .claim(JWT_TYPE_CLAIM, this.type)
                 .setIssuer(issuer).setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration * 1000L))
                 .signWith(key, SignatureAlgorithm.HS512)
@@ -40,13 +45,19 @@ public class JWToken {
         return new SecretKeySpec(hmacKey, SignatureAlgorithm.HS512.getJcaName());
     }
 
-    private static JWToken decode(String token, String pass){
+    public static JWToken decode(String token, String issuer, String pass)
+            throws ExpiredJwtException, MalformedJwtException{
         Key key = getKey(pass);
         Jws<Claims> jws = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
         Claims claims = jws.getBody();
 
+        //check if issuer is valid
+        if (!claims.get(JWT_ISSUER_CLAIM).toString().equals(issuer)){
+            throw new MalformedJwtException("Issuer is invalid");
+        }
+
         return new JWToken(claims.get(JWT_CALLNAME_CLAIM).toString(),
                 Long.valueOf(claims.get(JWT_USERID_CLAIM).toString()),
-                claims.get(JWT_ROLE_CLAIM).toString());
+                claims.get(JWT_TYPE_CLAIM).toString());
     }
 }

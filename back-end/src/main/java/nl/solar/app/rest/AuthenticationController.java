@@ -37,8 +37,6 @@ public class AuthenticationController {
 
         //if no user was found or the password isn't correct then throw a not acceptable exception
         if (foundUser == null || !foundUser.checkPassword(password)) {
-            System.out.println(userList.get(0));
-            System.out.println(password);
             throw new NotAcceptableException("Login was unsuccessful for account: " + email);
         }
         JWToken jwToken = new JWToken(foundUser.getName(), foundUser.getId(), foundUser.getType());
