@@ -71,7 +71,7 @@ export default {
     showAddModal() {
       this.modalTitle = "Add team";
       this.modalBodyComponent = this.MODAL_TYPES.ADD;
-      this.modalItem = {
+      this.modalTeam = {
         team: '',
         warehouse: '',
       };
@@ -143,9 +143,9 @@ export default {
     formatTeamForTable(team) {
       return {
         id: team.id,
-        teamName: team.team,
+        team: team.team,
         warehouse: team.warehouseName,
-        type: team.type,
+        type: team.type.charAt(0).toUpperCase() + team.type.slice(1).toLowerCase(),
       };
     },
 
