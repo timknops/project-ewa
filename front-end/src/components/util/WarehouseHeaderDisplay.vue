@@ -94,6 +94,8 @@ export default {
     //if there is no total default the active warehouse to the first in the list
     if (this.hasNoTotalOption) {
       this.$emit('setActiveWarehouse', this.warehouses[0])
+    } else {
+      this.$emit('setActiveWarehouse', "Total");
     }
   }
 }
