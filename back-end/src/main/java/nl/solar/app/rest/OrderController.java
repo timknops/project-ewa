@@ -37,11 +37,20 @@ public class OrderController {
     @Autowired
     private EntityRepository<Order> orderRepo;
 
+    /**
+     * Get a list of all orders found
+     * @return list of orders
+     */
     @GetMapping(produces = "application/json")
     public List<Order> getAll() {
         return this.orderRepo.findAll();
     }
 
+    /**
+     * Get a order with a certain id
+     * @param id the id of an order
+     * @return a order object
+     */
     @GetMapping(path = "{id}", produces = "application/json")
     public ResponseEntity<Order> getOrder(@PathVariable long id) {
         Order order = this.orderRepo.findById(id);
@@ -53,38 +62,48 @@ public class OrderController {
         return ResponseEntity.ok(order);
     }
 
+    /**
+     * Get all items for one particular order
+     * An item is a product, sold by solar sedum
+     * @param id the id of an order
+     * @return a list of items
+     */
     @GetMapping(path = "{id}/items", produces = "application/json")
     public List<Item> getItemsForOrder(@PathVariable long id) {
         return this.itemRepo.getItemsForOrder(id);
     }
 
+    /**
+     * Add an order and the items belonging to the order to the database.
+     * @param order the order which is added.
+     *
+     * @return The order which is added
+     */
     @Transactional
     @PostMapping(produces = "application/json")
-    public ResponseEntity<Order> addOrder(@RequestBody OrderRequestDTO Request) {
+    public ResponseEntity<Order> addOrder(@RequestBody OrderRequestDTO order) {
+        Order newOrder = new Order();
         //set the order date to the current datetime
-        Request.getOrder().setOrderDate(LocalDateTime.now().withNano(0));
-        Request.getOrder().setOrderStatus(OrderStatus.PENDING);
+        newOrder.setOrderDate(LocalDateTime.now().withNano(0));
+        newOrder.setStatus(OrderStatus.PENDING);
+        newOrder.setDeliverDate(order.getDeliverDate());
+        newOrder.setTag(order.getTag());
+        newOrder.setWarehouse(order.getWarehouse());
 
-        if (Request.getOrder().getWarehouse() == null) {
+        if (order.getWarehouse() == null) {
             throw new BadRequestException("An order should be placed for a warehouse!");
         }
 
-        if (Request.getOrder().getDeliverDate().isBefore(Request.getOrder().getOrderDate())) {
+        if (order.getDeliverDate().isBefore(newOrder.getOrderDate().toLocalDate())) {
             throw new BadRequestException("An order can not be delivered in the past!");
         }
+        Order savedOrder = this.orderRepo.save(newOrder);
 
-        Order savedOrder = this.orderRepo.save(Request.getOrder());
-
-        for (ItemDTO item : Request.getItems()) {
-            Product product = productRepo.findById(item.getProduct().getId()); // find the correct persisted product.
-            //create the bidirectional relationships
-            Item newItem = new Item();
-            newItem.setProduct(product);
-            newItem.setOrder(savedOrder);
-            newItem.setQuantity(item.getQuantity());
-
-            product.getItems().add(newItem);
-            savedOrder.getItems().add(newItem);
+        //add all the items and manage bidirectional relationships
+        for (ItemDTO item : order.getItems()) {
+            Item newItem = new Item(item.getProduct(), newOrder, item.getQuantity());
+            item.getProduct().getItems().add(newItem);
+            newOrder.getItems().add(newItem);
         }
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedOrder.getId()).toUri();
@@ -92,6 +111,12 @@ public class OrderController {
         return ResponseEntity.created(location).body(savedOrder);
     }
 
+    /**
+     * Update the given order and the items which belongs to this order.
+     * @param id the id of the order which is being updated
+     * @param order the data of an order which is being updated
+     * @return the updated order
+     */
     @Transactional
     @PutMapping(path = "{id}", produces = "application/json")
     public ResponseEntity<Order> updateOrder(@PathVariable long id, @RequestBody Order order) {
@@ -99,17 +124,25 @@ public class OrderController {
             throw new PreConditionFailedException("The id's in the path and body don't match");
         }
 
+        //find the existing order to handle some change checks.
         Order existingOrder = this.orderRepo.findById(id);
 
-        if (order.getDeliverDate().isBefore(existingOrder.getOrderDate())) {
+        if (order.getDeliverDate().isBefore(existingOrder.getOrderDate().toLocalDate())) {
             throw new BadRequestException("An order can not be delivered in the past!");
         }
         order.setOrderDate(existingOrder.getOrderDate());
+
+        //TODO handle updating the inventory for the given items
 
         Order updated = this.orderRepo.save(order);
         return ResponseEntity.ok(updated);
     }
 
+    /**
+     * Delete an order
+     * @param id the id of the order which is deleted
+     * @return the deleted order
+     */
     @DeleteMapping(path = "{id}", produces = "application/json")
     public ResponseEntity<Order> deleteOrder(@PathVariable long id) {
         Order toBeDelete = this.orderRepo.delete(id);

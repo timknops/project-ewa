@@ -10,12 +10,23 @@
           disabled
       />
     </div>
+    <div class="mb-3">
+      <label for="tag" class="form-label fw-bold">Tag</label>
+      <input
+          type="text"
+          id="tag"
+          class="form-control"
+          :class="{'border-danger': emptyTag}"
+          v-model.trim="modalItem.tag"
+          @blur="validateTag"
+      >
+    </div>
     <div class="row grid mb3">
       <div class="col">
         <label for="deliver-date" class="form-label fw-bold">Deliver date</label>
         <input
             id="deliver-date"
-            type="datetime-local"
+            type="date"
             class="form-control"
             :class="{'border-danger': incorrectDate}"
             v-model.trim="modalItem.deliverDate"
@@ -24,7 +35,7 @@
       </div>
       <div class="col">
         <label for="order-status" class="form-label fw-bold">Order status</label>
-        <select id="order-status" class="form-select" v-model="modalItem.orderStatus">
+        <select id="order-status" class="form-select" v-model="modalItem.status">
           <option v-for="status in STATUS" :key="status" :value="status">
             {{status.toLowerCase()}}
           </option>
@@ -99,7 +110,8 @@
                     :class="{
                       'border-danger': itemNotFilled && validateQuantity(item)}"
                 />
-                <small v-if="itemNotFilled && validateQuantity(item)" class="text-danger"> Fill in a quantity!</small>
+                <small v-if="negativeQuantity" class="text-danger"> Quantity can't be negative or 0</small>
+                <small v-else-if="itemNotFilled && validateQuantity(item)" class="text-danger"> Fill in a quantity!</small>
               </td>
 
               <td>
@@ -140,6 +152,8 @@ export default {
       STATUS: ["DELIVERED", "PENDING", "CANCELED"],
       incorrectDate: false,
       itemNotFilled: false,
+      emptyTag: false,
+      negativeQuantity: false,
       //track items which are added in modal
       itemsList: []
     }
@@ -161,9 +175,10 @@ export default {
     hasError() {
       const isEmpty = this.emptyItems;
       this.validateItems()
+      this.validateTag();
 
 
-      return this.incorrectDate || isEmpty || this.itemNotFilled
+      return this.incorrectDate || isEmpty || this.itemNotFilled || this.emptyTag
     }
   },
 
@@ -183,7 +198,12 @@ export default {
     },
 
     validateQuantity(item) {
-      return item.quantity === "" || item.quantity === undefined
+      this.negativeQuantity = parseInt(item.quantity) <= 0;
+      return item.quantity === "" || item.quantity === undefined || this.negativeQuantity
+    },
+
+    validateTag() {
+      this.emptyTag = this.modalItem.tag === ""
     },
 
     productSelected(item) {

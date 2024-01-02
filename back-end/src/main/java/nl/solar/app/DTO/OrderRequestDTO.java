@@ -1,34 +1,32 @@
 package nl.solar.app.DTO;
 
-import nl.solar.app.models.Order;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import nl.solar.app.models.Warehouse;
 
+import java.time.LocalDate;
 import java.util.List;
 
+
 /**
- * Data Transfer Object (DTO) representing the object received from the front-end when adding an order
- * Since the order-id isn't set yet, the items list, needs to be deserialized in a different way than normal.
+ * Since when adding order the id is not know, the items should not contain a reference to an order,
+ * otherwise jpa creates empty orders. Therefore, a DTO is needed for adding items for a new order
  *
  * @author Julian Kruithof
  */
+@Getter
+@Setter
+@EqualsAndHashCode
+@NoArgsConstructor
 public class OrderRequestDTO {
+    private Warehouse warehouse;
 
-    private Order order;
+    private String tag;
+
+    private LocalDate deliverDate;
 
     private List<ItemDTO> items;
 
-    public Order getOrder() {
-        return order;
-    }
-
-    public void setOrder(Order order) {
-        this.order = order;
-    }
-
-    public List<ItemDTO> getItems() {
-        return items;
-    }
-
-    public void setItems(List<ItemDTO> items) {
-        this.items = items;
-    }
 }

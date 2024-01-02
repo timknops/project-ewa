@@ -50,13 +50,20 @@ import SpinnerComponent from "@/components/util/SpinnerComponent.vue";
 import ModalComponent from "@/components/modal/ModalComponent.vue";
 import ToastComponent from "@/components/util/ToastComponent.vue";
 
+/**
+ * Overview for all orders for each specific warehouse
+ *
+ * @author Julian Kruithof
+ */
 export default {
   name: "orderOverview",
   components: {ToastComponent, ModalComponent, SpinnerComponent, TableComponent, WarehouseHeaderDisplay},
-  inject: ["orderService"],
+  inject: ["orderService", "warehouseService"],
   data() {
     return {
       activeWarehouse: {},
+
+      // todo get from localstorage, with jwt
       activeUser: {
         name: "Julian",
         role: "admin",
@@ -84,6 +91,7 @@ export default {
         ADD: "add-order-modal",
       }),
 
+      //toast variables
       showToast: false,
       toastTitle: "",
       toastMessage: ""
@@ -91,21 +99,30 @@ export default {
     }
   },
   methods: {
-    setActiveWarehouse(warehouse) {
+    /**
+     * Set the active warehouse and get the orders for that warehouse
+     * @param warehouse
+     */
+    async setActiveWarehouse(warehouse) {
       this.activeWarehouse = warehouse
       this.$router.push("/orders/" + warehouse.name)
-      this.orders = this.getOrdersForWarehouse(this.activeWarehouse)
-
+      this.orders = await this.getOrdersForWarehouse(this.activeWarehouse.id)
+      this.ordersAreLoaded = true //set to true, after first load. Thereafter, this will always be true.
     },
 
-    getOrdersForWarehouse(warehouse) {
-      return this.totalOrders.filter((order) => order.warehouse.id === warehouse.id)
-          .map(order => ({
-            id: order.id,
-            warehouse: order.warehouse.name,
-            deliverDate: this.formatDate(order.deliverDate),
-            orderStatus: order.orderStatus
-          }))
+    /**
+     * get the orders for the active warehouse and format it to the correct table format
+     * @param id the id of the current active warehouse
+     * @return * returns a list of all orders for a warehouse
+     */
+    async getOrdersForWarehouse(id) {
+      const data = await this.warehouseService.findOrdersForWarehouse(id);
+      return data.map(order => ({
+        id: order.id,
+        tag: order.tag,
+        deliverDate: this.formatDate(order.deliverDate),
+        status: order.status
+      }))
 
     },
 
@@ -120,11 +137,6 @@ export default {
         month: "short",
         day: "numeric",
         year: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-        second: "numeric",
-        hour12: false
-
       });
     },
 
@@ -134,22 +146,22 @@ export default {
     formatEmptyTableData() {
       return {
         id: "",
-        warehouse: "",
+        tag: "",
         deliverDate: "",
-        orderStatus: "",
+        status: "",
       };
     },
 
     /**
-     * Show the delete modal with corresponding product info
-     * @param product product to be deleted
+     * Show the delete modal with corresponding order info
+     * @param order product to be deleted
      */
     showDeleteModal(order) {
       this.modalTitle = "Delete Order";
       this.modalBodyComponent = this.MODAL_TYPES.DELETE;
       this.modalOrderInfo = {
-          id: order.id,
-          warehouseName: order.warehouse
+        id: order.id,
+        warehouseName: this.activeWarehouse.name
       };
       this.okBtnText = "Delete";
       this.showModal = true;
@@ -180,6 +192,11 @@ export default {
       this.showModal = true;
     },
 
+    /**
+     * Handle the flow, when the ok button of the modal is clicked
+     * @param order the order on which a certain action should be performed
+     * @param modal {String} The type of modal (delete, update, add).
+     */
     handleOk(order, modal) {
       switch (modal) {
         case this.MODAL_TYPES.DELETE:
@@ -194,7 +211,11 @@ export default {
       }
     },
 
-    async deleteOrder(order){
+    /**
+     * Delete an order
+     * @param order the order which is deleted
+     */
+    async deleteOrder(order) {
       try {
         const deleted = await this.orderService.delete(order.id);
         this.orders = this.orders.filter(order => order.id !== deleted.id)
@@ -203,15 +224,23 @@ export default {
             "Order Deleted",
             `Successfully deleted an order with id: ${deleted.id} for warehouse ${this.activeWarehouse.name}`)
       } catch (e) {
-        console.error(e)
+        this.showTimedToast(
+            "Oops!",
+            `Something went wrong trying to delete an order with id: ${order.id} for ware ${this.activeWarehouse.name}`)
       }
     },
 
+    /**
+     * Update an order
+     * @param order the order to be updated
+     * @return {Promise<void>}
+     */
     async updateOrder(order) {
       try {
         const updated = await this.orderService.update(order);
-        const formatted = { ...updated}
-        formatted.warehouse = updated.warehouse.name
+        const formatted = {...updated}
+        delete formatted.warehouse // remove warehouse from formatted object
+
         formatted.deliverDate = this.formatDate(updated.deliverDate)
         this.orders = this.orders.map((order) =>
             order.id === formatted.id ? formatted : order
@@ -222,42 +251,49 @@ export default {
             `Successfully updated an order with id: ${updated.id} for warehouse ${this.activeWarehouse.name}`
         )
       } catch (e) {
-        console.log(e);
+        this.showTimedToast(
+            "Oops!",
+            `Something went wrong trying to update an order with id: ${order.id} for ware ${this.activeWarehouse.name}`)
       }
     },
 
+    /**
+     * Add an order
+     * @param order the order to be added
+     */
     async addOrder(order) {
       try {
         const added = await this.orderService.add(order);
         const formatted = {...added}
-        formatted.warehouse = added.warehouse.name
+        delete formatted.warehouse;
         formatted.deliverDate = this.formatDate(added.deliverDate)
-        this.orders.push(formatted);
+
+        this.orders.unshift(formatted);
         this.showModal = false;
         this.showTimedToast(
             "Order added",
             `Successfully added an order with id: ${added.id} from warehouse ${this.activeWarehouse.name}`)
       } catch (e) {
-        console.log(e);
+        this.showTimedToast(
+            "Oops!",
+            `Something went wrong trying to add an order with id: ${order.id} for ware ${this.activeWarehouse.name}`)
       }
     },
 
+    /**
+     * Show a toast to give the user some information about how the Crud operation went
+     * @param title the title of the toast
+     * @param message the to show to the user
+     */
     showTimedToast(title, message) {
       this.toastTitle = title
       this.toastMessage = message
       this.showToast = true
 
-      setTimeout(()=> this.showToast = false, 4000)
+      // after 4 seconds remove the toast from view
+      setTimeout(() => this.showToast = false, 4000)
     },
   },
-
-  async created() {
-    const data = await this.orderService.findAll();
-    this.totalOrders = data
-    this.setActiveWarehouse(data[0].warehouse)
-    this.ordersAreLoaded = true
-  }
-
 }
 </script>
 
