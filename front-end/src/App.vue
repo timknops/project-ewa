@@ -23,6 +23,7 @@ import {TeamAdaptor} from "@/service/teamAdaptor";
 import {EmailAdaptor} from "@/service/emailAdaptor";
 import {ProjectAdaptor} from "@/service/projectAdaptor";
 import {OrderAdaptor} from "@/service/orderAdaptor";
+import {DashboardAdaptor} from "@/service/dashboardAdaptor";
 
 
 export default {
@@ -47,7 +48,8 @@ export default {
       teamsService: new TeamAdaptor(`${appConfig.BACKEND_URL}/teams`),
       emailService: new EmailAdaptor(`${appConfig.BACKEND_URL}`),
       projectService: new ProjectAdaptor(`${appConfig.BACKEND_URL}/projects`),
-      orderService: new OrderAdaptor(`${appConfig.BACKEND_URL}/orders`)
+      orderService: new OrderAdaptor(`${appConfig.BACKEND_URL}/orders`),
+      dashboardService: new DashboardAdaptor(`${appConfig.BACKEND_URL}/dashboard-items`)
     };
   },
   methods: {
