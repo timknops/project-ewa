@@ -23,7 +23,7 @@
           :class="{ active: activeWarehouse === 'Total' }"
           @click="$emit('setActiveWarehouse','Total')"
       >
-        <strong>{{totalText}}</strong>
+        <strong>{{ totalText }}</strong>
       </button>
     </div>
     <div class="col-auto" v-for="(warehouse) in warehouses" :key="warehouse.id">
@@ -82,7 +82,19 @@ export default {
    */
   async created() {
     if (this.activeUser.role === "viewer") return;
-    this.warehouses = await this.warehouseService.findAll();
+    try {
+      this.warehouses = await this.warehouseService.findAll();
+
+    } catch (error) {
+      this.warehouses = [];
+      if (!this.hasNoTotalOption) {
+        this.$emit("setActiveWarehouse", "Total");
+        return;
+      }
+      this.$emit("setActiveWarehouse", null)
+
+      return;
+    }
     if (this.$route.params.warehouse) {
       const warehouse = this.findWarehouseByName(this.$route.params.warehouse);
       //if a warehouse is found in the route, set is as the active warehouse

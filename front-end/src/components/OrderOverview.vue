@@ -104,9 +104,18 @@ export default {
      * @param warehouse
      */
     async setActiveWarehouse(warehouse) {
+      if (warehouse == null) {
+        this.orders = [this.formatEmptyTableData()];
+        this.ordersAreLoaded = true;
+        return
+      }
       this.activeWarehouse = warehouse
       this.$router.push("/orders/" + warehouse.name)
-      this.orders = await this.getOrdersForWarehouse(this.activeWarehouse.id)
+      try {
+        this.orders = await this.getOrdersForWarehouse(this.activeWarehouse.id)
+      } catch (e) {
+        this.orders = [this.formatEmptyTableData()]
+      }
       this.ordersAreLoaded = true //set to true, after first load. Thereafter, this will always be true.
     },
 

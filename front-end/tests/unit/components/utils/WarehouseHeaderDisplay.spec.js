@@ -149,3 +149,35 @@ describe('WarehouseHeaderDisplay.vue',  () => {
     wrapper.unmount()
   })
 })
+
+describe('WarehouseHeaderDisplay.vue errors',  () => {
+  it('If warehouse service fails, the diplay is not broken', async () => {
+    const mockWarehouseAdaptor = new WarehouseAdaptor();
+    const router = createRouter({
+      history: createWebHashHistory(),
+      routes,
+    })
+
+    wrapper = shallowMount(WarehouseHeaderDisplay, {
+      global: {
+        provide: {
+          warehouseService: mockWarehouseAdaptor
+        },
+        plugins: [router]
+      },
+      props: {
+        activeUser: {id: 1, name: 'test', role: 'admin', team: {id: 1, name: 'test', warehouse: {id: 1, name: 'Solar'}}},
+        activeWarehouse : {},
+        hasNoTotalOption: false,
+        totalText: 'Total'
+      }
+    })
+
+    jest.spyOn(mockWarehouseAdaptor, 'findAll').mockRejectedValue({code: 500, reason: 'Internal server error'});
+
+    console.log(wrapper.vm.warehouses)
+    expect(wrapper.element.children.length, "WarehouseHeaderDisplay is not rendered properly").toBeGreaterThan(0);
+    expect(wrapper.vm.warehouses.length, "WarehouseHeaderDisplay should have an empty list of warehouses")
+      .toBe(0);
+  });
+})
