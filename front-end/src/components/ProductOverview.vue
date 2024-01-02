@@ -30,9 +30,9 @@
 
     <transition>
       <toast-component
-          v-if="showToast"
-          :toast-message="toastMessage"
-          :toast-title="toastTitle"
+        v-if="showToast"
+        :toast-message="toastMessage"
+        :toast-title="toastTitle"
       ></toast-component>
     </transition>
   </div>
@@ -53,7 +53,12 @@ import ToastComponent from "@/components/util/ToastComponent.vue";
  */
 export default {
   name: "ProductOverview",
-  components: {ToastComponent, SpinnerComponent, ModalComponent, TableComponent },
+  components: {
+    ToastComponent,
+    SpinnerComponent,
+    ModalComponent,
+    TableComponent,
+  },
   inject: ["productService"],
   data() {
     return {
@@ -83,7 +88,7 @@ export default {
       //toast variables
       showToast: false,
       toastTitle: "",
-      toastMessage: ""
+      toastMessage: "",
     };
   },
   methods: {
@@ -153,7 +158,10 @@ export default {
           (product) => product.id !== deleted.id
         );
         this.showModal = false;
-        this.showTimedToast("Deleted product", `Successfully deleted the product: ${deleted.productName}`)
+        this.showTimedToast(
+          "Deleted product",
+          `Successfully deleted the product: ${deleted.productName}`
+        );
       } catch (exception) {
         this.showModal = false;
         this.handleException(exception, "Failed to delete product");
@@ -172,10 +180,13 @@ export default {
           product.id === updated.id ? updated : product
         );
         this.showModal = false;
-        this.showTimedToast("Updated Product", `Successfully updated the product: ${updated.productName}`)
+        this.showTimedToast(
+          "Updated Product",
+          `Successfully updated the product: ${updated.productName}`
+        );
       } catch (e) {
         this.showModal = false;
-        this.handleException(e, "Failed to update product")
+        this.handleException(e, "Failed to update product");
       }
     },
 
@@ -187,9 +198,12 @@ export default {
     async addProduct(product) {
       try {
         const added = await this.productService.add(product);
-        this.products.unshift(added);
+        this.products.push(added);
         this.showModal = false;
-        this.showTimedToast("Added product!", `Successfully added the product: ${product.productName}`)
+        this.showTimedToast(
+          "Added product!",
+          `Successfully added the product: ${product.productName}`
+        );
       } catch (e) {
         this.showModal = false;
         this.handleException(e, "Failed to add product");
@@ -215,12 +229,12 @@ export default {
      * @param message the to show to the user
      */
     showTimedToast(title, message) {
-      this.toastTitle = title
-      this.toastMessage = message
-      this.showToast = true
+      this.toastTitle = title;
+      this.toastMessage = message;
+      this.showToast = true;
 
       // after 4 seconds remove the toast from view
-      setTimeout(() => this.showToast = false, 4000)
+      setTimeout(() => (this.showToast = false), 4000);
     },
 
     /**
@@ -231,18 +245,12 @@ export default {
     handleException(exception, exceptionTitle) {
       // If the exception is a client-error, show the reason of the exception.
       if (exception.code >= 400 && exception.code < 500) {
-        this.showTimedToast(
-            exceptionTitle,
-            exception.reason
-        );
+        this.showTimedToast(exceptionTitle, exception.reason);
       } else {
         // If the exception is a server-error, show a generic message.
-        this.showTimedToast(
-            exceptionTitle,
-            "Something went wrong"
-        );
+        this.showTimedToast(exceptionTitle, "Something went wrong");
       }
-    }
+    },
   },
 
   async created() {
