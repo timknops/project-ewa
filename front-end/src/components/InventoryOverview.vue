@@ -130,7 +130,6 @@ export default {
      * @param warehouse a warehouse object
      */
     setActiveWarehouse(warehouse) {
-      // console.log(warehouse)
       this.activeWarehouse = warehouse;
       if (warehouse === "Total") {
         this.products = this.getTotalProductInfo()

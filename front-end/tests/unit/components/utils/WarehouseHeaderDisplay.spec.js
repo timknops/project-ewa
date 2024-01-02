@@ -174,8 +174,6 @@ describe('WarehouseHeaderDisplay.vue errors',  () => {
     })
 
     jest.spyOn(mockWarehouseAdaptor, 'findAll').mockRejectedValue({code: 500, reason: 'Internal server error'});
-
-    console.log(wrapper.vm.warehouses)
     expect(wrapper.element.children.length, "WarehouseHeaderDisplay is not rendered properly").toBeGreaterThan(0);
     expect(wrapper.vm.warehouses.length, "WarehouseHeaderDisplay should have an empty list of warehouses")
       .toBe(0);

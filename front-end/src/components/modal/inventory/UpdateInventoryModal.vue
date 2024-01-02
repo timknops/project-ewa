@@ -25,11 +25,12 @@
       <input id="quantity"
              type="number"
              class="form-control"
-             :class="{'border-danger': decimalError}"
+             :class="{'border-danger': decimalError || emptyQuantity}"
              v-model="modalItem.quantity"
              @blur="validateQuantity">
+      <p v-if="decimalError" class="text-danger"> Quantity should be a whole number</p>
+      <p v-if="emptyQuantity" class="text-danger"> Quantity can not be empty</p>
     </div>
-    <p v-if="decimalError" class="text-danger"> Quantity should be a whole number!</p>
   </form>
 </template>
 <script>
@@ -46,6 +47,7 @@ export default {
       modalItem: {},
       decimalError: false,
       negativeMinimum: false,
+      emptyQuantity: false,
     }
   },
   props: ["item"],
@@ -58,7 +60,7 @@ export default {
       this.validateQuantity();
       this.validateMinimum();
 
-      return this.decimalError || this.negativeMinimum
+      return this.decimalError || this.negativeMinimum || this.emptyQuantity;
     }
   },
   methods: {
@@ -70,7 +72,15 @@ export default {
      * input type number, in vue sets the value to empty so only check on empty string
      */
     validateQuantity() {
-      this.decimalError = this.modalItem.quantity !== "" && !Number.isInteger(this.modalItem.quantity);
+      if (this.modalItem.quantity === "") {
+        this.emptyQuantity = true
+      } else if (this.modalItem.quantity !== "" && !Number.isInteger(this.modalItem.quantity)) {
+        this.emptyQuantity = false
+        this.decimalError = true
+      } else {
+        this.emptyQuantity = false
+        this.decimalError = false
+      }
     },
 
     validateMinimum() {

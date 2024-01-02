@@ -16,7 +16,7 @@ export class WarehouseAdaptor{
     }
 
     async findAll() {
-        return await this.fetchJSON(this.resourceURL+ "/");
+        return await this.fetchJSON(this.resourceURL);
     }
 
     async findById(id) {

@@ -331,9 +331,11 @@ describe('InventoryOverview.vue', () => {
     expect(table.vm.tableData.length, "Table should be empty if there are no products").toBe(0);
   })
 
-  it('table should not have buttons when active warehouse is total', () => {
+  it('table should not have buttons when active warehouse is total', async () => {
     wrapper.vm.setActiveWarehouse("Total");
+    await wrapper.vm.$nextTick();
     const table = wrapper.findComponent({name: "TableComponent"});
+
     expect(table.exists(), "Table should be rendered").toBeTruthy();
     expect(table.vm.hasAddButton, "Table should not have add button when active warehouse is total").toBeFalsy();
     expect(table.vm.hasEditButton, "Table should not have update button when active warehouse is total").toBeFalsy();
