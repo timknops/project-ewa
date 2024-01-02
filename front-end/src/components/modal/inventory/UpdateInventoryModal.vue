@@ -9,16 +9,27 @@
       <input id="product" type="text" class="form-control" :value="modalItem.product.productName" disabled>
     </div>
     <div class="mb-3">
+      <label for="minimum" class="form-label fw-bold"> Minimum</label>
+      <input type="number"
+             id="minimum"
+             class="form-control"
+             :class="{'border-danger': negativeMinimum}"
+             v-model="modalItem.minimum"
+             @blur="validateMinimum"
+      >
+      <p v-if="negativeMinimum" class="text-danger"> The minimum can't be a negative number</p>
+    </div>
+
+    <div class="mb-3">
       <label for="quantity" class="form-label fw-bold">Quantity</label>
       <input id="quantity"
              type="number"
              class="form-control"
-             :class="{'border-danger': hasError || decimalError}"
+             :class="{'border-danger': decimalError}"
              v-model="modalItem.quantity"
              @blur="validateQuantity">
     </div>
     <p v-if="decimalError" class="text-danger"> Quantity should be a whole number!</p>
-    <p v-else-if="hasError" class="text-danger"> Quantity input should only contain numbers!</p>
   </form>
 </template>
 <script>
@@ -33,13 +44,22 @@ export default {
   data() {
     return {
       modalItem: {},
-      hasError: false,
       decimalError: false,
+      negativeMinimum: false,
     }
   },
   props: ["item"],
   created() {
     this.modalItem = Object.assign({}, this.item)
+  },
+
+  computed: {
+    hasError() {
+      this.validateQuantity();
+      this.validateMinimum();
+
+      return this.decimalError || this.negativeMinimum
+    }
   },
   methods: {
 
@@ -50,13 +70,11 @@ export default {
      * input type number, in vue sets the value to empty so only check on empty string
      */
     validateQuantity() {
-      if (this.modalItem.quantity !== "" && !Number.isInteger(this.modalItem.quantity)) {
-        this.decimalError = true
-        this.hasError = true
-      } else {
-        this.decimalError = false;
-        this.hasError = this.modalItem.quantity === ""
-      }
+      this.decimalError = this.modalItem.quantity !== "" && !Number.isInteger(this.modalItem.quantity);
+    },
+
+    validateMinimum() {
+      this.negativeMinimum = this.modalItem.minimum < 0;
     }
   }
 }

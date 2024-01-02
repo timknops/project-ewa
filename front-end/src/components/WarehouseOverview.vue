@@ -25,6 +25,14 @@
         @ok-modal-btn="handleOk"
       />
     </Transition>
+
+    <transition>
+      <toast-component
+          v-if="showToast"
+          :toast-message="toastMessage"
+          :toast-title="toastTitle"
+      ></toast-component>
+    </transition>
   </div>
 </template>
 
@@ -32,10 +40,11 @@
 import TableComponent from "@/components/table/TableComponent.vue";
 import ModalComponent from "@/components/modal/ModalComponent.vue";
 import SpinnerComponent from "@/components/util/SpinnerComponent.vue";
+import ToastComponent from "@/components/util/ToastComponent.vue";
 
 export default {
   name: "WarehouseOverview",
-  components: { ModalComponent, TableComponent, SpinnerComponent },
+  components: {ToastComponent, ModalComponent, TableComponent, SpinnerComponent },
   inject: ["warehouseService"],
   data() {
     return {
@@ -60,6 +69,10 @@ export default {
         UPDATE: "update-warehouse-modal",
         ADD: "add-warehouse-modal",
       }),
+
+      showToast: false,
+      toastTitle: "",
+      toastMessage: "",
       wareHousesAreLoading: true,
     };
   },
@@ -107,7 +120,13 @@ export default {
         );
         this.showModal = false;
       } catch (exception) {
-        console.log(exception);
+        this.showModal = false;
+        if (exception.code >= 400 && exception.code < 500) {
+          this.showTimedToast(
+            "The warehouse could not be deleted",
+            exception.reason
+          );
+        }
       }
     },
     async updateWarehouse(warehouse) {
@@ -121,6 +140,7 @@ export default {
         console.log(e);
       }
     },
+
     async addWarehouse(warehouse) {
       try {
         const warehouseToAdd = await this.warehouseService.add(warehouse);
@@ -137,6 +157,21 @@ export default {
         name: "",
         location: "",
       };
+    },
+
+    /**
+     * Shows a toast message for 4 seconds.
+     * @param {String} title The title of the toast.
+     * @param {String} message The message of the toast.
+     */
+    showTimedToast(title, message) {
+      this.toastTitle = title;
+      this.toastMessage = message;
+      this.showToast = true;
+
+      setTimeout(() => {
+        this.showToast = false;
+      }, 4000);
     },
   },
   async created() {

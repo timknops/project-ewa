@@ -1,6 +1,7 @@
 package nl.solar.app.repositories;
 
 import nl.solar.app.models.Order;
+import nl.solar.app.models.Warehouse;
 import nl.solar.app.repositories.EntityRepository;
 
 import java.util.List;
@@ -13,4 +14,6 @@ import java.util.List;
  */
 public interface OrderRepository extends EntityRepository<Order> {
     List<Order> findOrdersWarehouse(long wId);
+
+    List<Order> findPendingOrders(Warehouse warehouse);
 }

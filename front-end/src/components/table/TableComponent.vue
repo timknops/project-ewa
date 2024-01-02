@@ -500,6 +500,7 @@ export default {
 
 table td,
 table th {
+  max-width: 35vw;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;

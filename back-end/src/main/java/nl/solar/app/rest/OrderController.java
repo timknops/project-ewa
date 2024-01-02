@@ -12,6 +12,7 @@ import nl.solar.app.models.Order;
 import nl.solar.app.models.Product;
 import nl.solar.app.repositories.EntityRepository;
 import nl.solar.app.repositories.ItemRepository;
+import nl.solar.app.service.InventoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,11 +32,14 @@ import java.util.List;
 public class OrderController {
 
     @Autowired
-    EntityRepository<Product> productRepo;
+    private EntityRepository<Product> productRepo;
     @Autowired
-    ItemRepository itemRepo;
+    private ItemRepository itemRepo;
     @Autowired
     private EntityRepository<Order> orderRepo;
+
+    @Autowired
+    private InventoryService inventoryService;
 
     /**
      * Get a list of all orders found
@@ -124,15 +128,31 @@ public class OrderController {
             throw new PreConditionFailedException("The id's in the path and body don't match");
         }
 
+        //check if a tag is empty
+        if (order.getTag() == null) {
+            throw new BadRequestException("The order tag should not be empty");
+        }
+
+        if (order.getItems().stream().anyMatch(item -> item.getQuantity() <= 0)) {
+            throw new BadRequestException("An item quantity can't be negative or 0!");
+        }
+
         //find the existing order to handle some change checks.
         Order existingOrder = this.orderRepo.findById(id);
+
+        if (existingOrder.getStatus() == OrderStatus.DELIVERED && order.getStatus() != OrderStatus.DELIVERED) {
+            throw new BadRequestException("You can't change the status of an order that is already delivered ");
+        }
 
         if (order.getDeliverDate().isBefore(existingOrder.getOrderDate().toLocalDate())) {
             throw new BadRequestException("An order can not be delivered in the past!");
         }
         order.setOrderDate(existingOrder.getOrderDate());
 
-        //TODO handle updating the inventory for the given items
+        //If the new order is set to delivered update the Inventory
+        if (existingOrder.getStatus() == OrderStatus.PENDING && order.getStatus() == OrderStatus.DELIVERED) {
+            this.inventoryService.updateInventory(order.getItems(), order.getWarehouse());
+        }
 
         Order updated = this.orderRepo.save(order);
         return ResponseEntity.ok(updated);
