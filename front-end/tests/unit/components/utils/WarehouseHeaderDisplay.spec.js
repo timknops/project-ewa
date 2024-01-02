@@ -8,13 +8,20 @@ import inventoryOverview from "@/components/InventoryOverview.vue";
   jest.mock('@/service/warehouseAdaptor');
   const routes = [
     {
-      path: '/',
+      path: '/inventory',
       component: {default : inventoryOverview},
+      children: [
+        {
+          path: ':warehouse',
+          component: inventoryOverview,
+        }
+      ]
     },
     {
-      path: '/:warehouse',
-      component: WarehouseHeaderDisplay
+      path: '/',
+      redirect: '/inventory'
     }
+
   ]
 
 /**
@@ -55,7 +62,7 @@ describe('WarehouseHeaderDisplay.vue',  () => {
         },
         props: {
           activeUser: {id: 1, name: 'test', role: 'admin', team: {id: 1, name: 'test', warehouse: {id: 1, name: 'Solar'}}},
-          activeWarehouse : "Total",
+          activeWarehouse : {},
           hasNoTotalOption: false,
           totalText: 'Total'
         }
@@ -111,9 +118,32 @@ describe('WarehouseHeaderDisplay.vue',  () => {
     expect(warehouses[0].text(), "First warehouse should be Solar").toMatch('Solar');
   });
 
-  it("Warehouse should emit proper event in created hook",  () => {
-    console.log(wrapper.emitted())
+  it("Warehouse should emit proper event in created hook",  async () => {
+    expect(wrapper.emitted(), "Display should emit the initial warehouse").toHaveProperty('setActiveWarehouse');
+    //since the route is not set in the test and hasNoTotal is false, the active warehouse should be Total
+    expect(wrapper.emitted('setActiveWarehouse')[0][0], "Display should emit the first warehouse in the list")
+      .toMatch('Total');
+
+    //rerun the created hook when total is not an option
+    await wrapper.setProps({hasNoTotalOption: true})
+    await wrapper.vm.$options.created.call(wrapper.vm);
+    expect(wrapper.emitted('setActiveWarehouse')[1][0], "Display should emit the initial warehouse").toMatchObject({name: 'Solar', id: 1});
+
+    //Rerun the created hook with a different route
+    await wrapper.vm.$router.push(wrapper.vm.$route.matched[0].path + '/EHES')
+    await wrapper.vm.$options.created.call(wrapper.vm);
+    expect(wrapper.emitted('setActiveWarehouse')[2][0], "Display should emit the warehouse from the route param")
+      .toMatchObject({name: 'EHES', id: 2});
   })
+
+  it('When a warehouse is clicked setActiveWarehouse should fire', async () => {
+    const warehouse = wrapper.findAll('.warehouse-select')[2];
+
+    await warehouse.trigger('click');
+    //The created already fired an emitted event, so the second emitted event should be the one from the click
+    expect(wrapper.emitted('setActiveWarehouse')[1][0], "setActiveWarehouse should fire when a warehouse is clicked")
+      .toMatchObject({name: 'EHES', id: 2});
+  });
 
   afterEach(() => {
     wrapper.unmount()
