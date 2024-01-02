@@ -86,7 +86,7 @@ export default {
         team: {name: String, warehouse: name},
       },
 
-      activeWarehouse: "Total", //total selected by default.
+      activeWarehouse: {},
 
       //modal variables
       showModal: false,

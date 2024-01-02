@@ -12,7 +12,8 @@ import java.util.List;
 
 /**
  * JPA implementation of the repository for managing {@link Item} entities.
- * This repository provides CRUD operations related to item using Java Persistence API (JPA).
+ * This repository provides CRUD operations related to item using Java
+ * Persistence API (JPA).
  *
  * @author Julian Kruithof
  */
@@ -39,7 +40,7 @@ public class ItemRepositoryJpa implements ItemRepository {
     @Override
     public Item deleteByIds(long productId, long orderId) {
         Item toBeDeleted = findByIds(productId, orderId);
-        if(toBeDeleted != null) {
+        if (toBeDeleted != null) {
             entityManager.remove(toBeDeleted);
         }
         return toBeDeleted;
