@@ -4,6 +4,8 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import nl.solar.app.DTO.InventoryProductDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
@@ -240,12 +242,12 @@ public class ProjectController {
     public void updateInventory(Project updatedProject, Warehouse warehouse) {
         // Get all the resources of the project and the inventories of the warehouse.
         List<ProjectResourceDTO> resources = this.resourceRepo.getProjectResources(updatedProject.getId());
-        List<Inventory> inventories = this.inventoryRepo.findInventoryForWarehouse(warehouse.getId());
+        List<InventoryProductDTO> inventories = this.inventoryRepo.findInventoryForWarehouse(warehouse.getId());
 
         // Map for efficient lookup of inventories based on product ID.
         Map<Long, Inventory> inventoryMap = new HashMap<>();
-        for (Inventory inventory : inventories) {
-            inventoryMap.put(inventory.getId().getProductId(), inventory);
+        for (Inventory inventory : warehouse.getInventory()) {
+            inventoryMap.put(inventory.getProduct().getId(), inventory);
         }
 
         // Update the inventories based on resources.
