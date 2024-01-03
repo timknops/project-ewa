@@ -123,6 +123,7 @@ export default {
         this.warehouses = this.warehouses.filter(
           (warehouse) => warehouse.id !== warehouseToDelete.id
         );
+
         this.showModal = false;
         this.showTimedToast(
           "Warehouse deleted",
@@ -136,9 +137,13 @@ export default {
             exception.reason,
             8000
           );
+        } else {
+          this.showTimedToast(
+            "Failed to delete warehouse",
+            exception.message,
+            8000
+          );
         }
-
-        console.log(exception);
       }
     },
     async updateWarehouse(warehouse) {
@@ -147,9 +152,19 @@ export default {
         this.warehouses = this.warehouses.map((warehouse) =>
           warehouse.id === warehouseToUpdate.id ? warehouseToUpdate : warehouse
         );
+
         this.showModal = false;
+        this.showTimedToast(
+          "Warehouse updated",
+          `Warehouse ${warehouseToUpdate.name} has been updated`
+        );
       } catch (e) {
-        console.log(e);
+        this.showModal = false;
+        if (e.code >= 400 && e.code < 500) {
+          this.showTimedToast("Failed to update warehouse", e.reason, 8000);
+        } else {
+          this.showTimedToast("Failed to update warehouse", e.message, 8000);
+        }
       }
     },
 
@@ -158,8 +173,17 @@ export default {
         const warehouseToAdd = await this.warehouseService.add(warehouse);
         this.warehouses.push(warehouseToAdd);
         this.showModal = false;
+        this.showTimedToast(
+          "Warehouse added",
+          `Warehouse ${warehouseToAdd.name} has been added`
+        );
       } catch (e) {
-        console.log(e);
+        this.showModal = false;
+        if (e.code >= 400 && e.code < 500) {
+          this.showTimedToast("Failed to add warehouse", e.reason, 8000);
+        } else {
+          this.showTimedToast("Failed to add warehouse", e.message, 8000);
+        }
       }
     },
 
