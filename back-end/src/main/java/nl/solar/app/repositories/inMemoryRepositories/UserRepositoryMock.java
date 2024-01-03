@@ -22,7 +22,8 @@ public class UserRepositoryMock implements EntityRepository<User> {
 
 
     public UserRepositoryMock() {
-        userArrayList.add(User.createStaticAdmin());
+        userArrayList.addAll(User.createStaticAdmin());
+        userArrayList.add(User.createStaticUser());
         for (int i = 0; i < START_USERS_AMOUNT; i++) {
             userArrayList.add(User.creatyDummyUser(randomUserId(), randomTeamId()));
         }

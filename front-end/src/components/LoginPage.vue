@@ -47,7 +47,7 @@
           <button
             class="btn btn-primary login-button"
             type="button"
-            v-on:click="login()"
+            v-on:click="onLogin()"
           >
             Login
           </button>
@@ -61,7 +61,7 @@
 
 export default {
   name: "LoginPage",
-  inject: ["userService"],
+  inject: ["userService", "sessionService"],
   data() {
     return {
       users: [],
@@ -119,6 +119,22 @@ export default {
      */
     findUserByName(name){
       this.user = this.users.find((user) => user.name === name);
+    },
+    async onLogin(){
+
+      let user = await this.sessionService.asyncLogin(this.input.username1, this.input.password1)
+
+      //check whether the user is correctly logging in
+      if (this.input.username1 === "" || this.input.password1 === "") {
+        this.errorMessage = "One of the fields is empty";
+        this.correctLogin = true;
+      } else if (user != null) {
+        this.$emit("updateLoggedIn", true);
+        this.$router.push("/users");
+      } else {
+        this.errorMessage = "Your login details are incorrect";
+        this.correctLogin = true;
+      }
     }
   },
   async created() {

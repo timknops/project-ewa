@@ -28,16 +28,17 @@ public class AuthenticationController {
 
     @PostMapping(path = "/login")
     public ResponseEntity<User> userLogin(@RequestBody ObjectNode loginInfo) throws NotAcceptableException {
-        String email = loginInfo.get("email").asText();
+        System.out.println(loginInfo);
+        String username = loginInfo.get("username").asText();
         String password = loginInfo.get("password").asText();
 
         //Get all users, then search the list to find the user with the same email as the email provided
         List<User> userList = userEntityRepository.findAll();
-        User foundUser = userList.stream().filter(user -> user.getEmail().equals(email)).findAny().orElse(null);
+        User foundUser = userList.stream().filter(user -> user.getName().equals(username)).findAny().orElse(null);
 
         //if no user was found or the password isn't correct then throw a not acceptable exception
         if (foundUser == null || !foundUser.checkPassword(password)) {
-            throw new NotAcceptableException("Login was unsuccessful for account: " + email);
+            throw new NotAcceptableException("Login was unsuccessful for account: " + username);
         }
         JWToken jwToken = new JWToken(foundUser.getName(), foundUser.getId(), foundUser.getType());
         String token = jwToken.encode(

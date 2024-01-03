@@ -1,5 +1,5 @@
 <template>
-  <div v-if="loggedInActive === 'false'">
+  <div v-if="loggedInActive === null">
     <router-view
         @update-logged-in="updateLoggedIn"
     ></router-view>
@@ -23,6 +23,8 @@ import {TeamAdaptor} from "@/service/teamAdaptor";
 import {EmailAdaptor} from "@/service/emailAdaptor";
 import {ProjectAdaptor} from "@/service/projectAdaptor";
 import {OrderAdaptor} from "@/service/orderAdaptor";
+import {SessionSbService} from "@/service/SessionSbService";
+import {shallowReactive} from "vue";
 
 
 export default {
@@ -37,7 +39,12 @@ export default {
     };
   },
   provide() {
+    this.theSessionService = shallowReactive(new SessionSbService(appConfig.BACKEND_URL +
+        '/authentication', appConfig.JWT_STORAGE_ITEM));
     return {
+      //session service
+      sessionService: this.theSessionService,
+
       productService: new ProductAdaptor(`${appConfig.BACKEND_URL}/products`),
       warehouseService: new WarehouseAdaptor(
           `${appConfig.BACKEND_URL}/warehouses`
@@ -48,15 +55,16 @@ export default {
       emailService: new EmailAdaptor(`${appConfig.BACKEND_URL}`),
       projectService: new ProjectAdaptor(`${appConfig.BACKEND_URL}/projects`),
       orderService: new OrderAdaptor(`${appConfig.BACKEND_URL}/orders`)
-    };
+    }
   },
   methods: {
     updateLoggedIn() {
-      this.loggedInActive = localStorage.getItem("loggedIn");
+      this.loggedInActive = this.theSessionService.getTokenFromBrowserStorage();
     }
   },
   created() {
-    this.loggedInActive = localStorage.getItem("loggedIn");
+    this.loggedInActive = this.theSessionService.getTokenFromBrowserStorage();
+
   },
 };
 </script>

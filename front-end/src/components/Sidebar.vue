@@ -104,7 +104,7 @@
       </li>
       <li class="nav-item">
         <router-link to="/loginPage" class="nav-link" active-class="active"
-        @click="logOut"
+        @click="logOut()"
         >
           <font-awesome-icon
             icon="fa-solid fa-arrow-right-from-bracket"
@@ -120,6 +120,7 @@
 export default {
   // eslint-disable-next-line
   name: "sidebar",
+  inject: ['sessionService'],
   data() {
     return {
       dashboardRoute: "/dashboard",
@@ -128,7 +129,7 @@ export default {
   },
   methods: {
     logOut(){
-      localStorage.setItem("loggedIn", false);
+      this.sessionService.logOut2();
       this.$emit("updateLoggedIn", true);
     }
   }

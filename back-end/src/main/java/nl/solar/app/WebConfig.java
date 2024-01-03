@@ -15,7 +15,7 @@ import java.util.Set;
 public class WebConfig implements WebMvcConfigurer {
 
     //All paths that are protected with authorization
-    public Set<String> SECURED_PATHS = Set.of("/users");
+    public Set<String> SECURED_PATHS = Set.of("/teams");
 
     @Value("${jwt.issuer}")
     private String issuer;
