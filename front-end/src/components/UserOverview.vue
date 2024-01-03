@@ -24,6 +24,15 @@
         @ok-modal-btn="handleOk"
       />
     </Transition>
+
+    <Transition>
+      <ToastComponent
+        v-if="showToast"
+        :toast-title="toastTitle"
+        :toast-message="toastMessage"
+        @close-toast="showToast = false"
+      />
+    </Transition>
   </div>
 </template>
 
@@ -31,6 +40,7 @@
 import TableComponent from "@/components/table/TableComponent.vue";
 import ModalComponent from "@/components/modal/ModalComponent.vue";
 import SpinnerComponent from "@/components/util/SpinnerComponent.vue";
+import ToastComponent from "@/components/util/ToastComponent.vue";
 
 /**
  * Component to display and manage the users for the admins
@@ -42,7 +52,12 @@ import SpinnerComponent from "@/components/util/SpinnerComponent.vue";
  */
 export default {
   name: "UserOverview",
-  components: { TableComponent, ModalComponent, SpinnerComponent },
+  components: {
+    TableComponent,
+    ModalComponent,
+    SpinnerComponent,
+    ToastComponent,
+  },
   inject: ["userService"],
   data() {
     return {
@@ -64,6 +79,9 @@ export default {
         UPDATE: "update-user-modal",
         ADD: "add-user-modal",
       }),
+      showToast: false,
+      toastTitle: "",
+      toastMessage: "",
     };
   },
   async created() {
@@ -134,9 +152,17 @@ export default {
         delete addedUser.password;
         this.usersAdmin.push(addedUser);
         this.users.push(addedUser);
+
         this.showModal = false;
+        this.showTimedToast("Added user", "Successfully added the user");
       } catch (e) {
-        console.log(e);
+        this.showModal = false;
+
+        if (e.code >= 400 && e.code < 500) {
+          this.showTimedToast("Failed to add user", e.reason, 8000);
+        } else {
+          this.showTimedToast("Failed to add user", e.message, 8000);
+        }
       }
     },
     /**
@@ -159,9 +185,17 @@ export default {
         this.users = this.users.map((user) =>
           user.id === updatedUser.id ? updatedUser : user
         );
+
         this.showModal = false;
+        this.showTimedToast("Updated user", "Successfully updated the user");
       } catch (e) {
-        console.log(e);
+        this.showModal = false;
+
+        if (e.code >= 400 && e.code < 500) {
+          this.showTimedToast("Failed to update user", e.reason, 8000);
+        } else {
+          this.showTimedToast("Failed to update user", e.message, 8000);
+        }
       }
     },
     /**
@@ -176,10 +210,35 @@ export default {
           (user) => user.id !== deletedUser.id
         );
         this.users = this.users.filter((user) => user.id !== deletedUser.id);
+
         this.showModal = false;
+        this.showTimedToast("Deleted user", "Successfully deleted the user");
       } catch (e) {
-        console.log(e);
+        this.showModal = false;
+
+        if (e.code >= 400 && e.code < 500) {
+          this.showTimedToast("Failed to delete user", e.reason, 8000);
+        } else {
+          this.showTimedToast("Failed to delete user", e.message, 8000);
+        }
       }
+    },
+
+    /**
+     * Shows a toast for 4 seconds with the given title and message
+     * @param {String} title The title of the toast.
+     * @param {String} message The message of the toast.
+     * @param {Number} duration The duration of the toast in milliseconds. Default is 4000.
+     * @author Tim Knops
+     */
+    showTimedToast(title, message, duration = 4000) {
+      this.toastTitle = title;
+      this.toastMessage = message;
+      this.showToast = true;
+
+      setTimeout(() => {
+        this.showToast = false;
+      }, duration);
     },
   },
 };

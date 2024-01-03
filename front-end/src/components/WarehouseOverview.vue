@@ -28,9 +28,9 @@
 
     <transition>
       <toast-component
-          v-if="showToast"
-          :toast-message="toastMessage"
-          :toast-title="toastTitle"
+        v-if="showToast"
+        :toast-message="toastMessage"
+        :toast-title="toastTitle"
       ></toast-component>
     </transition>
   </div>
@@ -44,7 +44,12 @@ import ToastComponent from "@/components/util/ToastComponent.vue";
 
 export default {
   name: "WarehouseOverview",
-  components: {ToastComponent, ModalComponent, TableComponent, SpinnerComponent },
+  components: {
+    ToastComponent,
+    ModalComponent,
+    TableComponent,
+    SpinnerComponent,
+  },
   inject: ["warehouseService"],
   data() {
     return {
@@ -119,14 +124,21 @@ export default {
           (warehouse) => warehouse.id !== warehouseToDelete.id
         );
         this.showModal = false;
+        this.showTimedToast(
+          "Warehouse deleted",
+          `Warehouse ${warehouseToDelete.name} has been deleted`
+        );
       } catch (exception) {
         this.showModal = false;
         if (exception.code >= 400 && exception.code < 500) {
           this.showTimedToast(
-            "The warehouse could not be deleted",
-            exception.reason
+            "Failed to delete warehouse",
+            exception.reason,
+            8000
           );
         }
+
+        console.log(exception);
       }
     },
     async updateWarehouse(warehouse) {
@@ -160,18 +172,20 @@ export default {
     },
 
     /**
-     * Shows a toast message for 4 seconds.
+     * Shows a toast for 4 seconds with the given title and message
      * @param {String} title The title of the toast.
      * @param {String} message The message of the toast.
+     * @param {Number} duration The duration of the toast in milliseconds. Default is 4000.
+     * @author Tim Knops
      */
-    showTimedToast(title, message) {
+    showTimedToast(title, message, duration = 4000) {
       this.toastTitle = title;
       this.toastMessage = message;
       this.showToast = true;
 
       setTimeout(() => {
         this.showToast = false;
-      }, 4000);
+      }, duration);
     },
   },
   async created() {
