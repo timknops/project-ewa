@@ -1,5 +1,6 @@
 package nl.solar.app.rest;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.transaction.Transactional;
 import nl.solar.app.exceptions.BadRequestException;
 import nl.solar.app.exceptions.PreConditionFailedException;
@@ -7,8 +8,8 @@ import nl.solar.app.exceptions.ResourceConflictException;
 import nl.solar.app.exceptions.ResourceNotFoundException;
 import nl.solar.app.models.Order;
 import nl.solar.app.models.Warehouse;
+import nl.solar.app.models.views.ResourceView;
 import nl.solar.app.repositories.EntityRepository;
-import nl.solar.app.repositories.InventoryRepository;
 import nl.solar.app.repositories.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,11 +29,13 @@ public class WarehouseController {
     OrderRepository orderRepo;
 
     @GetMapping(produces = "application/json")
+    @JsonView(ResourceView.Complete.class)
     public List<Warehouse> getAll(){
         return this.warehouseRepo.findAll();
     }
 
     @GetMapping(path = "{id}", produces = "application/json")
+    @JsonView(ResourceView.Complete.class)
     public ResponseEntity<Warehouse> getWarehouseById(@PathVariable Long id) throws ResourceNotFoundException {
         Warehouse warehouse = this.warehouseRepo.findById(id);
 
@@ -44,6 +47,7 @@ public class WarehouseController {
     }
 
     @GetMapping(path = "{id}/orders", produces = "application/json")
+    @JsonView(ResourceView.Complete.class)
     public List<Order> getOrdersForWarehouse(@PathVariable long id) {
         Warehouse warehouse = this.warehouseRepo.findById(id);
 
@@ -56,6 +60,7 @@ public class WarehouseController {
 
     @Transactional
     @DeleteMapping(path = "{id}", produces = "application/json")
+    @JsonView(ResourceView.Complete.class)
     public ResponseEntity<Warehouse> deleteWarehouseById(@PathVariable long id) throws ResourceNotFoundException, ResourceConflictException {
         Warehouse warehouseToDelete = this.warehouseRepo.findById(id);
 
@@ -77,6 +82,7 @@ public class WarehouseController {
     }
 
     @PostMapping(produces = "application/json")
+    @JsonView(ResourceView.Complete.class)
     public ResponseEntity<Warehouse> addOneWarehouse(@RequestBody Warehouse warehouse) throws BadRequestException {
         if (warehouse.getName() == null || warehouse.getName().isBlank()){
             throw new BadRequestException("Warehouse name can't be empty");
@@ -89,6 +95,7 @@ public class WarehouseController {
     }
 
     @PutMapping(path = "{id}", produces = "application/json")
+    @JsonView(ResourceView.Complete.class)
     public ResponseEntity<Warehouse> updateWarehouse(@PathVariable long id, @RequestBody Warehouse warehouse)
         throws PreConditionFailedException, BadRequestException {
         if (warehouse.getId() != id){

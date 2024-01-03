@@ -20,7 +20,7 @@ public class Warehouse {
 
     @JsonView(ResourceView.Complete.class)
     private String name;
-
+    @JsonView(ResourceView.Complete.class)
     private String location;
 
     @OneToMany(mappedBy = "warehouse", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -30,6 +30,7 @@ public class Warehouse {
     @OneToMany(mappedBy = "warehouse")
     @JsonIgnore
     Set<Order> orders = new HashSet<>();
+
 
     @OneToMany(mappedBy = "warehouse")
     private Set<Team> teams;
