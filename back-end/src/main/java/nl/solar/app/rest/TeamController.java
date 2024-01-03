@@ -1,6 +1,7 @@
 package nl.solar.app.rest;
 
 import nl.solar.app.DTO.TeamDTO;
+import nl.solar.app.exceptions.BadRequestException;
 import nl.solar.app.exceptions.PreConditionFailedException;
 import nl.solar.app.exceptions.ResourceNotFoundException;
 import nl.solar.app.models.Team;
@@ -47,6 +48,7 @@ public class TeamController {
 
     @PostMapping
     public ResponseEntity<TeamDTO> createTeam(@RequestBody Team team) {
+        if (team.getTeam() == null || team.getTeam().isBlank()) throw new BadRequestException("Team name can't be empty");
         Warehouse warehouse = warehouseEntityRepository.findById(team.getWarehouse().getId());
         team.setWarehouse(warehouse);
 
@@ -64,6 +66,7 @@ public class TeamController {
 
     @PutMapping("/{id}")
     public ResponseEntity<TeamDTO> updateTeam(@PathVariable long id, @RequestBody TeamDTO teamDTO) {
+        if (teamDTO.getTeam() == null || teamDTO.getTeam().isBlank()) throw new BadRequestException("Team name can't be empty");
         Team existingTeam = teamRepository.findById(id);
         if (existingTeam == null) {
             throw new ResourceNotFoundException("Team not found with id: " + id);

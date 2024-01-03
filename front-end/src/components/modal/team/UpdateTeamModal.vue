@@ -6,7 +6,10 @@
           id="team-name"
           type="text"
           class="form-control"
-          v-model.lazy.trim="modalItem.team">
+          v-model.lazy.trim="modalItem.team"
+          @blur="validateName"
+          :class="{ 'border-danger': teamEmpty }">
+      <p v-if="teamEmpty" class="text-danger"> The team name can't be empty!</p>
     </div>
     <div class="mb-3">
       <label for="warehouse" class="form-label fw-bold">Select Warehouse</label>
@@ -14,6 +17,7 @@
           id="warehouse"
           class="form-select"
           v-model.lazy.trim="modalItem.warehouseName">
+        <option value="" disabled>Select a warehouse</option>
         <option v-for="warehouse in warehouses" :key="warehouse.id" :value="warehouse.name">
           {{ warehouse.name}}
         </option>
@@ -33,8 +37,16 @@ export default {
         team: "",
         warehouseName: "",
       },
+      teamEmpty: false,
       warehouses: [],
     };
+  },
+
+  computed: {
+    hasError() {
+      this.validateName();
+      return (this.teamEmpty);
+    }
   },
 
   async created() {
@@ -44,7 +56,13 @@ export default {
     } catch (error) {
       console.error("Error fetching warehouse:", error);
     }
-  }
+  },
+
+  methods: {
+    validateName() {
+      this.teamEmpty = this.modalItem.team.trim().length === 0;
+    },
+  },
 };
 </script>
 
