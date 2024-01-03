@@ -1,6 +1,13 @@
 import {shallowMount} from "@vue/test-utils";
 import UpdateInventoryModal from "@/components/modal/inventory/UpdateInventoryModal.vue";
 
+/**
+ * @test {UpdateInventoryModal}
+ *
+ * Test the UpdateInventoryModal component with a mock item.
+ *
+ * @autor Julian Kruithof
+ */
 describe('UpdateInventoryModal.vue', () => {
   let wrapper;
   beforeEach(() => {

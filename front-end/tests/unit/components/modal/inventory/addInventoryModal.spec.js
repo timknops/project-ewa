@@ -1,6 +1,13 @@
 import {mount} from "@vue/test-utils";
 import AddInventoryModal from "@/components/modal/inventory/AddInventoryModal.vue";
 
+/**
+ * @test {AddInventoryModal}
+ *
+ * Test the AddInventoryModal component with a mock item.
+ *
+ * @autor Julian Kruithof
+ */
 describe('AddInventoryModal.vue', () => {
   let wrapper;
   beforeEach(async () => {
