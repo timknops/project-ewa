@@ -91,31 +91,31 @@ export default {
     },
 
     async showEditModal(team) {
-      this.modalTitle = "Update team"
-      this.modalBodyComponent = this.MODAL_TYPES.UPDATE
-      this.modalTeam = await this.teamsService.findById(team.id)
-      this.okBtnText = "Save"
+      this.modalTitle = "Update team";
+      this.modalBodyComponent = this.MODAL_TYPES.UPDATE;
+      this.modalTeam = await this.teamsService.findById(team.id);
+      this.okBtnText = "Save";
       this.showModal = true;
     },
 
     showDeleteModal(team) {
-      this.modalTitle = "Delete team"
-      this.modalBodyComponent = this.MODAL_TYPES.DELETE
-      this.modalTeam = team
-      this.okBtnText = "Delete"
+      this.modalTitle = "Delete team";
+      this.modalBodyComponent = this.MODAL_TYPES.DELETE;
+      this.modalTeam = team;
+      this.okBtnText = "Delete";
       this.showModal = true;
     },
 
     handleOk(team, modal) {
       switch (modal) {
         case this.MODAL_TYPES.ADD:
-          this.addTeam(team)
+          this.addTeam(team);
           break;
         case this.MODAL_TYPES.UPDATE:
-          this.updateTeam(team)
+          this.updateTeam(team);
           break;
         case this.MODAL_TYPES.DELETE:
-          this.deleteTeam(team)
+          this.deleteTeam(team);
           break;
       }
     },
@@ -127,7 +127,12 @@ export default {
         this.showModal = false;
         this.showTimedToast("Success", "Team added.");
       } catch (e) {
-        console.log("Error adding team:", e);
+        this.showModal = false;
+        if (e.code >= 400 && e.code < 500) {
+          this.showTimedToast("Failed to delete", e.reason, 8000);
+        } else {
+          this.showTimedToast("Failed to delete", e.message, 8000);
+        }
       }
     },
 
@@ -139,21 +144,33 @@ export default {
         this.showModal = false
         this.showTimedToast("Updated successfully", "Team updated.");
       } catch (e) {
-        console.log(e)
+        this.showModal = false;
+        if (e.code >= 400 && e.code < 500) {
+          this.showTimedToast("Failed to delete", e.reason, 8000);
+        } else {
+          this.showTimedToast("Failed to delete", e.message, 8000);
+        }
       }
     },
 
     async deleteTeam(team) {
       try {
         await this.teamsService.delete(team.id);
-        const index = this.teams.findIndex(t => t.id === team.id);
+        const index = this.teams.findIndex((t) => t.id === team.id);
         if (index !== -1) {
           this.teams.splice(index, 1);
         }
         this.showModal = false;
         this.showTimedToast("Deleted successfully", "Team deleted.");
       } catch (e) {
-        console.log(e);
+        this.showModal = false;
+        if (e.response && e.response.status === 412) {
+          this.showTimedToast("Failed to delete", e.response.data.message, 8000);
+        } else if (e.code >= 400 && e.code < 500) {
+          this.showTimedToast("Failed to delete", e.reason, 8000);
+        } else {
+          this.showTimedToast("Failed to delete", e.message, 8000);
+        }
       }
     },
 

@@ -1,6 +1,7 @@
 package nl.solar.app.rest;
 
 import nl.solar.app.DTO.TeamDTO;
+import nl.solar.app.exceptions.PreConditionFailedException;
 import nl.solar.app.exceptions.ResourceNotFoundException;
 import nl.solar.app.models.Team;
 import nl.solar.app.models.Warehouse;
@@ -87,6 +88,11 @@ public class TeamController {
         if (existingTeam == null) {
             throw new ResourceNotFoundException("Team not found with id: " + id);
         }
+
+        if (!existingTeam.getProjects().isEmpty()) {
+            throw new PreConditionFailedException("Team is being used and cannot be deleted");
+        }
+
         teamRepository.delete(id);
         return ResponseEntity.noContent().build();
     }
