@@ -164,7 +164,7 @@ export default {
             .filter(item => item.productName === name)
             .map(item => ({
               x: item.deliverDate,
-              y: item.quantity
+              y: item.quantity + item.inventoryQuantity,
             }));
 
         const currentDateFormattedValue = currentDateFormattedValueTrimmed;
