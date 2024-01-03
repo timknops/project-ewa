@@ -68,9 +68,16 @@ public class TeamController {
             throw new ResourceNotFoundException("Team not found with id: " + id);
         }
 
-        Team updatedTeam = convertToEntity(teamDTO);
-        updatedTeam.setId(id);
-        TeamDTO updatedTeamDTO = convertToDTO(teamRepository.save(updatedTeam));
+        existingTeam.setTeam(teamDTO.getTeam());
+
+        Warehouse warehouse = warehouseEntityRepository.findAll().stream()
+                .filter(w -> w.getName().equals(teamDTO.getWarehouseName()))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Warehouse not found with name: " + teamDTO.getWarehouseName()));
+
+        existingTeam.setWarehouse(warehouse);
+
+        TeamDTO updatedTeamDTO = convertToDTO(teamRepository.save(existingTeam));
         return ResponseEntity.ok(updatedTeamDTO);
     }
 
@@ -86,19 +93,5 @@ public class TeamController {
 
     private TeamDTO convertToDTO(Team team) {
         return new TeamDTO(team.getId(), team.getTeam(), team.getWarehouse().getName(), team.getType().name());
-    }
-
-    private Team convertToEntity(TeamDTO teamDTO) {
-        Team team = new Team();
-        team.setTeam(teamDTO.getTeam());
-
-        Warehouse warehouse = warehouseEntityRepository.findAll().stream()
-                .filter(w -> w.getName().equals(teamDTO.getWarehouseName()))
-                .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException("Warehouse not found with name: " + teamDTO.getWarehouseName()));
-
-        team.setWarehouse(warehouse);
-
-        return team;
     }
 }

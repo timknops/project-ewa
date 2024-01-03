@@ -2,7 +2,7 @@
   <div>
     <TableComponent
         v-if="!teamsAreLoading"
-        :amount-to-display="4"
+        :amount-to-display="8"
         :has-add-button="true"
         :has-delete-button="true"
         :has-edit-button="true"
@@ -25,6 +25,14 @@
           @ok-modal-btn="handleOk"
       />
     </Transition>
+    <Transition>
+      <ToastComponent
+          v-if="showToast"
+          :toast-title="toastTitle"
+          :toast-message="toastMessage"
+          @close-toast="showToast = false"
+      />
+    </Transition>
   </div>
 </template>
 
@@ -32,11 +40,11 @@
 import TableComponent from "@/components/table/TableComponent.vue";
 import ModalComponent from "@/components/modal/ModalComponent.vue";
 import SpinnerComponent from "@/components/util/SpinnerComponent.vue";
-
+import ToastComponent from "@/components/util/ToastComponent.vue";
 
 export default {
   name: "TeamOverview",
-  components: {TableComponent, ModalComponent, SpinnerComponent},
+  components: {TableComponent, ModalComponent, SpinnerComponent, ToastComponent},
   inject: ['teamsService'],
 
   data() {
@@ -65,6 +73,9 @@ export default {
         DELETE: "delete-team-modal",
       }),
       teamsAreLoading: true,
+      showToast: false,
+      toastTitle: "",
+      toastMessage: "",
     };
   },
   methods: {
@@ -91,7 +102,7 @@ export default {
       this.modalTitle = "Delete team"
       this.modalBodyComponent = this.MODAL_TYPES.DELETE
       this.modalTeam = team
-      this.okBtnText = "Ok"
+      this.okBtnText = "Delete"
       this.showModal = true;
     },
 
@@ -112,8 +123,9 @@ export default {
     async addTeam(team) {
       try {
         const added = await this.teamsService.add(team);
-        this.teams.unshift(added);
+        this.teams.unshift(this.formatTeamForTable(added));
         this.showModal = false;
+        this.showTimedToast("Success", "Team added.");
       } catch (e) {
         console.log("Error adding team:", e);
       }
@@ -123,8 +135,9 @@ export default {
     async updateTeam(team) {
       try {
         const updated = await this.teamsService.update(team)
-        this.teams = this.teams.map((team) => team.id === updated.id ? updated : team);
+        this.teams = this.teams.map((team) => team.id === updated.id ? this.formatTeamForTable(updated) : team);
         this.showModal = false
+        this.showTimedToast("Updated successfully", "Team updated.");
       } catch (e) {
         console.log(e)
       }
@@ -132,13 +145,18 @@ export default {
 
     async deleteTeam(team) {
       try {
-        const deleted = await this.teamsService.delete(team.id)
-        this.teams = this.teams.filter((team) => team.id !== deleted.id)
+        await this.teamsService.delete(team.id);
+        const index = this.teams.findIndex(t => t.id === team.id);
+        if (index !== -1) {
+          this.teams.splice(index, 1);
+        }
         this.showModal = false;
-      } catch (exception) {
-        console.log(exception)
+        this.showTimedToast("Deleted successfully", "Team deleted.");
+      } catch (e) {
+        console.log(e);
       }
     },
+
 
     formatTeamForTable(team) {
       return {
@@ -156,6 +174,16 @@ export default {
         warehouse: "",
         type: "",
       };
+    },
+
+    showTimedToast(title, message) {
+      this.toastTitle = title;
+      this.toastMessage = message;
+      this.showToast = true;
+
+      setTimeout(() => {
+        this.showToast = false;
+      }, 4000);
     },
   },
 
