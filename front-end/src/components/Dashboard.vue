@@ -50,7 +50,7 @@
 
     <!--Confirm order-->
     <TableComponent
-        v-if="orderData.length > 0"
+        v-if="!ordersAreLoading"
         :hide-id-column="true"
         :table-width="'100%'"
         :amount-to-display="3"
@@ -143,9 +143,9 @@ export default {
       return Array.from(new Set(this.inventoryData.map((item) => item.warehouseName)));
     },
   },
-  created() {
-    this.fetchInventoryData();
-    this.fetchOrderData();
+  async created() {
+    await this.fetchInventoryData();
+    await this.fetchOrderData();
     this.updateChart();
   },
   methods: {
@@ -158,11 +158,9 @@ export default {
     },
     showConfirmModal(order) {
       this.modalTitle = "Confirm delivery?";
-      this.modalOrder = order;
       this.okBtnText = "Confirm";
-      this.showModal = true;
-      console.log(order)
       this.selectedOrder = order;
+      this.showModal = true;
     },
     handleConfirm() {
       try {
@@ -172,7 +170,7 @@ export default {
         this.fetchOrderData();
         this.showModal = false;
       } catch (e){
-        console.log(e)
+        console.error(e)
       }
     },
     async fetchOrderData() {
@@ -198,7 +196,6 @@ export default {
       this.updateChart();
     },
 
-
     updateChart() {
       if (this.saveChart) {
         this.saveChart.destroy();
@@ -212,21 +209,14 @@ export default {
         '#444b65',
         '#988960',
         '#7c7321'
-
-
       ];
-      // const currentDate = new Date();
-
-
       const currentDateFormattedValueTrimmed = new Date().toISOString().split("T")[0].trim();
       const dataBasedOnTheMonth = this.filteredInventoryData;
-
 
       const currentInventoryMap = {};
       dataBasedOnTheMonth.forEach(item => {
           currentInventoryMap[item.productName] = item.inventoryQuantity;
       });
-
 
       const nameLegend = [...new Set(dataBasedOnTheMonth.map(item => item.productName))];
 
@@ -244,8 +234,6 @@ export default {
           x: currentDateFormattedValue,
           y: currentInventoryMap[name] || 0,
         };
-
-        console.log('Dataset for', name, ':', [currentInventoryQuantity, ...quantityData]);
 
         return {
           label: name,
@@ -269,7 +257,6 @@ export default {
       };
 
       const chartOptions = {
-        // legend: { display: false },
         plugins: {
           title: {
             display: true,
@@ -318,8 +305,6 @@ export default {
           }
         },
       };
-
-      console.log('Chart Data:', chartData);
 
       this.saveChart = new Chart(this.$refs.combinedChart, {
         type: "line",

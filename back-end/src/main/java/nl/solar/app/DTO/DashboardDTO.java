@@ -79,4 +79,35 @@ public class DashboardDTO {
         return deliverDate;
     }
 
+    @Override
+    public String toString() {
+        return "DashboardDTO{" +
+                "warehouseId=" + warehouseId +
+                ", warehouseName='" + warehouseName + '\'' +
+                ", productName='" + productName + '\'' +
+                ", quantity=" + quantity +
+                ", inventoryQuantity=" + inventoryQuantity +
+                ", deliverDate=" + deliverDate +
+                "}\n";
+    }
+
+    public static DashboardDTO merge(DashboardDTO dto1, DashboardDTO dto2) {
+        if (dto1 == null && dto2 == null) {
+            return null;
+        } else if (dto1 == null) {
+            return dto2;
+        } else if (dto2 == null) {
+            return dto1;
+        }
+
+        if (dto1.getWarehouseId() == dto2.getWarehouseId()
+                && dto1.getProductName() == dto2.getProductName()){
+
+            // Combine quantities, keep other fields as is
+            dto1.setQuantity(dto1.getQuantity() + dto2.getQuantity());
+            return dto1;
+        }
+
+        return null;
+    }
 }

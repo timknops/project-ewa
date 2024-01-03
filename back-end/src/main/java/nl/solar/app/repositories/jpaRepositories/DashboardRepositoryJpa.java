@@ -5,9 +5,12 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import nl.solar.app.DTO.DashboardDTO;
 import org.springframework.context.annotation.Primary;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Repository
@@ -41,6 +44,30 @@ public class DashboardRepositoryJpa  {
                     ))
                     .collect(Collectors.toList());
 
-        }
+    }
 
+    @Scheduled(fixedRate = 20000) // fixedRate is low for testing (fixedRate = 24, timeUnit = TimeUnit.HOURS) for daily
+    protected void forecast (){
+        System.out.println("Scheduled method called:\n");
+
+        List<DashboardDTO> originalList = getDashboardItems();
+
+        System.out.println("\n\n The original version: ");
+        System.out.println(originalList);
+
+        System.out.println("\n\n Now the combined version:");
+
+        Map<Object, Optional<DashboardDTO>> combinedMap = originalList.stream()
+                .collect(Collectors.groupingBy(
+                        dto -> dto.getWarehouseId() + "-" + dto.getProductName(),
+                        Collectors.reducing(DashboardDTO::merge)
+                ));
+
+        List<DashboardDTO> combinedList = combinedMap.values().stream()
+                .filter(Optional::isPresent) // Filter out merged null values
+                .map(Optional::get)
+                .toList();
+
+        combinedList.forEach(System.out::print);
+    }
 }
