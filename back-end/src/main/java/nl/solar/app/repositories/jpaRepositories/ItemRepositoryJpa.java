@@ -3,19 +3,17 @@ package nl.solar.app.repositories.jpaRepositories;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
-import nl.solar.app.DTO.ItemDTO;
 import nl.solar.app.models.Item;
-import nl.solar.app.models.Order;
 import nl.solar.app.models.compositeKeys.ItemKey;
 import nl.solar.app.repositories.ItemRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * JPA implementation of the repository for managing {@link Item} entities.
- * This repository provides CRUD operations related to item using Java Persistence API (JPA).
+ * This repository provides CRUD operations related to item using Java
+ * Persistence API (JPA).
  *
  * @author Julian Kruithof
  */
@@ -42,7 +40,7 @@ public class ItemRepositoryJpa implements ItemRepository {
     @Override
     public Item deleteByIds(long productId, long orderId) {
         Item toBeDeleted = findByIds(productId, orderId);
-        if(toBeDeleted != null) {
+        if (toBeDeleted != null) {
             entityManager.remove(toBeDeleted);
         }
         return toBeDeleted;

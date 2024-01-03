@@ -10,6 +10,8 @@ import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import nl.solar.app.enums.ProjectStatus;
 import nl.solar.app.models.views.ProjectView;
 
@@ -18,6 +20,8 @@ import nl.solar.app.models.views.ProjectView;
  * 
  * @author Tim Knops
  */
+@Setter
+@Getter
 @Entity
 public class Project {
 
@@ -62,7 +66,7 @@ public class Project {
      * @param client      the client of the project
      * @param dueDate     the due date of the project
      * @param status      the status of the project
-     * @param products    the products of the project
+     * @param resources   the resources of the project
      */
     public Project(long id, String projectName, Team team, String client, Date dueDate, ProjectStatus status,
             Set<Resource> resources) {
@@ -84,8 +88,8 @@ public class Project {
 
     /**
      * Creates a dummy project with the given parameters.
-     * 
-     * @param currentId the current id
+     *
+     * @param description the description of the project
      * @return a dummy project
      */
     public static Project createDummyProject(String description) {
@@ -125,70 +129,6 @@ public class Project {
      */
     public static Date randomDate(Date start, Date end) {
         return new Date(start.getTime() + (long) (Math.random() * (end.getTime() - start.getTime())));
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public Team getTeam() {
-        return team;
-    }
-
-    public void setTeam(Team team) {
-        this.team = team;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getClient() {
-        return client;
-    }
-
-    public void setClient(String client) {
-        this.client = client;
-    }
-
-    public Date getDueDate() {
-        return dueDate;
-    }
-
-    public void setDueDate(Date dueDate) {
-        this.dueDate = dueDate;
-    }
-
-    public ProjectStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(ProjectStatus status) {
-        this.status = status;
-    }
-
-    public String getProjectName() {
-        return projectName;
-    }
-
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
-    }
-
-    public Set<Resource> getResources() {
-        return resources;
-    }
-
-    public void setResources(Set<Resource> resources) {
-        this.resources = resources;
     }
 
     @Override

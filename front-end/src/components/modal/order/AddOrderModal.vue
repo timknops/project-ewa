@@ -1,5 +1,5 @@
 <template>
-  <form >
+  <form>
     <div class="mb-3">
       <label for="warehouse" class="form-label fw-bold">Warehouse</label>
       <input
@@ -10,17 +10,29 @@
           disabled
       />
     </div>
-      <div class="mb-3">
-        <label for="deliver-date" class="form-label fw-bold">Deliver date</label>
-        <input
-            id="deliver-date"
-            type="datetime-local"
-            class="form-control"
-            :class="{'border-danger': incorrectDate}"
-            v-model.trim="modalItem.order.deliverDate"
-            @blur="validateDeliverDate"
-        >
-        <small v-if="incorrectDate" class="text-danger"> A deliver date can't be in the past</small>
+    <div class="mb-3">
+      <label for="tag" class="form-label fw-bold">Tag</label>
+      <input
+          type="text"
+          id="tag"
+          class="form-control"
+          :class="{'border-danger': emptyTag}"
+          v-model.trim="modalItem.tag"
+          @blur="validateTag"
+      >
+      <small v-if="emptyTag" class="text-danger">The tag can't be empty</small>
+    </div>
+    <div class="mb-3">
+      <label for="deliver-date" class="form-label fw-bold">Deliver date</label>
+      <input
+          id="deliver-date"
+          type="date"
+          class="form-control"
+          :class="{'border-danger': incorrectDate}"
+          v-model.trim="modalItem.deliverDate"
+          @blur="validateDeliverDate"
+      >
+      <small v-if="incorrectDate" class="text-danger"> A deliver date can't be in the past</small>
     </div>
     <hr>
 
@@ -39,7 +51,7 @@
               class="btn py-1 custom-btn"
               type="button"
           >
-            <FontAwesomeIcon icon="fa-solid fa-trash" size="sm" />
+            <FontAwesomeIcon icon="fa-solid fa-trash" size="sm"/>
           </button>
         </div>
       </div>
@@ -79,7 +91,8 @@
                     {{ product.productName }}
                   </option>
                 </select>
-                <small v-if="itemNotFilled && item.product.id === undefined" class="text-danger">Select a product!</small>
+                <small v-if="itemNotFilled && item.product.id === undefined" class="text-danger">Select a
+                  product!</small>
               </td>
 
               <td>
@@ -90,7 +103,8 @@
                     :class="{
                       'border-danger': itemNotFilled && validateQuantity(item)}"
                 />
-                <small v-if="itemNotFilled && validateQuantity(item)" class="text-danger"> Fill in a quantity!</small>
+                <small v-if="negativeQuantity" class="text-danger"> Quantity can't be negative or 0</small>
+                <small v-else-if="itemNotFilled && validateQuantity(item)" class="text-danger"> Fill in a quantity!</small>
               </td>
 
               <td>
@@ -112,7 +126,8 @@
 </template>
 
 <script>
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+
 export default {
   name: "AddOrderModal",
   components: {FontAwesomeIcon},
@@ -121,15 +136,17 @@ export default {
   data() {
     return {
       modalItem: {
-        order: {
-          warehouse: this.item.warehouse
-        },
+        tag: "",
+        deliverDate: null,
+        warehouse: this.item.warehouse,
         items: []
       },
       products: {},
       STATUS: ["delivered", "pending", "canceled"],
       incorrectDate: false,
       itemNotFilled: false,
+      emptyTag: false,
+      negativeQuantity: false,
       //track items which are added in modal
       itemsList: []
     }
@@ -146,19 +163,24 @@ export default {
       const isEmpty = this.emptyItems;
       this.validateDeliverDate()
       this.validateItems()
+      this.validateTag()
 
-
-      return this.incorrectDate || isEmpty || this.itemNotFilled
+      return this.incorrectDate || isEmpty || this.itemNotFilled || this.emptyTag
     }
   },
   methods: {
     validateDeliverDate() {
 
-      if (this.modalItem.order.deliverDate) {
-        this.incorrectDate = Date.now() > Date.parse(this.modalItem.order.deliverDate)
+      if (this.modalItem.deliverDate) {
+        this.incorrectDate = Date.now() > Date.parse(this.modalItem.deliverDate)
       } else {
         this.incorrectDate = true;
       }
+    },
+
+    validateTag() {
+      this.emptyTag = this.modalItem.tag === ""
+      console.log(this.emptyTag)
     },
 
     validateItems() {
@@ -176,7 +198,8 @@ export default {
     },
 
     validateQuantity(item) {
-      return item.quantity === "" || item.quantity === undefined
+      this.negativeQuantity = parseInt(item.quantity) <= 0;
+      return item.quantity === "" || item.quantity === undefined || this.negativeQuantity
     },
 
     productSelected(item) {
@@ -218,6 +241,7 @@ label {
 .custom-btn {
   background-color: var(--bs-gray-200) !important;
 }
+
 .custom-btn:hover {
   background-color: var(--bs-gray-400) !important;
 }

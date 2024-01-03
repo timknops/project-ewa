@@ -1,9 +1,6 @@
 package nl.solar.app.models.utils;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
+import java.time.*;
 
 /**
  * Utility class to get a random date
@@ -21,5 +18,14 @@ public class RandomDate {
 
         return LocalDateTime.ofEpochSecond(randomSeconds, 0,
                 ZoneId.systemDefault().getRules().getOffset(Instant.ofEpochSecond(randomSeconds)));
+    }
+
+    public static LocalDate randomLocalDate(LocalDate start, LocalDate end) {
+        long startEpoch= start.toEpochDay();
+        long endEpoch = end.toEpochDay();
+
+        long randomDay = (long) Math.floor(Math.random() * (endEpoch - startEpoch) + startEpoch);
+
+        return LocalDate.ofEpochDay(randomDay);
     }
 }

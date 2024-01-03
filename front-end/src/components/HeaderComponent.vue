@@ -50,7 +50,7 @@ export default {
   computed: {
     /**
      * Display the name of the route which is active, it removes the / and capitalizes the first letter.
-     * @return {string} the name of the page the user is currently on.
+     * @return {string | void} the name of the page the user is currently on.
      */
     displayCurrentPageName() {
       // When vue initially loads header the route is / and matched is empty.

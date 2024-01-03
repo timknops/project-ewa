@@ -32,15 +32,7 @@ export class InventoryAdaptor {
     return await this.fetchJSON(`${this.resourceUrl}/inventory`, {
       method: "POST",
       headers: {"content-type": "application/json"},
-      body: JSON.stringify({
-        warehouse: {
-          id: inventory.warehouse.id
-        },
-        product: {
-          id: inventory.product.id
-        },
-        quantity: inventory.quantity
-      })
+      body: JSON.stringify(inventory)
     })
   }
 
@@ -52,7 +44,9 @@ export class InventoryAdaptor {
     return await this.fetchJSON(`${this.resourceUrl}/warehouses/${inventory.warehouse.id}/products/${inventory.product.id}`, {
       method: "PATCH",
       headers: {"content-type": "application/json"},
-      body: JSON.stringify({quantity: inventory.quantity})
+      body: JSON.stringify({
+        minimum: inventory.minimum,
+        quantity: inventory.quantity})
     })
   }
 }

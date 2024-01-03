@@ -1,5 +1,6 @@
 package nl.solar.app.repositories;
 
+import nl.solar.app.DTO.InventoryProductDTO;
 import nl.solar.app.models.Product;
 import nl.solar.app.models.Inventory;
 import nl.solar.app.models.Warehouse;
@@ -19,7 +20,7 @@ public interface InventoryRepository extends ManyToManyRepository<Inventory> {
      * @param warehouseId the id of the warehouse
      * @return a list of resources where the warehouse is the same
      */
-    List<Inventory> findInventoryForWarehouse(long warehouseId);
+    List<InventoryProductDTO> findInventoryForWarehouse(long warehouseId);
 
 
     /**

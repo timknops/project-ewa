@@ -35,6 +35,9 @@ public class Inventory {
     private Product product;
 
     @JsonView(ResourceView.Complete.class)
+    private int minimum;
+
+    @JsonView(ResourceView.Complete.class)
     private long quantity;
 
     public static Inventory createDummyResource(Warehouse warehouse, Product product) {
@@ -42,6 +45,7 @@ public class Inventory {
 
         inventory.setProduct(product);
         inventory.setWarehouse(warehouse);
+        inventory.setMinimum((int) Math.floor(Math.random() * (40 - 10) + 10));
         inventory.setQuantity((int) (Math.floor(Math.random() * 40)));
 
         return inventory;
@@ -77,6 +81,14 @@ public class Inventory {
 
     public void setQuantity(long quantity) {
         this.quantity = quantity;
+    }
+
+    public int getMinimum() {
+        return minimum;
+    }
+
+    public void setMinimum(int minimum) {
+        this.minimum = minimum;
     }
 
     @Override

@@ -13,38 +13,38 @@ import nl.solar.app.models.Project;
  */
 public class ProjectRequestWrapper {
 
-  private Project project;
-  private List<ProjectResourceDTO> resources;
+    private Project project;
+    private List<ProjectResourceDTO> resources;
 
-  /**
-   * Creates a ProjectRequestWrapper with a project and a team ID.
-   * 
-   * @param project - the project
-   * @param teamId  - the team ID
-   */
+    /**
+     * Creates a ProjectRequestWrapper with a project and a team ID.
+     * 
+     * @param project - the project
+     * @param teamId  - the team ID
+     */
 
-  public ProjectRequestWrapper(Project project, List<ProjectResourceDTO> resources) {
-    this.project = project;
-    this.resources = resources;
-  }
+    public ProjectRequestWrapper(Project project, List<ProjectResourceDTO> resources) {
+        this.project = project;
+        this.resources = resources;
+    }
 
-  public ProjectRequestWrapper() {
-  }
+    public ProjectRequestWrapper() {
+    }
 
-  public Project getProject() {
-    return project;
-  }
+    public Project getProject() {
+        return project;
+    }
 
-  public List<ProjectResourceDTO> getResources() {
-    return resources;
-  }
+    public List<ProjectResourceDTO> getResources() {
+        return resources;
+    }
 
-  public void setProject(Project project) {
-    this.project = project;
-  }
+    public void setProject(Project project) {
+        this.project = project;
+    }
 
-  public void setResources(List<ProjectResourceDTO> resources) {
-    this.resources = resources;
-  }
+    public void setResources(List<ProjectResourceDTO> resources) {
+        this.resources = resources;
+    }
 
 }
