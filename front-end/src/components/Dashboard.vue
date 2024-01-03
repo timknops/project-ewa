@@ -48,30 +48,68 @@
       </div>
     </div>
 
+    <!--Confirm order-->
+    <TableComponent
+        v-if="orderData.length > 0"
+        :hide-id-column="true"
+        :table-width="'100%'"
+        :amount-to-display="3"
+        :table-data="orderData"
+        :table-title="'Pending deliveries'"
+        :sub-title="'Please confirm if a delivery has arrived'"
+        :has-add-button="false"
+        :has-delete-button="false"
+        :has-edit-button="true"
+        :has-search-bar="false"
+        @edit="showConfirmModal"
+    />
+
+    <Transition>
+      <modal-component
+          v-if="showModal"
+          :title="modalTitle"
+          :item="modalOrder"
+          :ok-btn-text="okBtnText"
+          @cancel-modal-btn="this.showModal = false"
+          @corner-close-modal-btn="this.showModal = false"
+          @ok-modal-btn="handleConfirm"
+      />
+    </Transition>
+
   </div>
 </template>
 
 <script>
 import Chart from "chart.js/auto";
 import TableComponent from "@/components/table/TableComponent.vue";
+import ModalComponent from "@/components/modal/ModalComponent.vue";
 
 export default {
   // eslint-disable-next-line
   name: "Dashboard",
   components: {
+    ModalComponent,
     TableComponent
   },
-  inject: ["dashboardService"],
+  inject: ["dashboardService", "orderService"],
   data() {
     return {
       inventoryData: [],
+      orders: [],
+      selectedOrder: "",
+      orderData: [],
       selectedWarehouse: "Solar Sedum", //default warehouse
       chart: null,
+      showModal: false,
+      modalTitle: "",
+      modalOrder: "",
+      okBtnText: "",
     };
   },
   mounted() {
     // this.updateChart();
     this.fetchInventoryData();
+    this.fetchOrderData();
   },
   watch: {
     selectedWarehouse: 'updateChartOnWarehouseChange',
@@ -99,7 +137,6 @@ export default {
             deliverDate,
             inventoryQuantity,
           }));
-
     },
 
     uniqueWarehouseNames() {
@@ -108,6 +145,7 @@ export default {
   },
   created() {
     this.fetchInventoryData();
+    this.fetchOrderData();
     this.updateChart();
   },
   methods: {
@@ -118,8 +156,41 @@ export default {
         console.error("Error fetching inventory data:", error);
       }
     },
+    showConfirmModal(order) {
+      this.modalTitle = "Confirm delivery?";
+      this.modalOrder = order;
+      this.okBtnText = "Confirm";
+      this.showModal = true;
+      console.log(order)
+      this.selectedOrder = order;
+    },
+    handleConfirm() {
+      try {
+        let deliveredOrder = {...this.selectedOrder}
+        deliveredOrder.status = "DELIVERED"
+        this.orderService.update(deliveredOrder)
+        this.fetchOrderData();
+        this.showModal = false;
+      } catch (e){
+        console.log(e)
+      }
+    },
+    async fetchOrderData() {
+      this.orders = await this.orderService.findAll()
+      this.orderData = this.getOrdersBySelectedWarehouse(this.orders)
+    },
+    getOrdersBySelectedWarehouse(data){
+      return data
+          .filter(item => item.warehouse.name === this.selectedWarehouse && item.status === 'PENDING')
+          .map(({ id, deliverDate, tag, status }) => ({
+            id,
+            deliverDate,
+            tag,
+            status }));
+    },
     updateChartOnWarehouseChange() {
       this.updateChart();
+      this.orderData = this.getOrdersBySelectedWarehouse(this.orders)
     },
 
     warehouseSelect(warehouse) {
