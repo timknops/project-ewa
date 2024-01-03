@@ -13,14 +13,12 @@ import java.util.Set;
 public class Warehouse {
 
     @Id
-    @JsonView(ResourceView.Complete.class)
     @SequenceGenerator(name = "warehouse_id_generator", initialValue = 1000, allocationSize = 3)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "warehouse_id_generator")
     private long id;
 
-    @JsonView(ResourceView.Complete.class)
     private String name;
-    @JsonView(ResourceView.Complete.class)
+
     private String location;
 
     @OneToMany(mappedBy = "warehouse", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -33,6 +31,7 @@ public class Warehouse {
 
 
     @OneToMany(mappedBy = "warehouse")
+    @JsonIgnore
     private Set<Team> teams;
 
     public Warehouse(long id, String name, String location) {
