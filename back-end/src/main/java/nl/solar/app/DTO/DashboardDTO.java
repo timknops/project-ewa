@@ -13,6 +13,14 @@ public class DashboardDTO {
 //    private Long orderWarehouseId;
     private LocalDate deliverDate;
 
+
+    private LocalDate dueDate;
+    private Long projectId;
+    private String projectName;
+    private Long productId;
+    private int amountOfProduct;
+
+
     public DashboardDTO(Long warehouseId, String warehouseName, String productName, int quantity, int inventoryQuantity, LocalDate deliverDate) {
         this.warehouseId = warehouseId;
         this.warehouseName = warehouseName;
@@ -22,6 +30,18 @@ public class DashboardDTO {
 //        this.orderId = orderId;
 //        this.orderWarehouseId = orderWarehouseId;
         this.deliverDate = deliverDate;
+    }
+
+
+    public DashboardDTO(LocalDate dueDate, Long projectId, String projectName, Long warehouseId, String warehouseName, Long productId, String productName, int amountOfProduct) {
+        this.dueDate = dueDate;
+        this.projectId = projectId;
+        this.projectName = projectName;
+        this.warehouseId = warehouseId;
+        this.warehouseName = warehouseName;
+        this.productId = productId;
+        this.productName = productName;
+        this.amountOfProduct = amountOfProduct;
     }
 
     public Long getWarehouseId() {
@@ -74,6 +94,47 @@ public class DashboardDTO {
 //    public Long getOrderWarehouseId() {
 //        return orderWarehouseId;
 //    }
+
+
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
+
+    public Long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Long productId) {
+        this.productId = productId;
+    }
+
+    public int getAmountOfProduct() {
+        return amountOfProduct;
+    }
+
+    public void setAmountOfProduct(int amountOfProduct) {
+        this.amountOfProduct = amountOfProduct;
+    }
 
     public LocalDate getDeliverDate() {
         return deliverDate;

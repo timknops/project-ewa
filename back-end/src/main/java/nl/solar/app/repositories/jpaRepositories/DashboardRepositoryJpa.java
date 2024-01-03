@@ -43,4 +43,37 @@ public class DashboardRepositoryJpa  {
 
         }
 
+
+    public List<DashboardDTO> getProjectDashboardItems() {
+        List<Object[]> projectResults = entityManager.createQuery(
+                        "SELECT CAST(p.dueDate AS DATE) AS dueDate, " +
+                                "r.project.id AS projectId, p.projectName, " +
+                                "w.id AS warehouseId, w.name AS warehouseName, " +
+                                "r.product.id AS productId, pr.productName, " +
+                                "r.quantity AS amountOfProduct " +
+                                "FROM Project p " +
+                                "JOIN Resource r ON p.id = r.project.id " +
+                                "JOIN Team t ON p.team.id = t.id " +
+                                "JOIN Warehouse w ON t.warehouse.id = w.id " +
+                                "JOIN Product pr ON r.product.id = pr.id " +
+                                "GROUP BY CAST(p.dueDate AS DATE), r.project.id, p.projectName, " +
+                                "w.id, w.name, r.product.id, pr.productName, r.quantity " +
+                                "ORDER BY CAST(p.dueDate AS DATE)"
+                        , Object[].class)
+                .getResultList();
+
+        return projectResults.stream()
+                .map(result -> new DashboardDTO(
+                        ((java.sql.Date) result[0]).toLocalDate(), // dueDate
+                        (Long) result[1], // projectId
+                        (String) result[2], // projectName
+                        (Long) result[3], // warehouseId
+                        (String) result[4], // warehouseName
+                        (Long) result[5], // productId
+                        (String) result[6], // productName
+                        ((Number) result[7]).intValue() // amountOfProduct
+                ))
+                .collect(Collectors.toList());
+    }
+
 }
