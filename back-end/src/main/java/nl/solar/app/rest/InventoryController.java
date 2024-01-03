@@ -9,6 +9,7 @@ import nl.solar.app.models.Inventory;
 import nl.solar.app.models.Product;
 import nl.solar.app.models.Warehouse;
 import nl.solar.app.models.views.ResourceView;
+import nl.solar.app.repositories.EntityRepository;
 import nl.solar.app.repositories.InventoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +34,9 @@ public class InventoryController {
     @Autowired
     InventoryRepository inventoryRepo;
 
+    @Autowired
+    EntityRepository<Warehouse> warehouseRepo;
+
     @JsonView(ResourceView.Complete.class)
     @GetMapping("/inventory/test")
     public List<Inventory> inventory() {
@@ -47,22 +51,11 @@ public class InventoryController {
     @JsonView(ResourceView.Complete.class)
     @GetMapping(path = "/inventory", produces = "application/json")
     public ResponseEntity<List<InventoryDTO>> getInventory() {
-        List<Inventory> inventories = inventoryRepo.findAll();
-        List<InventoryDTO> formattedResources = new ArrayList<>();
-        Map<Warehouse, List<InventoryProductDTO>> GroupedByWarehouse = new HashMap<>();
-
-        for (Inventory inventory : inventories) {
-            InventoryProductDTO productFormat = formatProductObject(inventory);
-
-            // add product to a list of the warehouse of the current resources.
-            GroupedByWarehouse.computeIfAbsent(inventory.getWarehouse(), k -> new ArrayList<>()).add(productFormat);
+        List<InventoryDTO> inventory = new ArrayList<>();
+        for (Warehouse warehouse : warehouseRepo.findAll()) {
+            inventory.add(new InventoryDTO(warehouse, inventoryRepo.findInventoryForWarehouse(warehouse.getId())));
         }
-
-        for (Map.Entry<Warehouse, List<InventoryProductDTO>> entry : GroupedByWarehouse.entrySet()) {
-            InventoryDTO formattedResource = new InventoryDTO(entry.getKey(), entry.getValue());
-            formattedResources.add(formattedResource);
-        }
-        return ResponseEntity.ok(formattedResources);
+        return ResponseEntity.ok(inventory);
     }
 
     /**
@@ -77,17 +70,13 @@ public class InventoryController {
     @GetMapping(path = "/warehouses/{id}/inventory", produces = "application/json")
     public ResponseEntity<List<InventoryProductDTO>> getInventoryForWarehouse(@PathVariable long id)
             throws ResourceNotFoundException {
-        List<Inventory> inventories = this.inventoryRepo.findInventoryForWarehouse(id);
-
-        if (inventories.isEmpty()) {
+        if (warehouseRepo.findById(id) == null) {
             throw new ResourceNotFoundException("Warehouse doesn't exist");
         }
 
-        List<InventoryProductDTO> formattedProducts = new ArrayList<>();
-        for (Inventory inventory : inventories) {
-            formattedProducts.add(formatProductObject(inventory));
-        }
-        return ResponseEntity.ok(formattedProducts);
+        List<InventoryProductDTO> inventories = this.inventoryRepo.findInventoryForWarehouse(id);
+
+        return ResponseEntity.ok(inventories);
     }
 
     /**
@@ -136,17 +125,18 @@ public class InventoryController {
     @JsonView(ResourceView.Complete.class)
     @PatchMapping(path = "/warehouses/{wId}/products/{pId}", produces = "application/json")
     public ResponseEntity<Inventory> updateInventory(@PathVariable long wId, @PathVariable long pId,
-            @RequestBody Map<String, Long> partiallyUpdated)
+            @RequestBody Map<String, Number> partiallyUpdated)
             throws ResourceNotFoundException, BadRequestException {
         Inventory existingInventory = inventoryRepo.findByIds(pId, wId);
         if (existingInventory == null) {
             throw new ResourceNotFoundException("inventory Not Found");
         }
-        if (!partiallyUpdated.containsKey("quantity")) {
+        if (!partiallyUpdated.containsKey("quantity") || !partiallyUpdated.containsKey("minimum")) {
             throw new BadRequestException("Request body doesn't contain quantity");
         }
 
-        existingInventory.setQuantity(partiallyUpdated.get("quantity"));
+        existingInventory.setMinimum(partiallyUpdated.get("minimum").intValue());
+        existingInventory.setQuantity(partiallyUpdated.get("quantity").longValue());
 
         Inventory update = this.inventoryRepo.save(existingInventory);
 
@@ -194,7 +184,7 @@ public class InventoryController {
     private InventoryProductDTO formatProductObject(Inventory inventory) {
         return new InventoryProductDTO(inventory.getProduct().getId(),
                 inventory.getProduct().getProductName(),
-                inventory.getProduct().getDescription(),
+                inventory.getMinimum(),
                 inventory.getQuantity());
     }
 }

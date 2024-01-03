@@ -1,5 +1,4 @@
 <template>
-  <!--  TODO add redirecting delays with information to the user that something is happening-->
   <div class="container-fluid">
     <!--    success alert when successfully logged in-->
     <div v-if="alert1" class="alert alert-success text-center">
@@ -33,6 +32,7 @@
           <h2>Recover Password</h2>
           <p>Enter the email address of the account that you want to recover</p>
 
+          <!--          email input-->
           <div class="row form-group email">
             <label for="emailInputLabel">E-mail:</label>
             <input
@@ -43,6 +43,7 @@
                 required
                 v-model.lazy.trim="input.email"
             />
+            <!--            validation of email input-->
             <p v-if="!correctEmail" class="error-message">{{ errorMessage }}</p>
             <div class="text-center mt-3">
               <!--              button-->
@@ -134,26 +135,23 @@ export default {
     }
   },
   watch: {
-    '$route'(){
+    '$route'() {
       this.errorMessage = null;
       this.alert1 = false;
-      this.bodySplitter = this.$route.params.email.split("_", 3);
-      this.user = this.findByEmail(this.bodySplitter[0]);
-      if (this.bodySplitter.length === 3) {
-        this.newPassword = true;
-      }
+      this.processUrl();
     }
   },
   async created() {
-    this.bodySplitter = this.$route.params.email.split("_", 3);
     this.users = await this.userService.asyncFindAll();
-    this.user = this.findByEmail(this.bodySplitter[0]);
-    if (this.bodySplitter.length === 3) {
-      this.newPassword = true;
-    }
+    this.processUrl();
   },
   methods: {
     //TODO seperate clear fields method
+    /**
+     * Checks the input on whether it is a valid email and belongs to an existing user,
+     * if it's not, give accurate error message back
+     * If everything is correct email the email address that was just entered
+     */
     mailSubmit() {
       if (this.input.email === "") {
         this.correctEmail = false;
@@ -163,7 +161,6 @@ export default {
           if (this.findByEmail(this.input.email) != null) {
             this.sendEmail();
             this.alert1 = true;
-            console.log(this.alert1)
             this.errorMessage = null;
           } else {
             this.correctEmail = false;
@@ -175,10 +172,39 @@ export default {
         }
       }
     },
+    //validates if the entered email is in email format
     validEmail() {
       const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return this.input.email.match(regex);
     },
+    /**
+     * Processes the information in the url.
+     * This will check the information to see if it's the information of an existing account.
+     * If the information is in the right format and matches an existing account,
+     * it will toggle the password reset version of this component.
+     * If something is wrong it will log the problem in the console
+     */
+    processUrl() {
+      this.bodySplitter = this.$route.params.email.split("_", 3);
+      this.user = this.findByEmail(this.bodySplitter[0]);
+
+      if (this.bodySplitter.length === 3 && this.user !== undefined) {
+        if (this.user.id === parseInt(this.bodySplitter[2]) &&
+            this.user.name === this.bodySplitter[1]) {
+          this.newPassword = true;
+        } else {
+          console.log("Email and format of url was correct, but other info was incorrect")
+        }
+      } else {
+        //TODO error when wrong url
+        console.log("error url is in the wrong format or user wasn't found");
+      }
+    },
+    /**
+     * First validates the passwords on certain conditions.
+     * If it fails the validation, give an error message with accurate information.
+     * If every condition has been passed, change the password and navigate back to the login page
+     */
     passwordSubmit() {
       if (!this.password1 || !this.password2) {
         this.correctPassword = false;
@@ -192,29 +218,27 @@ export default {
           this.newPassword = false;
           this.passwordUpdate(this.password1);
           this.navigateToLogin();
-          this.clearFields();
         }
       } else {
         this.correctPassword = false;
         this.errorMessage = "Passwords do not match"
       }
     },
+    //finds a user from the users list based on the given email
     findByEmail(email) {
       this.user = this.users.find((user) => user.email === email);
       return this.user
     },
+    //navigate back to the login page
     navigateToLogin() {
-      this.clearFields();
-      localStorage.setItem("resetLogin", false);
       this.$emit("updateResetLogin", false);
       this.$router.push("/loginPage");
     },
-    clearFields() {
-      this.user = null;
-      this.password1 = null;
-      this.password2 = null;
-      this.errorMessage = null;
-    },
+    /**
+     * Updates the password of the user
+     * @param password new password entered
+     * @returns {Promise<void>}
+     */
     async passwordUpdate(password) {
       try {
         this.user.password = password
@@ -223,6 +247,9 @@ export default {
         console.log(e)
       }
     },
+    /**
+     * Finds the user based on the entered email, then gives information the to back-end to send an email
+     */
     sendEmail() {
       this.user = this.findByEmail(this.input.email);
       try {

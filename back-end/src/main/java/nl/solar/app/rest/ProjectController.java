@@ -4,8 +4,11 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import nl.solar.app.DTO.InventoryProductDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,14 +22,18 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import nl.solar.app.DTO.ProjectResourceDTO;
+import nl.solar.app.enums.ProjectStatus;
 import nl.solar.app.exceptions.PreConditionFailedException;
 import nl.solar.app.exceptions.ResourceNotFoundException;
+import nl.solar.app.models.Inventory;
 import nl.solar.app.models.Project;
 import nl.solar.app.models.Resource;
 import nl.solar.app.models.Team;
+import nl.solar.app.models.Warehouse;
 import nl.solar.app.models.views.ProjectView;
 import nl.solar.app.models.wrappers.ProjectRequestWrapper;
 import nl.solar.app.repositories.EntityRepository;
+import nl.solar.app.repositories.InventoryRepository;
 import nl.solar.app.repositories.ProjectRepository;
 import nl.solar.app.repositories.ResourceRepository;
 
@@ -48,6 +55,9 @@ public class ProjectController {
 
     @Autowired
     EntityRepository<Team> teamRepo;
+
+    @Autowired
+    InventoryRepository inventoryRepo;
 
     /**
      * Retrieves a list of all projects specifically for the overview of the
@@ -178,6 +188,9 @@ public class ProjectController {
             throw new ResourceNotFoundException("Project with id: " + id + " was not found");
         }
 
+        // Save the old status of the project.
+        ProjectStatus oldStatus = project.getStatus();
+
         // Update the project.
         Project updatedProject = this.projectRepo.save(projectWrapper.getProject());
 
@@ -189,11 +202,65 @@ public class ProjectController {
             this.resourceRepo.save(new Resource(updatedProject, resource.getProduct(), resource.getQuantity()));
         }
 
+        // Check if the project went from upcoming to in progress. If so, update the
+        // inventory.
+        if (oldStatus == ProjectStatus.UPCOMING && updatedProject.getStatus() == ProjectStatus.IN_PROGRESS) {
+            // Get the team of the project.
+            Team team = this.teamRepo.findById(updatedProject.getTeam().getId());
+
+            if (team == null) {
+                throw new ResourceNotFoundException(
+                        "Team with id: " + updatedProject.getTeam().getId() + " was not found");
+            }
+
+            // Get the warehouse of the team.
+            Warehouse warehouse = team.getWarehouse();
+
+            if (warehouse == null) {
+                throw new ResourceNotFoundException(
+                        "Warehouse with id: " + team.getWarehouse().getId() + " was not found");
+            }
+
+            // Update the inventory asynchronously.
+            updateInventory(updatedProject, warehouse);
+        }
+
         // Create the URI for the updated project.
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(updatedProject.getId()).toUri();
 
         return ResponseEntity.created(location).body(updatedProject);
+    }
+
+    /**
+     * Asynchronously updates the inventory of a warehouse based on the resources.
+     * 
+     * @param updatedProject the updated project
+     * @param warehouse      the warehouse of the team
+     */
+    @Async
+    public void updateInventory(Project updatedProject, Warehouse warehouse) {
+        // Get all the resources of the project and the inventories of the warehouse.
+        List<ProjectResourceDTO> resources = this.resourceRepo.getProjectResources(updatedProject.getId());
+        List<InventoryProductDTO> inventories = this.inventoryRepo.findInventoryForWarehouse(warehouse.getId());
+
+        // Map for efficient lookup of inventories based on product ID.
+        Map<Long, Inventory> inventoryMap = new HashMap<>();
+        for (Inventory inventory : warehouse.getInventory()) {
+            inventoryMap.put(inventory.getProduct().getId(), inventory);
+        }
+
+        // Update the inventories based on resources.
+        for (ProjectResourceDTO resource : resources) {
+            Long productId = resource.getProduct().getId();
+            Inventory inventory = inventoryMap.get(productId);
+
+            if (inventory != null) {
+                long newQuantity = inventory.getQuantity() - resource.getQuantity();
+                inventory.setQuantity(newQuantity);
+                this.inventoryRepo.save(inventory);
+            }
+        }
     }
 
     /**

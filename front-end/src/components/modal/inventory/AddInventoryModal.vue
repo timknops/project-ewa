@@ -21,6 +21,18 @@
       <p v-if="noProductSelectedError" class="text-danger"> Please select a product!</p>
     </div>
     <div class="mb-3">
+      <label for="minimum" class="form-label fw-bold"> Minimum</label>
+      <input type="number"
+             id="minimum"
+             class="form-control"
+             :class="{'border-danger': negativeMinimum}"
+             v-model="modalItem.minimum"
+             @blur="validateMinimum"
+      >
+      <p v-if="negativeMinimum" class="text-danger"> The minimum can't be a negative number</p>
+    </div>
+
+    <div class="mb-3">
       <label for="quantity" class="form-label fw-bold">Quantity</label>
       <input id="quantity"
              type="number"
@@ -51,6 +63,7 @@ export default {
         product: {
           id: null
         },
+        minimum: 0,
         quantity: 0
       },
       activeWarehouseId: Number,
@@ -58,6 +71,7 @@ export default {
       decimalError: false,
       emptyQuantityError: false,
       noProductSelectedError: false,
+      negativeMinimum: false
     }
   },
   computed: {
@@ -68,7 +82,8 @@ export default {
     hasError() {
       this.validateProduct();
       this.validateQuantity()
-      return this.noProductSelectedError || this.emptyQuantityError || this.decimalError
+      this.validateMinimum()
+      return this.noProductSelectedError || this.emptyQuantityError || this.decimalError || this.negativeMinimum
     }
   },
   inject: ["inventoryService"],
@@ -91,6 +106,9 @@ export default {
     },
     validateProduct() {
       this.noProductSelectedError = this.modalItem.product.id === null
+    },
+    validateMinimum() {
+      this.negativeMinimum = this.modalItem.minimum < 0;
     }
   },
   created() {

@@ -1,7 +1,7 @@
 <template>
   <div v-if="loggedInActive === 'false'">
     <router-view
-    @update-logged-in="updateLoggedIn"
+        @update-logged-in="updateLoggedIn"
     ></router-view>
   </div>
   <div v-else class="view">
@@ -19,11 +19,10 @@ import {ProductAdaptor} from "@/service/productAdaptor";
 import {WarehouseAdaptor} from "@/service/warehouseAdaptor";
 import {UserAdaptor} from "@/service/userAdaptor";
 import {InventoryAdaptor} from "@/service/inventoryAdaptor";
-import { TeamAdaptor } from "@/service/teamAdaptor";
+import {TeamAdaptor} from "@/service/teamAdaptor";
 import {EmailAdaptor} from "@/service/emailAdaptor";
-import { ProjectAdaptor } from "@/service/projectAdaptor";
+import {ProjectAdaptor} from "@/service/projectAdaptor";
 import {OrderAdaptor} from "@/service/orderAdaptor";
-import {DashboardAdaptor} from "@/service/dashboardAdaptor";
 
 
 export default {
@@ -34,21 +33,21 @@ export default {
   },
   data() {
     return {
-      loggedInActive: {},
-      resetLogin: {}
+      loggedInActive: {}
     };
   },
   provide() {
     return {
       productService: new ProductAdaptor(`${appConfig.BACKEND_URL}/products`),
-      warehouseService: new WarehouseAdaptor(`${appConfig.BACKEND_URL}/warehouses`),
+      warehouseService: new WarehouseAdaptor(
+          `${appConfig.BACKEND_URL}/warehouses`
+      ),
       userService: new UserAdaptor(`${appConfig.BACKEND_URL}/users`),
       inventoryService: new InventoryAdaptor(appConfig.BACKEND_URL),
       teamsService: new TeamAdaptor(`${appConfig.BACKEND_URL}/teams`),
       emailService: new EmailAdaptor(`${appConfig.BACKEND_URL}`),
       projectService: new ProjectAdaptor(`${appConfig.BACKEND_URL}/projects`),
-      orderService: new OrderAdaptor(`${appConfig.BACKEND_URL}/orders`),
-      dashboardService: new DashboardAdaptor(`${appConfig.BACKEND_URL}/dashboard-items`)
+      orderService: new OrderAdaptor(`${appConfig.BACKEND_URL}/orders`)
     };
   },
   methods: {
