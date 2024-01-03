@@ -224,7 +224,7 @@ export default {
             },
           },
           y: {
-            beginAtZero: false,
+            beginAtZero: true,
             title: {
               display: true,
               text: "Quantity",
@@ -244,6 +244,7 @@ export default {
         elements: {
           line: {
             tension: 0,
+            stepped: 'before',
           }
         },
       };
