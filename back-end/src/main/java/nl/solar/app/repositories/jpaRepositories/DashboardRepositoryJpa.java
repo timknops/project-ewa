@@ -8,9 +8,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
@@ -47,27 +45,39 @@ public class DashboardRepositoryJpa  {
     }
 
     @Scheduled(fixedRate = 20000) // fixedRate is low for testing (fixedRate = 24, timeUnit = TimeUnit.HOURS) for daily
-    protected void forecast (){
+    protected void forecastNotification (){
         System.out.println("Scheduled method called:\n");
 
         List<DashboardDTO> originalList = getDashboardItems();
 
-        System.out.println("\n\n The original version: ");
+        System.out.println("The original:");
         System.out.println(originalList);
 
-        System.out.println("\n\n Now the combined version:");
+        System.out.println("\n\n The combined:\n");
 
-        Map<Object, Optional<DashboardDTO>> combinedMap = originalList.stream()
-                .collect(Collectors.groupingBy(
-                        dto -> dto.getWarehouseId() + "-" + dto.getProductName(),
-                        Collectors.reducing(DashboardDTO::merge)
-                ));
+        List<DashboardDTO> combinedList = combineQuantities(originalList);
 
-        List<DashboardDTO> combinedList = combinedMap.values().stream()
-                .filter(Optional::isPresent) // Filter out merged null values
-                .map(Optional::get)
-                .toList();
+        // Print the combined list
+        for (DashboardDTO dto : combinedList) {
+            System.out.print(dto);
+        }
+    }
 
-        combinedList.forEach(System.out::print);
+    private static List<DashboardDTO> combineQuantities(List<DashboardDTO> originalList) {
+        Map<String, DashboardDTO> combinedMap = new HashMap<>();
+
+        for (DashboardDTO dto : originalList) {
+            String key = dto.getWarehouseId() + "_" + dto.getProductName();
+
+            if (combinedMap.containsKey(key)) {
+                DashboardDTO combinedDTO = combinedMap.get(key);
+                combinedDTO.setQuantity(combinedDTO.getQuantity() + dto.getQuantity());
+                // You can also update other fields if needed
+            } else {
+                combinedMap.put(key, new DashboardDTO(dto));
+            }
+        }
+
+        return new ArrayList<>(combinedMap.values());
     }
 }

@@ -50,7 +50,7 @@
 
     <!--Confirm order-->
     <TableComponent
-        v-if="!ordersAreLoading"
+        v-if="orderData.length > 0"
         :hide-id-column="true"
         :table-width="'100%'"
         :amount-to-display="3"
@@ -107,7 +107,6 @@ export default {
     };
   },
   mounted() {
-    // this.updateChart();
     this.fetchInventoryData();
     this.fetchOrderData();
   },
@@ -179,7 +178,8 @@ export default {
     },
     getOrdersBySelectedWarehouse(data){
       return data
-          .filter(item => item.warehouse.name === this.selectedWarehouse && item.status === 'PENDING')
+          .filter(item => item.warehouse.name === this.selectedWarehouse
+              && item.status === 'PENDING')
           .map(({ id, deliverDate, tag, status }) => ({
             id,
             deliverDate,
