@@ -123,15 +123,15 @@ export default {
     async addTeam(team) {
       try {
         const added = await this.teamsService.add(team);
-        this.teams.unshift(this.formatTeamForTable(added));
+        this.teams.push(this.formatTeamForTable(added));
         this.showModal = false;
         this.showTimedToast("Success", "Team added.");
       } catch (e) {
         this.showModal = false;
         if (e.code >= 400 && e.code < 500) {
-          this.showTimedToast("Failed to delete", e.reason, 8000);
+          this.showTimedToast("Failed to add", e.reason, 8000);
         } else {
-          this.showTimedToast("Failed to delete", e.message, 8000);
+          this.showTimedToast("Failed to add", e.message, 8000);
         }
       }
     },
@@ -145,9 +145,9 @@ export default {
       } catch (e) {
         this.showModal = false;
         if (e.code >= 400 && e.code < 500) {
-          this.showTimedToast("Failed to delete", e.reason, 8000);
+          this.showTimedToast("Failed to update", e.reason, 8000);
         } else {
-          this.showTimedToast("Failed to delete", e.message, 8000);
+          this.showTimedToast("Failed to update", e.message, 8000);
         }
       }
     },
@@ -191,14 +191,14 @@ export default {
       };
     },
 
-    showTimedToast(title, message) {
+    showTimedToast(title, message, duration = 4000) {
       this.toastTitle = title;
       this.toastMessage = message;
       this.showToast = true;
 
       setTimeout(() => {
         this.showToast = false;
-      }, 4000);
+      }, duration);
     },
   },
 

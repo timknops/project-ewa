@@ -8,7 +8,8 @@
           class="form-control"
           v-model.lazy.trim="modalItem.team"
           @blur="validateName"
-          :class="{ 'border-danger': teamEmpty }">
+          :class="{ 'border-danger': teamEmpty }"
+          placeholder="Enter team name">
       <p v-if="teamEmpty" class="text-danger"> The team name can't be empty!</p>
     </div>
     <div class="mb-3">
