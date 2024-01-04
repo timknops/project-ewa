@@ -43,41 +43,4 @@ public class DashboardRepositoryJpa  {
                     .collect(Collectors.toList());
 
     }
-
-    @Scheduled(fixedRate = 20000) // fixedRate is low for testing (fixedRate = 24, timeUnit = TimeUnit.HOURS) for daily
-    protected void forecastNotification (){
-        System.out.println("Scheduled method called:\n");
-
-        List<DashboardDTO> originalList = getDashboardItems();
-
-        System.out.println("The original:");
-        System.out.println(originalList);
-
-        System.out.println("\n\n The combined:\n");
-
-        List<DashboardDTO> combinedList = combineQuantities(originalList);
-
-        // Print the combined list
-        for (DashboardDTO dto : combinedList) {
-            System.out.print(dto);
-        }
-    }
-
-    private static List<DashboardDTO> combineQuantities(List<DashboardDTO> originalList) {
-        Map<String, DashboardDTO> combinedMap = new HashMap<>();
-
-        for (DashboardDTO dto : originalList) {
-            String key = dto.getWarehouseId() + "_" + dto.getProductName();
-
-            if (combinedMap.containsKey(key)) {
-                DashboardDTO combinedDTO = combinedMap.get(key);
-                combinedDTO.setQuantity(combinedDTO.getQuantity() + dto.getQuantity());
-                // You can also update other fields if needed
-            } else {
-                combinedMap.put(key, new DashboardDTO(dto));
-            }
-        }
-
-        return new ArrayList<>(combinedMap.values());
-    }
 }
