@@ -64,21 +64,6 @@
         @edit="showConfirmModal"
     />
 
-    <TableComponent
-        v-if="projectData.length > 0"
-        :hide-id-column="true"
-        :table-width="'100%'"
-        :amount-to-display="3"
-        :table-data="projectData"
-        :table-title="'Projects that are upcoming'"
-        :sub-title="'Please confirm a project to confirm it is in progress now'"
-        :has-add-button="false"
-        :has-delete-button="false"
-        :has-edit-button="true"
-        :has-search-bar="false"
-        @edit="showConfirmModal"
-    />
-
     <Transition>
       <modal-component
           v-if="showModal"
