@@ -1,46 +1,45 @@
 <template>
   <div>
     <warehouse-header-display
-        :has-no-total-option="true"
-        :active-warehouse="activeWarehouse"
-        :active-user="activeUser"
-        @setActiveWarehouse="setActiveWarehouse"
+      :has-no-total-option="true"
+      :active-warehouse="activeWarehouse"
+      :active-user="activeUser"
+      @setActiveWarehouse="setActiveWarehouse"
     />
     <table-component
-        v-if="ordersAreLoaded"
-        class="rounded-top-0 mt-0"
-        :table-data="orders"
-        :amount-to-display="5"
-        :has-add-button="true"
-        :has-edit-button="true"
-        :has-delete-button="true"
-        @add="showAddModal"
-        @edit="showEditModal"
-        @delete="showDeleteModal"
+      v-if="ordersAreLoaded"
+      class="rounded-top-0 mt-0"
+      :table-data="orders"
+      :amount-to-display="5"
+      :has-add-button="true"
+      :has-edit-button="true"
+      :has-delete-button="true"
+      @add="showAddModal"
+      @edit="showEditModal"
+      @delete="showDeleteModal"
     />
-    <spinner-component v-else/>
+    <spinner-component v-else />
 
     <transition>
       <modal-component
-          v-if="showModal"
-          :title="modalTitle"
-          :active-modal="modalBodyComponent"
-          :item="modalOrderInfo"
-          :ok-btn-text="okBtnText"
-          @cancel-modal-btn="this.showModal = false"
-          @corner-close-modal-btn="this.showModal = false"
-          @ok-modal-btn="handleOk"
+        v-if="showModal"
+        :title="modalTitle"
+        :active-modal="modalBodyComponent"
+        :item="modalOrderInfo"
+        :ok-btn-text="okBtnText"
+        @cancel-modal-btn="this.showModal = false"
+        @corner-close-modal-btn="this.showModal = false"
+        @ok-modal-btn="handleOk"
       ></modal-component>
     </transition>
     <transition>
       <toast-component
-          v-if="showToast"
-          :toast-message="toastMessage"
-          :toast-title="toastTitle"
+        v-if="showToast"
+        :toast-message="toastMessage"
+        :toast-title="toastTitle"
       ></toast-component>
     </transition>
   </div>
-
 </template>
 
 <script>
@@ -57,7 +56,13 @@ import ToastComponent from "@/components/util/ToastComponent.vue";
  */
 export default {
   name: "orderOverview",
-  components: {ToastComponent, ModalComponent, SpinnerComponent, TableComponent, WarehouseHeaderDisplay},
+  components: {
+    ToastComponent,
+    ModalComponent,
+    SpinnerComponent,
+    TableComponent,
+    WarehouseHeaderDisplay,
+  },
   inject: ["orderService", "warehouseService"],
   data() {
     return {
@@ -94,9 +99,8 @@ export default {
       //toast variables
       showToast: false,
       toastTitle: "",
-      toastMessage: ""
-
-    }
+      toastMessage: "",
+    };
   },
   methods: {
     /**
@@ -104,10 +108,10 @@ export default {
      * @param warehouse
      */
     async setActiveWarehouse(warehouse) {
-      this.activeWarehouse = warehouse
-      this.$router.push("/orders/" + warehouse.name)
-      this.orders = await this.getOrdersForWarehouse(this.activeWarehouse.id)
-      this.ordersAreLoaded = true //set to true, after first load. Thereafter, this will always be true.
+      this.activeWarehouse = warehouse;
+      this.$router.push("/orders/" + warehouse.name);
+      this.orders = await this.getOrdersForWarehouse(this.activeWarehouse.id);
+      this.ordersAreLoaded = true; //set to true, after first load. Thereafter, this will always be true.
     },
 
     /**
@@ -117,13 +121,12 @@ export default {
      */
     async getOrdersForWarehouse(id) {
       const data = await this.warehouseService.findOrdersForWarehouse(id);
-      return data.map(order => ({
+      return data.map((order) => ({
         id: order.id,
         tag: order.tag,
         deliverDate: this.formatDate(order.deliverDate),
-        status: order.status
-      }))
-
+        status: order.status,
+      }));
     },
 
     /**
@@ -161,7 +164,7 @@ export default {
       this.modalBodyComponent = this.MODAL_TYPES.DELETE;
       this.modalOrderInfo = {
         id: order.id,
-        warehouseName: this.activeWarehouse.name
+        warehouseName: this.activeWarehouse.name,
       };
       this.okBtnText = "Delete";
       this.showModal = true;
@@ -174,7 +177,7 @@ export default {
     async showEditModal(order) {
       this.modalTitle = "Update order";
       this.modalBodyComponent = this.MODAL_TYPES.UPDATE;
-      this.modalOrderInfo = await this.orderService.findById(order.id)
+      this.modalOrderInfo = await this.orderService.findById(order.id);
       this.okBtnText = "Save";
       this.showModal = true;
     },
@@ -186,8 +189,8 @@ export default {
       this.modalTitle = "Add order";
       this.modalBodyComponent = this.MODAL_TYPES.ADD;
       this.modalOrderInfo = {
-        warehouse: this.activeWarehouse
-      }
+        warehouse: this.activeWarehouse,
+      };
       this.okBtnText = "Add";
       this.showModal = true;
     },
@@ -218,14 +221,15 @@ export default {
     async deleteOrder(order) {
       try {
         const deleted = await this.orderService.delete(order.id);
-        this.orders = this.orders.filter(order => order.id !== deleted.id)
-        this.showModal = false
+        this.orders = this.orders.filter((order) => order.id !== deleted.id);
+        this.showModal = false;
         this.showTimedToast(
-            "Order Deleted",
-            `Successfully deleted an order with id: ${deleted.id} for warehouse ${this.activeWarehouse.name}`)
+          "Order Deleted",
+          `Successfully deleted an order with id: ${deleted.id} for warehouse ${this.activeWarehouse.name}`
+        );
       } catch (e) {
         this.showModal = false;
-        this.handleException(e, "Oops!")
+        this.handleException(e, "Oops!");
       }
     },
 
@@ -237,21 +241,21 @@ export default {
     async updateOrder(order) {
       try {
         const updated = await this.orderService.update(order);
-        const formatted = {...updated}
-        delete formatted.warehouse // remove warehouse from formatted object
+        const formatted = { ...updated };
+        delete formatted.warehouse; // remove warehouse from formatted object
 
-        formatted.deliverDate = this.formatDate(updated.deliverDate)
+        formatted.deliverDate = this.formatDate(updated.deliverDate);
         this.orders = this.orders.map((order) =>
-            order.id === formatted.id ? formatted : order
+          order.id === formatted.id ? formatted : order
         );
         this.showModal = false;
         this.showTimedToast(
-            "Order Updated",
-            `Successfully updated an order with id: ${updated.id} for warehouse ${this.activeWarehouse.name}`
-        )
+          "Order Updated",
+          `Successfully updated an order with id: ${updated.id} for warehouse ${this.activeWarehouse.name}`
+        );
       } catch (e) {
         this.showModal = false;
-        this.handleException(e, "Oops!")
+        this.handleException(e, "Oops!");
       }
     },
 
@@ -262,18 +266,19 @@ export default {
     async addOrder(order) {
       try {
         const added = await this.orderService.add(order);
-        const formatted = {...added}
+        const formatted = { ...added };
         delete formatted.warehouse;
-        formatted.deliverDate = this.formatDate(added.deliverDate)
+        formatted.deliverDate = this.formatDate(added.deliverDate);
 
-        this.orders.unshift(formatted);
+        this.orders.push(formatted);
         this.showModal = false;
         this.showTimedToast(
-            "Order added",
-            `Successfully added an order with id: ${added.id} from warehouse ${this.activeWarehouse.name}`)
+          "Order added",
+          `Successfully added an order with id: ${added.id} from warehouse ${this.activeWarehouse.name}`
+        );
       } catch (e) {
         this.showModal = false;
-        this.handleException(e, "Oops!")
+        this.handleException(e, "Oops!");
       }
     },
 
@@ -283,12 +288,12 @@ export default {
      * @param message the to show to the user
      */
     showTimedToast(title, message) {
-      this.toastTitle = title
-      this.toastMessage = message
-      this.showToast = true
+      this.toastTitle = title;
+      this.toastMessage = message;
+      this.showToast = true;
 
       // after 4 seconds remove the toast from view
-      setTimeout(() => this.showToast = false, 4000)
+      setTimeout(() => (this.showToast = false), 4000);
     },
 
     /**
@@ -298,21 +303,14 @@ export default {
      */
     handleException(exception, exceptionTitle) {
       if (exception.code >= 400 && exception.code < 500) {
-        this.showTimedToast(
-            exceptionTitle,
-            exception.reason
-        );
+        this.showTimedToast(exceptionTitle, exception.reason);
       } else {
-        this.showTimedToast(
-            exceptionTitle,
-            "Something went wrong"
-        );
+        this.showTimedToast(exceptionTitle, "Something went wrong");
       }
-    }
+    },
   },
-}
+};
 </script>
-
 
 <style scoped>
 /* styling for transitions*/

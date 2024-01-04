@@ -15,14 +15,14 @@
     <SpinnerComponent v-else />
     <Transition>
       <ModalComponent
-          v-if="showModal"
-          :title="modalTitle"
-          :active-modal="modalBodyComponent"
-          :item="modalTeam"
-          :ok-btn-text="okBtnText"
-          @cancel-modal-btn="this.showModal = false"
-          @corner-close-modal-btn="this.showModal = false"
-          @ok-modal-btn="handleOk"
+        v-if="showModal"
+        :title="modalTitle"
+        :active-modal="modalBodyComponent"
+        :item="modalTeam"
+        :ok-btn-text="okBtnText"
+        @cancel-modal-btn="this.showModal = false"
+        @corner-close-modal-btn="this.showModal = false"
+        @ok-modal-btn="handleOk"
       />
     </Transition>
     <Transition>
@@ -40,7 +40,6 @@
 import TableComponent from "@/components/table/TableComponent.vue";
 import ModalComponent from "@/components/modal/ModalComponent.vue";
 import SpinnerComponent from "@/components/util/SpinnerComponent.vue";
-import ToastComponent from "@/components/util/ToastComponent.vue";
 
 export default {
   name: "TeamOverview",
@@ -136,7 +135,6 @@ export default {
       }
     },
 
-
     async updateTeam(team) {
       try {
         const updated = await this.teamsService.update(team)
@@ -173,7 +171,6 @@ export default {
         }
       }
     },
-
 
     formatTeamForTable(team) {
       return {
