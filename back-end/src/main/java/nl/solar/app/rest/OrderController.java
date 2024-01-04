@@ -158,6 +158,29 @@ public class OrderController {
         return ResponseEntity.ok(updated);
     }
 
+    @PatchMapping(path = "{id}/status", produces = "application/json")
+    public ResponseEntity<Order> updateOrderStatusOnly(@PathVariable long id){
+        //find the existing order to handle some change checks.
+        Order existingOrder = this.orderRepo.findById(id);
+
+        if (existingOrder == null) {
+            throw new BadRequestException("The order should exist");
+        }
+
+        if (existingOrder.getStatus() == OrderStatus.DELIVERED) {
+            throw new BadRequestException("You can't change the status of an order that is already delivered ");
+        }
+
+        //If the new order is set to delivered update the Inventory
+        if (existingOrder.getStatus() == OrderStatus.PENDING) {
+            this.inventoryService.updateInventory(existingOrder.getItems(), existingOrder.getWarehouse());
+            existingOrder.setStatus(OrderStatus.DELIVERED);
+        }
+
+        Order updated = this.orderRepo.save(existingOrder);
+        return ResponseEntity.ok(updated);
+    }
+
     /**
      * Delete an order
      * @param id the id of the order which is deleted

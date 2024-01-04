@@ -95,11 +95,11 @@ export default {
   data() {
     return {
       inventoryData: [],
-      orders: [],
-      selectedOrder: "",
-      orderData: [],
       selectedWarehouse: "Solar Sedum", //default warehouse
       chart: null,
+      orders: [],
+      orderData: [],
+      selectedOrder: "",
       showModal: false,
       modalTitle: "",
       modalOrder: "",
@@ -161,12 +161,10 @@ export default {
       this.selectedOrder = order;
       this.showModal = true;
     },
-    handleConfirm() {
+    async handleConfirm() {
       try {
-        let deliveredOrder = {...this.selectedOrder}
-        deliveredOrder.status = "DELIVERED"
-        this.orderService.update(deliveredOrder)
-        this.fetchOrderData();
+        await this.orderService.updateStatusOnly(this.selectedOrder.id)
+        await this.fetchOrderData();
         this.showModal = false;
       } catch (e){
         console.error(e)

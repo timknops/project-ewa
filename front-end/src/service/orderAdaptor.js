@@ -49,6 +49,17 @@ export class OrderAdaptor {
     }
   }
 
+  async updateStatusOnly(id) {
+    try {
+      return await this.fetchJSON(`${this.resourceUrl}/${id}/status`, {
+        method: "PATCH",
+        headers: {"content-type": "application/json"}
+      })
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
   async delete(id) {
     try {
       return await this.fetchJSON(`${this.resourceUrl}/${id}`, {
