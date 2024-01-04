@@ -80,7 +80,7 @@ export default {
   data() {
     return {
       inventoryData: [],
-      selectedWarehouse: "EHES", //default warehouse
+      selectedWarehouse: "Superzon", //default warehouse
       chart: null,
 
       projectData: [],
@@ -91,13 +91,15 @@ export default {
     this.fetchInventoryData();
   },
   watch: {
-    selectedWarehouse: 'updateChartOnWarehouseChange',
+    selectedWarehouse: {
+      handler: 'updateChartOnWarehouseChange',
+    },
 
     inventoryData: {
       handler: 'updateChart',
       immediate: true, // Trigger the handler on component mount
     },
-    immediate: true,
+    // immediate: true,
   },
   computed: {
     //table only shows the ones that have an upcoming date
@@ -108,7 +110,7 @@ export default {
         return (
             (this.selectedWarehouse === null ||
                 item.warehouseName === this.selectedWarehouse) &&
-            deliverDate > currentDate
+             deliverDate > currentDate
         );
       })
           .map(({productName, quantity, deliverDate, inventoryQuantity }) => ({
@@ -173,7 +175,6 @@ export default {
       if (this.saveChart) {
         this.saveChart.destroy();
       }
-
       const colorLegend = [
         'rgba(199, 208, 44, 1)',
         'rgba(91, 46, 24, 1)',
@@ -212,16 +213,13 @@ export default {
        * @type {{backgroundColor: string, borderColor: string, data: [{x: string, y},...{x: *, y}[]], label: *, fill: boolean}[]}
        */
       const datasets = nameLegend.map((name, index) => {
-
-
         const quantityData = dataBasedOnTheMonth
             .filter(item => item.productName === name)
-            .map(item => {
-              return {
+            .map(item => ({
                 x: item.deliverDate,
                 y: item.quantity + item.inventoryQuantity,
-              };
-            });
+            }));
+
         const currentDateFormattedValue = currentDateFormattedValueTrimmed;
         /**
          * first point
@@ -270,21 +268,36 @@ export default {
 
         console.log('Dataset for', name, ':', [currentInventoryQuantity, ...quantityData, ...projectMinusQuanity]);
 
+        const allDataPoints = [currentInventoryQuantity, ...quantityData, ...projectMinusQuanity];
+
+
         return {
           label: name,
           backgroundColor: colorLegend[index % colorLegend.length],
           borderColor: colorLegend[index % colorLegend.length],
-          data: [currentInventoryQuantity, ...quantityData, ...projectMinusQuanity],
+          data: allDataPoints,
           fill: false,
         };
       });
 
-      const dateLabels = Array.from({length: 21}, (_, index) => {
+      const dateLabels = Array.from({length: 60}, (_, index) => {
         const nextDate = new Date(currentDateFormattedValueTrimmed);
         nextDate.setDate(nextDate.getDate() + index);
         const formattedDate = nextDate.toISOString().split("T")[0];
         return formattedDate;
       });
+
+
+
+      console.log('dateLabels:', dateLabels);
+      console.log('datasets:', datasets);
+
+      datasets.sort((a, b) => {
+        const dateA = new Date(a.data[0].x);
+        const dateB = new Date(b.data[0].x);
+        return dateA - dateB;
+      });
+
 
       const chartData = {
         labels: dateLabels,
@@ -338,7 +351,7 @@ export default {
         elements: {
           line: {
             tension: 0,
-            stepped: 'before',
+            // stepped: 'after',
           }
         },
       };
