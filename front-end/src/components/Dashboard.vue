@@ -64,6 +64,21 @@
         @edit="showConfirmModal"
     />
 
+    <TableComponent
+        v-if="projectData.length > 0"
+        :hide-id-column="true"
+        :table-width="'100%'"
+        :amount-to-display="3"
+        :table-data="projectData"
+        :table-title="'Projects that are upcoming'"
+        :sub-title="'Please confirm a project to confirm it is in progress now'"
+        :has-add-button="false"
+        :has-delete-button="false"
+        :has-edit-button="true"
+        :has-search-bar="false"
+        @edit="showConfirmModal"
+    />
+
     <Transition>
       <modal-component
           v-if="showModal"
@@ -91,7 +106,7 @@ export default {
     ModalComponent,
     TableComponent
   },
-  inject: ["dashboardService", "orderService"],
+  inject: ["dashboardService", "orderService", "projectService"],
   data() {
     return {
       inventoryData: [],
@@ -155,6 +170,20 @@ export default {
         console.error("Error fetching inventory data:", error);
       }
     },
+    async fetchOrderData() {
+      this.orders = await this.orderService.findAll()
+      this.orderData = this.getOrdersBySelectedWarehouse(this.orders)
+    },
+    getOrdersBySelectedWarehouse(data){
+      return data
+          .filter(item => item.warehouse.name === this.selectedWarehouse
+              && item.status === 'PENDING')
+          .map(({ id, deliverDate, tag, status }) => ({
+            id,
+            deliverDate,
+            tag,
+            status }));
+    },
     showConfirmModal(order) {
       this.modalTitle = "Confirm delivery?";
       this.okBtnText = "Confirm";
@@ -169,20 +198,6 @@ export default {
       } catch (e){
         console.error(e)
       }
-    },
-    async fetchOrderData() {
-      this.orders = await this.orderService.findAll()
-      this.orderData = this.getOrdersBySelectedWarehouse(this.orders)
-    },
-    getOrdersBySelectedWarehouse(data){
-      return data
-          .filter(item => item.warehouse.name === this.selectedWarehouse
-              && item.status === 'PENDING')
-          .map(({ id, deliverDate, tag, status }) => ({
-            id,
-            deliverDate,
-            tag,
-            status }));
     },
     updateChartOnWarehouseChange() {
       this.updateChart();
