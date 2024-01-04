@@ -40,19 +40,19 @@
     </TableComponent>
 
 
-    <div class="flex-grow-1">
-      <TableComponent
-          v-if="filteredProjectData.length > 0"
-          :tableWidth="'100%'"
-          :boldFirstColumn="true"
-          :amountToDisplay="4"
-          :tableData="filteredProjectData"
-          :arrayAmountToDisplay="10"
-          table-title="Projects"
-          sub-title="Project details"
-      >
-      </TableComponent>
-    </div>
+<!--    <div class="flex-grow-1">-->
+<!--      <TableComponent-->
+<!--          v-if="filteredProjectData.length > 0"-->
+<!--          :tableWidth="'100%'"-->
+<!--          :boldFirstColumn="true"-->
+<!--          :amountToDisplay="4"-->
+<!--          :tableData="filteredProjectData"-->
+<!--          :arrayAmountToDisplay="10"-->
+<!--          table-title="Projects"-->
+<!--          sub-title="Project details"-->
+<!--      >-->
+<!--      </TableComponent>-->
+<!--    </div>-->
 
     <!--Chart forecasting-->
     <div class="table-container mb-5 gap-5 d-flex w-100 ">
@@ -231,17 +231,42 @@ export default {
           x: currentDateFormattedValue,
           y: currentInventoryMap[name] || 0,
         };
+
+
         /**
          * third point
          */
+        // const projectMinusQuanity = dataProject
+        //     .filter(item => item.productName === name)
+        //     .map(item => {
+        //       // const amountOfProduct = item.amountOfProduct || 0;
+        //       const calculatedValue = item.quantity + item.inventoryQuantity - item.amountOfProduct;
+        //       return {
+        //         x: item.dueDate,
+        //         y: calculatedValue,
+        //     };
+        //     });
+
         const projectMinusQuanity = dataProject
-            .filter(item => item.productName === name)
-            .map(item => {
-              return {
-                x: item.dueDate,
-                y: item.amountOfProduct,
-            };
-            });
+                .filter(item => item.productName === name)
+                .map(item => {
+                  const quantitySum = dataBasedOnTheMonth
+                      .filter(monthItem => monthItem.productName === name)
+                      .reduce((sum, monthItem) => sum + monthItem.quantity + monthItem.inventoryQuantity, 0);
+
+                  const amountOfProductSum = dataProject
+                      .filter(projectItem => projectItem.productName === name)
+                      .reduce((sum, projectItem) => sum + projectItem.amountOfProduct, 0);
+
+                  const calculatedValue = quantitySum - amountOfProductSum;
+
+                  return {
+                    x: item.dueDate,
+                    y: calculatedValue || 0,
+                  };
+                });
+
+
 
         console.log('Dataset for', name, ':', [currentInventoryQuantity, ...quantityData, ...projectMinusQuanity]);
 
