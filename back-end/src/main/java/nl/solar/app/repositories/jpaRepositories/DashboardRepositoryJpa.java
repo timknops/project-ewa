@@ -29,8 +29,7 @@ public class DashboardRepositoryJpa  {
                             , Object[].class)
                     .getResultList();
 
-
-            return results.stream()
+    return results.stream()
                     .map(result -> new DashboardDTO(
                             (Long) result[0], //warehouseId
                             (String) result[1], // warehouseName

@@ -39,6 +39,21 @@
     >
     </TableComponent>
 
+
+    <div class="flex-grow-1">
+      <TableComponent
+          v-if="filteredProjectData.length > 0"
+          :tableWidth="'100%'"
+          :boldFirstColumn="true"
+          :amountToDisplay="4"
+          :tableData="filteredProjectData"
+          :arrayAmountToDisplay="10"
+          table-title="Projects"
+          sub-title="Project details"
+      >
+      </TableComponent>
+    </div>
+
     <!--Chart forecasting-->
     <div class="table-container mb-5 gap-5 d-flex w-100 ">
       <div class="user-table-overview-left card border-0">
@@ -65,8 +80,10 @@ export default {
   data() {
     return {
       inventoryData: [],
-      selectedWarehouse: "Solar Sedum", //default warehouse
+      selectedWarehouse: "EHES", //default warehouse
       chart: null,
+
+      projectData: [],
     };
   },
   mounted() {
@@ -75,6 +92,7 @@ export default {
   },
   watch: {
     selectedWarehouse: 'updateChartOnWarehouseChange',
+
     inventoryData: {
       handler: 'updateChart',
       immediate: true, // Trigger the handler on component mount
@@ -102,6 +120,13 @@ export default {
 
     },
 
+
+    filteredProjectData() {
+      return this.projectData.filter(project =>
+          project.warehouseName === this.selectedWarehouse);
+    },
+
+
     uniqueWarehouseNames() {
       return Array.from(new Set(this.inventoryData.map((item) => item.warehouseName)));
     },
@@ -109,6 +134,7 @@ export default {
   created() {
     this.fetchInventoryData();
     this.updateChart();
+    this.fetchProjectData();
   },
   methods: {
     async fetchInventoryData() {
@@ -118,6 +144,18 @@ export default {
         console.error("Error fetching inventory data:", error);
       }
     },
+
+    async fetchProjectData() {
+      try {
+        this.projectData = await this.dashboardService.findAllProjects();
+        // this.projectData.forEach(item => {
+        //   console.log(`ProductName: ${item.productName}, DueDate: ${item.dueDate}, AmountOfProduct: ${item.amountOfProduct}`);
+        // });
+      } catch (error) {
+        console.error("Error fetching project data:", error);
+      }
+    },
+
     updateChartOnWarehouseChange() {
       this.updateChart();
     },
@@ -144,43 +182,71 @@ export default {
 
 
       ];
-      // const currentDate = new Date();
-
 
       const currentDateFormattedValueTrimmed = new Date().toISOString().split("T")[0].trim();
+
       const dataBasedOnTheMonth = this.filteredInventoryData;
+      const dataProject = this.filteredProjectData;
 
 
       const currentInventoryMap = {};
+      const amountOfProductMap = {};
+
       dataBasedOnTheMonth.forEach(item => {
           currentInventoryMap[item.productName] = item.inventoryQuantity;
       });
 
+      dataProject.forEach(item => {
+        amountOfProductMap[item.productName] = item.amountOfProduct;
+      });
+
+      // console.log('hey:', dataProject);
 
       const nameLegend = [...new Set(dataBasedOnTheMonth.map(item => item.productName))];
 
+      /**
+       * second point
+       * @type {{backgroundColor: string, borderColor: string, data: [{x: string, y},...{x: *, y}[]], label: *, fill: boolean}[]}
+       */
       const datasets = nameLegend.map((name, index) => {
+
+
         const quantityData = dataBasedOnTheMonth
             .filter(item => item.productName === name)
-            .map(item => ({
-              x: item.deliverDate,
-              y: item.quantity + item.inventoryQuantity,
-            }));
-
+            .map(item => {
+              return {
+                x: item.deliverDate,
+                y: item.quantity + item.inventoryQuantity,
+              };
+            });
         const currentDateFormattedValue = currentDateFormattedValueTrimmed;
-
+        /**
+         * first point
+         * @type {{x: string, y: (*|number)}}
+         */
         const currentInventoryQuantity = {
           x: currentDateFormattedValue,
           y: currentInventoryMap[name] || 0,
         };
+        /**
+         * third point
+         */
+        const projectMinusQuanity = dataProject
+            .filter(item => item.productName === name)
+            .map(item => {
+              return {
+                x: item.dueDate,
+                y: item.amountOfProduct,
+            };
+            });
 
-        console.log('Dataset for', name, ':', [currentInventoryQuantity, ...quantityData]);
+        console.log('Dataset for', name, ':', [currentInventoryQuantity, ...quantityData, ...projectMinusQuanity]);
 
         return {
           label: name,
           backgroundColor: colorLegend[index % colorLegend.length],
           borderColor: colorLegend[index % colorLegend.length],
-          data: [currentInventoryQuantity, ...quantityData],
+          data: [currentInventoryQuantity, ...quantityData, ...projectMinusQuanity],
           fill: false,
         };
       });
@@ -249,13 +315,14 @@ export default {
         },
       };
 
-      console.log('Chart Data:', chartData);
+      // console.log('Chart Data:', chartData);
 
       this.saveChart = new Chart(this.$refs.combinedChart, {
         type: "line",
         data: chartData,
         options: chartOptions,
       });
+
 
     }
   },
