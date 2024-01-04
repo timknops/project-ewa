@@ -80,7 +80,7 @@ export default {
   data() {
     return {
       inventoryData: [],
-      selectedWarehouse: "Superzon", //default warehouse
+      selectedWarehouse: "Solar Sedum", //default warehouse
       chart: null,
 
       projectData: [],
@@ -213,12 +213,19 @@ export default {
        * @type {{backgroundColor: string, borderColor: string, data: [{x: string, y},...{x: *, y}[]], label: *, fill: boolean}[]}
        */
       const datasets = nameLegend.map((name, index) => {
+        let doubleOrderCounting = 0;
+
         const quantityData = dataBasedOnTheMonth
             .filter(item => item.productName === name)
-            .map(item => ({
+            .map(item => {
+              doubleOrderCounting += item.quantity
+
+              const totalQuantity = doubleOrderCounting + item.inventoryQuantity;
+              return {
                 x: item.deliverDate,
-                y: item.quantity + item.inventoryQuantity,
-            }));
+                y: totalQuantity,
+              };
+            });
 
         const currentDateFormattedValue = currentDateFormattedValueTrimmed;
         /**
@@ -234,17 +241,6 @@ export default {
         /**
          * third point
          */
-        // const projectMinusQuanity = dataProject
-        //     .filter(item => item.productName === name)
-        //     .map(item => {
-        //       // const amountOfProduct = item.amountOfProduct || 0;
-        //       const calculatedValue = item.quantity + item.inventoryQuantity - item.amountOfProduct;
-        //       return {
-        //         x: item.dueDate,
-        //         y: calculatedValue,
-        //     };
-        //     });
-
         const projectMinusQuanity = dataProject
                 .filter(item => item.productName === name)
                 .map(item => {
