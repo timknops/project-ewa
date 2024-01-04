@@ -94,7 +94,7 @@
           />Teams
         </router-link>
       </li>
-      <li class="nav-item">
+      <li class="nav-item" v-if="isActiveUserAdmin !== false">
         <router-link to="/users" class="nav-link" active-class="active">
           <font-awesome-icon
             icon="fa-solid fa-user"
@@ -104,8 +104,7 @@
       </li>
       <li class="nav-item">
         <router-link to="/loginPage" class="nav-link" active-class="active"
-        @click="logOut()"
-        >
+        @click="logOut()">
           <font-awesome-icon
             icon="fa-solid fa-arrow-right-from-bracket"
             class="sidebar-icons"
@@ -125,6 +124,7 @@ export default {
     return {
       dashboardRoute: "/dashboard",
       submenuProjects: false,
+      isActiveUserAdmin: null
     };
   },
   methods: {
@@ -132,6 +132,9 @@ export default {
       this.sessionService.logOut2();
       this.$emit("updateLoggedIn", true);
     }
+  },
+  created() {
+    this.isActiveUserAdmin = this.sessionService.isAdmin();
   }
 };
 </script>

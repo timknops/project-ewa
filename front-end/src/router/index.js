@@ -55,7 +55,7 @@ export const router = createRouter({
     {
       path: "/users",
       component: UserOverview,
-      meta: { icon: "fa-solid fa-user", requiresLogin: true },
+      meta: { icon: "fa-solid fa-user", requiresLogin: true, requiresAdmin: true},
     },
     { path: "/loginPage", component: loginPage },
     {
@@ -98,10 +98,17 @@ export const router = createRouter({
 
 router.beforeEach((to) => {
   const requiresLogin = to.matched.some((route) => route.meta.requiresLogin);
-  const loggedStorage = window.localStorage.getItem("JWT_SOLARIUM");
+  const requiresAdmin = to.matched.some((route) => route.meta.requiresAdmin);
+  const loggedStorage = JSON.parse(window.localStorage.getItem("JWT_SOLARIUM"+"_ACC"));
   //if the user has been logged in and is and is on page that requires login then let the user navigate
   if (loggedStorage !== null && requiresLogin) {
-    return true;
+    //if the component is set to admin only and the logged-in user isn't an admin, don't let the user navigate
+    //else let the user navigate as normal
+    if (loggedStorage.type?.toUpperCase() !== "ADMIN" && requiresAdmin){
+      return false;
+    } else {
+      return true;
+    }
   }
   // if the user navigates to a required login page and isn't logged in, redirect the user to the login page
   else if (loggedStorage === null && requiresLogin) {

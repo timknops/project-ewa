@@ -2,14 +2,15 @@ export class SessionSbService{
     browserItemStorage;
     resourcesURL;
     currentToken;
-    currentUser;
+    _currentUser;
 
 
     constructor(resourcesURL, browserItemStorage) {
         this.browserItemStorage = browserItemStorage;
         this.resourcesURL = resourcesURL;
-        this.currentUser = null;
+        this._currentUser = null;
         this.currentToken = null;
+        this.getTokenFromBrowserStorage();
     }
 
     getTokenFromBrowserStorage(){
@@ -25,15 +26,14 @@ export class SessionSbService{
             console.log("Implement method TODO")
         }
         if (jsonUser != null){
-            this.currentToken = JSON.parse(jsonUser);
+            this._currentUser = JSON.parse(jsonUser);
         }
         return this.currentToken;
-
     }
 
     saveTokenInBrowserStorage(token, account){
         this.currentToken = token;
-        this.currentUser = account;
+        this._currentUser = account;
 
         if (token == null){
             this.currentToken = null;
@@ -69,4 +69,11 @@ export class SessionSbService{
         this.saveTokenInBrowserStorage(null, null);
     }
 
+    isAdmin(){
+        return this._currentUser?.type?.toUpperCase().includes("ADMIN");
+    }
+
+    get currentUser() {
+        return this._currentUser;
+    }
 }

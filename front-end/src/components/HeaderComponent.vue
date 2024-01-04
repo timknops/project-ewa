@@ -5,10 +5,10 @@
     >
       <div class="col-auto d-flex flex-column text-end">
         <span
-          >Logged in as: <strong>{{ activeUser.name }}</strong></span
+          >Logged in as: <strong>{{ loggedUser.name }}</strong></span
         >
         <span
-          >Role: <strong>{{ activeUser.role }} </strong></span
+          >Role: <strong>{{ loggedUser.type }} </strong></span
         >
       </div>
     </div>
@@ -37,6 +37,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
  */
 export default {
   name: "HeaderComponent",
+  inject: ['sessionService'],
   components: { FontAwesomeIcon },
   data() {
     return {
@@ -45,6 +46,7 @@ export default {
         role: String,
         team: { name: String, warehouse: name },
       },
+      loggedUser: null
     };
   },
   computed: {
@@ -84,6 +86,7 @@ export default {
   },
   created() {
     this.activeUser = this.getUser();
+    this.loggedUser = this.sessionService.currentUser;
   },
 };
 </script>

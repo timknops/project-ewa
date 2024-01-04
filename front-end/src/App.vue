@@ -64,7 +64,6 @@ export default {
   },
   created() {
     this.loggedInActive = this.theSessionService.getTokenFromBrowserStorage();
-
   },
 };
 </script>

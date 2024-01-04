@@ -3,7 +3,7 @@
     <div class="col-md-4 offset-md-4 card my-5">
       <!--            logo-->
       <div class="text-center logo-header">
-        <img src="../assets/solar_logo.svg" class="logo-image-pic" alt="logo" />
+        <img src="../assets/solar_logo.svg" class="logo-image-pic" alt="logo"/>
       </div>
       <!--        grey card border-->
       <form class="card-body p-lg-5 card-color-grey set-font needs-validation">
@@ -12,32 +12,32 @@
         <div class="row form-group username">
           <label for="usernameInputLabel">Name:</label>
           <input
-            type="text"
-            class="form-control"
-            id="usernameInputLabel"
-            placeholder="Enter name"
-            v-model.trim.lazy="input.username1"
-            required
+              type="text"
+              class="form-control"
+              id="usernameInputLabel"
+              placeholder="Enter name"
+              v-model.trim.lazy="input.username1"
+              required
           />
         </div>
         <!--            password-->
         <div class="row form-group password mt-4">
           <label for="passwordInputLabel">Password:</label>
           <input
-            type="password"
-            class="form-control"
-            id="passwordInputLabel"
-            placeholder="Enter password"
-            v-model.trim.lazy="input.password1"
-            required
+              type="password"
+              class="form-control"
+              id="passwordInputLabel"
+              placeholder="Enter password"
+              v-model.trim.lazy="input.password1"
+              required
           />
           <!--              Forgot password-->
           <small
-            style="cursor: pointer"
-            @click="forgotPassword"
-            id="forgotPassword"
-            class="form-text text-muted"
-            >Forgot password?</small
+              style="cursor: pointer"
+              @click="forgotPassword"
+              id="forgotPassword"
+              class="form-text text-muted"
+          >Forgot password?</small
           >
         </div>
         <!--            error message-->
@@ -45,9 +45,9 @@
         <div class="text-center mt-3">
           <!--              button-->
           <button
-            class="btn btn-primary login-button"
-            type="button"
-            v-on:click="onLogin()"
+              class="btn btn-primary login-button"
+              type="button"
+              v-on:click="onLogin()"
           >
             Login
           </button>
@@ -64,15 +64,11 @@ export default {
   inject: ["userService", "sessionService"],
   data() {
     return {
-      users: [],
       //input variables for the entered userdata
       input: {
         username1: "",
         password1: "",
       },
-      user: null,
-      loggedInActive: {},
-      user1: {},
       correctLogin: null,
       errorMessage: "",
     };
@@ -80,26 +76,25 @@ export default {
   methods: {
     /**
      * Login method that checks the entered userinfo
+     * Log the user into the back-end with the given data and return a user if the login was successful
      *
      * Checks if one of the fields is empty, if it is then change the error message and display it
      *
-     * if the entered username and password are the same as the dummy data then change the localstorage item and
+     * if the back-end login was successful meaning the user isn't empty then change the localstorage item and
      * redirect to the dashboard
      *
      * if not then notify the user with an error message that login details are incorrect
      */
-    login() {
-      //find the user
-      this.findUserByName(this.input.username1);
+    async onLogin() {
+      let user = await this.sessionService.asyncLogin(this.input.username1, this.input.password1)
 
       //check whether the user is correctly logging in
       if (this.input.username1 === "" || this.input.password1 === "") {
         this.errorMessage = "One of the fields is empty";
         this.correctLogin = true;
-      } else if (this.user !== undefined && this.user.password === this.input.password1 ) {
-          localStorage.setItem("loggedIn", true);
-          this.$emit("updateLoggedIn", true);
-          this.$router.push("/dashboard");
+      } else if (user != null) {
+        this.$emit("updateLoggedIn", true);
+        this.$router.push("/dashboard");
       } else {
         this.errorMessage = "Your login details are incorrect";
         this.correctLogin = true;
@@ -112,35 +107,8 @@ export default {
       localStorage.setItem("resetLogin", true);
       this.$emit("updateResetLogin", true);
       this.$router.push("/loginReset");
-    },
-    /**
-     * Find a user from the users array based on the name that was entered in the input
-     * @param name name of the account that the user wants to log in to
-     */
-    findUserByName(name){
-      this.user = this.users.find((user) => user.name === name);
-    },
-    async onLogin(){
-
-      let user = await this.sessionService.asyncLogin(this.input.username1, this.input.password1)
-
-      //check whether the user is correctly logging in
-      if (this.input.username1 === "" || this.input.password1 === "") {
-        this.errorMessage = "One of the fields is empty";
-        this.correctLogin = true;
-      } else if (user != null) {
-        this.$emit("updateLoggedIn", true);
-        this.$router.push("/users");
-      } else {
-        this.errorMessage = "Your login details are incorrect";
-        this.correctLogin = true;
-      }
     }
-  },
-  async created() {
-    //get all users
-    this.users = await this.userService.asyncFindAll();
-  },
+  }
 };
 </script>
 
@@ -148,6 +116,7 @@ export default {
 .card-color-grey {
   background-color: #f9fafb;
 }
+
 .logo-header {
   background-color: #f9fafb;
 }
