@@ -122,8 +122,11 @@ export default {
 
 
     filteredProjectData() {
-      return this.projectData.filter(project =>
-          project.warehouseName === this.selectedWarehouse);
+      const currentDate = new Date();
+      return this.projectData.filter( (project) =>{
+        const dueDate = new Date(project.dueDate);
+        return dueDate > currentDate;
+      }).filter(project => project.warehouseName === this.selectedWarehouse);
     },
 
 
