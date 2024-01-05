@@ -57,7 +57,7 @@ const mockProjects = [
 describe("ProjectsOverview", () => {
   let wrapper;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     // Mock the project adaptor.
     ProjectAdaptor.mockImplementation(() => {
       return {
@@ -209,17 +209,15 @@ describe("ProjectsOverview", () => {
   });
 
   /**
-   * Update/delete tests.
+   * Created lifecycle hook test.
    */
 
   it("calls projectService.getAll() on created lifecycle hook", async () => {
     // Mock the getAll method.
     const getAllSpy = jest.spyOn(wrapper.vm.projectService, "getAll");
 
-    // If the component has a created hook, it will be executed.
-    if (wrapper.vm.$options.created && wrapper.vm.$options.created.length > 0) {
-      await wrapper.vm.$options.created[0].call(wrapper.vm); // Call the created lifecycle hook directly
-    }
+    // Call the lifecycle hook.
+    await wrapper.vm.$options.created.call(wrapper.vm);
 
     // Check if the getAll method was called.
     expect(getAllSpy).toHaveBeenCalled();
@@ -227,6 +225,10 @@ describe("ProjectsOverview", () => {
     // Restore the spy.
     getAllSpy.mockRestore();
   });
+
+  /**
+   * Update/delete tests.
+   */
 
   it("calls projectService.delete() and updates projects array when deleteProject method is called", async () => {
     const project = { id: 1 };
@@ -238,7 +240,7 @@ describe("ProjectsOverview", () => {
     await wrapper.vm.deleteProject(project);
 
     // Check if the delete method was called with the correct project.
-    expect(deleteSpy).toHaveBeenCalledWith(1);
+    expect(deleteSpy).toHaveBeenCalledWith(project.id);
 
     // Check if the projects array was updated.
     expect(wrapper.vm.projects).toEqual([
