@@ -1,6 +1,7 @@
 package nl.solar.app.DTO;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import nl.solar.app.models.views.ResourceView;
@@ -13,6 +14,7 @@ import nl.solar.app.models.views.ResourceView;
  */
 @Getter
 @Setter
+@EqualsAndHashCode
 public class InventoryProductDTO {
 
     @JsonView(ResourceView.Complete.class)
