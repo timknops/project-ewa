@@ -80,7 +80,7 @@ export default {
   data() {
     return {
       inventoryData: [],
-      selectedWarehouse: "Solar Sedum", //default warehouse
+      selectedWarehouse: "Superzon", //default warehouse
       chart: null,
 
       projectData: [],
@@ -140,6 +140,7 @@ export default {
     this.fetchInventoryData();
     this.updateChart();
     this.fetchProjectData();
+    // this.fetchInventoriesData();
   },
   methods: {
     async fetchInventoryData() {
@@ -149,6 +150,7 @@ export default {
         console.error("Error fetching inventory data:", error);
       }
     },
+
 
     async fetchProjectData() {
       try {
@@ -160,6 +162,7 @@ export default {
         console.error("Error fetching project data:", error);
       }
     },
+
 
     updateChartOnWarehouseChange() {
       this.updateChart();
@@ -273,6 +276,7 @@ export default {
           borderColor: colorLegend[index % colorLegend.length],
           data: allDataPoints,
           fill: false,
+          // spanGaps: true,
         };
       });
 
@@ -292,6 +296,16 @@ export default {
         const dateA = new Date(a.data[0].x);
         const dateB = new Date(b.data[0].x);
         return dateA - dateB;
+      });
+
+      /**
+       * Makes the line continue straight from it's last point
+       * @type {string}
+       */
+      const lastDate = dateLabels[dateLabels.length - 1];
+      datasets.forEach(dataset => {
+        const lastDataPoint = dataset.data[dataset.data.length - 1];
+        dataset.data.push({ x: lastDate, y: lastDataPoint.y });
       });
 
 
