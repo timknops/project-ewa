@@ -113,6 +113,13 @@ export default {
              deliverDate > currentDate
         );
       })
+          // Sort the deliverDate in the table from low to high
+          .sort((a, b) => {
+            const firstDate = new Date(a.deliverDate);
+            const lastDate = new Date(b.deliverDate);
+            return firstDate - lastDate;
+          })
+
           .map(({productName, quantity, deliverDate, inventoryQuantity }) => ({
             productName,
             quantity,
@@ -207,7 +214,7 @@ export default {
         amountOfProductMap[item.productName] = item.amountOfProduct;
       });
 
-      // console.log('hey:', dataProject);
+      // console.log('testData:', dataProject);
 
       const nameLegend = [...new Set(dataBasedOnTheMonth.map(item => item.productName))];
 
@@ -276,7 +283,6 @@ export default {
           borderColor: colorLegend[index % colorLegend.length],
           data: allDataPoints,
           fill: false,
-          // spanGaps: true,
         };
       });
 
