@@ -42,6 +42,13 @@ const mockProjects = [
   },
 ];
 
+/**
+ * Tests for the ProjectAdaptor service.
+ *
+ * @group unit/service
+ * @groupname ProjectAdaptor
+ * @author Tim Knops
+ */
 describe("ProjectAdaptor", () => {
   let projectAdaptor;
 
