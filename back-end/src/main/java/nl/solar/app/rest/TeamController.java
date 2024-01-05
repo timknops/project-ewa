@@ -42,7 +42,12 @@ public class TeamController {
 
     @GetMapping("/{id}")
     public ResponseEntity<TeamDTO> getTeamById(@PathVariable long id) {
-        TeamDTO teamDTO = convertToDTO(teamRepository.findById(id));
+        Team team = teamRepository.findById(id);
+        if(team == null) {
+            throw new ResourceNotFoundException("Team with id: '" + id + "' was not found");
+        }
+
+        TeamDTO teamDTO = convertToDTO(team);
         return ResponseEntity.ok(teamDTO);
     }
 
