@@ -276,7 +276,7 @@ public class BackEndApplication implements CommandLineRunner {
 
         for (Product product : productsRepo.findAll()) {
             for (Warehouse warehouse : warehouseRepo.findAll()) {
-                Inventory inventory = Inventory.createDummyResource(warehouse, product);
+                Inventory inventory = Inventory.createDummyInventory(warehouse, product);
 
                 product.getInventory().add(inventory);
                 warehouse.getInventory().add(inventory);
