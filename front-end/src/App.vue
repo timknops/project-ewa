@@ -25,6 +25,7 @@ import {ProjectAdaptor} from "@/service/projectAdaptor";
 import {OrderAdaptor} from "@/service/orderAdaptor";
 import {SessionSbService} from "@/service/SessionSbService";
 import {shallowReactive} from "vue";
+import {FetchInterceptor} from "@/service/FetchInterceptor";
 
 
 export default {
@@ -41,6 +42,7 @@ export default {
   provide() {
     this.theSessionService = shallowReactive(new SessionSbService(appConfig.BACKEND_URL +
         '/authentication', appConfig.JWT_STORAGE_ITEM));
+    this.theFetchInterceptor = new FetchInterceptor(this.theSessionService, this.$router);
     return {
       //session service
       sessionService: this.theSessionService,
@@ -56,6 +58,9 @@ export default {
       projectService: new ProjectAdaptor(`${appConfig.BACKEND_URL}/projects`),
       orderService: new OrderAdaptor(`${appConfig.BACKEND_URL}/orders`)
     }
+  },
+  unmounted() {
+    this.theFetchInterceptor.unregister();
   },
   methods: {
     updateLoggedIn() {
