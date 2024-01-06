@@ -25,7 +25,7 @@ public class UserRepositoryMock implements EntityRepository<User> {
         userArrayList.addAll(User.createStaticAdmin());
         userArrayList.add(User.createStaticUser());
         for (int i = 0; i < START_USERS_AMOUNT; i++) {
-            userArrayList.add(User.creatyDummyUser(randomUserId(), randomTeamId()));
+            userArrayList.add(User.creatyDummyUser(randomUserId(), null));
         }
     }
 
@@ -67,8 +67,8 @@ public class UserRepositoryMock implements EntityRepository<User> {
             if (item.getId() == 0) {
                 item.setId(randomUserId());
             }
-            if (item.getTeamId() == 0) {
-                item.setTeamId(randomTeamId());
+            if (item.getTeam() == null) {
+                item.setTeam(null);
             }
             userArrayList.add(item);
         }

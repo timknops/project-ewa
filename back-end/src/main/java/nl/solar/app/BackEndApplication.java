@@ -1,6 +1,7 @@
 package nl.solar.app;
 
 import jakarta.transaction.Transactional;
+import nl.solar.app.exceptions.ResourceNotFoundException;
 import nl.solar.app.models.*;
 import nl.solar.app.repositories.EntityRepository;
 import nl.solar.app.repositories.InventoryRepository;
@@ -19,6 +20,9 @@ import java.util.Random;
 public class BackEndApplication implements CommandLineRunner {
 
     // All repositories.
+    @Autowired
+    EntityRepository<User> userRepo;
+
     @Autowired
     EntityRepository<Warehouse> warehouseRepo;
 
@@ -50,9 +54,11 @@ public class BackEndApplication implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
+
         this.createSampleWarehouse();
         this.createSampleTeams();
         this.createSampleOrders();
+        this.createSampleUser();
         this.createSampleProjects();
         this.createSampleProducts();
         this.createSampleResources();
@@ -150,6 +156,34 @@ public class BackEndApplication implements CommandLineRunner {
                 warehouse.getOrders().add(order);
             }
         }
+    }
+
+    /**
+     * Create sample data for user
+     *
+     * @author Noa de Greef
+     */
+    private void createSampleUser() throws ResourceNotFoundException {
+        List<User> users = userRepo.findAll();
+        List<Team> teams = teamsRepo.findAll();
+
+        if (teams == null){
+            throw new ResourceNotFoundException("No teams were found");
+        }
+        System.out.println(teams.size() + "323232");
+
+        if (!users.isEmpty()) return;
+        for (int i = 0; i < 11; i++) {
+            Team team = teams.get((int) (Math.random() * teams.size()));
+            User user = User.creatyDummyUser(i, team);
+            team.getUsers().add(user);
+
+            userRepo.save(user);
+        }
+        for (User staticUser: User.createStaticAdmin()) {
+            userRepo.save(staticUser);
+        }
+        userRepo.save(User.createStaticUser());
     }
 
     /**
