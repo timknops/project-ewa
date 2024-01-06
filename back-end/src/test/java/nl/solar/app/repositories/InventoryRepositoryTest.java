@@ -1,4 +1,4 @@
-package nl.solar.app.repositories.jpaRepositories;
+package nl.solar.app.repositories;
 
 import jakarta.persistence.Entity;
 import nl.solar.app.DTO.InventoryProductDTO;
@@ -17,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.stereotype.Repository;
+import org.springframework.test.context.TestPropertySource;
 
 
 import java.util.List;
@@ -28,7 +29,7 @@ import static org.hamcrest.Matchers.*;
 
 
 @DataJpaTest(includeFilters = @ComponentScan.Filter(type = FilterType.ANNOTATION,
-        classes = { Repository.class, Entity.class }))
+        classes = { Repository.class, Entity.class }), showSql = false)
 public class InventoryRepositoryTest {
 
     @Autowired
