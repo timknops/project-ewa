@@ -52,6 +52,6 @@ public class AuthenticationController {
                 this.webConfig.getPassphrase(),
                 this.webConfig.getTokenValidity());
 
-        return ResponseEntity.accepted().header(HttpHeaders.AUTHORIZATION, token).body(foundUser);
+        return ResponseEntity.accepted().header(HttpHeaders.AUTHORIZATION, "Bearer " + token).body(foundUser);
     }
 }

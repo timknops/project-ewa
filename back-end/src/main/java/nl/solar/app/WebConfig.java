@@ -16,7 +16,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     //TODO fix /users and loginReset
     //All paths that are protected with authorization
-    public Set<String> SECURED_PATHS = Set.of("/products", "/projects", "/teams", "/warehouses");
+    public Set<String> SECURED_PATHS = Set.of("/products", "/projects", "/teams", "/warehouses", "/orders");
 
     @Value("${jwt.issuer}")
     private String issuer;

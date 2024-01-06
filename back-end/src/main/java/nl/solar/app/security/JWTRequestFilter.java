@@ -47,7 +47,7 @@ public class JWTRequestFilter extends OncePerRequestFilter {
         //try decoding the token
         JWToken jwToken = null;
         try {
-            jwToken = JWToken.decode(encryptedToken, this.webConfig.getIssuer(), this.webConfig.getPassphrase());
+            jwToken = JWToken.decode(encryptedToken.replace("Bearer ", ""), this.webConfig.getIssuer(), this.webConfig.getPassphrase());
         } catch (RuntimeException e){
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage() + "You need to login first");
         }
