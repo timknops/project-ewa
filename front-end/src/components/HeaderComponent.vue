@@ -41,11 +41,6 @@ export default {
   components: { FontAwesomeIcon },
   data() {
     return {
-      activeUser: {
-        name: String,
-        role: String,
-        team: { name: String, warehouse: name },
-      },
       loggedUser: null
     };
   },
@@ -72,20 +67,7 @@ export default {
         .concat(pageName.substring(2));
     },
   },
-  methods: {
-    getUser() {
-      return {
-        name: "Julian",
-        role: "admin",
-        team: {
-          name: "team1",
-          warehouse: "Superzon",
-        },
-      };
-    },
-  },
   created() {
-    this.activeUser = this.getUser();
     this.loggedUser = this.sessionService.currentUser;
   },
 };

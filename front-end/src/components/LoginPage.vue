@@ -41,7 +41,7 @@
           >
         </div>
         <!--            error message-->
-        <p v-if="correctLogin" class="error-message">{{ errorMessage }}</p>
+        <p v-if="!correctLogin" class="error-message">{{ errorMessage }}</p>
         <div class="text-center mt-3">
           <!--              button-->
           <button
@@ -56,12 +56,11 @@
     </div>
   </div>
 </template>
-
 <script>
 
 export default {
   name: "LoginPage",
-  inject: ["userService", "sessionService"],
+  inject: ["sessionService"],
   data() {
     return {
       //input variables for the entered userdata
@@ -88,16 +87,14 @@ export default {
     async onLogin() {
       let user = await this.sessionService.asyncLogin(this.input.username1, this.input.password1)
 
-      //check whether the user is correctly logging in
       if (this.input.username1 === "" || this.input.password1 === "") {
         this.errorMessage = "One of the fields is empty";
-        this.correctLogin = true;
+        this.correctLogin = false;
       } else if (user != null) {
-        this.$emit("updateLoggedIn", true);
-        this.$router.push("/dashboard");
+        this.$router.push("/team");
       } else {
         this.errorMessage = "Your login details are incorrect";
-        this.correctLogin = true;
+        this.correctLogin = false;
       }
     },
     /**

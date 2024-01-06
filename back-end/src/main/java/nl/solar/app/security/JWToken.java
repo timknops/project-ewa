@@ -27,6 +27,13 @@ public class JWToken {
         this.type = type;
     }
 
+    /**
+     * Method to encode a JWToken
+     * @param issuer the issuer
+     * @param passphrase passphrase
+     * @param expiration amount of time that the token is valid
+     * @return returns the token, but secured
+     */
     public String encode(String issuer, String passphrase, int expiration){
         Key key = getKey(passphrase);
 
@@ -40,11 +47,21 @@ public class JWToken {
                 .compact();
     }
 
+    //Key used when encoding, uses HS512
     private static Key getKey(String pass){
         byte[] hmacKey = pass.getBytes(StandardCharsets.UTF_8);
         return new SecretKeySpec(hmacKey, SignatureAlgorithm.HS512.getJcaName());
     }
 
+    /**
+     * Method to decode the token back to its original form. Throws different exceptions based on what went wrong
+     * @param token
+     * @param issuer
+     * @param pass
+     * @return
+     * @throws ExpiredJwtException
+     * @throws MalformedJwtException
+     */
     public static JWToken decode(String token, String issuer, String pass)
             throws ExpiredJwtException, MalformedJwtException{
         Key key = getKey(pass);

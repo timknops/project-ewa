@@ -26,9 +26,14 @@ public class AuthenticationController {
     @Autowired
     EntityRepository<User> userEntityRepository;
 
+    /**
+     * Log in POST, to specifically log in the back-end
+     *
+     * @param loginInfo contains the username and password that was given
+     * @return returns the logged in yser and puts the token in the http header
+     */
     @PostMapping(path = "/login")
     public ResponseEntity<User> userLogin(@RequestBody ObjectNode loginInfo) throws NotAcceptableException {
-        System.out.println(loginInfo);
         String username = loginInfo.get("username").asText();
         String password = loginInfo.get("password").asText();
 
@@ -40,6 +45,7 @@ public class AuthenticationController {
         if (foundUser == null || !foundUser.checkPassword(password)) {
             throw new NotAcceptableException("Login was unsuccessful for account: " + username);
         }
+        //make a new token, encode it and then put it in the AUTHORIZATION httpheader
         JWToken jwToken = new JWToken(foundUser.getName(), foundUser.getId(), foundUser.getType());
         String token = jwToken.encode(
                 this.webConfig.getIssuer(),

@@ -19,15 +19,8 @@ export class SessionSbService{
         }
 
         this.currentToken = window.localStorage.getItem(this.browserItemStorage);
-        let jsonUser = window.localStorage.getItem(this.browserItemStorage+"_ACC");
+        this._currentUser = JSON.parse(window.localStorage.getItem(this.browserItemStorage+"_USER"));
 
-        if (this.currentToken == null){
-            //TODO get the token
-            console.log("Implement method TODO")
-        }
-        if (jsonUser != null){
-            this._currentUser = JSON.parse(jsonUser);
-        }
         return this.currentToken;
     }
 
@@ -38,13 +31,13 @@ export class SessionSbService{
         if (token == null){
             this.currentToken = null;
             window.localStorage.removeItem(this.browserItemStorage);
-            window.localStorage.removeItem(this.browserItemStorage+"_ACC");
+            window.localStorage.removeItem(this.browserItemStorage+"_USER");
         } else {
             window.localStorage.setItem(this.browserItemStorage, token);
-            window.localStorage.setItem(this.browserItemStorage+"_ACC", JSON.stringify(account));
+            window.localStorage.setItem(this.browserItemStorage+"_USER", JSON.stringify(account));
         }
     }
-
+    
     async asyncLogin(username, password){
         const body = JSON.stringify({username: username, password: password});
         let response = await fetch(this.resourcesURL +"/login",
@@ -64,13 +57,17 @@ export class SessionSbService{
             return null;
         }
     }
-
-    logOut2(){
+    //Logs the user out, by setting the browser storage to null for both account and token
+    logOut(){
         this.saveTokenInBrowserStorage(null, null);
     }
 
+    //returns true or false based on whether the user is an admin or not
     isAdmin(){
         return this._currentUser?.type?.toUpperCase().includes("ADMIN");
+    }
+    isAuthenticated() {
+        return this._currentUser != null;
     }
 
     get currentUser() {

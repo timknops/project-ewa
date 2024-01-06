@@ -94,6 +94,7 @@
           />Teams
         </router-link>
       </li>
+<!--      User list item only shows if the user is an admin-->
       <li class="nav-item" v-if="isActiveUserAdmin !== false">
         <router-link to="/users" class="nav-link" active-class="active">
           <font-awesome-icon
@@ -129,10 +130,11 @@ export default {
   },
   methods: {
     logOut(){
-      this.sessionService.logOut2();
-      this.$emit("updateLoggedIn", true);
+      //calls method in app.vue to receive token from storage
+      this.$router.push("/logout");
     }
   },
+  //checks if the user is an admin
   created() {
     this.isActiveUserAdmin = this.sessionService.isAdmin();
   }

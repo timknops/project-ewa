@@ -1,4 +1,5 @@
 import { createRouter, createWebHashHistory } from "vue-router";
+import appConfig from "@/appConfig";
 import Dashboard from "@/components/Dashboard";
 import ProductOverview from "@/components/ProductOverview.vue";
 import loginPage from "@/components/LoginPage.vue";
@@ -10,6 +11,7 @@ import WarehouseOverview from "@/components/WarehouseOverview.vue";
 import ProjectSpecific from "@/components/ProjectSpecific.vue";
 import loginResetPage from "@/components/LoginResetComponent.vue";
 import OrderOverview from "@/components/OrderOverview.vue";
+import logoutPage from "@/components/LogoutPage.vue";
 
 export const router = createRouter({
   history: createWebHashHistory(),
@@ -19,6 +21,13 @@ export const router = createRouter({
       component: loginPage,
       meta: {
         requiresLogin: false,
+      },
+    },
+    {
+      path: "/logout",
+      component: logoutPage,
+      meta: {
+        requiresLogin: true,
       },
     },
     {
@@ -99,7 +108,7 @@ export const router = createRouter({
 router.beforeEach((to) => {
   const requiresLogin = to.matched.some((route) => route.meta.requiresLogin);
   const requiresAdmin = to.matched.some((route) => route.meta.requiresAdmin);
-  const loggedStorage = JSON.parse(window.localStorage.getItem("JWT_SOLARIUM"+"_ACC"));
+  const loggedStorage = JSON.parse(window.localStorage.getItem(appConfig.JWT_STORAGE_ITEM+"_USER"));
   //if the user has been logged in and is and is on page that requires login then let the user navigate
   if (loggedStorage !== null && requiresLogin) {
     //if the component is set to admin only and the logged-in user isn't an admin, don't let the user navigate

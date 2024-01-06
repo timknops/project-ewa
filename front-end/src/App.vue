@@ -1,11 +1,9 @@
 <template>
-  <div v-if="loggedInActive === null">
-    <router-view
-        @update-logged-in="updateLoggedIn"
-    ></router-view>
+  <div v-if="isLoggedIn === false">
+    <router-view></router-view>
   </div>
   <div v-else class="view">
-    <sidebar @update-logged-in="updateLoggedIn"/>
+    <sidebar/>
     <header-component class="header"></header-component>
     <router-view id="component"></router-view>
   </div>
@@ -34,11 +32,6 @@ export default {
     HeaderComponent,
     Sidebar,
   },
-  data() {
-    return {
-      loggedInActive: {}
-    };
-  },
   provide() {
     this.theSessionService = shallowReactive(new SessionSbService(appConfig.BACKEND_URL +
         '/authentication', appConfig.JWT_STORAGE_ITEM));
@@ -59,16 +52,14 @@ export default {
       orderService: new OrderAdaptor(`${appConfig.BACKEND_URL}/orders`)
     }
   },
-  unmounted() {
-    this.theFetchInterceptor.unregister();
+  beforeMount() {
+    this.theFetchInterceptor.unregister;
   },
-  methods: {
-    updateLoggedIn() {
-      this.loggedInActive = this.theSessionService.getTokenFromBrowserStorage();
-    }
-  },
-  created() {
-    this.loggedInActive = this.theSessionService.getTokenFromBrowserStorage();
+  //checks to see if the user is logged in
+  computed: {
+    isLoggedIn() {
+      return this.theSessionService.isAuthenticated();
+    },
   },
 };
 </script>

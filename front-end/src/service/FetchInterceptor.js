@@ -30,4 +30,24 @@ export class FetchInterceptor {
             return [url, newOptions]
         }
     }
+
+    requestError(error){
+        return Promise.reject(error);
+    }
+
+    response(response){
+        if (response.status >= 400 && response.status < 600){
+            FetchInterceptor.theInstance.handleErrors(response);
+        }
+        return response;
+    }
+    responseError(error){
+        return Promise.reject(error);
+    }
+
+    handleErrors(response){
+        if (response.status === 401){
+            this.router.push("/loginPage");
+        }
+    }
 }
