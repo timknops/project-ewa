@@ -11,7 +11,7 @@ export class WarehouseAdaptor{
             return await response.json();
         } else {
             const error = await response.json();
-            return Promise.reject({code: error.status, reason: error.reason});
+            return Promise.reject({code: error.status, reason: error.message});
         }
     }
 
@@ -21,6 +21,10 @@ export class WarehouseAdaptor{
 
     async findById(id) {
         return await this.fetchJSON(`${this.resourceURL}/${id}`);
+    }
+
+    async findOrdersForWarehouse(id) {
+        return await this.fetchJSON(`${this.resourceURL}/${id}/orders`);
     }
 
     async delete(id) {

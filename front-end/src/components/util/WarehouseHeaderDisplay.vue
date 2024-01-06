@@ -1,5 +1,4 @@
 <template>
-
   <div
       class="row warehouse-display rounded-top mx-0 p-3 pb-0"
       v-if="activeUser.role === 'viewer'"
@@ -32,7 +31,7 @@
           type="button"
           class="warehouse-select btn btn-link p-0"
           :class="{ active: warehouse.name === activeWarehouse.name}"
-          @click="$emit('setActiveWarehouse',warehouse)"
+          @click="$emit('setActiveWarehouse', warehouse)"
       >
         <strong>{{ warehouse.name }}</strong>
       </button>
@@ -41,13 +40,23 @@
 </template>
 
 <script>
+/**
+ * Display for all warehouse which are connected to Solar Sedum,
+ * Makes it possible to handle which warehouse is active at the initialisation of the parent component.
+ *
+ * @author Julian Kruithof
+ */
 export default {
   name: "WarehouseHeaderDisplay",
   inject: ["warehouseService"],
+  emits: ["setActiveWarehouse"],
   props: {
     activeUser: {},
     activeWarehouse: {},
+
+    //option to have a total overview, or only overview for each separate warehouse
     hasNoTotalOption: Boolean,
+    //text of the total option
     totalText: String
   },
   data() {
@@ -66,16 +75,27 @@ export default {
       return this.warehouses.find((warehouse) => name === warehouse.name);
     }
   },
+
+  /**
+   * Find all warehouses and emit to the parentComponent, which is the active warehouse
+   *
+   */
   async created() {
+    if (this.activeUser.role === "viewer") return;
     this.warehouses = await this.warehouseService.findAll();
     if (this.$route.params.warehouse) {
-      if (this.activeUser.role === "viewer") return;
-      this.$emit('setActiveWarehouse',this.findWarehouseByName(this.$route.params.warehouse));
+      const warehouse = this.findWarehouseByName(this.$route.params.warehouse);
+      //if a warehouse is found in the route, set is as the active warehouse
+      if (warehouse !== undefined) {
+        this.$emit('setActiveWarehouse', warehouse);
+        return
+      }
     }
-
     //if there is no total default the active warehouse to the first in the list
     if (this.hasNoTotalOption) {
       this.$emit('setActiveWarehouse', this.warehouses[0])
+    } else {
+      this.$emit('setActiveWarehouse', "Total");
     }
   }
 }

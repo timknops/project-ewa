@@ -3,6 +3,7 @@ package nl.solar.app.repositories.jpaRepositories;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
+import nl.solar.app.DTO.InventoryProductDTO;
 import nl.solar.app.models.Inventory;
 import nl.solar.app.models.Product;
 import nl.solar.app.models.compositeKeys.InventoryKey;
@@ -64,9 +65,10 @@ public class InventoryRepositoryJpa implements InventoryRepository {
      * @return a list of inventories for the specified warehouse
      */
     @Override
-    public List<Inventory> findInventoryForWarehouse(long warehouseId) {
+    public List<InventoryProductDTO> findInventoryForWarehouse(long warehouseId) {
         return entityManager
-                .createQuery("SELECT i FROM Inventory i WHERE i.id.warehouseId = :warehouse_id", Inventory.class)
+                .createQuery("SELECT new nl.solar.app.DTO.InventoryProductDTO(i.product.id, i.product.productName, i.minimum, i.quantity)" +
+                        " FROM Inventory i WHERE i.id.warehouseId = :warehouse_id", InventoryProductDTO.class)
                 .setParameter("warehouse_id", warehouseId)
                 .getResultList();
     }

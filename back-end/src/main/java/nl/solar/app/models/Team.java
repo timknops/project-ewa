@@ -4,23 +4,17 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.*;
 import nl.solar.app.models.views.ProjectView;
 
 @Entity
 public class Team {
 
     @Id
-    @SequenceGenerator(name = "team_id_generator", initialValue = 1)
+    @SequenceGenerator(name = "team_id_generator")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "team_id_generator")
     @JsonView(ProjectView.Overview.class)
     private long id;
@@ -28,6 +22,9 @@ public class Team {
     @JsonView(ProjectView.Overview.class)
     private String team;
 
+    @ManyToOne
+    @JoinColumn(name = "warehouse_id", nullable = false)
+    @JsonIncludeProperties
     private Warehouse warehouse;
 
     @Enumerated(EnumType.STRING)
@@ -51,11 +48,18 @@ public class Team {
     }
 
     public static Team createDummyTeam() {
-        String randomTeamName = "Team " + (int) (Math.random() * 10);
-        return new Team(0, randomTeamName, Warehouse.SolarSedum, TeamType.Internal);
+        Team team = new Team();
+
+        // Random team name.
+        team.setTeam("Team " + (int) (Math.random() * 1000));
+
+        // Team type internal.
+        team.setType(TeamType.Internal);
+
+        return team;
     }
 
-    public enum Warehouse {
+    public enum WarehouseNames {
         SolarSedum, Superzon, Theswitch, Induct, EHES
     }
 
@@ -79,7 +83,7 @@ public class Team {
         this.team = team;
     }
 
-    public Warehouse getWarehouse() {
+    public nl.solar.app.models.Warehouse getWarehouse() {
         return warehouse;
     }
 

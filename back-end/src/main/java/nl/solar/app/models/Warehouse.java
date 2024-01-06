@@ -31,6 +31,9 @@ public class Warehouse {
     @JsonIgnore
     Set<Order> orders = new HashSet<>();
 
+    @OneToMany(mappedBy = "warehouse")
+    private Set<Team> teams;
+
     public Warehouse(long id, String name, String location) {
         this.id = id;
         this.name = name;
@@ -40,11 +43,13 @@ public class Warehouse {
     public Warehouse() {
     }
 
-    public static Warehouse createDummyWarehouses(long id, String name, String location) {
-        return new Warehouse(
-                id,
-                name,
-                location);
+    public static Warehouse createDummyWarehouse(String name, String location) {
+        Warehouse warehouse = new Warehouse();
+
+        warehouse.setName(name);
+        warehouse.setLocation(location);
+
+        return warehouse;
     }
 
     public Set<Inventory> getInventory() {
@@ -85,6 +90,14 @@ public class Warehouse {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public Set<Team> getTeams() {
+        return teams;
+    }
+
+    public void setTeams(Set<Team> team) {
+        this.teams = team;
     }
 
     @Override

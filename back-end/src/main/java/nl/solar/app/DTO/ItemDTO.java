@@ -1,40 +1,21 @@
 package nl.solar.app.DTO;
 
-import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import nl.solar.app.models.Product;
 
 /**
- * Data Transfer Object (DTO) representing a item, used to transfer product-related data
- * between the backend and frontend with specific view annotations.
+ * A dto to represent an item, for which it is not know which order id it shall get, this is handled in the controller
  *
  * @author Julian Kruithof
  */
+@Getter
+@Setter
+@EqualsAndHashCode
+@NoArgsConstructor
 public class ItemDTO {
-    @JsonIncludeProperties({"id", "productName"})
     private Product product;
-    private Long quantity;
-
-    public ItemDTO() {
-    }
-
-    public ItemDTO(Product product, Long quantity) {
-        this.product = product;
-        this.quantity = quantity;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
-
-    public Long getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Long quantity) {
-        this.quantity = quantity;
-    }
+    private long quantity;
 }

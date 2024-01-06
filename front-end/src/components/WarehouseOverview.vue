@@ -25,6 +25,14 @@
         @ok-modal-btn="handleOk"
       />
     </Transition>
+
+    <transition>
+      <toast-component
+        v-if="showToast"
+        :toast-message="toastMessage"
+        :toast-title="toastTitle"
+      ></toast-component>
+    </transition>
   </div>
 </template>
 
@@ -32,10 +40,16 @@
 import TableComponent from "@/components/table/TableComponent.vue";
 import ModalComponent from "@/components/modal/ModalComponent.vue";
 import SpinnerComponent from "@/components/util/SpinnerComponent.vue";
+import ToastComponent from "@/components/util/ToastComponent.vue";
 
 export default {
   name: "WarehouseOverview",
-  components: { ModalComponent, TableComponent, SpinnerComponent },
+  components: {
+    ToastComponent,
+    ModalComponent,
+    TableComponent,
+    SpinnerComponent,
+  },
   inject: ["warehouseService"],
   data() {
     return {
@@ -60,6 +74,10 @@ export default {
         UPDATE: "update-warehouse-modal",
         ADD: "add-warehouse-modal",
       }),
+
+      showToast: false,
+      toastTitle: "",
+      toastMessage: "",
       wareHousesAreLoading: true,
     };
   },
@@ -105,9 +123,27 @@ export default {
         this.warehouses = this.warehouses.filter(
           (warehouse) => warehouse.id !== warehouseToDelete.id
         );
+
         this.showModal = false;
+        this.showTimedToast(
+          "Warehouse deleted",
+          `Warehouse ${warehouseToDelete.name} has been deleted`
+        );
       } catch (exception) {
-        console.log(exception);
+        this.showModal = false;
+        if (exception.code >= 400 && exception.code < 500) {
+          this.showTimedToast(
+            "Failed to delete warehouse",
+            exception.reason,
+            8000
+          );
+        } else {
+          this.showTimedToast(
+            "Failed to delete warehouse",
+            exception.message,
+            8000
+          );
+        }
       }
     },
     async updateWarehouse(warehouse) {
@@ -116,18 +152,38 @@ export default {
         this.warehouses = this.warehouses.map((warehouse) =>
           warehouse.id === warehouseToUpdate.id ? warehouseToUpdate : warehouse
         );
+
         this.showModal = false;
+        this.showTimedToast(
+          "Warehouse updated",
+          `Warehouse ${warehouseToUpdate.name} has been updated`
+        );
       } catch (e) {
-        console.log(e);
+        this.showModal = false;
+        if (e.code >= 400 && e.code < 500) {
+          this.showTimedToast("Failed to update warehouse", e.reason, 8000);
+        } else {
+          this.showTimedToast("Failed to update warehouse", e.message, 8000);
+        }
       }
     },
+
     async addWarehouse(warehouse) {
       try {
         const warehouseToAdd = await this.warehouseService.add(warehouse);
         this.warehouses.push(warehouseToAdd);
         this.showModal = false;
+        this.showTimedToast(
+          "Warehouse added",
+          `Warehouse ${warehouseToAdd.name} has been added`
+        );
       } catch (e) {
-        console.log(e);
+        this.showModal = false;
+        if (e.code >= 400 && e.code < 500) {
+          this.showTimedToast("Failed to add warehouse", e.reason, 8000);
+        } else {
+          this.showTimedToast("Failed to add warehouse", e.message, 8000);
+        }
       }
     },
 
@@ -137,6 +193,23 @@ export default {
         name: "",
         location: "",
       };
+    },
+
+    /**
+     * Shows a toast for 4 seconds with the given title and message
+     * @param {String} title The title of the toast.
+     * @param {String} message The message of the toast.
+     * @param {Number} duration The duration of the toast in milliseconds. Default is 4000.
+     * @author Tim Knops
+     */
+    showTimedToast(title, message, duration = 4000) {
+      this.toastTitle = title;
+      this.toastMessage = message;
+      this.showToast = true;
+
+      setTimeout(() => {
+        this.showToast = false;
+      }, duration);
     },
   },
   async created() {
