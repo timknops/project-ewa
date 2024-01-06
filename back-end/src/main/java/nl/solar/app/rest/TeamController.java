@@ -1,10 +1,13 @@
 package nl.solar.app.rest;
 
+import nl.solar.app.DTO.TeamDTO;
 import nl.solar.app.exceptions.BadRequestException;
 import nl.solar.app.exceptions.PreConditionFailedException;
 import nl.solar.app.exceptions.ResourceNotFoundException;
 import nl.solar.app.models.Team;
+import nl.solar.app.models.Warehouse;
 import nl.solar.app.repositories.EntityRepository;
+import nl.solar.app.repositories.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,57 +15,97 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
+
 
 @RestController
 @RequestMapping("/teams")
 public class TeamController {
 
+    TeamRepository teamRepository;
+
+    EntityRepository<Warehouse> warehouseEntityRepository;
+
     @Autowired
-    EntityRepository<Team> teamRepo;
-
-    @GetMapping(produces = "application/json")
-    public List<Team> getAll() {
-        return this.teamRepo.findAll();
+    public TeamController(TeamRepository teamRepository, EntityRepository<Warehouse> warehouseEntityRepository) {
+        this.teamRepository = teamRepository;
+        this.warehouseEntityRepository = warehouseEntityRepository;
     }
 
-    @GetMapping(path = "{id}", produces = "application/json")
-    public ResponseEntity<Team> getTeam(@PathVariable Long id) throws ResourceNotFoundException {
-        Team team = this.teamRepo.findById(id);
-
-        if (team == null) {
-            throw new ResourceNotFoundException("Team with id: " + id + " was not found");
-        }
-        return ResponseEntity.ok(team);
+    @GetMapping
+    public ResponseEntity<List<TeamDTO>> getAllTeams() {
+        List<TeamDTO> teams = teamRepository.findAll().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(teams);
     }
 
-    @DeleteMapping(path = "{id}", produces = "application/json")
-    public ResponseEntity<Team> deleteTeam(@PathVariable long id) throws ResourceNotFoundException {
-        Team deleted = this.teamRepo.delete(id);
-
-        if (deleted == null) {
-            throw new ResourceNotFoundException("Cannot delete team with id: " + id + " Team not found");
+    @GetMapping("/{id}")
+    public ResponseEntity<TeamDTO> getTeamById(@PathVariable long id) {
+        Team team = teamRepository.findById(id);
+        if(team == null) {
+            throw new ResourceNotFoundException("Team with id: '" + id + "' was not found");
         }
 
-        return ResponseEntity.ok(deleted);
+        TeamDTO teamDTO = convertToDTO(team);
+        return ResponseEntity.ok(teamDTO);
     }
 
-    @PostMapping(produces = "application/json")
-    public ResponseEntity<Team> addTeam(@RequestBody Team team) throws BadRequestException {
+    @PostMapping
+    public ResponseEntity<TeamDTO> createTeam(@RequestBody Team team) {
         if (team.getTeam() == null || team.getTeam().isBlank()) throw new BadRequestException("Team name can't be empty");
-        Team added = this.teamRepo.save(team);
+        Warehouse warehouse = warehouseEntityRepository.findById(team.getWarehouse().getId());
+        team.setWarehouse(warehouse);
 
+        Team createdTeam = teamRepository.save(team);
+        TeamDTO createdTeamDTO = convertToDTO(createdTeam);
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(added.getId()).toUri();
-        return ResponseEntity.created(location).body(team);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(createdTeamDTO.getId())
+                .toUri();
+
+        return ResponseEntity.created(location).body(createdTeamDTO);
     }
 
-    @PutMapping(path = "{id}", produces = "application/json")
-    public ResponseEntity<Team> updateTeam(@PathVariable long id, @RequestBody Team team)
-            throws PreConditionFailedException, BadRequestException {
-        if (id != team.getId()) throw new PreConditionFailedException("Id of the body and path do not match");
-        if (team.getTeam() == null || team.getTeam().isBlank()) throw new BadRequestException("Team name can't be empty");
+    @PutMapping("/{id}")
+    public ResponseEntity<TeamDTO> updateTeam(@PathVariable long id, @RequestBody TeamDTO teamDTO) {
+        if (teamDTO.getTeam() == null || teamDTO.getTeam().isBlank()) throw new BadRequestException("Team name can't be empty");
+        Team existingTeam = teamRepository.findById(id);
+        if (existingTeam == null) {
+            throw new ResourceNotFoundException("Team not found with id: " + id);
+        }
 
-        Team updated = this.teamRepo.save(team);
-        return ResponseEntity.ok(updated);
+        existingTeam.setTeam(teamDTO.getTeam());
+
+        Warehouse warehouse = warehouseEntityRepository.findAll().stream()
+                .filter(w -> w.getName().equals(teamDTO.getWarehouseName()))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException("Warehouse not found with name: " + teamDTO.getWarehouseName()));
+
+        existingTeam.setWarehouse(warehouse);
+
+        TeamDTO updatedTeamDTO = convertToDTO(teamRepository.save(existingTeam));
+        return ResponseEntity.ok(updatedTeamDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTeam(@PathVariable long id) {
+        Team existingTeam = teamRepository.findById(id);
+        if (existingTeam == null) {
+            throw new ResourceNotFoundException("Team not found with id: " + id);
+        }
+
+        if (!existingTeam.getProjects().isEmpty()) {
+            throw new PreConditionFailedException("Team is being used and cannot be deleted");
+        }
+
+        teamRepository.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    private TeamDTO convertToDTO(Team team) {
+        return new TeamDTO(team.getId(), team.getTeam(), team.getWarehouse().getName(), team.getType().name());
     }
 }

@@ -23,8 +23,8 @@ public class Team {
     private String team;
 
     @ManyToOne
-    @JoinColumn(name = "warehouse_id", nullable = false)
-    @JsonIncludeProperties
+    @JoinColumn(name = "warehouse_id")
+    @JsonIncludeProperties({"id", "name"})
     private Warehouse warehouse;
 
     @Enumerated(EnumType.STRING)
@@ -33,6 +33,10 @@ public class Team {
     @OneToMany(mappedBy = "team")
     private Set<Project> projects = new HashSet<>();
 
+    public Team() {
+
+    }
+
     public Team(long id, String team, Warehouse warehouse, TeamType type) {
         this.id = id;
         this.team = team;
@@ -40,31 +44,16 @@ public class Team {
         this.type = type;
     }
 
-    public Team(long id) {
-        this.id = id;
-    }
-
-    public Team() {
-    }
-
-    public static Team createDummyTeam() {
+    public static Team createDummyTeam(Warehouse warehouse, String teamName, TeamType teamType) {
         Team team = new Team();
-
-        // Random team name.
-        team.setTeam("Team " + (int) (Math.random() * 1000));
-
-        // Team type internal.
-        team.setType(TeamType.Internal);
-
+        team.setWarehouse(warehouse);
+        team.setTeam(teamName);
+        team.setType(teamType);
         return team;
     }
 
-    public enum WarehouseNames {
-        SolarSedum, Superzon, Theswitch, Induct, EHES
-    }
-
     public enum TeamType {
-        Internal, External
+        INTERNAL, EXTERNAL
     }
 
     public long getId() {
@@ -83,11 +72,16 @@ public class Team {
         this.team = team;
     }
 
-    public nl.solar.app.models.Warehouse getWarehouse() {
+    public Warehouse getWarehouse() {
         return warehouse;
     }
 
     public void setWarehouse(Warehouse warehouse) {
+        if ("Solar Sedum".equals(warehouse.getName())) {
+            this.type = TeamType.INTERNAL;
+        } else {
+            this.type = TeamType.EXTERNAL;
+        }
         this.warehouse = warehouse;
     }
 

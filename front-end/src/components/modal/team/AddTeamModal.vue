@@ -2,12 +2,14 @@
   <form>
     <div class="mb-3">
       <label for="team-name" class="form-label fw-bold">Team name</label>
-      <input id="team-name"
-             type="text"
-             class="form-control"
-             :class="{'border-danger': teamEmpty}"
-             v-model.lazy.trim="modalItem.team"
-             @blur="validateName">
+      <input
+          id="team-name"
+          type="text"
+          class="form-control"
+          v-model.lazy.trim="modalItem.team"
+          @blur="validateName"
+          :class="{ 'border-danger': teamEmpty }"
+          placeholder="Enter team name">
       <p v-if="teamEmpty" class="text-danger"> The team name can't be empty!</p>
     </div>
     <div class="mb-3">
@@ -15,12 +17,12 @@
       <select
           id="warehouse"
           class="form-select"
-          :class="{'border-danger': warehouseEmpty}"
-          v-model.lazy.trim="modalItem.warehouse"
-          @blur="validateWarehouse">
-        <option value="" disabled>Select a warehouse</option>
-        <option v-for="(warehouse, index) in warehouseOptions" :key="index" :value="warehouse">
-          {{ warehouse }}
+          v-model="modalItem.warehouse.id"
+          @blur="validateWarehouse"
+          :class="{ 'border-danger': warehouseEmpty }">
+        <option value="" disabled selected>Select a warehouse</option>
+        <option v-for="warehouse in warehouses" :key="warehouse.id" :value="warehouse.id">
+          {{ warehouse.name }}
         </option>
       </select>
       <p v-if="warehouseEmpty" class="text-danger">The warehouse can't be empty!</p>
@@ -31,36 +33,51 @@
 <script>
 export default {
   name: "AddTeamModal",
-
+  inject: ['warehouseService'],
   data() {
     return {
-      modalItem:{
+      modalItem: {
         team: '',
-        warehouse: '',
+        warehouse: {
+          id: '',
+        },
       },
       teamEmpty: false,
       warehouseEmpty: false,
-      warehouseOptions: ["Solar Sedum", "Superzon", "The switch", "Induct", "EHES"]
-    }
+      warehouses: [],
+    };
   },
 
   computed: {
     hasError() {
-      return this.teamEmpty || this.warehouseEmpty;
+      this.validateName();
+      this.validateWarehouse();
+      return (this.teamEmpty || this.warehouseEmpty);
     }
   },
 
   methods: {
+    async fetchWarehouseOptions() {
+      try {
+        const options = await this.warehouseService.findAll();
+        this.warehouses = options || [];
+      } catch (error) {
+        console.error("Error fetching warehouse options:", error);
+      }
+    },
+
     validateName() {
-      this.teamEmpty = this.modalItem.team.length === 0;
-      this.hasError = this.modalItem.team.length === 0;
+      this.teamEmpty = this.modalItem.team.trim().length === 0;
     },
 
     validateWarehouse() {
-      this.warehouseEmpty = this.modalItem.warehouse.length === 0;
-      this.hasError = this.modalItem.warehouse.length === 0;
+      this.warehouseEmpty = !this.modalItem.warehouse.id;
     }
-  }
+  },
+
+  async created() {
+    await this.fetchWarehouseOptions();
+  },
 }
 </script>
 

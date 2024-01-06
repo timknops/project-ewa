@@ -1,5 +1,6 @@
 package nl.solar.app.rest;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.transaction.Transactional;
 import nl.solar.app.exceptions.BadRequestException;
 import nl.solar.app.exceptions.PreConditionFailedException;
@@ -7,8 +8,8 @@ import nl.solar.app.exceptions.ResourceConflictException;
 import nl.solar.app.exceptions.ResourceNotFoundException;
 import nl.solar.app.models.Order;
 import nl.solar.app.models.Warehouse;
+import nl.solar.app.models.views.ResourceView;
 import nl.solar.app.repositories.EntityRepository;
-import nl.solar.app.repositories.InventoryRepository;
 import nl.solar.app.repositories.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
