@@ -6,6 +6,14 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Test class for the Inventory model.
+ * This class tests the Inventory model by creating a dummy inventory and checking if the values are correct.
+ * It also tests the formatInventoryToDTO method.
+ * It also tests the equals method.
+ *
+ * @author Julian Kruithof
+ */
 public class InventoryTest {
     Warehouse warehouse, warehouse2;
     Product product;

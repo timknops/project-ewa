@@ -25,6 +25,12 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * Test class for the InventoryController.
+ * This class tests the InventoryController by testing all end-points.
+ *
+ * @author  Julian Kruithof
+ */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class inventoryControllerTest {
 

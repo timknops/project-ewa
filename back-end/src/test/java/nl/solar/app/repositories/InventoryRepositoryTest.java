@@ -27,7 +27,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 
-
+/**
+ * Test class for the InventoryRepository.
+ * This class tests the InventoryRepository by testing all methods.
+ *
+ * @author Julian Kruithof
+ */
 @DataJpaTest(includeFilters = @ComponentScan.Filter(type = FilterType.ANNOTATION,
         classes = { Repository.class, Entity.class }), showSql = false)
 public class InventoryRepositoryTest {
