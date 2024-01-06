@@ -28,20 +28,23 @@ public class JWTRequestFilter extends OncePerRequestFilter {
         //servlet path
         String path = request.getServletPath();
 
+        //options request and paths that aren't secured should pass through
         if (HttpMethod.OPTIONS.matches(request.getMethod()) ||
                 this.webConfig.SECURED_PATHS.stream().noneMatch(path::startsWith)){
             filterChain.doFilter(request, response);
             return;
         }
 
-        //encoded
+        //encrypted token from the authorization request header
         String encryptedToken = request.getHeader(HttpHeaders.AUTHORIZATION);
 
+        //if the token is null, block the request and send an error message
         if (encryptedToken == null){
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "No token provided, login first!");
             return;
         }
 
+        //try decoding the token
         JWToken jwToken = null;
         try {
             jwToken = JWToken.decode(encryptedToken, this.webConfig.getIssuer(), this.webConfig.getPassphrase());
@@ -49,6 +52,7 @@ public class JWTRequestFilter extends OncePerRequestFilter {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage() + "You need to login first");
         }
 
+        //set the token as an attribute of the request
         request.setAttribute(JWToken.JWT_ATTRIBUTE_NAME, jwToken);
         filterChain.doFilter(request, response);
     }

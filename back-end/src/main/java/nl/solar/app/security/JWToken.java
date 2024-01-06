@@ -9,7 +9,6 @@ import java.util.Date;
 
 @Data
 public class JWToken {
-    //TODO add comments, reformat code and remove unnecessary imports
 
     private static final String JWT_CALLNAME_CLAIM = "sub";
     private static final String JWT_USERID_CLAIM = "id";
@@ -55,12 +54,10 @@ public class JWToken {
 
     /**
      * Method to decode the token back to its original form. Throws different exceptions based on what went wrong
-     * @param token
-     * @param issuer
-     * @param pass
-     * @return
-     * @throws ExpiredJwtException
-     * @throws MalformedJwtException
+     * @param token the encoded token
+     * @param issuer the issuer defined in application.properties
+     * @param pass passphrase defined in application.properties
+     * @return returns a decoded JWToken
      */
     public static JWToken decode(String token, String issuer, String pass)
             throws ExpiredJwtException, MalformedJwtException{

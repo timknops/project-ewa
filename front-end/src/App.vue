@@ -52,8 +52,8 @@ export default {
       orderService: new OrderAdaptor(`${appConfig.BACKEND_URL}/orders`)
     }
   },
-  beforeMount() {
-    this.theFetchInterceptor.unregister;
+  beforeUnmount() {
+    this.theFetchInterceptor.unregister();
   },
   //checks to see if the user is logged in
   computed: {

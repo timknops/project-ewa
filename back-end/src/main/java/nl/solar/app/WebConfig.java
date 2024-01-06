@@ -37,8 +37,10 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**") // all endpoints
                 .allowedOriginPatterns("*") // all origins
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH")// all methods
-                .allowedHeaders(HttpHeaders.AUTHORIZATION, HttpHeaders.CONTENT_TYPE) //Auth http header
-                .exposedHeaders(HttpHeaders.AUTHORIZATION, HttpHeaders.CONTENT_TYPE) //Auth http header
+                //Allow and expose Auth and content_type httpheaders
+                .allowedHeaders(HttpHeaders.AUTHORIZATION, HttpHeaders.CONTENT_TYPE)
+                .exposedHeaders(HttpHeaders.AUTHORIZATION, HttpHeaders.CONTENT_TYPE)
+                //allows credentials to be included
                 .allowCredentials(true);
 
     }
