@@ -1,11 +1,11 @@
 <template>
   <div class="mb-3" v-if="hasSearchBar">
     <input
-        v-model="searchQuery"
-        type="text"
-        class="form-control"
-        placeholder="Search..."
-        @input="handleSearch"
+      v-model="searchQuery"
+      type="text"
+      class="form-control"
+      placeholder="Search..."
+      @input="handleSearch"
     />
   </div>
   <div class="card border-0 pt-4 pb-2 d-flex" :style="{ width: tableWidth }">
@@ -135,7 +135,7 @@
                     fieldData === 'COMPLETED' ||
                     fieldData === 'IN_PROGRESS' ||
                     fieldData === 'UPCOMING' ||
-                    fieldData === 'PENDING'||
+                    fieldData === 'PENDING' ||
                     fieldData === 'CANCELED' ||
                     fieldData === 'DELIVERED'
                   "
@@ -233,7 +233,7 @@ export default {
     TableFooter,
     TableButtons,
   },
-  emits: ['add', 'edit', 'delete'],
+  emits: ["add", "edit", "delete"],
   props: {
     tableWidth: String,
     boldFirstColumn: Boolean,
@@ -282,7 +282,7 @@ export default {
         UPCOMING: "upcoming-badge",
         PENDING: "pending-badge",
         DELIVERED: "delivered-badge",
-        CANCELED: "canceled-badge"
+        CANCELED: "canceled-badge",
       }),
       /** shallow Copy of the table data, used for sorting. */
       tableDataSorted: this.tableData,
@@ -302,6 +302,8 @@ export default {
       showEmptyTable: false,
       /** The search query for filtering table data. */
       searchQuery: "",
+      /** The previous table data content, used to see wether a new item is added. */
+      previousTableData: [],
     };
   },
   created() {
@@ -312,7 +314,7 @@ export default {
     handleSearch() {
       const query = this.searchQuery.toLowerCase().trim();
       this.currentlyDisplayedData = this.tableDataSorted.filter((row) =>
-          this.rowContainsSearchQuery(row, query)
+        this.rowContainsSearchQuery(row, query)
       );
     },
 
@@ -320,7 +322,7 @@ export default {
     rowContainsSearchQuery(row, query) {
       const rowValues = Object.values(row);
       return rowValues.some((value) =>
-          value.toString().toLowerCase().includes(query)
+        value.toString().toLowerCase().includes(query)
       );
     },
 
@@ -353,8 +355,21 @@ export default {
       }
 
       this.showEmptyTable = false;
-
       this.tableDataSorted = this.tableData;
+
+      // If the previous table data is not empty and the tableData is greater than the previous table data, an item has been added.
+      // When an item is added, the indexes are reset and the added item is set to the first item in the table.
+      if (
+        this.previousTableData.length !== 0 &&
+        this.tableDataSorted.length > this.previousTableData.length
+      ) {
+        this.currentStartIndex = 0;
+        this.currentEndIndex = this.displayAmount;
+
+        // Move the last item in the table to the first position.
+        this.tableDataSorted.unshift(this.tableDataSorted.pop());
+      }
+
       this.currentlyDisplayedData = this.tableDataSorted.slice(
         this.currentStartIndex,
         this.currentEndIndex
@@ -363,6 +378,8 @@ export default {
       if (this.currentlyDisplayedData.length === 0) {
         this.handlePreviousButton();
       }
+
+      this.previousTableData = [...this.tableData];
     },
 
     /** Ensures that the ending index is the right number in the bottom left range display. */
@@ -578,8 +595,6 @@ button:active {
   color: #127235;
   background-color: #bbf7d0;
 }
-
-
 
 .empty-text {
   color: var(--bs-gray-700);

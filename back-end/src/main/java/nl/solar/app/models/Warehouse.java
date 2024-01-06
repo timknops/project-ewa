@@ -17,7 +17,6 @@ public class Warehouse {
     @SequenceGenerator(name = "warehouse_id_generator", initialValue = 1000, allocationSize = 3)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "warehouse_id_generator")
     private long id;
-
     @JsonView(ResourceView.Complete.class)
     private String name;
 
@@ -31,7 +30,9 @@ public class Warehouse {
     @JsonIgnore
     Set<Order> orders = new HashSet<>();
 
+
     @OneToMany(mappedBy = "warehouse")
+    @JsonIgnore
     private Set<Team> teams;
 
     public Warehouse(long id, String name, String location) {

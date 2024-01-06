@@ -3,6 +3,8 @@ package nl.solar.app.models;
 import com.fasterxml.jackson.annotation.JsonView;
 import nl.solar.app.models.views.UserView;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -38,6 +40,10 @@ public class User {
         this.type = Type;
     }
 
+    public boolean checkPassword(String password){
+        return password.equals(this.password);
+    }
+
     /**
      * Creates dummy users to populate the table. The data for the dummy users is random generated
      *
@@ -62,8 +68,17 @@ public class User {
 
         return new User(userId, teamId, fullRandomName, randomEmail, randomPassword, randomUserType.toString());
     }
-    public static User createStaticAdmin(){
-        return new User(1, 1, "Julian", "nashonwoldai@gmail.com", "password", "ADMIN");
+    public static List<User> createStaticAdmin(){
+        List<User> userList = new ArrayList<>();
+        User user1 = new User(1, 1, "Julian", "nashonwoldai@gmail.com", "password", "ADMIN");
+        User user2 = new User(2, 2, "admin", "admin@admin.com", "admin", "ADMIN");
+        userList.add(user1);
+        userList.add(user2);
+        return userList;
+    }
+
+    public static User createStaticUser(){
+        return new User(3, 3, "user", "user@user.com", "user", "VIEWER");
     }
 
     /**

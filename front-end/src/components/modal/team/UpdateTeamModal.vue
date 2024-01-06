@@ -2,12 +2,14 @@
   <form>
     <div class="mb-3">
       <label for="team-name" class="form-label fw-bold">Team name</label>
-      <input id="team-name"
-             type="text"
-             class="form-control"
-             :class="{'border-danger': teamEmpty}"
-             v-model.lazy.trim="modalItem.team"
-             @blur="validateTeam">
+      <input
+          id="team-name"
+          type="text"
+          class="form-control"
+          v-model.lazy.trim="modalItem.team"
+          @blur="validateName"
+          :class="{ 'border-danger': teamEmpty }"
+          placeholder="Enter team name">
       <p v-if="teamEmpty" class="text-danger"> The team name can't be empty!</p>
     </div>
     <div class="mb-3">
@@ -15,16 +17,12 @@
       <select
           id="warehouse"
           class="form-select"
-          :class="{'border-danger': warehouseEmpty}"
-          v-model="modalItem.warehouse"
-          @blur="validateWarehouse"
-      >
-        <option value="" disabled selected>Select Warehouse</option>
-        <option v-for="(warehouse, index) in warehouseOptions" :key="index" :value="warehouse">
-          {{ warehouse }}
+          v-model.lazy.trim="modalItem.warehouseName">
+        <option value="" disabled>Select a warehouse</option>
+        <option v-for="warehouse in warehouses" :key="warehouse.id" :value="warehouse.name">
+          {{ warehouse.name}}
         </option>
       </select>
-      <p v-if="warehouseEmpty" class="text-danger"> The warehouse can't be empty!</p>
     </div>
   </form>
 </template>
@@ -32,43 +30,42 @@
 <script>
 export default {
   name: "UpdateTeamModal",
+  inject: ['warehouseService'],
+  props: ["item"],
   data() {
     return {
       modalItem: {
-        team: '',
-        warehouse: '',
+        team: "",
+        warehouseName: "",
       },
       teamEmpty: false,
-      warehouseEmpty: false,
-      warehouseOptions: ["SolarSedum", "Superzon", "Theswitch", "Induct", "EHES"]
-    }
-  },
-
-  props: ["item"],
-  created() {
-    this.modalItem = Object.assign({}, this.item)
+      warehouses: [],
+    };
   },
 
   computed: {
     hasError() {
-      return this.teamEmpty || this.warehouseEmpty;
+      this.validateName();
+      return (this.teamEmpty);
+    }
+  },
+
+  async created() {
+    this.modalItem = Object.assign({}, this.item);
+    try {
+      this.warehouses = await this.warehouseService.findAll();
+    } catch (error) {
+      console.error("Error fetching warehouse:", error);
     }
   },
 
   methods: {
-    validateTeam() {
-      this.teamEmpty = this.modalItem.team.length === 0;
-      this.hasError = this.modalItem.team.length === 0;
+    validateName() {
+      this.teamEmpty = this.modalItem.team.trim().length === 0;
     },
-
-    validateWarehouse() {
-      this.warehouseEmpty = this.modalItem.warehouse.length === 0;
-      this.hasError = this.modalItem.warehouse.length === 0;
-    }
-  }
-}
+  },
+};
 </script>
-
 
 <style scoped>
 .form-control:disabled {

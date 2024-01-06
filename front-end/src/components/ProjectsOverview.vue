@@ -226,10 +226,17 @@ export default {
       try {
         await this.projectService.delete(project.id);
         this.projects = this.projects.filter((p) => p.id !== project.id);
+
         this.showModal = false;
         this.showTimedToast("Deleted successfully", "Project deleted.");
       } catch (error) {
-        console.log(error);
+        this.showModal = false;
+
+        if (error.code >= 400 && error.code < 500) {
+          this.showTimedToast("Failed to delete", error.reason, 8000);
+        } else {
+          this.showTimedToast("Failed to delete", error.message, 8000);
+        }
       }
     },
 
@@ -243,10 +250,17 @@ export default {
           this.formatProjectForRequest(project)
         );
         this.projects.push(this.formatProjectForTable(newProject));
+
         this.showModal = false;
         this.showTimedToast("Success", "Project added.");
       } catch (error) {
-        console.log(error);
+        this.showModal = false;
+
+        if (error.code >= 400 && error.code < 500) {
+          this.showTimedToast("Failed to add", error.reason, 8000);
+        } else {
+          this.showTimedToast("Failed to add", error.message, 8000);
+        }
       }
     },
 
@@ -264,10 +278,17 @@ export default {
             ? this.formatProjectForTable(updatedProject)
             : p
         );
+
         this.showModal = false;
         this.showTimedToast("Updated successfully", "Project updated.");
       } catch (error) {
-        console.log(error);
+        this.showModal = false;
+
+        if (error.code >= 400 && error.code < 500) {
+          this.showTimedToast("Failed to update", error.reason, 8000);
+        } else {
+          this.showTimedToast("Failed to update", error.message, 8000);
+        }
       }
     },
 
@@ -325,18 +346,20 @@ export default {
     },
 
     /**
-     * Shows a toast message for 4 seconds.
+     * Shows a toast for 4 seconds with the given title and message
      * @param {String} title The title of the toast.
      * @param {String} message The message of the toast.
+     * @param {Number} duration The duration of the toast in milliseconds. Default is 4000.
+     * @author Tim Knops
      */
-    showTimedToast(title, message) {
+    showTimedToast(title, message, duration = 4000) {
       this.toastTitle = title;
       this.toastMessage = message;
       this.showToast = true;
 
       setTimeout(() => {
         this.showToast = false;
-      }, 4000);
+      }, duration);
     },
 
     showSpecificView(project) {
