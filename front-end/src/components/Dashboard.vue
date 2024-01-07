@@ -187,9 +187,9 @@ export default {
   async created() {
     await this.fetchInventoryData();
     await this.fetchOrderData();
+    await this.fetchProjectData();
+    await this.fetchInventoryQuantity();
     this.updateChart();
-    this.fetchProjectData();
-    this.fetchInventoryQuantity();
   },
   methods: {
     async fetchInventoryData() {
