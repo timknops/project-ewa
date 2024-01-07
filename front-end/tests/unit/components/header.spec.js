@@ -1,5 +1,7 @@
 import {shallowMount} from '@vue/test-utils'
 import Header from '@/components/HeaderComponent.vue'
+import {SessionSbService} from "@/service/SessionSbService";
+
 
 /**
  * @jest-environment jsdom
@@ -9,9 +11,8 @@ import Header from '@/components/HeaderComponent.vue'
  * @author Julian Kruithof
  */
 describe('HelloWorld.vue', () => {
-
   let wrapper;
-  beforeEach(() => {
+  beforeEach(async () => {
     const mockRouter = {
       push: jest.fn()
     }
@@ -31,15 +32,29 @@ describe('HelloWorld.vue', () => {
         }
       ]
     }
+
+    const sessionSbService = new SessionSbService();
+
+    sessionSbService.saveTokenInBrowserStorage('token', {
+      id: 1,
+      name: 'name',
+      type: 'admin'
+    })
+
     wrapper = shallowMount(Header,
       {
         global: {
           mocks: {
             $router: mockRouter,
             $route: mockRoute
+          },
+          provide: {
+            sessionService: sessionSbService
           }
         }
       })
+
+    await wrapper.vm.$nextTick();
   })
 
   it("Header should render properly", () => {
@@ -54,5 +69,11 @@ describe('HelloWorld.vue', () => {
   it('Header should contain icon', () => {
     const icon = wrapper.findComponent({name: 'FontAwesomeIcon'});
     expect(icon.vm.icon, "Icon should contain the meta info about the icon").toContain('fa-solid fa-house');
+  })
+
+  it("header should contain correct user info", () => {
+    const userInfo = wrapper.findAll("span");
+    expect(userInfo[0].text(), "Header should contain the name of the user").toContain("Logged in as: name");
+    expect(userInfo[1].text(), "Header should contain the type of the user").toContain("Role: admin");
   })
 })

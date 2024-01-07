@@ -219,7 +219,7 @@ describe('InventoryOverview.vue', () => {
 
     const products = wrapper.vm.getWarehouseProductInfo(wrapper.vm.activeWarehouse);
     expect(products.length, "product should be added to the list").toBe(3);
-    expect(products[0], "product should be added to the front of the list").toEqual({
+    expect(products[products.length -1], "product should be added to the end of the list").toEqual({
       id: 3,
       productName: "enphase q kabel 3 fase",
       quantity: 30,
