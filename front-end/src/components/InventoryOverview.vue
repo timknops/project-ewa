@@ -17,6 +17,7 @@
       :has-edit-button="activeWarehouse != null && activeWarehouse !== 'Total'"
       :has-add-button="activeWarehouse != null && activeWarehouse !== 'Total'"
       :hide-id-column="true"
+      :has-search-bar="true"
       @edit="showUpdateModal"
       @add="showAddModal"
     ></table-component>

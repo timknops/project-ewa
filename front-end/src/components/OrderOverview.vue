@@ -14,6 +14,7 @@
       :has-add-button="true"
       :has-edit-button="true"
       :has-delete-button="true"
+      :has-search-bar="true"
       @add="showAddModal"
       @edit="showEditModal"
       @delete="showDeleteModal"
