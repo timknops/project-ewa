@@ -55,7 +55,7 @@ import { Transition } from "vue";
  */
 export default {
   name: "ProjectsOverview",
-  inject: ["projectService"],
+  inject: ["projectService", "sessionService"],
   components: {
     TableComponent,
     SpinnerComponent,
@@ -88,13 +88,27 @@ export default {
       showToast: false,
       toastTitle: "",
       toastMessage: "",
+      userTypes: Object.freeze({
+        ADMIN: "ADMIN",
+        VIEWER: "VIEWER",
+      }),
     };
   },
   async created() {
-    const data = await this.projectService.getAll();
+    // Get the current active user type.
+    const user = await this.sessionService.currentUser;
+
+    let data;
+    if (user.type === this.userTypes.VIEWER && user.team !== null) {
+      data = await this.projectService.getAllForTeam(user.team);
+    }
+
+    if (user.type === this.userTypes.ADMIN) {
+      data = await this.projectService.getAll();
+    }
 
     // If there are no projects, add only the table header row titles.
-    if (data.length === 0) {
+    if (data === undefined || data.length === 0) {
       this.projects = [this.formatEmptyTableData()];
 
       this.projectsAreLoading = false;

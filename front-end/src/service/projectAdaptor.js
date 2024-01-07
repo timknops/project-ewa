@@ -9,7 +9,7 @@ export class ProjectAdaptor {
    * Constructs a new ProjectAdaptor instance.
    */
   constructor() {
-    this.resourceUrl = process.env.VUE_APP_API_URL + '/projects';
+    this.resourceUrl = process.env.VUE_APP_API_URL + "/projects";
   }
 
   /**
@@ -47,6 +47,15 @@ export class ProjectAdaptor {
    */
   async get(id) {
     return await this.fetchJSON(`${this.resourceUrl}/${id}`);
+  }
+
+  /**
+   * Retrieves all projects for a specific team.
+   * @param {string} teamId The ID of the team to retrieve projects for.
+   * @returns {Promise<object>} A promise that resolves to the fetched JSON data representing all projects for the specified team.
+   */
+  async getAllForTeam(teamId) {
+    return await this.fetchJSON(`${this.resourceUrl}/team/${teamId}`);
   }
 
   /**
