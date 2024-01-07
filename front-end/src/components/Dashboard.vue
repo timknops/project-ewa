@@ -275,7 +275,6 @@ export default {
       const amountOfProductMap = {};
       const totalInventoriesMap = {};
 
-      const currentInventoryMap = {};
       dataBasedOnTheMonth.forEach(item => {
         currentInventoryMaps[item.productName] = item.inventoryQuantity;
       });

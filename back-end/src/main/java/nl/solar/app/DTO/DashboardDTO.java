@@ -10,7 +10,6 @@ public class DashboardDTO {
     private String productName;
     private int quantity;
     private int inventoryQuantity;
-
     private LocalDate deliverDate;
     private LocalDate dueDate;
     private Long projectId;
@@ -25,10 +24,7 @@ public class DashboardDTO {
         this.productName = productName;
         this.quantity = quantity;
         this.inventoryQuantity = inventoryQuantity;
-//        this.orderId = orderId;
-//        this.orderWarehouseId = orderWarehouseId;
         this.deliverDate = deliverDate;
-//        this.productId = productId;
     }
 
     public DashboardDTO(Long warehouseId, String warehouseName, String productName, int inventoryQuantity, Long productId) {
@@ -42,6 +38,7 @@ public class DashboardDTO {
     public DashboardDTO(){
 
     }
+
     public DashboardDTO(LocalDate dueDate, Long projectId, String projectName, Long warehouseId, String warehouseName, Long productId, String productName, int amountOfProduct) {
         this.dueDate = dueDate;
         this.projectId = projectId;
@@ -51,16 +48,6 @@ public class DashboardDTO {
         this.productId = productId;
         this.productName = productName;
         this.amountOfProduct = amountOfProduct;
-    }
-
-
-    public DashboardDTO(DashboardDTO other) {
-        this.warehouseId = other.warehouseId;
-        this.warehouseName = other.warehouseName;
-        this.productName = other.productName;
-        this.quantity = other.quantity;
-        this.inventoryQuantity = other.inventoryQuantity;
-        this.deliverDate = other.deliverDate;
     }
 
     public Long getWarehouseId() {
@@ -150,6 +137,7 @@ public class DashboardDTO {
     public void setAmountOfProduct(int amountOfProduct) {
         this.amountOfProduct = amountOfProduct;
     }
+
     @Override
     public String toString() {
         return "DashboardDTO{" +
@@ -159,6 +147,11 @@ public class DashboardDTO {
                 ", quantity=" + quantity +
                 ", inventoryQuantity=" + inventoryQuantity +
                 ", deliverDate=" + deliverDate +
+                ", dueDate=" + dueDate +
+                ", projectId=" + projectId +
+                ", projectName='" + projectName + '\'' +
+                ", productId=" + productId +
+                ", amountOfProduct=" + amountOfProduct +
                 "}\n";
     }
 }
