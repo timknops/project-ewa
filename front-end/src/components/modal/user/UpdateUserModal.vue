@@ -35,7 +35,7 @@
     </div>
     <!--    email of the user-->
     <div class="mb-3">
-      <label for="email" class="form-label fw-bold">e-mail</label>
+      <label for="email" class="form-label fw-bold">E-mail</label>
       <input id="email"
              type="email"
              class="form-control"
