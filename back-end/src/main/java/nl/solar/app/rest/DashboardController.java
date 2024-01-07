@@ -2,9 +2,11 @@ package nl.solar.app.rest;
 
 import nl.solar.app.DTO.DashboardDTO;
 import nl.solar.app.DTO.InventoryDTO;
+import nl.solar.app.models.Email;
 import nl.solar.app.models.Inventory;
 import nl.solar.app.repositories.InventoryRepository;
 import nl.solar.app.repositories.jpaRepositories.DashboardRepositoryJpa;
+import nl.solar.app.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/dashboard-items")
@@ -43,10 +46,13 @@ public class DashboardController {
     @Autowired
     InventoryRepository inventoryRepo;
 
+    @Autowired
+    private EmailService emailService;
+
     // quantity = the amount added by an order
 // inventoryQuantity = the current inventory level
 // amountOfProduct = the amount used by a project
-    @Scheduled(fixedRate = 20000) // fixedRate is low for testing (fixedRate = 24, timeUnit = TimeUnit.HOURS) for daily
+    @Scheduled(fixedDelay = 24, timeUnit = TimeUnit.HOURS)
     protected void forecastNotification () {
         System.out.println("Scheduled method called:\n");
 
@@ -71,7 +77,45 @@ public class DashboardController {
 
         // method to get any shortages
         Map<String, LocalDate> shortages = getStockShortages(currentStockValues, minimumStockValues, mergedList);
-        System.out.println(shortages);
+
+        if (!shortages.isEmpty()){
+            // method to send email
+            sendEmailNotification(shortages);
+        }
+    }
+
+    // method to send an email
+    private void sendEmailNotification(Map<String, LocalDate> shortages) {
+        Email email = new Email();
+
+        String body = formatShortagesString(shortages);
+
+        email.setReceiver("wilcovdpol1999@gmail.com"); // correct email
+        email.setEmailBody(body);
+        email.setSubject("Stock shortage notification");
+
+        emailService.sendMail(email);
+    }
+
+    // method to format the Map into a String
+    private String formatShortagesString(Map<String, LocalDate> shortages) {
+        StringBuilder body = new StringBuilder();
+
+        body.append("Hello,\n\n");
+        body.append("This is an automated message letting you know that the following items need to be ordered, to " +
+                "prevent them from having a shortage of stock for upcoming projects: \n\n");
+
+        for (Map.Entry<String, LocalDate> entry : shortages.entrySet()) {
+            String key = entry.getKey();
+            LocalDate value = entry.getValue();
+
+            body.append(key)
+                    .append(" will have a shortage of stock on: ")
+                    .append(value)
+                    .append("\n");
+        }
+
+        return body.toString();
     }
 
     // method to combine the quantities of a certain product for orders on the same day
