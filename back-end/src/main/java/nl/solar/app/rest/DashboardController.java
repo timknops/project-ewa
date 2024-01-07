@@ -55,6 +55,10 @@ public class DashboardController {
         // method to combine projects on the same date
         List<DashboardDTO> combinedQuantityList = combineQuantityList(originalQuantityList);
 
+        // method to combine orders on the same date
+        List<DashboardDTO> combinedAmountOfProductList = combineAmountOfProductList(originalAmountOfProductList);
+
+
     }
 
     // method to combine the quantities of a certain product for orders on the same day
@@ -74,5 +78,24 @@ public class DashboardController {
 
         return new ArrayList<>(combinedMap.values());
     }
+
+    // method to combine the quantities of a certain product for projects on the same day
+    private static List<DashboardDTO> combineAmountOfProductList(List<DashboardDTO> originalAmountOfProductList) {
+        Map<String, DashboardDTO> combinedMap = new HashMap<>();
+
+        for (DashboardDTO dto : originalAmountOfProductList) {
+            String key = dto.getWarehouseName() + "_" + dto.getProductName() + "_" + dto.getDueDate();
+
+            if (combinedMap.containsKey(key)) {
+                DashboardDTO combinedDTO = combinedMap.get(key);
+                combinedDTO.setQuantity(combinedDTO.getAmountOfProduct() + dto.getAmountOfProduct());
+            } else {
+                combinedMap.put(key, dto);
+            }
+        }
+
+        return new ArrayList<>(combinedMap.values());
+    }
+
 
 }
