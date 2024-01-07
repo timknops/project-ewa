@@ -58,6 +58,10 @@ public class DashboardController {
         // method to combine orders on the same date
         List<DashboardDTO> combinedAmountOfProductList = combineAmountOfProductList(originalAmountOfProductList);
 
+        // method to add a order to the quantity list
+        List<DashboardDTO> mergedList = mergeQuantityAndAmountOfProduct(combinedQuantityList, combinedAmountOfProductList);
+        mergedList.sort(Comparator.comparing(DashboardDTO::getDeliverDate)); // list now sorted on date
+
 
     }
 
@@ -97,5 +101,30 @@ public class DashboardController {
         return new ArrayList<>(combinedMap.values());
     }
 
+    // method to combine the list of orders and the list of project where the date is the same
+    private static List<DashboardDTO> mergeQuantityAndAmountOfProduct(
+            List<DashboardDTO> combinedQuantityList, List<DashboardDTO> combinedAmountOfProductList) {
+        Map<String, DashboardDTO> mergedMap = new HashMap<>();
+
+        for (DashboardDTO dto : combinedQuantityList) {
+            String key = dto.getWarehouseName() + "_" + dto.getProductName() + "_" + dto.getDeliverDate();
+
+            mergedMap.put(key, dto);
+        }
+
+        for (DashboardDTO dto : combinedAmountOfProductList) {
+            String key = dto.getWarehouseName() + "_" + dto.getProductName() + "_" + dto.getDueDate();
+
+            if (mergedMap.containsKey(key)) {
+                DashboardDTO combinedDTO = mergedMap.get(key);
+                combinedDTO.setAmountOfProduct(dto.getAmountOfProduct());
+            } else {
+                dto.setDeliverDate(dto.getDueDate());
+                mergedMap.put(key, dto);
+            }
+        }
+
+        return new ArrayList<>(mergedMap.values());
+    }
 
 }
