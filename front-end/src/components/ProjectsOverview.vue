@@ -4,9 +4,9 @@
       v-if="!projectsAreLoading"
       :table-data="projects"
       :amount-to-display="10"
-      :has-delete-button="true"
-      :has-edit-button="true"
-      :has-add-button="true"
+      :has-delete-button="hasDeleteButton"
+      :has-edit-button="hasEditButton"
+      :has-add-button="hasAddButton"
       :has-specific-button="true"
       :has-search-bar="true"
       @edit="showEditModal"
@@ -92,6 +92,9 @@ export default {
         ADMIN: "ADMIN",
         VIEWER: "VIEWER",
       }),
+      hasDeleteButton: true,
+      hasEditButton: true,
+      hasAddButton: true,
     };
   },
   async created() {
@@ -99,10 +102,16 @@ export default {
     const user = await this.sessionService.currentUser;
 
     let data;
+
+    // If the user is a viewer and has a team, get all projects for that team.
     if (user.type === this.userTypes.VIEWER && user.team !== null) {
-      data = await this.projectService.getAllForTeam(user.team);
+      this.hasDeleteButton = false;
+      this.hasEditButton = false;
+      this.hasAddButton = false;
+      data = await this.projectService.getAllForTeam(user.team.id);
     }
 
+    // If the user is an admin, get all projects.
     if (user.type === this.userTypes.ADMIN) {
       data = await this.projectService.getAll();
     }

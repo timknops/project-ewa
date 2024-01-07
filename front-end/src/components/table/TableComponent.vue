@@ -102,7 +102,7 @@
 
               <!-- If the table has edit and delete buttons -->
               <TableButtons
-                v-if="hasEditButton || hasDeleteButton"
+                v-if="hasEditButton || hasDeleteButton || hasSpecificButton"
                 :table-row="tableRow"
                 :row-height-large="ROW_HEIGHT_LARGE"
                 :has-edit-button="hasEditButton"
@@ -172,7 +172,7 @@
 
               <!-- If the table has edit and delete buttons -->
               <TableButtons
-                v-if="hasEditButton || hasDeleteButton"
+                v-if="hasEditButton || hasDeleteButton || hasSpecificButton"
                 :table-row="tableRow"
                 :row-height-large="ROW_HEIGHT_LARGE"
                 :has-edit-button="hasEditButton"
@@ -244,7 +244,7 @@ export default {
     TableFooter,
     TableButtons,
   },
-  emits: ["add", "edit", "delete"],
+  emits: ["add", "edit", "delete", "specific"],
   props: {
     tableWidth: String,
     boldFirstColumn: Boolean,
