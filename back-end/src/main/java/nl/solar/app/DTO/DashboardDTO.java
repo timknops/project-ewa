@@ -10,11 +10,16 @@ public class DashboardDTO {
     private String productName;
     private int quantity;
     private int inventoryQuantity;
-//    private Long orderId;
-//    private Long orderWarehouseId;
-    private LocalDate deliverDate;
 
-    public DashboardDTO(Long warehouseId, String warehouseName, String productName, int quantity, int inventoryQuantity, LocalDate deliverDate) {
+    private LocalDate deliverDate;
+    private LocalDate dueDate;
+    private Long projectId;
+    private String projectName;
+    private Long productId;
+    private int amountOfProduct;
+
+
+    public DashboardDTO(Long warehouseId, String warehouseName, String productName, Integer quantity, Integer inventoryQuantity, LocalDate deliverDate) {
         this.warehouseId = warehouseId;
         this.warehouseName = warehouseName;
         this.productName = productName;
@@ -23,7 +28,31 @@ public class DashboardDTO {
 //        this.orderId = orderId;
 //        this.orderWarehouseId = orderWarehouseId;
         this.deliverDate = deliverDate;
+//        this.productId = productId;
     }
+
+    public DashboardDTO(Long warehouseId, String warehouseName, String productName, int inventoryQuantity, Long productId) {
+        this.warehouseId = warehouseId;
+        this.warehouseName = warehouseName;
+        this.productName = productName;
+        this.inventoryQuantity = inventoryQuantity;
+        this.productId = productId;
+    }
+
+    public DashboardDTO(){
+
+    }
+    public DashboardDTO(LocalDate dueDate, Long projectId, String projectName, Long warehouseId, String warehouseName, Long productId, String productName, int amountOfProduct) {
+        this.dueDate = dueDate;
+        this.projectId = projectId;
+        this.projectName = projectName;
+        this.warehouseId = warehouseId;
+        this.warehouseName = warehouseName;
+        this.productId = productId;
+        this.productName = productName;
+        this.amountOfProduct = amountOfProduct;
+    }
+
 
     public DashboardDTO(DashboardDTO other) {
         this.warehouseId = other.warehouseId;
@@ -36,6 +65,10 @@ public class DashboardDTO {
 
     public Long getWarehouseId() {
         return warehouseId;
+    }
+
+    public void setWarehouseId(Long warehouseId) {
+        this.warehouseId = warehouseId;
     }
 
     public String getWarehouseName() {
@@ -62,10 +95,6 @@ public class DashboardDTO {
         this.quantity = quantity;
     }
 
-    public void setWarehouseId(Long warehouseId) {
-        this.warehouseId = warehouseId;
-    }
-
     public int getInventoryQuantity() {
         return inventoryQuantity;
     }
@@ -74,21 +103,53 @@ public class DashboardDTO {
         this.inventoryQuantity = inventoryQuantity;
     }
 
-    public void setDeliverDate(LocalDate deliverDate) {
-        this.deliverDate = deliverDate;
-    }
-    //    public Long getOrderId() {
-//        return orderId;
-//    }
-//
-//    public Long getOrderWarehouseId() {
-//        return orderWarehouseId;
-//    }
-
     public LocalDate getDeliverDate() {
         return deliverDate;
     }
 
+    public void setDeliverDate(LocalDate deliverDate) {
+        this.deliverDate = deliverDate;
+    }
+
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
+
+    public Long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Long productId) {
+        this.productId = productId;
+    }
+
+    public int getAmountOfProduct() {
+        return amountOfProduct;
+    }
+
+    public void setAmountOfProduct(int amountOfProduct) {
+        this.amountOfProduct = amountOfProduct;
+    }
     @Override
     public String toString() {
         return "DashboardDTO{" +

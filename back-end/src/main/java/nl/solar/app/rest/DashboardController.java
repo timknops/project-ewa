@@ -20,9 +20,18 @@ public class DashboardController {
         this.dashboardRepo = dashboardRepo;
     }
 
-    @GetMapping
+    @GetMapping("/inventory")
     public List<DashboardDTO> getDashboardItems() {
         return dashboardRepo.getDashboardItems();
+    }
+
+    @GetMapping("/project")
+    public List<DashboardDTO> getProjectDashboardItems() {
+        return dashboardRepo.getProjectDashboardItems();
+    }
+    @GetMapping("/inventory-quantity")
+    public List<DashboardDTO> getInventoryQuantity() {
+        return dashboardRepo.getInventoryQuantity();
     }
 
 }
