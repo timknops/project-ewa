@@ -1,5 +1,6 @@
 package nl.solar.app.rest;
 
+import jakarta.annotation.PostConstruct;
 import nl.solar.app.DTO.DashboardDTO;
 import nl.solar.app.DTO.InventoryDTO;
 import nl.solar.app.models.Email;
@@ -8,6 +9,7 @@ import nl.solar.app.repositories.InventoryRepository;
 import nl.solar.app.repositories.jpaRepositories.DashboardRepositoryJpa;
 import nl.solar.app.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,12 +52,10 @@ public class DashboardController {
     private EmailService emailService;
 
     // quantity = the amount added by an order
-// inventoryQuantity = the current inventory level
-// amountOfProduct = the amount used by a project
-    @Scheduled(fixedDelay = 24, timeUnit = TimeUnit.HOURS)
-    protected void forecastNotification () {
-        System.out.println("Scheduled method called:\n");
-
+    // inventoryQuantity = the current inventory level
+    // amountOfProduct = the amount used by a project
+    @Scheduled(initialDelay = 10000, fixedRate = 24 * 60 * 60 * 1000)
+    public void forecastNotification() {
         List<DashboardDTO> originalQuantityList = getDashboardItems();
         List<DashboardDTO> originalAmountOfProductList = getProjectDashboardItems();
 
@@ -217,7 +217,7 @@ public class DashboardController {
 
     // method to get the date at which a stock value wouldn't be enough anymore
     private static Map<String, LocalDate> getStockShortages(Map<String, Integer> currentStockValues, Map<String, Integer> minimumStockValues,
-                                                                    List<DashboardDTO> mergedList) {
+                                                            List<DashboardDTO> mergedList) {
         Map<String, LocalDate> shortagesMap = new HashMap<>();
 
         for (DashboardDTO dto : mergedList){
