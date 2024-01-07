@@ -65,6 +65,10 @@ public class DashboardController {
         // method to extract the current stock levels
         Map<String, Integer> currentStockValues = extractCurrentStockValues(mergedList);
 
+        // method to get minimum value of product
+        Map<String, Integer> minimumStockValues = extractMinimumValueProduct(inventoryRepo.findAll());
+
+
     }
 
     // method to combine the quantities of a certain product for orders on the same day
@@ -146,4 +150,21 @@ public class DashboardController {
         return currentStockValues;
     }
 
+    // method to extract minimum value of a products stock
+    private static Map<String, Integer> extractMinimumValueProduct(List<Inventory> inventories) {
+        Map<String, Integer> minimumStockValues = new HashMap<>();
+
+        for (Inventory inventory : inventories){
+            String key = "Product: " + inventory.getProduct().getProductName() +
+                    ", in warehouse: " + inventory.getWarehouse().getName();
+
+            if (minimumStockValues.containsKey(key)) {
+                // continue
+            } else {
+                minimumStockValues.put(key, inventory.getMinimum());
+            }
+        }
+
+        return minimumStockValues;
+    }
 }
