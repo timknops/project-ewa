@@ -4,6 +4,7 @@ import nl.solar.app.DTO.InventoryDTO;
 import nl.solar.app.DTO.InventoryProductDTO;
 import nl.solar.app.WebConfig;
 import nl.solar.app.exceptions.BadRequestException;
+import nl.solar.app.exceptions.ResourceNotFoundException;
 import nl.solar.app.models.Inventory;
 import nl.solar.app.models.Product;
 import nl.solar.app.models.Warehouse;
@@ -24,6 +25,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Test class for the InventoryController.
@@ -32,11 +34,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author  Julian Kruithof
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class inventoryControllerTest {
+public class InventoryControllerTest {
 
     @Autowired
     WebConfig webConfig;
-
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -74,6 +75,31 @@ public class inventoryControllerTest {
         InventoryProductDTO[] inventory = response.getBody();
         assertThat(inventory.length, is(greaterThan(0)));
     }
+
+    @Test
+    public void inventoryCanBeRetrieved() {
+        ResponseEntity<InventoryProductDTO> response = this.restTemplate
+                .getForEntity("/warehouses/1000/products/1", InventoryProductDTO.class);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        ;
+        InventoryProductDTO inventory = response.getBody();
+        assertEquals(1, inventory.getId());
+        assertNotNull(inventory.getProductName());
+        assertNotNull(inventory.getQuantity());
+        assertNotNull(inventory.getMinimum());
+    }
+
+    @Test
+    public void findByIdsSentsBadRequestWhenWarehouseOrProductDoesntExist() {
+        ResponseEntity<ResourceNotFoundException> response = this.restTemplate
+                .getForEntity("/warehouses/1000/products/0", ResourceNotFoundException.class);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals("The combination of warehouse and product doesn't return a resource", response.getBody().getMessage());
+    }
+
+
 
     @Test
     public void InventoryCanBeCreated() {
@@ -171,7 +197,7 @@ public class inventoryControllerTest {
     }
 
     @Test
-    public void patchRequestShouldReturnBadRequestWhenQuantityOrMinimumIsNotSet() {
+    public void patchRequestShouldReturnErrorsCorrectly() {
         Map<String, Integer> patch = Map.of("minimum", 5);
         ResponseEntity<BadRequestException> response = this.restTemplate.exchange(
                 "/warehouses/1000/products/1",
@@ -195,6 +221,16 @@ public class inventoryControllerTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         exception = response.getBody();
         assertEquals("Request body doesn't contain quantity", exception.getMessage());
+
+        ResponseEntity<ResourceNotFoundException> response1 = this.restTemplate.exchange(
+                "/warehouses/1000/products/0",
+                org.springframework.http.HttpMethod.PATCH,
+                new org.springframework.http.HttpEntity<>(patch),
+                ResourceNotFoundException.class
+        );
+
+        assertEquals(HttpStatus.NOT_FOUND, response1.getStatusCode());
+        assertEquals("inventory Not Found", response1.getBody().getMessage());
     }
 
 }
