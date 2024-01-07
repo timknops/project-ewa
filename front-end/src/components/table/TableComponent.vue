@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-3" v-if="hasSearchBar">
+  <!-- <div class="mb-3" v-if="hasSearchBar">
     <input
       v-model="searchQuery"
       type="text"
@@ -7,7 +7,7 @@
       placeholder="Search..."
       @input="handleSearch"
     />
-  </div>
+  </div> -->
   <div class="card border-0 pt-4 pb-2 d-flex" :style="{ width: tableWidth }">
     <div class="card-body px-4 py-0 overflow-hidden">
       <!-- Both the title and the subtitle are optional props! They will not be displayed when not specified -->
@@ -21,6 +21,30 @@
       <p v-if="subTitle !== undefined" class="ps-2 subtitle mb-2">
         {{ subTitle }}
       </p>
+      <div class="d-flex gap-3 p-1">
+        <div class="flex-fill">
+          <input
+            v-if="hasSearchBar"
+            v-model="searchQuery"
+            type="text"
+            class="form-control"
+            placeholder="Search..."
+            @input="handleSearch"
+          />
+        </div>
+
+        <div>
+          <button
+            v-if="hasAddButton"
+            class="btn btn-primary"
+            @click="$emit('add')"
+          >
+            <font-awesome-icon icon="fa-solid fa-plus" />
+            add
+          </button>
+        </div>
+      </div>
+
       <div class="table-responsive" :style="{ height: calculateTableHeight }">
         <table class="table table-hover mb-0">
           <thead>
