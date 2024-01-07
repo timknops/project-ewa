@@ -24,7 +24,6 @@
           @ok-modal-btn="handleOk"
       />
     </Transition>
-
     <Transition>
       <ToastComponent
           v-if="showToast"
@@ -45,10 +44,7 @@ import ToastComponent from "@/components/util/ToastComponent.vue";
 /**
  * Component to display and manage the users for the admins
  *
- * Currently, the admin view is being displayed. At this moment this excludes the password.
- * This is done so that the table can be displayed properly, since it bugs out at too many fields,
- * but also for security/privacy reasons.
- * The password should at least be able to be changed by the user using the forgot password function in the user.
+ * Not all fields of the user are displayed, password for example is not displayed for security reasons
  */
 export default {
   name: "UserOverview",
@@ -61,12 +57,6 @@ export default {
   inject: ["userService"],
   data() {
     return {
-      /**
-       * Array of the full view including the passwords
-       * Currently not used however can probably be used to change the password temporarily or crud from there instead
-       * sending a whole new request
-       */
-      users: [],
       userList: {
         id: Number,
         team: String,
@@ -148,6 +138,8 @@ export default {
           break;
       }
     },
+
+    //helper method to transform the user data received from the back-end to a more appropriate format for the table
     formatUserForTable(user) {
       return {
         id: user.id,
@@ -156,8 +148,7 @@ export default {
         name: user.name,
         type: user.type
       }
-    }
-    ,
+    },
     /**
      * Adds a user to the backend user list, also to the user arrays
      * @param user that got created to be added
