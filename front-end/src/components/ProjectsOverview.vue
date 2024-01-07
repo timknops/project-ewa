@@ -3,7 +3,7 @@
     <TableComponent
       v-if="!projectsAreLoading"
       :table-data="projects"
-      :amount-to-display="10"
+      :amount-to-display="amountToDisplay"
       :has-delete-button="hasDeleteButton"
       :has-edit-button="hasEditButton"
       :has-add-button="hasAddButton"
@@ -95,6 +95,7 @@ export default {
       hasDeleteButton: true,
       hasEditButton: true,
       hasAddButton: true,
+      amountToDisplay: 10,
     };
   },
   async created() {
@@ -128,6 +129,11 @@ export default {
     this.projects = data.map((project) => {
       return this.formatProjectForTable(project);
     });
+
+    // If there are less projects than the amount to display, set the amount to display to the amount of projects.
+    if (this.projects.length < this.amountToDisplay) {
+      this.amountToDisplay = this.projects.length;
+    }
 
     this.projectsAreLoading = false;
   },
