@@ -75,4 +75,29 @@ public class DashboardRepositoryJpa  {
                 .collect(Collectors.toList());
     }
 
+    public List<DashboardDTO> getInventoryQuantity() {
+        List<Object[]> inventoryResults = entityManager.createQuery(
+                        "SELECT " +
+                                "w.id AS warehouseId, w.name AS warehouseName, " +
+                                "p.id AS productId, p.productName AS productName, " +
+                                "COALESCE(SUM(inv.quantity), 0) AS inventoryQuantity " +
+                                "FROM Warehouse w " +
+                                "JOIN Product p ON 1 = 1 " +
+                                "LEFT JOIN Inventory inv ON p.id = inv.product.id AND w.id = inv.warehouse.id " +
+                                "GROUP BY w.id, w.name, p.id, p.productName"
+                        , Object[].class)
+                .getResultList();
+
+        return inventoryResults.stream()
+                .map(result -> new DashboardDTO(
+                        (Long) result[0], // warehouseId
+                        (String) result[1], // warehouseName
+                        (String) result[3], // productName
+                        ((Number) result[4]).intValue(), // inventoryQuantity
+                        (Long) result[2] // productId
+
+                ))
+                .collect(Collectors.toList());
+    }
+
 }

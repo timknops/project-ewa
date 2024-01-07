@@ -31,7 +31,7 @@
         :tableWidth="'100%'"
         :boldFirstColumn="true"
         :amountToDisplay="4"
-        :tableData="filteredInventoryData"
+        :tableData="tableData"
         :arrayAmountToDisplay="10"
         table-title="Inventory"
         sub-title="Future deliveries of my warehouse"
@@ -39,20 +39,6 @@
     >
     </TableComponent>
 
-
-<!--    <div class="flex-grow-1">-->
-<!--      <TableComponent-->
-<!--          v-if="filteredProjectData.length > 0"-->
-<!--          :tableWidth="'100%'"-->
-<!--          :boldFirstColumn="true"-->
-<!--          :amountToDisplay="4"-->
-<!--          :tableData="filteredProjectData"-->
-<!--          :arrayAmountToDisplay="10"-->
-<!--          table-title="Projects"-->
-<!--          sub-title="Project details"-->
-<!--      >-->
-<!--      </TableComponent>-->
-<!--    </div>-->
 
     <!--Chart forecasting-->
     <div class="table-container mb-5 gap-5 d-flex w-100 ">
@@ -80,14 +66,14 @@ export default {
   data() {
     return {
       inventoryData: [],
-      selectedWarehouse: "Superzon", //default warehouse
+      selectedWarehouse: "Solar Sedum", //default warehouse
       chart: null,
 
       projectData: [],
+      inventoryQuantities: [],
     };
   },
   mounted() {
-    // this.updateChart();
     this.fetchInventoryData();
   },
   watch: {
@@ -99,9 +85,25 @@ export default {
       handler: 'updateChart',
       immediate: true, // Trigger the handler on component mount
     },
-    // immediate: true,
   },
   computed: {
+    tableData() {
+      return this.filteredInventoryData.map(({productName, quantity, deliverDate, inventoryQuantity}) => ({
+        productName,
+        quantity,
+        deliverDate,
+        inventoryQuantity
+      }));
+    },
+
+    chartData() {
+      return this.filteredInventoryData.map(({productName, quantity, deliverDate, inventoryQuantity}) => ({
+        productName,
+        quantity,
+        deliverDate,
+        inventoryQuantity,
+      }));
+    },
     //table only shows the ones that have an upcoming date
     filteredInventoryData() {
       const currentDate = new Date();
@@ -110,7 +112,7 @@ export default {
         return (
             (this.selectedWarehouse === null ||
                 item.warehouseName === this.selectedWarehouse) &&
-             deliverDate > currentDate
+            deliverDate > currentDate
         );
       })
           // Sort the deliverDate in the table from low to high
@@ -120,25 +122,27 @@ export default {
             return firstDate - lastDate;
           })
 
-          .map(({productName, quantity, deliverDate, inventoryQuantity }) => ({
+          .map(({productName, quantity, deliverDate, inventoryQuantity}) => ({
             productName,
             quantity,
             deliverDate,
             inventoryQuantity,
           }));
-
     },
-
-
     filteredProjectData() {
       const currentDate = new Date();
-      return this.projectData.filter( (project) =>{
+      return this.projectData.filter((project) => {
         const dueDate = new Date(project.dueDate);
         return dueDate > currentDate;
       }).filter(project => project.warehouseName === this.selectedWarehouse);
     },
-
-
+    filteredInventoryQuantity() {
+      const productsInTable = new Set(this.tableData.map(item => item.productName));
+      const filteredQuantities = this.inventoryQuantities.filter(item =>
+          !productsInTable.has(item.productName) && item.warehouseName === this.selectedWarehouse);
+      // console.log("Filtered Inventory Quantities:", filteredQuantities);
+      return filteredQuantities;
+    },
     uniqueWarehouseNames() {
       return Array.from(new Set(this.inventoryData.map((item) => item.warehouseName)));
     },
@@ -147,7 +151,7 @@ export default {
     this.fetchInventoryData();
     this.updateChart();
     this.fetchProjectData();
-    // this.fetchInventoriesData();
+    this.fetchInventoryQuantity();
   },
   methods: {
     async fetchInventoryData() {
@@ -157,30 +161,28 @@ export default {
         console.error("Error fetching inventory data:", error);
       }
     },
-
-
     async fetchProjectData() {
       try {
         this.projectData = await this.dashboardService.findAllProjects();
-        // this.projectData.forEach(item => {
-        //   console.log(`ProductName: ${item.productName}, DueDate: ${item.dueDate}, AmountOfProduct: ${item.amountOfProduct}`);
-        // });
       } catch (error) {
         console.error("Error fetching project data:", error);
       }
     },
-
-
+    async fetchInventoryQuantity() {
+      try {
+        this.inventoryQuantities = await this.dashboardService.findAllInventoryQuantity();
+      } catch (error) {
+        console.error("Error fetching project data:", error);
+      }
+    },
     updateChartOnWarehouseChange() {
       this.updateChart();
     },
-
     warehouseSelect(warehouse) {
       this.selectedWarehouse = warehouse;
+      this.fetchInventoryQuantity(warehouse);
       this.updateChart();
     },
-
-
     updateChart() {
       if (this.saveChart) {
         this.saveChart.destroy();
@@ -196,40 +198,39 @@ export default {
 
 
       ];
-
       const currentDateFormattedValueTrimmed = new Date().toISOString().split("T")[0].trim();
 
-      const dataBasedOnTheMonth = this.filteredInventoryData;
+      const dataBasedOnTheMonth = this.chartData;
       const dataProject = this.filteredProjectData;
+      const constInventoryQuantity = this.filteredInventoryQuantity;
 
-
-      const currentInventoryMap = {};
+      const currentInventoryMaps = {};
       const amountOfProductMap = {};
+      const totalInventoriesMap = {};
 
       dataBasedOnTheMonth.forEach(item => {
-          currentInventoryMap[item.productName] = item.inventoryQuantity;
+        currentInventoryMaps[item.productName] = item.inventoryQuantity;
       });
-
       dataProject.forEach(item => {
         amountOfProductMap[item.productName] = item.amountOfProduct;
       });
+      constInventoryQuantity.forEach(item => {
+        totalInventoriesMap[item.productName] = item.inventoryQuantity;
+      });
 
-      // console.log('testData:', dataProject);
-
-      const nameLegend = [...new Set(dataBasedOnTheMonth.map(item => item.productName))];
-
+      const combinedData = [...dataBasedOnTheMonth, ...constInventoryQuantity];
+      const nameLegend = [...new Set(combinedData.map(item => item.productName))];
       /**
        * second point
        * @type {{backgroundColor: string, borderColor: string, data: [{x: string, y},...{x: *, y}[]], label: *, fill: boolean}[]}
        */
       const datasets = nameLegend.map((name, index) => {
-        let doubleOrderCounting = 0;
 
+        let doubleOrderCounting = 0;
         const quantityData = dataBasedOnTheMonth
             .filter(item => item.productName === name)
             .map(item => {
               doubleOrderCounting += item.quantity
-
               const totalQuantity = doubleOrderCounting + item.inventoryQuantity;
               return {
                 x: item.deliverDate,
@@ -239,43 +240,67 @@ export default {
 
         const currentDateFormattedValue = currentDateFormattedValueTrimmed;
         /**
+         * Inventory for all the products
+         * @type {{}}
+         */
+        const inventoryQuantityDataForItem = constInventoryQuantity
+            .filter(item => item.productName === name)
+            .map(item => {
+              currentInventoryMaps[item.productName] = item.inventoryQuantity;
+                return {
+                  x: currentDateFormattedValue,
+                  y: item.inventoryQuantity,
+                };
+            });
+
+        /**
+         * checks the project from the inventory
+         * @type {{x: *, y}[]}
+         */
+        const amountOfProductOnDueDate = dataProject
+            .filter(item => item.productName === name)
+            .map(item => {
+              const quantitySum = constInventoryQuantity
+                  .filter(monthItem => monthItem.productName === name)
+                  .reduce((sum, monthItem) => sum + monthItem.inventoryQuantity, 0);
+              const amountOfProductTest = dataProject
+                  .filter(projectItem => projectItem.productName === name)
+                  .reduce((sum, projectItem) => sum + projectItem.amountOfProduct, 0);
+              const calculatedValues = quantitySum - amountOfProductTest;
+              return {
+                x: item.dueDate,
+                y: calculatedValues || 0,
+              };
+      });
+
+        /**
          * first point
          * @type {{x: string, y: (*|number)}}
          */
         const currentInventoryQuantity = {
           x: currentDateFormattedValue,
-          y: currentInventoryMap[name] || 0,
+          y: currentInventoryMaps[name] || 0,
         };
-
-
         /**
          * third point
          */
-        const projectMinusQuanity = dataProject
-                .filter(item => item.productName === name)
-                .map(item => {
-                  const quantitySum = dataBasedOnTheMonth
-                      .filter(monthItem => monthItem.productName === name)
-                      .reduce((sum, monthItem) => sum + monthItem.quantity + monthItem.inventoryQuantity, 0);
-
-                  const amountOfProductSum = dataProject
-                      .filter(projectItem => projectItem.productName === name)
-                      .reduce((sum, projectItem) => sum + projectItem.amountOfProduct, 0);
-
-                  const calculatedValue = quantitySum - amountOfProductSum;
-
-                  return {
-                    x: item.dueDate,
-                    y: calculatedValue || 0,
-                  };
-                });
-
-
-
-        console.log('Dataset for', name, ':', [currentInventoryQuantity, ...quantityData, ...projectMinusQuanity]);
-
-        const allDataPoints = [currentInventoryQuantity, ...quantityData, ...projectMinusQuanity];
-
+        // const projectMinusQuanity = dataProject
+        //     .filter(item => item.productName === name)
+        //     .map(item => {
+        //       const quantitySum = dataBasedOnTheMonth
+        //           .filter(monthItem => monthItem.productName === name)
+        //           .reduce((sum, monthItem) => sum + monthItem.quantity + monthItem.inventoryQuantity, 0);
+        //       const amountOfProductSum = dataProject
+        //           .filter(projectItem => projectItem.productName === name)
+        //           .reduce((sum, projectItem) => sum + projectItem.amountOfProduct, 0);
+        //       const calculatedValue = quantitySum - amountOfProductSum;
+        //       return {
+        //         x: item.dueDate,
+        //         y: calculatedValue || 0,
+        //       };
+        //     });
+        // console.log('Dataset for', name, ':', [currentInventoryQuantity, ...quantityData, ...projectMinusQuanity]);
+        const allDataPoints = [currentInventoryQuantity, ...quantityData, ...inventoryQuantityDataForItem, ...amountOfProductOnDueDate];
 
         return {
           label: name,
@@ -292,18 +317,11 @@ export default {
         const formattedDate = nextDate.toISOString().split("T")[0];
         return formattedDate;
       });
-
-
-
-      console.log('dateLabels:', dateLabels);
-      console.log('datasets:', datasets);
-
       datasets.sort((a, b) => {
         const dateA = new Date(a.data[0].x);
         const dateB = new Date(b.data[0].x);
         return dateA - dateB;
       });
-
       /**
        * Makes the line continue straight from it's last point
        * @type {string}
@@ -311,17 +329,13 @@ export default {
       const lastDate = dateLabels[dateLabels.length - 1];
       datasets.forEach(dataset => {
         const lastDataPoint = dataset.data[dataset.data.length - 1];
-        dataset.data.push({ x: lastDate, y: lastDataPoint.y });
+        dataset.data.push({x: lastDate, y: lastDataPoint.y});
       });
-
-
       const chartData = {
         labels: dateLabels,
         datasets: datasets,
       };
-
       const chartOptions = {
-        // legend: { display: false },
         plugins: {
           title: {
             display: true,
@@ -354,7 +368,6 @@ export default {
             },
           },
         },
-
         tooltip: {
           enabled: true,
           callbacks: {
@@ -367,20 +380,14 @@ export default {
         elements: {
           line: {
             tension: 0,
-            // stepped: 'after',
           }
         },
       };
-
-      // console.log('Chart Data:', chartData);
-
       this.saveChart = new Chart(this.$refs.combinedChart, {
         type: "line",
         data: chartData,
         options: chartOptions,
       });
-
-
     }
   },
 }
@@ -425,9 +432,7 @@ h2 {
 }
 
 .chart-container {
-//width: 100%; width: 800px;
-  height: 450px;
-  margin: 0 auto;
+//width: 100%; width: 800px; height: 450px; margin: 0 auto;
 }
 
 .colorTest {

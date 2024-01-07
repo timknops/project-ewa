@@ -29,5 +29,9 @@ public class DashboardController {
     public List<DashboardDTO> getProjectDashboardItems() {
         return dashboardRepo.getProjectDashboardItems();
     }
+    @GetMapping("/inventory-quantity")
+    public List<DashboardDTO> getInventoryQuantity() {
+        return dashboardRepo.getInventoryQuantity();
+    }
 
 }

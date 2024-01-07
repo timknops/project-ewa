@@ -9,11 +9,8 @@ public class DashboardDTO {
     private String productName;
     private int quantity;
     private int inventoryQuantity;
-//    private Long orderId;
-//    private Long orderWarehouseId;
+
     private LocalDate deliverDate;
-
-
     private LocalDate dueDate;
     private Long projectId;
     private String projectName;
@@ -21,7 +18,7 @@ public class DashboardDTO {
     private int amountOfProduct;
 
 
-    public DashboardDTO(Long warehouseId, String warehouseName, String productName, int quantity, int inventoryQuantity, LocalDate deliverDate) {
+    public DashboardDTO(Long warehouseId, String warehouseName, String productName, Integer quantity, Integer inventoryQuantity, LocalDate deliverDate) {
         this.warehouseId = warehouseId;
         this.warehouseName = warehouseName;
         this.productName = productName;
@@ -30,9 +27,20 @@ public class DashboardDTO {
 //        this.orderId = orderId;
 //        this.orderWarehouseId = orderWarehouseId;
         this.deliverDate = deliverDate;
+//        this.productId = productId;
     }
 
+    public DashboardDTO(Long warehouseId, String warehouseName, String productName, int inventoryQuantity, Long productId) {
+        this.warehouseId = warehouseId;
+        this.warehouseName = warehouseName;
+        this.productName = productName;
+        this.inventoryQuantity = inventoryQuantity;
+        this.productId = productId;
+    }
 
+    public DashboardDTO(){
+
+    }
     public DashboardDTO(LocalDate dueDate, Long projectId, String projectName, Long warehouseId, String warehouseName, Long productId, String productName, int amountOfProduct) {
         this.dueDate = dueDate;
         this.projectId = projectId;
@@ -44,8 +52,13 @@ public class DashboardDTO {
         this.amountOfProduct = amountOfProduct;
     }
 
+
     public Long getWarehouseId() {
         return warehouseId;
+    }
+
+    public void setWarehouseId(Long warehouseId) {
+        this.warehouseId = warehouseId;
     }
 
     public String getWarehouseName() {
@@ -72,10 +85,6 @@ public class DashboardDTO {
         this.quantity = quantity;
     }
 
-    public void setWarehouseId(Long warehouseId) {
-        this.warehouseId = warehouseId;
-    }
-
     public int getInventoryQuantity() {
         return inventoryQuantity;
     }
@@ -84,17 +93,13 @@ public class DashboardDTO {
         this.inventoryQuantity = inventoryQuantity;
     }
 
+    public LocalDate getDeliverDate() {
+        return deliverDate;
+    }
+
     public void setDeliverDate(LocalDate deliverDate) {
         this.deliverDate = deliverDate;
     }
-    //    public Long getOrderId() {
-//        return orderId;
-//    }
-//
-//    public Long getOrderWarehouseId() {
-//        return orderWarehouseId;
-//    }
-
 
     public LocalDate getDueDate() {
         return dueDate;
@@ -135,9 +140,4 @@ public class DashboardDTO {
     public void setAmountOfProduct(int amountOfProduct) {
         this.amountOfProduct = amountOfProduct;
     }
-
-    public LocalDate getDeliverDate() {
-        return deliverDate;
-    }
-
 }
