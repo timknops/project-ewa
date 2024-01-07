@@ -7,11 +7,15 @@ export class TeamAdaptor {
 
     async fetchJSON(url, options = null) {
         let response = await fetch(url, options);
+        if (response.status === 204) {
+            return {};
+        }
+
         if (response.ok) {
             return await response.json();
         } else {
             const error = await response.json();
-            return Promise.reject({code: error.status, reason: error.message});
+            return Promise.reject({ code: error.status, reason: error.message });
         }
     }
 
@@ -24,7 +28,7 @@ export class TeamAdaptor {
     }
 
     async add(team) {
-        return await this.fetchJSON(this.resourceUrl, {
+        return await this.fetchJSON(`${this.resourceUrl}`, {
             method: "POST",
             headers: {"content-type": "application/json"},
             body: JSON.stringify(team)

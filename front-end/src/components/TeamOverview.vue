@@ -2,7 +2,7 @@
   <div>
     <TableComponent
         v-if="!teamsAreLoading"
-        :amount-to-display="4"
+        :amount-to-display="8"
         :has-add-button="true"
         :has-delete-button="true"
         :has-edit-button="true"
@@ -15,14 +15,22 @@
     <SpinnerComponent v-else />
     <Transition>
       <ModalComponent
-          v-if="showModal"
-          :title="modalTitle"
-          :active-modal="modalBodyComponent"
-          :item="modalTeam"
-          :ok-btn-text="okBtnText"
-          @cancel-modal-btn="this.showModal = false"
-          @corner-close-modal-btn="this.showModal = false"
-          @ok-modal-btn="handleOk"
+        v-if="showModal"
+        :title="modalTitle"
+        :active-modal="modalBodyComponent"
+        :item="modalTeam"
+        :ok-btn-text="okBtnText"
+        @cancel-modal-btn="this.showModal = false"
+        @corner-close-modal-btn="this.showModal = false"
+        @ok-modal-btn="handleOk"
+      />
+    </Transition>
+    <Transition>
+      <ToastComponent
+          v-if="showToast"
+          :toast-title="toastTitle"
+          :toast-message="toastMessage"
+          @close-toast="showToast = false"
       />
     </Transition>
   </div>
@@ -32,15 +40,23 @@
 import TableComponent from "@/components/table/TableComponent.vue";
 import ModalComponent from "@/components/modal/ModalComponent.vue";
 import SpinnerComponent from "@/components/util/SpinnerComponent.vue";
+import ToastComponent from "@/components/util/ToastComponent";
 
 export default {
   name: "TeamOverview",
-  components: {TableComponent, ModalComponent, SpinnerComponent},
+  components: {TableComponent, ModalComponent, SpinnerComponent, ToastComponent},
   inject: ['teamsService'],
 
   data() {
     return {
-      teams: [],
+      teams: [
+        {
+          id: Number,
+          teamName: String,
+          warehouse: String,
+          type: String,
+        },
+      ],
       showModal: false,
       modalTitle: "",
       modalBodyComponent: "",
@@ -57,83 +73,112 @@ export default {
         DELETE: "delete-team-modal",
       }),
       teamsAreLoading: true,
+      showToast: false,
+      toastTitle: "",
+      toastMessage: "",
     };
   },
   methods: {
     showAddModal() {
-      this.modalTitle = "Add team"
-      this.modalBodyComponent = this.MODAL_TYPES.ADD
-      this.okBtnText = "Add"
-      this.showModal = true
+      this.modalTitle = "Add team";
+      this.modalBodyComponent = this.MODAL_TYPES.ADD;
+      this.modalTeam = {
+        team: '',
+        warehouse: '',
+      };
+      this.okBtnText = "Add";
+      this.showModal = true;
     },
 
     async showEditModal(team) {
-      this.modalTitle = "Update team"
-      this.modalBodyComponent = this.MODAL_TYPES.UPDATE
-      this.modalTeam = await this.teamsService.findById(team.id)
-      this.okBtnText = "Save"
+      this.modalTitle = "Update team";
+      this.modalBodyComponent = this.MODAL_TYPES.UPDATE;
+      this.modalTeam = await this.teamsService.findById(team.id);
+      this.okBtnText = "Save";
       this.showModal = true;
     },
 
     showDeleteModal(team) {
-      this.modalTitle = "Delete team"
-      this.modalBodyComponent = this.MODAL_TYPES.DELETE
-      this.modalTeam = team
-      this.okBtnText = "Ok"
+      this.modalTitle = "Delete team";
+      this.modalBodyComponent = this.MODAL_TYPES.DELETE;
+      this.modalTeam = team;
+      this.okBtnText = "Delete";
       this.showModal = true;
     },
 
     handleOk(team, modal) {
       switch (modal) {
         case this.MODAL_TYPES.ADD:
-          this.addTeam(team)
+          this.addTeam(team);
           break;
         case this.MODAL_TYPES.UPDATE:
-          this.updateTeam(team)
+          this.updateTeam(team);
           break;
         case this.MODAL_TYPES.DELETE:
-          this.deleteTeam(team)
+          this.deleteTeam(team);
           break;
       }
     },
 
-    async addTeam(team){
+    async addTeam(team) {
       try {
-        const added = await this.teamsService.add(team)
-        this.teams.push(added)
-        this.showModal =false;
-
-      } catch (e){
-        console.log(e)
+        const added = await this.teamsService.add(team);
+        this.teams.push(this.formatTeamForTable(added));
+        this.showModal = false;
+        this.showTimedToast("Success", "Team added.");
+      } catch (e) {
+        this.showModal = false;
+        if (e.code >= 400 && e.code < 500) {
+          this.showTimedToast("Failed to add", e.reason, 8000);
+        } else {
+          this.showTimedToast("Failed to add", e.message, 8000);
+        }
       }
     },
 
     async updateTeam(team) {
       try {
         const updated = await this.teamsService.update(team)
-        this.teams = this.teams.map((team) => team.id === updated.id ? updated : team);
+        this.teams = this.teams.map((team) => team.id === updated.id ? this.formatTeamForTable(updated) : team);
         this.showModal = false
+        this.showTimedToast("Updated successfully", "Team updated.");
       } catch (e) {
-        console.log(e)
+        this.showModal = false;
+        if (e.code >= 400 && e.code < 500) {
+          this.showTimedToast("Failed to update", e.reason, 8000);
+        } else {
+          this.showTimedToast("Failed to update", e.message, 8000);
+        }
       }
     },
 
     async deleteTeam(team) {
       try {
-        const deleted = await this.teamsService.delete(team.id)
-        this.teams = this.teams.filter((team) => team.id !== deleted.id)
+        await this.teamsService.delete(team.id);
+        const index = this.teams.findIndex((t) => t.id === team.id);
+        if (index !== -1) {
+          this.teams.splice(index, 1);
+        }
         this.showModal = false;
-      } catch (exception) {
-        console.log(exception)
+        this.showTimedToast("Deleted successfully", "Team deleted.");
+      } catch (e) {
+        this.showModal = false;
+        if (e.response && e.response.status === 412) {
+          this.showTimedToast("Failed to delete", e.response.data.message, 8000);
+        } else if (e.code >= 400 && e.code < 500) {
+          this.showTimedToast("Failed to delete", e.reason, 8000);
+        } else {
+          this.showTimedToast("Failed to delete", e.message, 8000);
+        }
       }
     },
 
     formatTeamForTable(team) {
       return {
         id: team.id,
-        teamName: team.team,
-        warehouse: team.warehouse.warehouse,
-        type: team.type,
+        team: team.team,
+        warehouse: team.warehouseName,
+        type: team.type.charAt(0).toUpperCase() + team.type.slice(1).toLowerCase(),
       };
     },
 
@@ -144,6 +189,16 @@ export default {
         warehouse: "",
         type: "",
       };
+    },
+
+    showTimedToast(title, message, duration = 4000) {
+      this.toastTitle = title;
+      this.toastMessage = message;
+      this.showToast = true;
+
+      setTimeout(() => {
+        this.showToast = false;
+      }, duration);
     },
   },
 

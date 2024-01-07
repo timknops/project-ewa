@@ -107,15 +107,21 @@ public class BackEndApplication implements CommandLineRunner {
             return;
         }
 
+        final String[] names = {
+                "Team 1",
+                "Team 2",
+                "Team 3",
+                "Team 4",
+                "Team 5",
+        };
+
         List<Warehouse> warehouses = warehouseRepo.findAll();
 
-        final int AMOUNT_OF_TEAMS = 6;
-        for (int i = 0; i < AMOUNT_OF_TEAMS; i++) {
-            Warehouse randomWarehouse = warehouses.get((int) (Math.random() * warehouses.size()));
-            Team team = Team.createDummyTeam();
+        for (Warehouse warehouse : warehouses) {
+            Team.TeamType teamType = (warehouse.getId() == 1000) ? Team.TeamType.INTERNAL : Team.TeamType.EXTERNAL;
 
-            // Set the warehouse for the team.
-            team.setWarehouse(randomWarehouse);
+            String teamName = names[(int) (warehouse.getId() % names.length)];
+            Team team = Team.createDummyTeam(warehouse, teamName, teamType);
 
             teamsRepo.save(team);
         }

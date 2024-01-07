@@ -1,11 +1,9 @@
 <template>
-  <div v-if="loggedInActive === 'false'">
-    <router-view
-        @update-logged-in="updateLoggedIn"
-    ></router-view>
+  <div v-if="isLoggedIn === false">
+    <router-view></router-view>
   </div>
   <div v-else class="view">
-    <sidebar @update-logged-in="updateLoggedIn"/>
+    <sidebar/>
     <header-component class="header"></header-component>
     <router-view id="component"></router-view>
   </div>
@@ -23,6 +21,9 @@ import {TeamAdaptor} from "@/service/teamAdaptor";
 import {EmailAdaptor} from "@/service/emailAdaptor";
 import {ProjectAdaptor} from "@/service/projectAdaptor";
 import {OrderAdaptor} from "@/service/orderAdaptor";
+import {SessionSbService} from "@/service/SessionSbService";
+import {shallowReactive} from "vue";
+import {FetchInterceptor} from "@/service/FetchInterceptor";
 import {DashboardAdaptor} from "@/service/dashboardAdaptor";
 
 
@@ -32,13 +33,14 @@ export default {
     HeaderComponent,
     Sidebar,
   },
-  data() {
-    return {
-      loggedInActive: {}
-    };
-  },
   provide() {
+    this.theSessionService = shallowReactive(new SessionSbService(appConfig.BACKEND_URL +
+        '/authentication', appConfig.JWT_STORAGE_ITEM));
+    this.theFetchInterceptor = new FetchInterceptor(this.theSessionService, this.$router);
     return {
+      //session service
+      sessionService: this.theSessionService,
+
       productService: new ProductAdaptor(`${appConfig.BACKEND_URL}/products`),
       warehouseService: new WarehouseAdaptor(
           `${appConfig.BACKEND_URL}/warehouses`
@@ -50,15 +52,16 @@ export default {
       projectService: new ProjectAdaptor(`${appConfig.BACKEND_URL}/projects`),
       orderService: new OrderAdaptor(`${appConfig.BACKEND_URL}/orders`),
       dashboardService: new DashboardAdaptor(`${appConfig.BACKEND_URL}/dashboard-items`)
-    };
-  },
-  methods: {
-    updateLoggedIn() {
-      this.loggedInActive = localStorage.getItem("loggedIn");
     }
   },
-  created() {
-    this.loggedInActive = localStorage.getItem("loggedIn");
+  beforeUnmount() {
+    this.theFetchInterceptor.unregister();
+  },
+  //checks to see if the user is logged in
+  computed: {
+    isLoggedIn() {
+      return this.theSessionService.isAuthenticated();
+    },
   },
 };
 </script>

@@ -76,7 +76,7 @@
             </thead>
             <tbody>
             <tr v-if="modalItem.items.length === 0">
-              <td colspan="3" class="text-center empty-text">
+              <td colspan="3" class="text-center empty-text" :class="{'text-danger': emptyList}">
                 No products added yet.
               </td>
             </tr>
@@ -152,6 +152,7 @@ export default {
       STATUS: ["DELIVERED", "PENDING", "CANCELED"],
       incorrectDate: false,
       itemNotFilled: false,
+      emptyList: false,
       emptyTag: false,
       negativeQuantity: false,
       //track items which are added in modal
@@ -169,22 +170,21 @@ export default {
   },
 
   computed: {
-    emptyItems() {
-      return this.modalItem.items.length === 0;
-    },
     hasError() {
-      const isEmpty = this.emptyItems;
       this.validateItems()
       this.validateTag();
 
 
-      return this.incorrectDate || isEmpty || this.itemNotFilled || this.emptyTag
+      return this.incorrectDate || this.emptyList || this.itemNotFilled || this.emptyTag
     }
   },
 
   methods: {
     validateItems() {
       this.itemNotFilled = false;
+
+      this.emptyList = this.modalItem.items.length === 0;
+
       for (const item of this.modalItem.items) {
         if (this.validateQuantity(item)) {
           this.itemNotFilled = true
@@ -261,6 +261,6 @@ label {
 }
 
 .empty-text {
-  color: var(--bs-gray-800) !important;
+  color: var(--bs-gray-800);
 }
 </style>
