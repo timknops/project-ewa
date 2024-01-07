@@ -25,7 +25,6 @@
       <p v-if="!locationCorrect" class="text-danger">The location does not match the format: [street name] [number], [postal code] [city]</p>
     </div>
   </form>
-
 </template>
 
 <script>
@@ -44,6 +43,8 @@ export default {
   },
   computed: {
     hasError() {
+      this.validateName();
+      this.validateLocation();
       return this.nameEmpty || !this.locationCorrect;
     }
   },
