@@ -5,11 +5,23 @@
       <label for="id" class="form-label fw-bold">ID</label>
       <input id="id" type="text" class="form-control" :value="modalItem.id" disabled>
     </div>
-    <!--    team id-->
+
+    <!--    team of the user-->
     <div class="mb-3">
-      <label for="teamId" class="form-label fw-bold">ID</label>
-      <input id="teamId" type="text" class="form-control" :value="modalItem.teamId" disabled>
+      <label for="team" class="form-label fw-bold">Team</label>
+      <select id="team"
+              class="form-select"
+              :class="{'border-danger': teamUnselected}"
+              v-model="modalItem.team.id"
+              @blur="validateTeam">
+        <option selected value="">Select a team</option>
+        <option v-for="team in teams" :key="team.id" :value="team.id">
+          {{ team.team }}
+        </option>
+      </select>
+      <p v-if="teamUnselected" class="text-danger"> Team has to be selected!</p>
     </div>
+
     <!--    name of the user-->
     <div class="mb-3">
       <label for="user-name" class="form-label fw-bold">User name</label>
@@ -31,7 +43,7 @@
              v-model.lazy.trim="modalItem.email"
              @blur="validateEmail">
       <p v-if="emailEmpty" class="text-danger"> The e-mail can't be empty!</p>
-      <p v-if="emailValid" class="text-danger"> The e-mail isn't valid!</p>
+      <p v-else-if="emailValid" class="text-danger"> The e-mail isn't valid!</p>
     </div>
     <!--    type of user-->
     <div class="mb-3">
@@ -50,26 +62,50 @@
  */
 export default {
   name: "UpdateUserModal",
+  inject: ['teamsService'],
   computed: {
     hasError() {
-      return this.nameEmpty || this.emailEmpty || this.emailValid;
+      this.validateName();
+      this.validateEmail();
+      this.validateTeam();
+      return this.nameEmpty || this.emailEmpty || this.emailValid || this.teamUnselected;
     }
   },
   props: ['item'],
   data() {
     return {
-      modalItem: {},
+      modalItem: {
+        id: 0,
+        team: {
+          id: ""
+        },
+        name: "",
+        email: "",
+        password: "",
+        type: "VIEWER"
+      },
       nameEmpty: false,
+      teamUnselected: false,
       emailEmpty: false,
       emailValid: false,
+      teams: []
     };
   },
-  created() {
+  async created() {
+    await this.getTeams();
     this.modalItem = Object.assign({}, this.item)
   },
   methods: {
+    async getTeams() {
+      this.teams = await this.teamsService.findAll();
+    },
+
     validateName() {
       this.nameEmpty = this.modalItem.name.length === 0;
+    },
+
+    validateTeam(){
+      this.teamUnselected = !this.modalItem.team.id;
     },
 
     validateEmail() {
