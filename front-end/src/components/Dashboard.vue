@@ -177,7 +177,6 @@ export default {
       const productsInTable = new Set(this.tableData.map(item => item.productName));
       const filteredQuantities = this.inventoryQuantities.filter(item =>
           !productsInTable.has(item.productName) && item.warehouseName === this.selectedWarehouse);
-      // console.log("Filtered Inventory Quantities:", filteredQuantities);
       return filteredQuantities;
     },
     uniqueWarehouseNames() {
