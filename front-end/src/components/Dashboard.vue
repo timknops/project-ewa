@@ -88,11 +88,10 @@ export default {
   },
   computed: {
     tableData() {
-      return this.filteredInventoryData.map(({productName, quantity, deliverDate, inventoryQuantity}) => ({
+      return this.filteredInventoryData.map(({productName, quantity, deliverDate}) => ({
         productName,
         quantity,
         deliverDate,
-        inventoryQuantity
       }));
     },
 
