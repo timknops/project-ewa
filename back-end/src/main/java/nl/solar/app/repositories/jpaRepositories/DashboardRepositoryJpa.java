@@ -26,7 +26,9 @@ public class DashboardRepositoryJpa  {
                                     "JOIN Order o ON i.order.id = o.id " +
                                     "JOIN Product p ON i.product.id = p.id " +
                                     "JOIN Warehouse w ON o.warehouse.id = w.id " +
-                                    "LEFT JOIN Inventory inv ON p.id = inv.product.id AND w.id = inv.warehouse.id"
+                                    "LEFT JOIN Inventory inv ON p.id = inv.product.id AND w.id = inv.warehouse.id " +
+                                    "WHERE o.status = 'PENDING'"
+
                             , Object[].class)
                     .getResultList();
 
@@ -56,6 +58,7 @@ public class DashboardRepositoryJpa  {
                                 "JOIN Team t ON p.team.id = t.id " +
                                 "JOIN Warehouse w ON t.warehouse.id = w.id " +
                                 "JOIN Product pr ON r.product.id = pr.id " +
+                                "WHERE p.status = 'UPCOMING'" +
                                 "GROUP BY CAST(p.dueDate AS DATE), r.project.id, p.projectName, " +
                                 "w.id, w.name, r.product.id, pr.productName, r.quantity " +
                                 "ORDER BY CAST(p.dueDate AS DATE)"

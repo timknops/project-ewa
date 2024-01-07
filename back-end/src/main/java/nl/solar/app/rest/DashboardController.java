@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @RestController
@@ -65,10 +66,12 @@ public class DashboardController {
         // method to extract the current stock levels
         Map<String, Integer> currentStockValues = extractCurrentStockValues(mergedList);
 
-        // method to get minimum value of product
+        // method to extract minimum value of product
         Map<String, Integer> minimumStockValues = extractMinimumValueProduct(inventoryRepo.findAll());
 
-
+        // method to get any shortages
+        Map<String, LocalDate> shortages = getStockShortages(currentStockValues, minimumStockValues, mergedList);
+        System.out.println(shortages);
     }
 
     // method to combine the quantities of a certain product for orders on the same day
@@ -166,5 +169,25 @@ public class DashboardController {
         }
 
         return minimumStockValues;
+    }
+
+    // method to get the date at which a stock value wouldn't be enough anymore
+    private static Map<String, LocalDate> getStockShortages(Map<String, Integer> currentStockValues, Map<String, Integer> minimumStockValues,
+                                                                    List<DashboardDTO> mergedList) {
+        Map<String, LocalDate> shortagesMap = new HashMap<>();
+
+        for (DashboardDTO dto : mergedList){
+            String key = "Product: " + dto.getProductName() + ", in warehouse: " + dto.getWarehouseName();
+            currentStockValues.put(key, (currentStockValues.get(key) + dto.getQuantity()) - dto.getAmountOfProduct());
+            if (currentStockValues.get(key) < minimumStockValues.get(key)){
+                if (shortagesMap.containsKey(key)){
+                    // continue
+                } else {
+                    shortagesMap.put(key, dto.getDeliverDate());
+                }
+            }
+        }
+
+        return shortagesMap;
     }
 }
