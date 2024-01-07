@@ -62,6 +62,8 @@ public class DashboardController {
         List<DashboardDTO> mergedList = mergeQuantityAndAmountOfProduct(combinedQuantityList, combinedAmountOfProductList);
         mergedList.sort(Comparator.comparing(DashboardDTO::getDeliverDate)); // list now sorted on date
 
+        // method to extract the current stock levels
+        Map<String, Integer> currentStockValues = extractCurrentStockValues(mergedList);
 
     }
 
@@ -125,6 +127,23 @@ public class DashboardController {
         }
 
         return new ArrayList<>(mergedMap.values());
+    }
+
+    // method to extract current stock value
+    private static Map<String, Integer> extractCurrentStockValues(List<DashboardDTO> mergedList) {
+        Map<String, Integer> currentStockValues = new HashMap<>();
+
+        for (DashboardDTO dto : mergedList){
+            String key = "Product: " + dto.getProductName() + ", in warehouse: " + dto.getWarehouseName();
+
+            if (currentStockValues.containsKey(key)) {
+                // continue
+            } else {
+                currentStockValues.put(key, dto.getInventoryQuantity());
+            }
+        }
+
+        return currentStockValues;
     }
 
 }
