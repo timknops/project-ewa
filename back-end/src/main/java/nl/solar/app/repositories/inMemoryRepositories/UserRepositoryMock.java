@@ -1,6 +1,8 @@
 package nl.solar.app.repositories.inMemoryRepositories;
 
+import nl.solar.app.models.Team;
 import nl.solar.app.models.User;
+import nl.solar.app.models.Warehouse;
 import nl.solar.app.repositories.EntityRepository;
 import org.springframework.stereotype.Repository;
 
@@ -22,8 +24,9 @@ public class UserRepositoryMock implements EntityRepository<User> {
 
 
     public UserRepositoryMock() {
-        userArrayList.addAll(User.createStaticAdmin());
-        userArrayList.add(User.createStaticUser());
+
+        userArrayList.addAll(User.createStaticAdmin(null));
+        userArrayList.add(User.createStaticUser(null));
         for (int i = 0; i < START_USERS_AMOUNT; i++) {
             userArrayList.add(User.creatyDummyUser(randomUserId(), null));
         }

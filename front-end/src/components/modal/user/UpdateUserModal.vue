@@ -15,7 +15,7 @@
               v-model="modalItem.team.id"
               @blur="validateTeam">
         <option selected value="">Select a team</option>
-        <option v-for="team in teams" :key="team.id" :value="team.id">
+        <option v-for="team in teamsOptions" :key="team.id" :value="team.id">
           {{ team.team }}
         </option>
       </select>
@@ -41,6 +41,7 @@
              class="form-control"
              :class="{'border-danger': emailValid}"
              v-model.lazy.trim="modalItem.email"
+             placeholder="example@domain.com"
              @blur="validateEmail">
       <p v-if="emailEmpty" class="text-danger"> The e-mail can't be empty!</p>
       <p v-else-if="emailValid" class="text-danger"> The e-mail isn't valid!</p>
@@ -88,7 +89,7 @@ export default {
       teamUnselected: false,
       emailEmpty: false,
       emailValid: false,
-      teams: []
+      teamsOptions: []
     };
   },
   async created() {
@@ -97,7 +98,8 @@ export default {
   },
   methods: {
     async getTeams() {
-      this.teams = await this.teamsService.findAll();
+      this.teamsOptions = await this.teamsService.findAll();
+      this.teamsOptions.splice(0, 1)
     },
 
     validateName() {
@@ -119,7 +121,5 @@ export default {
 </script>
 
 <style scoped>
-.form-control:disabled {
-  background-color: var(--bs-body-bg);
-}
+
 </style>
