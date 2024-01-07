@@ -108,6 +108,7 @@ public class OrderController {
             Item newItem = new Item(item.getProduct(), newOrder, item.getQuantity());
             item.getProduct().getItems().add(newItem);
             newOrder.getItems().add(newItem);
+            this.itemRepo.save(newItem);
         }
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedOrder.getId()).toUri();
@@ -141,7 +142,7 @@ public class OrderController {
         Order existingOrder = this.orderRepo.findById(id);
 
         if (existingOrder.getStatus() == OrderStatus.DELIVERED && order.getStatus() != OrderStatus.DELIVERED) {
-            throw new BadRequestException("You can't change the status of an order that is already delivered ");
+            throw new BadRequestException("You can't change the status of an order that is already delivered!");
         }
 
         if (order.getDeliverDate().isBefore(existingOrder.getOrderDate().toLocalDate())) {
@@ -151,6 +152,7 @@ public class OrderController {
 
         //If the new order is set to delivered update the Inventory
         if (existingOrder.getStatus() == OrderStatus.PENDING && order.getStatus() == OrderStatus.DELIVERED) {
+            System.out.println("Updating inventory");
             this.inventoryService.updateInventory(order.getItems(), order.getWarehouse());
         }
 
@@ -168,7 +170,7 @@ public class OrderController {
         Order toBeDelete = this.orderRepo.delete(id);
 
         if (toBeDelete == null) {
-            throw new ResourceNotFoundException("Cannot delete order with id: " + id + "Order not found");
+            throw new ResourceNotFoundException("Cannot delete order with id: " + id + " Order not found");
         }
         return ResponseEntity.ok(toBeDelete);
     }
