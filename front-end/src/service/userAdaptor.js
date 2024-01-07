@@ -69,7 +69,7 @@ export class UserAdaptor {
                 body: JSON.stringify(user)
             })
         } catch (e) {
-            Promise.reject(e)
+            return Promise.reject(e)
         }
     }
 

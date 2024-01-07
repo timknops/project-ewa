@@ -1,36 +1,36 @@
 <template>
   <div>
     <table-component
-      v-if="usersAdmin.length > 0"
-      :amount-to-display="5"
-      :has-add-button="true"
-      :has-delete-button="true"
-      :has-edit-button="true"
-      :table-data="usersAdmin"
-      @edit="showEditModal"
-      @delete="showDeleteModal"
-      @add="showAddModal"
+        v-if="userList.length > 0"
+        :amount-to-display="5"
+        :has-add-button="true"
+        :has-delete-button="true"
+        :has-edit-button="true"
+        :table-data="userList"
+        @edit="showEditModal"
+        @delete="showDeleteModal"
+        @add="showAddModal"
     />
-    <SpinnerComponent v-else />
+    <SpinnerComponent v-else/>
     <Transition>
       <modal-component
-        v-if="showModal"
-        :title="modalTitle"
-        :active-modal="modalBodyComponent"
-        :item="modalUser"
-        :ok-btn-text="okBtnText"
-        @cancel-modal-btn="this.showModal = false"
-        @corner-close-modal-btn="this.showModal = false"
-        @ok-modal-btn="handleOk"
+          v-if="showModal"
+          :title="modalTitle"
+          :active-modal="modalBodyComponent"
+          :item="modalUser"
+          :ok-btn-text="okBtnText"
+          @cancel-modal-btn="this.showModal = false"
+          @corner-close-modal-btn="this.showModal = false"
+          @ok-modal-btn="handleOk"
       />
     </Transition>
 
     <Transition>
       <ToastComponent
-        v-if="showToast"
-        :toast-title="toastTitle"
-        :toast-message="toastMessage"
-        @close-toast="showToast = false"
+          v-if="showToast"
+          :toast-title="toastTitle"
+          :toast-message="toastMessage"
+          @close-toast="showToast = false"
       />
     </Transition>
   </div>
@@ -67,8 +67,13 @@ export default {
        * sending a whole new request
        */
       users: [],
-      //array of the admin view excluding the password
-      usersAdmin: [],
+      userList: {
+        id: Number,
+        team: String,
+        email: String,
+        name: String,
+        type: String
+      },
       showModal: false,
       modalTitle: "",
       modalBodyComponent: "",
@@ -85,8 +90,11 @@ export default {
     };
   },
   async created() {
-    this.users = await this.userService.asyncFindAll();
-    this.usersAdmin = await this.userService.asyncFindAdmin();
+    const data = await this.userService.asyncFindAll();
+
+    this.userList = data.map((user) => {
+      return this.formatUserForTable(user)
+    })
   },
   methods: {
     /**
@@ -104,10 +112,10 @@ export default {
      * When clicked on the edit button in the table, it will show the modal for editing an existing user
      * @param user that's being selected for editing
      */
-    showEditModal(user) {
+    async showEditModal(user) {
       this.modalTitle = "Update user";
       this.modalBodyComponent = this.MODAL_TYPES.UPDATE;
-      this.modalUser = user;
+      this.modalUser = await this.userService.asyncFindById(user.id);
       this.okBtnText = "Save";
       this.showModal = true;
     },
@@ -140,6 +148,16 @@ export default {
           break;
       }
     },
+    formatUserForTable(user) {
+      return {
+        id: user.id,
+        team: user.team?.team,
+        email: user.email,
+        name: user.name,
+        type: user.type
+      }
+    }
+    ,
     /**
      * Adds a user to the backend user list, also to the user arrays
      * @param user that got created to be added
@@ -148,10 +166,7 @@ export default {
     async onUserAdd(user) {
       try {
         const addedUser = await this.userService.asyncAdd(user);
-        //remove the user password, so it doesn't bug out the table
-        delete addedUser.password;
-        this.usersAdmin.push(addedUser);
-        this.users.push(addedUser);
+        this.userList.push(this.formatUserForTable(addedUser));
 
         this.showModal = false;
         this.showTimedToast("Added user", "Successfully added the user");
@@ -172,19 +187,9 @@ export default {
      */
     async onUserUpdate(user) {
       try {
-        //get the full current user
-        const userFromBack = await this.userService.asyncFindById(user.id);
-        //temporarily add the password to save it with the user
-        user.password = userFromBack.password;
         const updatedUser = await this.userService.asyncSave(user);
-        //delete the password so that the table doesn't break
-        delete updatedUser.password;
-        this.usersAdmin = this.usersAdmin.map((user) =>
-          user.id === updatedUser.id ? updatedUser : user
-        );
-        this.users = this.users.map((user) =>
-          user.id === updatedUser.id ? updatedUser : user
-        );
+        this.userList =
+            this.userList.map((user) => user.id === updatedUser.id ? this.formatUserForTable(updatedUser) : user)
 
         this.showModal = false;
         this.showTimedToast("Updated user", "Successfully updated the user");
@@ -206,10 +211,7 @@ export default {
     async onUserDelete(user) {
       try {
         const deletedUser = await this.userService.asyncDelete(user.id);
-        this.usersAdmin = this.usersAdmin.filter(
-          (user) => user.id !== deletedUser.id
-        );
-        this.users = this.users.filter((user) => user.id !== deletedUser.id);
+        this.userList = this.userList.filter((user) => user.id !== deletedUser.id);
 
         this.showModal = false;
         this.showTimedToast("Deleted user", "Successfully deleted the user");
