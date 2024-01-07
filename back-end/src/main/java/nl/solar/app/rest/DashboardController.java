@@ -49,5 +49,30 @@ public class DashboardController {
     protected void forecastNotification () {
         System.out.println("Scheduled method called:\n");
 
+        List<DashboardDTO> originalQuantityList = getDashboardItems();
+        List<DashboardDTO> originalAmountOfProductList = getProjectDashboardItems();
+
+        // method to combine projects on the same date
+        List<DashboardDTO> combinedQuantityList = combineQuantityList(originalQuantityList);
+
     }
+
+    // method to combine the quantities of a certain product for orders on the same day
+    private static List<DashboardDTO> combineQuantityList(List<DashboardDTO> originalQuantityList) {
+        Map<String, DashboardDTO> combinedMap = new HashMap<>();
+
+        for (DashboardDTO dto : originalQuantityList) {
+            String key = dto.getWarehouseName() + "_" + dto.getProductName() + "_" + dto.getDeliverDate();
+
+            if (combinedMap.containsKey(key)) {
+                DashboardDTO combinedDTO = combinedMap.get(key);
+                combinedDTO.setQuantity(combinedDTO.getQuantity() + dto.getQuantity());
+            } else {
+                combinedMap.put(key, dto);
+            }
+        }
+
+        return new ArrayList<>(combinedMap.values());
+    }
+
 }
