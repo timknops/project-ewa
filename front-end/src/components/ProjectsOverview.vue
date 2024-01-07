@@ -8,6 +8,7 @@
       :has-edit-button="true"
       :has-add-button="true"
       :has-specific-button="true"
+      :has-search-bar="true"
       @edit="showEditModal"
       @delete="showDeleteModal"
       @add="showAddModal"
