@@ -170,7 +170,12 @@ public class BackEndApplication implements CommandLineRunner {
         if (teams == null){
             throw new ResourceNotFoundException("No teams were found");
         }
-        System.out.println(teams.size() + "323232");
+
+
+        for (User staticUser: User.createStaticAdmin()) {
+            userRepo.save(staticUser);
+        }
+        userRepo.save(User.createStaticUser());
 
         if (!users.isEmpty()) return;
         for (int i = 0; i < 11; i++) {
@@ -180,10 +185,6 @@ public class BackEndApplication implements CommandLineRunner {
 
             userRepo.save(user);
         }
-        for (User staticUser: User.createStaticAdmin()) {
-            userRepo.save(staticUser);
-        }
-        userRepo.save(User.createStaticUser());
     }
 
     /**
