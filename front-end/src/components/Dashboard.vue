@@ -27,11 +27,11 @@
 
     <!--Inventory-->
     <TableComponent
-        v-if="inventoryData.length > 0"
+        v-if="inventoryQuantities.length > 0"
         :tableWidth="'100%'"
         :boldFirstColumn="true"
         :amountToDisplay="4"
-        :tableData="tableData"
+        :tableData="tableDatas"
         :arrayAmountToDisplay="10"
         table-title="Inventory"
         sub-title="Future deliveries of my warehouse"
@@ -71,6 +71,7 @@ export default {
 
       projectData: [],
       inventoryQuantities: [],
+      lastDataPoints: [],
     };
   },
   mounted() {
@@ -83,15 +84,35 @@ export default {
 
     inventoryData: {
       handler: 'updateChart',
-      immediate: true, // Trigger the handler on component mount
+      immediate: true,
     },
   },
   computed: {
+
+
+    tableDatas() {
+      const data = this.inventoryQuantitiesData.map(({productName, inventoryQuantity}) => {
+        // const lastDataPoint = this.getLastDataPoint(productName);
+        const lastDataPoint = this.lastDataPoints.find(item => item.productName === productName);
+       const tableDataItem = {
+          productName,
+          inventoryQuantity,
+         lastDataPoint: lastDataPoint ? lastDataPoint.lastDataPoint : null,
+        };
+        console.log(`Last data point for ${productName}: `, lastDataPoint);
+        console.log('hello tableDaty', tableDataItem)
+        return tableDataItem;
+      });
+      console.log('hello data', data)
+      return data;
+    },
+
     tableData() {
-      return this.filteredInventoryData.map(({productName, quantity, deliverDate}) => ({
+      return this.filteredInventoryData.map(({productName, quantity, deliverDate, inventoryQuantity}) => ({
         productName,
         quantity,
         deliverDate,
+        inventoryQuantity
       }));
     },
 
@@ -128,6 +149,15 @@ export default {
             inventoryQuantity,
           }));
     },
+    inventoryQuantitiesData(){
+      return this.inventoryQuantities.filter((item) => {
+        return (
+            this.selectedWarehouse === null ||
+            item.warehouseName === this.selectedWarehouse
+        );
+      });
+
+    },
     filteredProjectData() {
       const currentDate = new Date();
       return this.projectData.filter((project) => {
@@ -142,6 +172,7 @@ export default {
       // console.log("Filtered Inventory Quantities:", filteredQuantities);
       return filteredQuantities;
     },
+
     uniqueWarehouseNames() {
       return Array.from(new Set(this.inventoryData.map((item) => item.warehouseName)));
     },
@@ -182,7 +213,14 @@ export default {
       this.fetchInventoryQuantity(warehouse);
       this.updateChart();
     },
+
+
+
+
+
     updateChart() {
+      this.lastDataPoints = [];
+
       if (this.saveChart) {
         this.saveChart.destroy();
       }
@@ -256,21 +294,23 @@ export default {
          * checks the project from the inventory
          * @type {{x: *, y}[]}
          */
-        const amountOfProductOnDueDate = dataProject
-            .filter(item => item.productName === name)
-            .map(item => {
-              const quantitySum = constInventoryQuantity
-                  .filter(monthItem => monthItem.productName === name)
-                  .reduce((sum, monthItem) => sum + monthItem.inventoryQuantity, 0);
-              const amountOfProductTest = dataProject
-                  .filter(projectItem => projectItem.productName === name)
-                  .reduce((sum, projectItem) => sum + projectItem.amountOfProduct, 0);
-              const calculatedValues = quantitySum - amountOfProductTest;
-              return {
-                x: item.dueDate,
-                y: calculatedValues || 0,
-              };
-      });
+      //   const amountOfProductOnDueDate = dataProject
+      //       .filter(item => item.productName === name)
+      //       .map(item => {
+      //         const totalQuantity = dataBasedOnTheMonth
+      //             .filter(monthItem => monthItem.productName === name && monthItem.deliverDate)
+      //             .reduce((sum, monthItem) => sum + + monthItem.quantity + monthItem.inventoryQuantity, 0);
+      //
+      //         const calculatedValues = (item.deliverDate)
+      //             ? totalQuantity - item.amountOfProduct
+      //             : totalQuantity;
+      //
+      //         return {
+      //           x:  item.dueDate ,
+      //           y: calculatedValues || 0,
+      //         };
+      // });
+      //   console.log('1', amountOfProductOnDueDate)
 
         /**
          * first point
@@ -283,23 +323,23 @@ export default {
         /**
          * third point
          */
-        // const projectMinusQuanity = dataProject
-        //     .filter(item => item.productName === name)
-        //     .map(item => {
-        //       const quantitySum = dataBasedOnTheMonth
-        //           .filter(monthItem => monthItem.productName === name)
-        //           .reduce((sum, monthItem) => sum + monthItem.quantity + monthItem.inventoryQuantity, 0);
-        //       const amountOfProductSum = dataProject
-        //           .filter(projectItem => projectItem.productName === name)
-        //           .reduce((sum, projectItem) => sum + projectItem.amountOfProduct, 0);
-        //       const calculatedValue = quantitySum - amountOfProductSum;
-        //       return {
-        //         x: item.dueDate,
-        //         y: calculatedValue || 0,
-        //       };
-        //     });
+        const projectMinusQuanity = dataProject
+            .filter(item => item.productName === name)
+            .map(item => {
+              const quantitySum = dataBasedOnTheMonth
+                  .filter(monthItem => monthItem.productName === name)
+                  .reduce((sum, monthItem) => sum + monthItem.quantity + monthItem.inventoryQuantity, 0);
+              const amountOfProductSum = dataProject
+                  .filter(projectItem => projectItem.productName === name)
+                  .reduce((sum, projectItem) => sum + projectItem.amountOfProduct, 0);
+              const calculatedValue = quantitySum - amountOfProductSum;
+              return {
+                x: item.dueDate,
+                y: calculatedValue || 0,
+              };
+            });
         // console.log('Dataset for', name, ':', [currentInventoryQuantity, ...quantityData, ...projectMinusQuanity]);
-        const allDataPoints = [currentInventoryQuantity, ...quantityData, ...inventoryQuantityDataForItem, ...amountOfProductOnDueDate];
+        const allDataPoints = [currentInventoryQuantity, ...quantityData, ...inventoryQuantityDataForItem,  ...projectMinusQuanity];
 
         return {
           label: name,
@@ -326,10 +366,24 @@ export default {
        * @type {string}
        */
       const lastDate = dateLabels[dateLabels.length - 1];
+
       datasets.forEach(dataset => {
         const lastDataPoint = dataset.data[dataset.data.length - 1];
+        console.log(`Last data point for ${dataset.label}: `, lastDataPoint);
+
         dataset.data.push({x: lastDate, y: lastDataPoint.y});
+        this.lastDataPoints.push({
+          productName: dataset.label,
+          lastDataPoint: lastDataPoint.y,
+        });
+        // const productIndex = this.tableDatas.findIndex(item => item.productName === dataset.label);
+        // if (productIndex !== -1) {
+        //
+        //   this.tableDatas[productIndex].lastDataPoint = lastDataPoint.y;
+          // this.$set(this.tableDatas[productIndex], 'lastDataPoint', lastDataPoint.y);
+        // }
       });
+
       const chartData = {
         labels: dateLabels,
         datasets: datasets,
