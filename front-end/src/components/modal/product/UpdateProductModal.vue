@@ -50,6 +50,8 @@ export default {
 
   computed: {
     hasError() {
+      this.validateName();
+      this.validateDescription();
       return this.nameEmpty || this.descriptionEmpty;
     }
   },

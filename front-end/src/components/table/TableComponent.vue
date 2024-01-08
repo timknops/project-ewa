@@ -1,14 +1,9 @@
 <template>
-  <div class="mb-3" v-if="hasSearchBar">
-    <input
-      v-model="searchQuery"
-      type="text"
-      class="form-control"
-      placeholder="Search..."
-      @input="handleSearch"
-    />
-  </div>
-  <div class="card border-0 pt-4 pb-2 d-flex" :style="{ width: tableWidth }">
+  <div
+    class="card border-0 pt-4 pb-2 d-flex"
+    :style="{ width: tableWidth }"
+    style=""
+  >
     <div class="card-body px-4 py-0 overflow-hidden">
       <!-- Both the title and the subtitle are optional props! They will not be displayed when not specified -->
       <h5
@@ -21,12 +16,32 @@
       <p v-if="subTitle !== undefined" class="ps-2 subtitle mb-2">
         {{ subTitle }}
       </p>
+      <div v-if="hasSearchBar" class="d-flex gap-3 py-1 mb-3">
+        <div class="flex-fill">
+          <input
+            v-if="hasSearchBar"
+            v-model="searchQuery"
+            type="text"
+            class="form-control"
+            placeholder="Search..."
+            @input="handleSearch"
+          />
+        </div>
+
+        <div v-if="hasAddButton && hasSearchBar">
+          <button class="btn btn-primary" @click="$emit('add')">
+            <font-awesome-icon icon="fa-solid fa-plus" />
+            add
+          </button>
+        </div>
+      </div>
+
       <div class="table-responsive" :style="{ height: calculateTableHeight }">
         <table class="table table-hover mb-0">
           <thead>
             <TableHeaderRow
               :table-column-names="tableColumnNames"
-              :has-add-button="hasAddButton"
+              :has-add-button="hasAddButton && !hasSearchBar"
               :hide-id-column="hideIdColumn"
               :sort-direction-all-columns="sortDirectionAllColumns"
               :previous-sorted-column="previousSortedColumn"
@@ -91,7 +106,7 @@
 
               <!-- If the table has edit and delete buttons -->
               <TableButtons
-                v-if="hasEditButton || hasDeleteButton"
+                v-if="hasEditButton || hasDeleteButton || hasSpecificButton"
                 :table-row="tableRow"
                 :row-height-large="ROW_HEIGHT_LARGE"
                 :has-edit-button="hasEditButton"
@@ -161,7 +176,7 @@
 
               <!-- If the table has edit and delete buttons -->
               <TableButtons
-                v-if="hasEditButton || hasDeleteButton"
+                v-if="hasEditButton || hasDeleteButton || hasSpecificButton"
                 :table-row="tableRow"
                 :row-height-large="ROW_HEIGHT_LARGE"
                 :has-edit-button="hasEditButton"
@@ -233,7 +248,7 @@ export default {
     TableFooter,
     TableButtons,
   },
-  emits: ["add", "edit", "delete"],
+  emits: ["add", "edit", "delete", "specific"],
   props: {
     tableWidth: String,
     boldFirstColumn: Boolean,
@@ -250,8 +265,14 @@ export default {
     subTitle: String,
     hasEditButton: Boolean,
     hasDeleteButton: Boolean,
-    hasAddButton: Boolean,
-    hasSpecificButton: Boolean,
+    hasAddButton: {
+      type: Boolean,
+      default: false,
+    },
+    hasSpecificButton: {
+      type: Boolean,
+      default: false,
+    },
     hideIdColumn: Boolean,
     hasSearchBar: {
       type: Boolean,
@@ -409,11 +430,29 @@ export default {
 
     /** Whenever the mouse enters a row, the edit and delete buttons are displayed. */
     mouseEnter(e) {
+      // If the table does not have edit, delete, or specific buttons, do not show the buttons.
+      if (
+        !this.hasEditButton &&
+        !this.hasDeleteButton &&
+        !this.hasSpecificButton
+      ) {
+        return;
+      }
+
       e.target.lastElementChild.classList.add("d-md-block");
     },
 
     /** Whenever the mouse leaves a row, the edit and delete buttons are hidden. */
     mouseLeave(e) {
+      // If the table does not have edit, delete, or specific buttons, do not hide the buttons.
+      if (
+        !this.hasEditButton &&
+        !this.hasDeleteButton &&
+        !this.hasSpecificButton
+      ) {
+        return;
+      }
+
       e.target.lastElementChild.classList.remove("d-md-block");
     },
 

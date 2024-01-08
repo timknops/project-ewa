@@ -1,9 +1,11 @@
 package nl.solar.app.rest;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import nl.solar.app.WebConfig;
 import nl.solar.app.exceptions.NotAcceptableException;
 import nl.solar.app.models.User;
+import nl.solar.app.models.views.UserView;
 import nl.solar.app.repositories.EntityRepository;
 import nl.solar.app.security.JWToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,7 @@ public class AuthenticationController {
      * @param loginInfo contains the username and password that was given
      * @return returns the logged in yser and puts the token in the http header
      */
+    @JsonView(UserView.userFull.class)
     @PostMapping(path = "/login")
     public ResponseEntity<User> userLogin(@RequestBody ObjectNode loginInfo) throws NotAcceptableException {
         String username = loginInfo.get("username").asText();

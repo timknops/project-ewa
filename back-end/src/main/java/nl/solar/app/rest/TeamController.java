@@ -8,7 +8,6 @@ import nl.solar.app.models.Team;
 import nl.solar.app.models.Warehouse;
 import nl.solar.app.repositories.EntityRepository;
 import nl.solar.app.repositories.TeamRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -16,7 +15,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
-
 
 @RestController
 @RequestMapping("/teams")
@@ -26,7 +24,6 @@ public class TeamController {
 
     EntityRepository<Warehouse> warehouseEntityRepository;
 
-    @Autowired
     public TeamController(TeamRepository teamRepository, EntityRepository<Warehouse> warehouseEntityRepository) {
         this.teamRepository = teamRepository;
         this.warehouseEntityRepository = warehouseEntityRepository;
@@ -43,7 +40,7 @@ public class TeamController {
     @GetMapping("/{id}")
     public ResponseEntity<TeamDTO> getTeamById(@PathVariable long id) {
         Team team = teamRepository.findById(id);
-        if(team == null) {
+        if (team == null) {
             throw new ResourceNotFoundException("Team with id: '" + id + "' was not found");
         }
 
@@ -53,7 +50,8 @@ public class TeamController {
 
     @PostMapping
     public ResponseEntity<TeamDTO> createTeam(@RequestBody Team team) {
-        if (team.getTeam() == null || team.getTeam().isBlank()) throw new BadRequestException("Team name can't be empty");
+        if (team.getTeam() == null || team.getTeam().isBlank())
+            throw new BadRequestException("Team name can't be empty");
         Warehouse warehouse = warehouseEntityRepository.findById(team.getWarehouse().getId());
         team.setWarehouse(warehouse);
 
@@ -71,7 +69,8 @@ public class TeamController {
 
     @PutMapping("/{id}")
     public ResponseEntity<TeamDTO> updateTeam(@PathVariable long id, @RequestBody TeamDTO teamDTO) {
-        if (teamDTO.getTeam() == null || teamDTO.getTeam().isBlank()) throw new BadRequestException("Team name can't be empty");
+        if (teamDTO.getTeam() == null || teamDTO.getTeam().isBlank())
+            throw new BadRequestException("Team name can't be empty");
         Team existingTeam = teamRepository.findById(id);
         if (existingTeam == null) {
             throw new ResourceNotFoundException("Team not found with id: " + id);
@@ -82,7 +81,8 @@ public class TeamController {
         Warehouse warehouse = warehouseEntityRepository.findAll().stream()
                 .filter(w -> w.getName().equals(teamDTO.getWarehouseName()))
                 .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException("Warehouse not found with name: " + teamDTO.getWarehouseName()));
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Warehouse not found with name: " + teamDTO.getWarehouseName()));
 
         existingTeam.setWarehouse(warehouse);
 

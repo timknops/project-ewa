@@ -1,6 +1,7 @@
 package nl.solar.app;
 
 import jakarta.transaction.Transactional;
+import nl.solar.app.exceptions.ResourceNotFoundException;
 import nl.solar.app.models.*;
 import nl.solar.app.repositories.EntityRepository;
 import nl.solar.app.repositories.InventoryRepository;
@@ -8,6 +9,7 @@ import nl.solar.app.repositories.ItemRepository;
 import nl.solar.app.repositories.ResourceRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,6 +21,9 @@ import java.util.Random;
 public class BackEndApplication implements CommandLineRunner {
 
     // All repositories.
+    @Autowired
+    EntityRepository<User> userRepo;
+
     @Autowired
     EntityRepository<Warehouse> warehouseRepo;
 
@@ -43,6 +48,9 @@ public class BackEndApplication implements CommandLineRunner {
     @Autowired
     ItemRepository itemRepo;
 
+    @Value("${spring.jpa.hibernate.ddl-auto}")
+    private String ddlAuto;
+
     public static void main(String[] args) {
         SpringApplication.run(BackEndApplication.class, args);
     }
@@ -50,9 +58,16 @@ public class BackEndApplication implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
+
+        // Only create sample data if the database is empty.
+        if (!this.ddlAuto.matches("create-drop|create")) {
+            return;
+        }
+
         this.createSampleWarehouse();
         this.createSampleTeams();
         this.createSampleOrders();
+        this.createSampleUser();
         this.createSampleProjects();
         this.createSampleProducts();
         this.createSampleResources();
@@ -153,6 +168,39 @@ public class BackEndApplication implements CommandLineRunner {
     }
 
     /**
+     * Create sample data for user
+     *
+     * @author Noa de Greef
+     */
+    private void createSampleUser() throws ResourceNotFoundException {
+        List<User> users = userRepo.findAll();
+        List<Team> teams = teamsRepo.findAll();
+
+        if (teams == null) {
+            throw new ResourceNotFoundException("No teams were found");
+        }
+
+        teams.get(0).setTeam("Static Users");
+        for (User staticUser : User.createStaticAdmin(teams.get(0))) {
+            userRepo.save(staticUser);
+        }
+
+        userRepo.save(User.createStaticUser(teams.get(0)));
+
+        if (!users.isEmpty())
+            return;
+        for (int i = 0; i < 11; i++) {
+            // get a random team, except for the first team since that one is reserved for
+            // static user
+            Team team = teams.get((int) Math.floor(Math.random() * (teams.size() - 1)) + 1);
+            User user = User.creatyDummyUser(i, team);
+            team.getUsers().add(user);
+
+            userRepo.save(user);
+        }
+    }
+
+    /**
      * Creates sample projects and assigns them to a random team.
      *
      * @throws RuntimeException if there are no teams.
@@ -224,7 +272,6 @@ public class BackEndApplication implements CommandLineRunner {
                 "Similar to the Enphase Q Relay 1 fase, but designed for three-phase electrical systems.",
                 "Solar panel created with two glass layers for extra protection. It can produces op to 380W in energy"
         };
-
 
         for (int i = 0; i < PRODUCT_NAMES.length; i++) {
             Product product = Product.createDummyProducts(0, PRODUCT_NAMES[i], PRODUCT_DESCRIPTONS[i]);

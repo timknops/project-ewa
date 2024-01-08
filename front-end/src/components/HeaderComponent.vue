@@ -1,27 +1,27 @@
 <template>
   <header class="bg-white mb-5">
     <div
-      class="row mx-0 px-3 py-1 justify-content-end border-bottom align-items-center"
+      class="row mx-0 px-3 py-1 justify-content-between border-bottom align-items-center"
     >
-      <div class="col-auto d-flex flex-column text-end">
-        <span
+      <div class="col-auto d-flex mx-0 px-5 py-2 justify-content-start align-items-center">
+        <div
+            class="color-primary bg-body-secondary p-2 rounded-5 me-3"
+            v-if="$route.meta?.icon"
+        >
+          <font-awesome-icon :icon="$route.meta.icon"></font-awesome-icon>
+        </div>
+        <h2 class="fs-4 mb-0 color-primary fw-bold">
+          {{ displayCurrentPageName }}
+        </h2>
+      </div>
+      <div class="col-auto text-end">
+        <span class="me-3"
           >Logged in as: <strong>{{ loggedUser.name }}</strong></span
         >
         <span
           >Role: <strong>{{ loggedUser.type }} </strong></span
         >
       </div>
-    </div>
-    <div class="row mx-0 px-5 py-2 justify-content-start align-items-center">
-      <div
-        class="col-auto color-primary bg-body-secondary py-2 rounded-5"
-        v-if="$route.meta?.icon"
-      >
-        <font-awesome-icon :icon="$route.meta.icon"></font-awesome-icon>
-      </div>
-      <h2 class="col-auto fs-4 mb-0 color-primary fw-bold">
-        {{ displayCurrentPageName }}
-      </h2>
     </div>
   </header>
 </template>
@@ -32,7 +32,6 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 /**
  * Header component to display the current page the user is on and the name and role of a user
  *
- * In the future it could contain a search bar
  * @author Julian Kruithof
  */
 export default {
