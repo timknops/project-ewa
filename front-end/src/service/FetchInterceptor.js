@@ -59,7 +59,7 @@ export class FetchInterceptor {
     // If the status 401, navigate the user back the login page
     handleErrors(response){
         if (response.status === 401){
-            this.router.push("/loginPage");
+            this.router.push("/logout");
         }
     }
 }

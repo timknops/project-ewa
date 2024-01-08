@@ -6,7 +6,6 @@ import jakarta.transaction.Transactional;
 import nl.solar.app.enums.OrderStatus;
 import nl.solar.app.models.Order;
 import nl.solar.app.models.Warehouse;
-import nl.solar.app.repositories.EntityRepository;
 import nl.solar.app.repositories.OrderRepository;
 import org.springframework.stereotype.Repository;
 
@@ -26,6 +25,7 @@ public class OrderRepositoryJpa implements OrderRepository {
 
     /**
      * Find all orders
+     * 
      * @return a list of orders
      */
     @Override
@@ -35,6 +35,7 @@ public class OrderRepositoryJpa implements OrderRepository {
 
     /**
      * Find one specific order
+     * 
      * @param id the ID of the entity to retrieve
      * @return a order object
      */
@@ -45,6 +46,7 @@ public class OrderRepositoryJpa implements OrderRepository {
 
     /**
      * Find all orders for a specific warehouse
+     * 
      * @param wId the id of a warehouse
      * @return a list of orders
      */
@@ -54,15 +56,16 @@ public class OrderRepositoryJpa implements OrderRepository {
                 .setParameter(1, wId).getResultList();
     }
 
-
     /**
      * Find all pending orders for a specific warehouse
+     * 
      * @param warehouse the warehouse for which the orders should be found
      * @return a list of orders
      */
     @Override
     public List<Order> findPendingOrders(Warehouse warehouse) {
-        return entityManager.createQuery("SELECT o FROM Order o WHERE o.status = ?1 AND o.warehouse.id = ?2", Order.class)
+        return entityManager
+                .createQuery("SELECT o FROM Order o WHERE o.status = ?1 AND o.warehouse.id = ?2", Order.class)
                 .setParameter(1, OrderStatus.PENDING)
                 .setParameter(2, warehouse.getId())
                 .getResultList();
@@ -81,6 +84,7 @@ public class OrderRepositoryJpa implements OrderRepository {
 
     /**
      * delete an order
+     * 
      * @param id the ID of the entity to delete
      * @return the deleted order
      */
@@ -97,6 +101,7 @@ public class OrderRepositoryJpa implements OrderRepository {
 
     /**
      * Add or update an order
+     * 
      * @param item the entity to save
      * @return the saved order
      */

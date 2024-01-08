@@ -37,48 +37,29 @@
       <li class="nav-item">
         <router-link to="/orders" class="nav-link" active-class="active">
           <font-awesome-icon
-              icon="fa-solid fa-truck-fast"
-              class="sidebar-icons"
-          /> Orders
+            icon="fa-solid fa-truck-fast"
+            class="sidebar-icons"
+          />
+          Orders
         </router-link>
       </li>
       <li class="nav-item">
         <router-link to="/projects" class="nav-link" active-class="active">
-          <font-awesome-icon
-            icon="fa-solid fa-diagram-project"
-            class="sidebar-icons"
-          />Projects
+          <span v-if="isActiveUserAdmin"
+            ><font-awesome-icon
+              icon="fa-solid fa-diagram-project"
+              class="sidebar-icons"
+            />Projects</span
+          >
+          <span v-else>
+            <font-awesome-icon
+              icon="fa-solid fa-diagram-project"
+              class="sidebar-icons"
+            />My Projects
+          </span>
         </router-link>
       </li>
-
-      <!-- TODO: Make use of submenu for projects when specific view is implemented.
-      <li
-        @click="submenuProjects = !submenuProjects"
-        href="#homeSubmenu"
-        data-toggle="collapse"
-        aria-expanded="false"
-        class="dropdown-toggle collapsed nav-item"
-        active-class="active"
-      >
-        Home
-      </li>
-      <ul
-        class="list-unstyled collapse"
-        id="homeSubmenu"
-        :class="submenuProjects ? 'show' : ''"
-      >
-        <li>
-          <a href="#">Home 1</a>
-        </li>
-        <li>
-          <a href="#">Home 2</a>
-        </li>
-        <li>
-          <a href="#">Home 3</a>
-        </li> -->
-      <!-- </ul> -->
-
-      <li class="nav-item">
+      <li class="nav-item" v-if="isActiveUserAdmin">
         <router-link to="/warehouses" class="nav-link" active-class="active">
           <font-awesome-icon
             icon="fa-solid fa-warehouse"
@@ -88,14 +69,22 @@
       </li>
       <li class="nav-item">
         <router-link to="/team" class="nav-link" active-class="active">
-          <font-awesome-icon
-            icon="fa-solid fa-users"
-            class="sidebar-icons"
-          />Teams
+          <span v-if="isActiveUserAdmin"
+            ><font-awesome-icon
+              icon="fa-solid fa-users"
+              class="sidebar-icons"
+            />Teams</span
+          >
+          <span v-else
+            ><font-awesome-icon
+              icon="fa-solid fa-user"
+              class="sidebar-icons"
+            />My Team</span
+          >
         </router-link>
       </li>
-<!--      User list item only shows if the user is an admin-->
-      <li class="nav-item" v-if="isActiveUserAdmin !== false">
+      <!--      User list item only shows if the user is an admin-->
+      <li class="nav-item" v-if="isActiveUserAdmin">
         <router-link to="/users" class="nav-link" active-class="active">
           <font-awesome-icon
             icon="fa-solid fa-user"
@@ -104,12 +93,16 @@
         </router-link>
       </li>
       <li class="nav-item">
-        <router-link to="/loginPage" class="nav-link" active-class="active"
-        @click="logOut()">
+        <router-link
+          to="/loginPage"
+          class="nav-link"
+          active-class="active"
+          @click="logOut()"
+        >
           <font-awesome-icon
             icon="fa-solid fa-arrow-right-from-bracket"
             class="sidebar-icons"
-            />Log out
+          />Log out
         </router-link>
       </li>
     </ul>
@@ -120,24 +113,25 @@
 export default {
   // eslint-disable-next-line
   name: "sidebar",
-  inject: ['sessionService'],
+  inject: ["sessionService"],
   data() {
     return {
       dashboardRoute: "/dashboard",
       submenuProjects: false,
-      isActiveUserAdmin: null
+      isActiveUserAdmin: null,
     };
   },
   methods: {
-    logOut(){
+    logOut() {
       //calls method in app.vue to receive token from storage
       this.$router.push("/logout");
-    }
+    },
   },
   //checks if the user is an admin
   created() {
     this.isActiveUserAdmin = this.sessionService.isAdmin();
-  }
+    console.log(this.isActiveUserAdmin);
+  },
 };
 </script>
 

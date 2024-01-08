@@ -2,7 +2,7 @@
   <div>
     <table-component
       v-if="!wareHousesAreLoading"
-      :amount-to-display="5"
+      :amount-to-display="amountToDisplay"
       :has-add-button="true"
       :has-delete-button="true"
       :has-edit-button="true"
@@ -84,6 +84,7 @@ export default {
       toastTitle: "",
       toastMessage: "",
       wareHousesAreLoading: true,
+      amountToDisplay: 10,
     };
   },
   methods: {
@@ -259,7 +260,25 @@ export default {
     }
 
     this.warehouses = data;
+
+    // Set the amount to display to the amount of warehouses if there are less than 10.
+    if (this.warehouses.length < this.amountToDisplay) {
+      this.amountToDisplay = this.warehouses.length;
+    }
+
     this.wareHousesAreLoading = false;
+  },
+  watch: {
+    warehouses: {
+      handler() {
+        // TODO: Fix this.
+        // Set the amount to display to the amount of warehouses if there are less than 10.
+        if (this.warehouses.length < this.amountToDisplay) {
+          this.amountToDisplay = this.warehouses.length;
+        }
+      },
+      deep: true,
+    },
   },
 };
 </script>
