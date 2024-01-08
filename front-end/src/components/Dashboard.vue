@@ -334,6 +334,8 @@ export default {
           return dateA - dateB;
         });
 
+
+
         //create the chart points for the product
         let stockAtThisMoment = 0;
         const createChartPoints = allStockInteractionsForProduct.map((item) => {
@@ -411,6 +413,7 @@ export default {
 
 
         const allDataPoints = [...createChartPoints];
+        console.log('allDataPoints', allDataPoints)
 
         return {
           label: name,
@@ -445,7 +448,15 @@ export default {
         return dateA - dateB;
       });
 
+      const lastDate = dateLabels[dateLabels.length - 1];
+
       datasets.forEach(dataset => {
+        if (dataset.data.length === 1) {
+          dataset.data.push ({
+            x: lastDate,
+            y: dataset.data[0].y,
+          });
+        }
         const lastDataPoint = dataset.data[dataset.data.length - 1];
         this.lastDataPoints.push({
           productName: dataset.label,
@@ -453,7 +464,7 @@ export default {
         });
       });
       const chartData = {
-        labels: dateLabels,
+        labels: [...dateLabels],
         datasets: datasets,
       };
       const chartOptions = {
