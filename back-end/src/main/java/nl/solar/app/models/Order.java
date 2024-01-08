@@ -19,6 +19,7 @@ import java.util.Set;
  * @author Julian Kruithof
  */
 @Entity
+@Table(name = "`order`")
 public class Order {
 
     @Id

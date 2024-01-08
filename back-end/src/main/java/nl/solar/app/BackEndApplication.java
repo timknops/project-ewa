@@ -9,6 +9,7 @@ import nl.solar.app.repositories.ItemRepository;
 import nl.solar.app.repositories.ResourceRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -49,6 +50,9 @@ public class BackEndApplication implements CommandLineRunner {
     @Autowired
     ItemRepository itemRepo;
 
+    @Value("${spring.jpa.hibernate.ddl-auto}")
+    private String ddlAuto;
+
     public static void main(String[] args) {
         SpringApplication.run(BackEndApplication.class, args);
     }
@@ -56,6 +60,11 @@ public class BackEndApplication implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
+
+        // Only create sample data if the database is empty.
+        if (!this.ddlAuto.matches("create-drop|create")) {
+            return;
+        }
 
         this.createSampleWarehouse();
         this.createSampleTeams();

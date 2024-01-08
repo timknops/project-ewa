@@ -13,6 +13,7 @@ import java.util.Objects;
  * @author Julian Kruithof
  */
 @Entity
+@Table(name = "item")
 public class Item {
 
     @EmbeddedId
