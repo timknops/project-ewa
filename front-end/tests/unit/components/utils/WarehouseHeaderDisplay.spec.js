@@ -3,6 +3,7 @@ import WarehouseHeaderDisplay from "@/components/util/WarehouseHeaderDisplay.vue
 import {WarehouseAdaptor} from "@/service/warehouseAdaptor";
 import {createRouter, createWebHashHistory} from "vue-router";
 import inventoryOverview from "@/components/InventoryOverview.vue";
+import {SessionSbService} from "@/service/SessionSbService";
 
   let wrapper;
   jest.mock('@/service/warehouseAdaptor');
@@ -39,6 +40,12 @@ describe('WarehouseHeaderDisplay.vue',  () => {
       routes,
     })
     const mockWarehouseAdaptor = new WarehouseAdaptor();
+    const sessionSbService = new SessionSbService();
+    sessionSbService.saveTokenInBrowserStorage('token', {
+      id: 1,
+      name: 'name',
+      type: 'admin'
+    })
 
     jest.spyOn(mockWarehouseAdaptor, 'findAll').mockResolvedValue([
       {
@@ -57,11 +64,11 @@ describe('WarehouseHeaderDisplay.vue',  () => {
         global: {
           plugins: [router],
           provide: {
-            warehouseService: mockWarehouseAdaptor
+            warehouseService: mockWarehouseAdaptor,
+            sessionService: sessionSbService
           },
         },
         props: {
-          activeUser: {id: 1, name: 'test', role: 'admin', team: {id: 1, name: 'test', warehouse: {id: 1, name: 'Solar'}}},
           activeWarehouse : {},
           hasNoTotalOption: false,
           totalText: 'Total'
@@ -87,7 +94,11 @@ describe('WarehouseHeaderDisplay.vue',  () => {
   })
 
   it('Admin should have a list of warehouse', async () => {
-    await wrapper.setProps({activeUser: {id: 1, name: 'test', role: 'admin', team: {id: 1, name: 'test', warehouse: {id: 1, name: 'Solar'}}}})
+    wrapper.vm.sessionService.saveTokenInBrowserStorage('token', {
+      id: 1,
+      name: 'name',
+      type: 'admin'
+    })
     await wrapper.setProps({hasNoTotalOption: true})
 
     const warehouses = wrapper.findAll('.warehouse-select');
@@ -97,7 +108,11 @@ describe('WarehouseHeaderDisplay.vue',  () => {
   });
 
   it('admin should have list of warehouse and total if hasNoTotalOption is false', async () => {
-    await wrapper.setProps({activeUser: {id: 1, name: 'test', role: 'admin', team: {id: 1, name: 'test', warehouse: {id: 1, name: 'Solar'}}}})
+    wrapper.vm.sessionService.saveTokenInBrowserStorage('token', {
+      id: 1,
+      name: 'name',
+      type: 'admin'
+    })
     await wrapper.setProps({hasNoTotalOption: false})
 
     const warehouses = wrapper.findAll('.warehouse-select');
@@ -108,14 +123,6 @@ describe('WarehouseHeaderDisplay.vue',  () => {
   it('findWarehouseByName returns correct warehouse', () => {
     expect(wrapper.vm.findWarehouseByName('Solar'), "findWarehouseByName should return correct warehouse").toMatchObject({name: 'Solar', id: 1});
     expect(wrapper.vm.findWarehouseByName('Total'), "findWarehouseByName should return correct warehouse").toMatch('Total');
-  });
-
-  it('viewer should only have one warehouse', async () => {
-    await wrapper.setProps({activeUser: {id: 1, name: 'test', role: 'viewer', team: {id: 1, name: 'test', warehouse: {id: 1, name: 'Solar'}}}})
-
-    const warehouses = wrapper.findAll('.warehouse-select');
-    expect(warehouses.length, "Viewer should have one warehouse").toBe(1);
-    expect(warehouses[0].text(), "First warehouse should be Solar").toMatch('Solar');
   });
 
   it("Warehouse should emit proper event in created hook",  async () => {
@@ -158,15 +165,22 @@ describe('WarehouseHeaderDisplay.vue errors',  () => {
       routes,
     })
 
+    const sessionSbService = new SessionSbService();
+    sessionSbService.saveTokenInBrowserStorage('token', {
+      id: 1,
+      name: 'name',
+      type: 'admin'
+    })
+
     wrapper = shallowMount(WarehouseHeaderDisplay, {
       global: {
         provide: {
-          warehouseService: mockWarehouseAdaptor
+          warehouseService: mockWarehouseAdaptor,
+          sessionService: sessionSbService
         },
         plugins: [router]
       },
       props: {
-        activeUser: {id: 1, name: 'test', role: 'admin', team: {id: 1, name: 'test', warehouse: {id: 1, name: 'Solar'}}},
         activeWarehouse : {},
         hasNoTotalOption: false,
         totalText: 'Total'
@@ -177,5 +191,65 @@ describe('WarehouseHeaderDisplay.vue errors',  () => {
     expect(wrapper.element.children.length, "WarehouseHeaderDisplay is not rendered properly").toBeGreaterThan(0);
     expect(wrapper.vm.warehouses.length, "WarehouseHeaderDisplay should have an empty list of warehouses")
       .toBe(0);
+  });
+})
+
+describe('WarehouseHeaderDisplay.vue Viewer Flow',  () => {
+  it('Viewer should only see one warehouse', async () => {
+    const router = createRouter({
+      history: createWebHashHistory(),
+      routes,
+    })
+    const mockWarehouseAdaptor = new WarehouseAdaptor();
+    const sessionSbService = new SessionSbService();
+    sessionSbService.saveTokenInBrowserStorage('token', {
+      id: 1,
+      name: 'name',
+      type: 'viewer',
+      team: {
+        id: 1,
+        name: 'Solar',
+        warehouse: {
+          id: 1,
+          name: 'Solar'
+        }
+      }
+    })
+
+    jest.spyOn(mockWarehouseAdaptor, 'findAll').mockResolvedValue([
+      {
+        name: 'Solar',
+        id: 1
+      },
+      {
+        name: 'EHES',
+        id: 2
+      }
+    ])
+
+    //set props to not break the component on mount, props are changed in the tests
+    wrapper = shallowMount(WarehouseHeaderDisplay,
+      {
+        global: {
+          plugins: [router],
+          provide: {
+            warehouseService: mockWarehouseAdaptor,
+            sessionService: sessionSbService
+          },
+        },
+        props: {
+          activeWarehouse : {},
+          hasNoTotalOption: false,
+          totalText: 'Total'
+        }
+      })
+
+    await wrapper.vm.$router.isReady();
+    await wrapper.vm.$nextTick();
+
+
+    const warehouses = wrapper.findAll('.warehouse-select');
+    expect(warehouses.length, "Viewer should have one warehouse").toBe(1);
+    expect(warehouses[0].text(), "First warehouse should be Solar").toMatch('Solar');
   });
 })

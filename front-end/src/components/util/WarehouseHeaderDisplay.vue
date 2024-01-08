@@ -81,10 +81,13 @@ export default {
    *
    */
   async created() {
-    if (this.activeUser.role === "viewer") return;
+
+    if (!this.sessionService.isAdmin()) {
+      this.$emit('setActiveWarehouse', this.activeUser.team.warehouse);
+      return;
+    }
     try {
       this.warehouses = await this.warehouseService.findAll();
-
     } catch (error) {
       this.warehouses = [];
       if (!this.hasNoTotalOption) {
@@ -95,11 +98,6 @@ export default {
 
       return;
     }
-    if (!this.sessionService.isAdmin()) {
-      this.$emit('setActiveWarehouse', this.activeUser.team.warehouse);
-      return;
-    }
-    this.warehouses = await this.warehouseService.findAll();
 
     if (this.$route.params.warehouse) {
       const warehouse = this.findWarehouseByName(this.$route.params.warehouse);

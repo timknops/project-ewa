@@ -18,8 +18,8 @@ public class OrderTest {
 
     @Test
     public void testCreateDummyOrder() {
-        final LocalDateTime MINIMUM_START = LocalDateTime.of(2023, 9, 12, 0, 0, 0);
-        final LocalDateTime MAXIMUM_END = LocalDateTime.of(2024, 2, 1, 0, 0, 0);
+        final LocalDateTime MINIMUM_START = LocalDateTime.now().minusMonths(2);
+        final LocalDateTime MAXIMUM_END = LocalDateTime.now().plusMonths(4);
 
         Warehouse warehouse = new Warehouse(1000, "Wibauthuis", "Wibautstraat 3b, 1091 GH Amsterdam");
         Order order = Order.createDummyOrder(warehouse);

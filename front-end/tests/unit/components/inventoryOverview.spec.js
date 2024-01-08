@@ -2,6 +2,7 @@ import {shallowMount} from "@vue/test-utils";
 import InventoryOverview from "@/components/InventoryOverview.vue";
 import {InventoryAdaptor} from "@/service/inventoryAdaptor.js";
 import {createRouter, createWebHashHistory} from "vue-router";
+import {SessionSbService} from "@/service/SessionSbService";
 
 
 //mock adaptor
@@ -37,6 +38,12 @@ describe('InventoryOverview.vue', () => {
       routes: routes
     })
 
+    const sessionSbService = new SessionSbService();
+    sessionSbService.saveTokenInBrowserStorage('token', {
+      id: 1,
+      name: 'name',
+      type: 'admin'
+    });
     const mockInventoryAdaptor = new InventoryAdaptor();
     //mock the findAll method
     jest.spyOn(mockInventoryAdaptor, 'findAll').mockResolvedValue([
@@ -85,7 +92,8 @@ describe('InventoryOverview.vue', () => {
     wrapper = shallowMount(InventoryOverview, {
       global: {
         provide: {
-          inventoryService: mockInventoryAdaptor
+          inventoryService: mockInventoryAdaptor,
+          sessionService: sessionSbService
         },
         plugins: [router]
       }
@@ -219,7 +227,7 @@ describe('InventoryOverview.vue', () => {
 
     const products = wrapper.vm.getWarehouseProductInfo(wrapper.vm.activeWarehouse);
     expect(products.length, "product should be added to the list").toBe(3);
-    expect(products[products.length -1], "product should be added to the end of the list").toEqual({
+    expect(products[products.length - 1], "product should be added to the end of the list").toEqual({
       id: 3,
       productName: "enphase q kabel 3 fase",
       quantity: 30,
@@ -352,5 +360,83 @@ describe('InventoryOverview.vue', () => {
     expect(table.vm.hasEditButton, "Table should have update button when active warehouse is a specific warehouse").toBeTruthy();
     expect(table.vm.hasDeleteButton, "Table should not have delete button when active warehouse is a specific warehouse").toBeFalsy();
 
+  });
+})
+
+describe('InventoryOverview.vue Viewer Flow', () => {
+
+  beforeEach(async () => {
+    const router = createRouter({
+      history: createWebHashHistory(),
+      routes: routes
+    })
+
+    const sessionSbService = new SessionSbService();
+    sessionSbService.saveTokenInBrowserStorage('token', {
+      id: 1,
+      name: 'name',
+      type: 'viewer',
+      team: {
+        id: 1,
+        name: 'Solar',
+        warehouse: {
+          id: 1,
+          name: 'Solar'
+        }
+      }
+    });
+
+    const mockInventoryAdaptor = new InventoryAdaptor();
+    //mock the findAll method
+    jest.spyOn(mockInventoryAdaptor, 'findAllForWarehouse').mockResolvedValue([
+      {
+        id: 1,
+        productName: "Enphase IQ8+ omvormer",
+        quantity: 1,
+        minimum: 1,
+      },
+      {
+        id: 2,
+        productName: "Enphase Q kabel 1 fase",
+        quantity: 2,
+        minimum: 2,
+      },
+    ])
+
+    wrapper = shallowMount(InventoryOverview, {
+      global: {
+        provide: {
+          inventoryService: mockInventoryAdaptor,
+          sessionService: sessionSbService
+        },
+        plugins: [router]
+      }
+    })
+
+    //wait for router to be ready
+    wrapper.vm.$router.push('/inventory');
+    await wrapper.vm.$router.isReady()
+    //wait for data to be loaded
+    await wrapper.vm.$nextTick();
+    wrapper.vm.setActiveWarehouse({id: 1, name: "Solar"});
+  });
+  it('Viewer data should only be inventory for one warehouse', () => {
+      expect(wrapper.vm.activeWarehouse, "Active warehouse should be null for a viewer").toBeNull()
+      expect(wrapper.vm.products.length, "Products should only be for the user warehouse").toBe(2);
+      expect(wrapper.vm.totalProducts.length, "Total products should be empty").toBe(0);
+  });
+
+  it('Router should not contain warehouse name', () => {
+      expect(wrapper.vm.$route.path, "Route path should not contain warehouse name").toBe('/inventory');
+  });
+
+  it('Crud buttons should not be displayed', () => {
+    console.log(wrapper.html())
+    const table = wrapper.findComponent({name: "TableComponent"});
+
+    expect(table.exists(), "Table should be rendered").toBeTruthy();
+    expect(table.vm.hasAddButton, "Table should not have add button when the user is a viewer").toBeFalsy();
+    expect(table.vm.hasEditButton, "Table should not have update button when the user is a viewer").toBeFalsy();
+    expect(table.vm.hasDeleteButton, "Table should not have delete button when the user is a viewer").toBeFalsy();
   });
 })
