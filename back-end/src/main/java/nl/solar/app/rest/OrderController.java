@@ -170,6 +170,11 @@ public class OrderController {
         return ResponseEntity.ok(updated);
     }
 
+    /**
+     * Update the status of an order with a specific id from PENDING to DELIVERED
+     * @param id The id of the order to update
+     * @return The updated order
+     */
     @PatchMapping(path = "{id}/status", produces = "application/json")
     public ResponseEntity<Order> updateOrderStatusOnly(@PathVariable long id){
         //find the existing order to handle some change checks.

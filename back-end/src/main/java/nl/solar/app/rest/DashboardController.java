@@ -56,6 +56,12 @@ public class DashboardController {
     // quantity = the amount added by an order
     // inventoryQuantity = the current inventory level
     // amountOfProduct = the amount used by a project
+
+    /**
+     * Method that is run every once at start of application and then in 24 hour intervals
+     * Gets the data used on the dashboard, and checks if at some point the amount of stock is below the minimum value
+     * Sends an email to the admins on what product should be ordered to which warehouse
+     */
     @Scheduled(initialDelay = 10000, fixedRate = 24 * 60 * 60 * 1000)
     public void forecastNotification() {
         List<DashboardDTO> originalQuantityList = getDashboardItems();
@@ -91,7 +97,11 @@ public class DashboardController {
         }
     }
 
-    // method to send an email
+    /**
+     * Sends an email to admin users
+     * @param shortages Map with product for a specific warehouse and the date the stock would be insufficient
+     * @param users List of users
+     */
     private void sendEmailNotification(Map<String, LocalDate> shortages, List<User> users) {
         Email email = new Email();
 
@@ -105,7 +115,11 @@ public class DashboardController {
         }
     }
 
-    // method to format the Map into a String
+    /**
+     * Method that creates a single String with all the shortages in it
+     * @param shortages Map with product for a specific warehouse and the date the stock would be insufficient
+     * @return a String that shows all shortages
+     */
     private String formatShortagesString(Map<String, LocalDate> shortages) {
         StringBuilder body = new StringBuilder();
 
@@ -126,7 +140,11 @@ public class DashboardController {
         return body.toString();
     }
 
-    // method to combine the quantities of a certain product for orders on the same day
+    /**
+     * Method to combine the amount of a product to be added if the order is for the same day, product and warehouse
+     * @param originalQuantityList List with all order data
+     * @return List with combined order data
+     */
     private static List<DashboardDTO> combineQuantityList(List<DashboardDTO> originalQuantityList) {
         Map<String, DashboardDTO> combinedMap = new HashMap<>();
 
@@ -144,7 +162,11 @@ public class DashboardController {
         return new ArrayList<>(combinedMap.values());
     }
 
-    // method to combine the quantities of a certain product for projects on the same day
+    /**
+     * Method to combine the amount of product to be used by a project if the project is for the same day, product and warehouse
+     * @param originalAmountOfProductList List with all project data
+     * @return List with combined project data
+     */
     private static List<DashboardDTO> combineAmountOfProductList(List<DashboardDTO> originalAmountOfProductList) {
         Map<String, DashboardDTO> combinedMap = new HashMap<>();
 
@@ -162,7 +184,12 @@ public class DashboardController {
         return new ArrayList<>(combinedMap.values());
     }
 
-    // method to combine the list of orders and the list of project where the date is the same
+    /**
+     * Method that merges the DTO if the date is the same
+     * @param combinedQuantityList List with combined order data
+     * @param combinedAmountOfProductList List with combined project data
+     * @return List with the combined data of orders and projects for a specific date and warehouse
+     */
     private static List<DashboardDTO> mergeQuantityAndAmountOfProduct(
             List<DashboardDTO> combinedQuantityList, List<DashboardDTO> combinedAmountOfProductList) {
         Map<String, DashboardDTO> mergedMap = new HashMap<>();
@@ -188,7 +215,11 @@ public class DashboardController {
         return new ArrayList<>(mergedMap.values());
     }
 
-    // method to extract current stock value
+    /**
+     * Method to extract the current stock value of a specific product in a warehouse from the DTO
+     * @param mergedList List with the combined data of orders and projects for a specific date and warehouse
+     * @return Map containing the product and warehouse combination and the current stock
+     */
     private static Map<String, Integer> extractCurrentStockValues(List<DashboardDTO> mergedList) {
         Map<String, Integer> currentStockValues = new HashMap<>();
 
@@ -205,7 +236,11 @@ public class DashboardController {
         return currentStockValues;
     }
 
-    // method to extract minimum value of a products stock
+    /**
+     * Method to extract the minimum values of a specific product in a warehouse from the DTO
+     * @param inventories List of inventories
+     * @return Map containing the product and warehouse combination and the minimum value
+     */
     private static Map<String, Integer> extractMinimumValueProduct(List<Inventory> inventories) {
         Map<String, Integer> minimumStockValues = new HashMap<>();
 
@@ -223,7 +258,14 @@ public class DashboardController {
         return minimumStockValues;
     }
 
-    // method to get the date at which a stock value wouldn't be enough anymore
+    /**
+     * Method that checks if at some point the products used and added would lead to a shortage of stock
+     * @param currentStockValues Map containing the product and warehouse combination and the current stock
+     * @param minimumStockValues Map containing the product and warehouse combination and the minimum value
+     * @param mergedList List with the combined data of orders and projects for a specific date and warehouse
+     * @return Map containing the product and warehouse combination and the date at which the amount of stock would
+     * become insufficient
+     */
     private static Map<String, LocalDate> getStockShortages(Map<String, Integer> currentStockValues, Map<String, Integer> minimumStockValues,
                                                             List<DashboardDTO> mergedList) {
         Map<String, LocalDate> shortagesMap = new HashMap<>();
