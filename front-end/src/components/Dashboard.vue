@@ -206,7 +206,7 @@ export default {
       return filteredQuantities;
     },
     uniqueWarehouseNames() {
-      return Array.from(new Set(this.inventoryData.map((item) => item.warehouseName)));
+      return Array.from(new Set(this.inventoryQuantities.map((item) => item.warehouseName)));
     },
   },
   async created() {
@@ -278,6 +278,7 @@ export default {
       this.selectedWarehouse = warehouse;
       this.fetchInventoryQuantity(warehouse);
       this.updateChart();
+
     },
     updateChart() {
       this.lastDataPoints = [];
