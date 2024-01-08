@@ -1,7 +1,7 @@
 <template>
   <div
       class="row warehouse-display rounded-top mx-0 p-3 pb-0"
-      v-if="activeUser.role === 'viewer'"
+      v-if="!this.sessionService.isAdmin()"
   >
     <div class="col">
       <strong class="warehouse-select active">{{
@@ -13,7 +13,7 @@
   <!-- row containing all names of warehouses and total which the admin can pick    -->
   <div
       class="row warehouse-display rounded-top mx-0 p-3 pb-0"
-      v-else-if="activeUser.role === 'admin'"
+      v-else-if="this.sessionService.isAdmin()"
   >
     <div class="col-auto">
       <button
@@ -23,7 +23,7 @@
           :class="{ active: activeWarehouse === 'Total' }"
           @click="$emit('setActiveWarehouse','Total')"
       >
-        <strong>{{totalText}}</strong>
+        <strong>{{ totalText }}</strong>
       </button>
     </div>
     <div class="col-auto" v-for="(warehouse) in warehouses" :key="warehouse.id">
@@ -48,10 +48,9 @@
  */
 export default {
   name: "WarehouseHeaderDisplay",
-  inject: ["warehouseService"],
+  inject: ["warehouseService", "sessionService"],
   emits: ["setActiveWarehouse"],
   props: {
-    activeUser: {},
     activeWarehouse: {},
 
     //option to have a total overview, or only overview for each separate warehouse
@@ -61,7 +60,8 @@ export default {
   },
   data() {
     return {
-      warehouses: []
+      warehouses: [],
+      activeUser: this.sessionService.currentUser
     }
   },
   methods: {
@@ -81,7 +81,10 @@ export default {
    *
    */
   async created() {
-    if (this.activeUser.role === "viewer") return;
+    if (!this.sessionService.isAdmin()) {
+      this.$emit('setActiveWarehouse', this.activeUser.team.warehouse);
+      return;
+    }
     this.warehouses = await this.warehouseService.findAll();
     if (this.$route.params.warehouse) {
       const warehouse = this.findWarehouseByName(this.$route.params.warehouse);
