@@ -15,4 +15,6 @@ public interface OrderRepository extends EntityRepository<Order> {
     List<Order> findOrdersWarehouse(long wId);
 
     List<Order> findPendingOrders(Warehouse warehouse);
+
+    List<Order> findAllPendingOrders();
 }

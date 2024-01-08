@@ -12,6 +12,7 @@ import nl.solar.app.models.Order;
 import nl.solar.app.models.Product;
 import nl.solar.app.repositories.EntityRepository;
 import nl.solar.app.repositories.ItemRepository;
+import nl.solar.app.repositories.OrderRepository;
 import nl.solar.app.service.InventoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -37,9 +38,10 @@ public class OrderController {
     private ItemRepository itemRepo;
     @Autowired
     private EntityRepository<Order> orderRepo;
-
     @Autowired
     private InventoryService inventoryService;
+    @Autowired
+    private OrderRepository orderRepository;
 
     /**
      * Get a list of all orders found
@@ -48,6 +50,15 @@ public class OrderController {
     @GetMapping(produces = "application/json")
     public List<Order> getAll() {
         return this.orderRepo.findAll();
+    }
+
+    /**
+     * Get a list of all pending orders found
+     * @return list of orders
+     */
+    @GetMapping(path = "pending")
+    public List<Order> getAllPending() {
+        return this.orderRepository.findAllPendingOrders();
     }
 
     /**
@@ -156,6 +167,34 @@ public class OrderController {
         }
 
         Order updated = this.orderRepo.save(order);
+        return ResponseEntity.ok(updated);
+    }
+
+    /**
+     * Update the status of an order with a specific id from PENDING to DELIVERED
+     * @param id The id of the order to update
+     * @return The updated order
+     */
+    @PatchMapping(path = "{id}/status", produces = "application/json")
+    public ResponseEntity<Order> updateOrderStatusOnly(@PathVariable long id){
+        //find the existing order to handle some change checks.
+        Order existingOrder = this.orderRepo.findById(id);
+
+        if (existingOrder == null) {
+            throw new BadRequestException("The order should exist");
+        }
+
+        if (existingOrder.getStatus() == OrderStatus.DELIVERED) {
+            throw new BadRequestException("You can't change the status of an order that is already delivered ");
+        }
+
+        //If the new order is set to delivered update the Inventory
+        if (existingOrder.getStatus() == OrderStatus.PENDING) {
+            this.inventoryService.updateInventory(existingOrder.getItems(), existingOrder.getWarehouse());
+            existingOrder.setStatus(OrderStatus.DELIVERED);
+        }
+
+        Order updated = this.orderRepo.save(existingOrder);
         return ResponseEntity.ok(updated);
     }
 

@@ -24,6 +24,7 @@ import {OrderAdaptor} from "@/service/orderAdaptor";
 import {SessionSbService} from "@/service/SessionSbService";
 import {shallowReactive} from "vue";
 import {FetchInterceptor} from "@/service/FetchInterceptor";
+import {DashboardAdaptor} from "@/service/dashboardAdaptor";
 
 
 export default {
@@ -49,7 +50,8 @@ export default {
       teamsService: new TeamAdaptor(`${appConfig.BACKEND_URL}/teams`),
       emailService: new EmailAdaptor(`${appConfig.BACKEND_URL}`),
       projectService: new ProjectAdaptor(`${appConfig.BACKEND_URL}/projects`),
-      orderService: new OrderAdaptor(`${appConfig.BACKEND_URL}/orders`)
+      orderService: new OrderAdaptor(`${appConfig.BACKEND_URL}/orders`),
+      dashboardService: new DashboardAdaptor(`${appConfig.BACKEND_URL}/dashboard-items`)
     }
   },
   beforeUnmount() {
