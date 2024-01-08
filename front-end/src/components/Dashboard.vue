@@ -355,7 +355,7 @@ export default {
             });
 
 
-        //I want also to include if there is no deliverdate and quantity, to make the inventoryQuantity minus the amountOfProduct and that value to be set to the duedate
+
         const allDataPoints = [currentInventoryQuantity, ...quantityData, ...inventoryQuantityDataForItem, ...projectMinusQuanity];
 
         return {
