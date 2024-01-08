@@ -99,7 +99,7 @@ export default {
     };
   },
   async created() {
-    // Get the current active user type.
+    // Get the current active user.
     const user = await this.sessionService.currentUser;
 
     let data;
@@ -113,7 +113,7 @@ export default {
     }
 
     // If the user is an admin, get all projects.
-    if (user.type === this.userTypes.ADMIN) {
+    else if (user.type === this.userTypes.ADMIN) {
       data = await this.projectService.getAll();
     }
 

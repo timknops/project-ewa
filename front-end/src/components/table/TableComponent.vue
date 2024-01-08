@@ -1,5 +1,9 @@
 <template>
-  <div class="card border-0 pt-4 pb-2 d-flex" :style="{ width: tableWidth }">
+  <div
+    class="card border-0 pt-4 pb-2 d-flex"
+    :style="{ width: tableWidth }"
+    style=""
+  >
     <div class="card-body px-4 py-0 overflow-hidden">
       <!-- Both the title and the subtitle are optional props! They will not be displayed when not specified -->
       <h5
@@ -12,7 +16,7 @@
       <p v-if="subTitle !== undefined" class="ps-2 subtitle mb-2">
         {{ subTitle }}
       </p>
-      <div class="d-flex gap-3 py-1 mb-3">
+      <div v-if="hasSearchBar" class="d-flex gap-3 py-1 mb-3">
         <div class="flex-fill">
           <input
             v-if="hasSearchBar"
