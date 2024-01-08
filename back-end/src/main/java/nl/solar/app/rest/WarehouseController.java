@@ -1,6 +1,5 @@
 package nl.solar.app.rest;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.transaction.Transactional;
 import nl.solar.app.exceptions.BadRequestException;
 import nl.solar.app.exceptions.PreConditionFailedException;
@@ -8,7 +7,6 @@ import nl.solar.app.exceptions.ResourceConflictException;
 import nl.solar.app.exceptions.ResourceNotFoundException;
 import nl.solar.app.models.Order;
 import nl.solar.app.models.Warehouse;
-import nl.solar.app.models.views.ResourceView;
 import nl.solar.app.repositories.EntityRepository;
 import nl.solar.app.repositories.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +27,7 @@ public class WarehouseController {
     OrderRepository orderRepo;
 
     @GetMapping(produces = "application/json")
-    public List<Warehouse> getAll(){
+    public List<Warehouse> getAll() {
         return this.warehouseRepo.findAll();
     }
 
@@ -37,7 +35,7 @@ public class WarehouseController {
     public ResponseEntity<Warehouse> getWarehouseById(@PathVariable Long id) throws ResourceNotFoundException {
         Warehouse warehouse = this.warehouseRepo.findById(id);
 
-        if (warehouse == null){
+        if (warehouse == null) {
             throw new ResourceNotFoundException("Warehouse with id: " + id + " was not found");
         }
 
@@ -48,25 +46,26 @@ public class WarehouseController {
     public List<Order> getOrdersForWarehouse(@PathVariable long id) {
         Warehouse warehouse = this.warehouseRepo.findById(id);
 
-        if (warehouse == null){
+        if (warehouse == null) {
             throw new ResourceNotFoundException("Can't find orders because warehouse doesn't exist");
         }
         return this.orderRepo.findOrdersWarehouse(id);
     }
 
-
     @Transactional
     @DeleteMapping(path = "{id}", produces = "application/json")
-    public ResponseEntity<Warehouse> deleteWarehouseById(@PathVariable long id) throws ResourceNotFoundException, ResourceConflictException {
+    public ResponseEntity<Warehouse> deleteWarehouseById(@PathVariable long id)
+            throws ResourceNotFoundException, ResourceConflictException {
         Warehouse warehouseToDelete = this.warehouseRepo.findById(id);
 
-        if (warehouseToDelete == null){
+        if (warehouseToDelete == null) {
             throw new ResourceNotFoundException("Cannot delete warehouse with id: " + id + "\nWarehouse not found");
         }
 
         // Check if warehouse has pending orders
-        if (!orderRepo.findPendingOrders(warehouseToDelete).isEmpty()){
-            throw new ResourceConflictException("Cannot delete warehouse with id: " + id + "\nWarehouse has pending orders");
+        if (!orderRepo.findPendingOrders(warehouseToDelete).isEmpty()) {
+            throw new ResourceConflictException(
+                    "Cannot delete warehouse with id: " + id + "\nWarehouse has pending orders");
         }
 
         // Remove warehouse from orders
@@ -79,23 +78,24 @@ public class WarehouseController {
 
     @PostMapping(produces = "application/json")
     public ResponseEntity<Warehouse> addOneWarehouse(@RequestBody Warehouse warehouse) throws BadRequestException {
-        if (warehouse.getName() == null || warehouse.getName().isBlank()){
+        if (warehouse.getName() == null || warehouse.getName().isBlank()) {
             throw new BadRequestException("Warehouse name can't be empty");
         }
 
         Warehouse newWarehouse = this.warehouseRepo.save(warehouse);
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(newWarehouse.getId()).toUri();
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                .buildAndExpand(newWarehouse.getId()).toUri();
         return ResponseEntity.created(location).body(newWarehouse);
     }
 
     @PutMapping(path = "{id}", produces = "application/json")
     public ResponseEntity<Warehouse> updateWarehouse(@PathVariable long id, @RequestBody Warehouse warehouse)
-        throws PreConditionFailedException, BadRequestException {
-        if (warehouse.getId() != id){
+            throws PreConditionFailedException, BadRequestException {
+        if (warehouse.getId() != id) {
             throw new PreConditionFailedException("Id of the body and path do not match");
         }
-        if (warehouse.getName() == null || warehouse.getName().isBlank()){
+        if (warehouse.getName() == null || warehouse.getName().isBlank()) {
             throw new BadRequestException("Warehouse name can't be empty");
         }
 

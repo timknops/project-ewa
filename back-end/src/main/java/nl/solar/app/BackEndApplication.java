@@ -167,19 +167,22 @@ public class BackEndApplication implements CommandLineRunner {
         List<User> users = userRepo.findAll();
         List<Team> teams = teamsRepo.findAll();
 
-        if (teams == null){
+        if (teams == null) {
             throw new ResourceNotFoundException("No teams were found");
         }
 
         teams.get(0).setTeam("Static Users");
-        for (User staticUser: User.createStaticAdmin(teams.get(0))) {
+        for (User staticUser : User.createStaticAdmin(teams.get(0))) {
             userRepo.save(staticUser);
         }
+
         userRepo.save(User.createStaticUser(teams.get(0)));
 
-        if (!users.isEmpty()) return;
+        if (!users.isEmpty())
+            return;
         for (int i = 0; i < 11; i++) {
-            //get a random team, except for the first team since that one is reserved for static user
+            // get a random team, except for the first team since that one is reserved for
+            // static user
             Team team = teams.get((int) Math.floor(Math.random() * (teams.size() - 1)) + 1);
             User user = User.creatyDummyUser(i, team);
             team.getUsers().add(user);
@@ -260,7 +263,6 @@ public class BackEndApplication implements CommandLineRunner {
                 "Similar to the Enphase Q Relay 1 fase, but designed for three-phase electrical systems.",
                 "Solar panel created with two glass layers for extra protection. It can produces op to 380W in energy"
         };
-
 
         for (int i = 0; i < PRODUCT_NAMES.length; i++) {
             Product product = Product.createDummyProducts(0, PRODUCT_NAMES[i], PRODUCT_DESCRIPTONS[i]);

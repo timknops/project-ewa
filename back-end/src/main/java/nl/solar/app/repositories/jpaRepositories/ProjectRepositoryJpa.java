@@ -51,6 +51,17 @@ public class ProjectRepositoryJpa implements ProjectRepository {
     }
 
     /**
+     * Finds all projects by team id.
+     */
+    @Override
+    public List<Project> findByTeamId(long teamId) {
+        TypedQuery<Project> query = entityManager.createQuery("SELECT p FROM Project p WHERE p.team.id = :teamId",
+                Project.class);
+        query.setParameter("teamId", teamId);
+        return query.getResultList();
+    }
+
+    /**
      * Deletes a project.
      * 
      * @param id the id of the project to delete.

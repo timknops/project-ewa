@@ -113,6 +113,29 @@ public class ProjectController {
     }
 
     /**
+     * Retrieves a list of all projects for a team.
+     *
+     * @param teamId the id of the team to retrieve projects for.
+     * @return A ResponseEntity containing the retrieved projects.
+     * @throws ResourceNotFoundException If the team with the given ID does not
+     *                                   exist.
+     */
+    @GetMapping(path = "/team/{teamId}", produces = "application/json")
+    public ResponseEntity<List<Project>> getProjectsForTeam(@PathVariable Long teamId)
+            throws ResourceNotFoundException {
+        // Check if the team exists.
+        Team team = this.teamRepo.findById(teamId);
+        if (team == null) {
+            throw new ResourceNotFoundException("Team with id: " + teamId + " was not found");
+        }
+
+        // Get the projects for the team.
+        List<Project> projects = this.projectRepo.findByTeamId(teamId);
+
+        return ResponseEntity.ok(projects);
+    }
+
+    /**
      * Deletes a project by its id.
      *
      * @param id the id of the project to delete.

@@ -1,36 +1,36 @@
 <template>
   <div>
     <table-component
-        v-if="userList.length > 0"
-        :amount-to-display="10"
-        :has-add-button="true"
-        :has-delete-button="true"
-        :has-edit-button="true"
-        :table-data="userList"
-        :has-search-bar="true"
-        @edit="showEditModal"
-        @delete="showDeleteModal"
-        @add="showAddModal"
+      v-if="userList.length > 0"
+      :amount-to-display="10"
+      :has-add-button="true"
+      :has-delete-button="true"
+      :has-edit-button="true"
+      :table-data="userList"
+      :has-search-bar="true"
+      @edit="showEditModal"
+      @delete="showDeleteModal"
+      @add="showAddModal"
     />
-    <SpinnerComponent v-else/>
+    <SpinnerComponent v-else />
     <Transition>
       <modal-component
-          v-if="showModal"
-          :title="modalTitle"
-          :active-modal="modalBodyComponent"
-          :item="modalUser"
-          :ok-btn-text="okBtnText"
-          @cancel-modal-btn="this.showModal = false"
-          @corner-close-modal-btn="this.showModal = false"
-          @ok-modal-btn="handleOk"
+        v-if="showModal"
+        :title="modalTitle"
+        :active-modal="modalBodyComponent"
+        :item="modalUser"
+        :ok-btn-text="okBtnText"
+        @cancel-modal-btn="this.showModal = false"
+        @corner-close-modal-btn="this.showModal = false"
+        @ok-modal-btn="handleOk"
       />
     </Transition>
     <Transition>
       <ToastComponent
-          v-if="showToast"
-          :toast-title="toastTitle"
-          :toast-message="toastMessage"
-          @close-toast="showToast = false"
+        v-if="showToast"
+        :toast-title="toastTitle"
+        :toast-message="toastMessage"
+        @close-toast="showToast = false"
       />
     </Transition>
   </div>
@@ -63,7 +63,7 @@ export default {
         team: String,
         email: String,
         name: String,
-        type: String
+        type: String,
       },
       showModal: false,
       modalTitle: "",
@@ -78,7 +78,7 @@ export default {
       showToast: false,
       toastTitle: "",
       toastMessage: "",
-      activeUser: {}
+      activeUser: {},
     };
   },
   async created() {
@@ -86,8 +86,8 @@ export default {
     const data = await this.userService.asyncFindAll();
 
     this.userList = data.map((user) => {
-      return this.formatUserForTable(user)
-    })
+      return this.formatUserForTable(user);
+    });
   },
   methods: {
     /**
@@ -95,9 +95,14 @@ export default {
      * @param user that's being selected for deletion
      */
     showDeleteModal(user) {
-
-      if (user.id === this.activeUser.id && user.name === this.activeUser.name){
-        this.showTimedToast("Can't delete user", "You can't delete your own account");
+      if (
+        user.id === this.activeUser.id &&
+        user.name === this.activeUser.name
+      ) {
+        this.showTimedToast(
+          "Can't delete user",
+          "You can't delete your own account"
+        );
       } else {
         this.modalTitle = "Delete user";
         this.modalBodyComponent = this.MODAL_TYPES.DELETE;
@@ -111,7 +116,7 @@ export default {
      * @param user that's being selected for editing
      */
     async showEditModal(user) {
-      console.log(user)
+      console.log(user);
       this.modalTitle = "Update user";
       this.modalBodyComponent = this.MODAL_TYPES.UPDATE;
       this.modalUser = await this.userService.asyncFindById(user.id);
@@ -155,8 +160,8 @@ export default {
         team: user.team?.team,
         email: user.email,
         name: user.name,
-        type: user.type
-      }
+        type: user.type,
+      };
     },
     /**
      * Adds a user to the backend user list, also to the user arrays
@@ -188,8 +193,11 @@ export default {
     async onUserUpdate(user) {
       try {
         const updatedUser = await this.userService.asyncSave(user);
-        this.userList =
-            this.userList.map((user) => user.id === updatedUser.id ? this.formatUserForTable(updatedUser) : user)
+        this.userList = this.userList.map((user) =>
+          user.id === updatedUser.id
+            ? this.formatUserForTable(updatedUser)
+            : user
+        );
 
         this.showModal = false;
         this.showTimedToast("Updated user", "Successfully updated the user");
@@ -211,7 +219,9 @@ export default {
     async onUserDelete(user) {
       try {
         const deletedUser = await this.userService.asyncDelete(user.id);
-        this.userList = this.userList.filter((user) => user.id !== deletedUser.id);
+        this.userList = this.userList.filter(
+          (user) => user.id !== deletedUser.id
+        );
 
         this.showModal = false;
         this.showTimedToast("Deleted user", "Successfully deleted the user");

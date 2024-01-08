@@ -2,10 +2,10 @@
   <div>
     <table-component
       v-if="!productsAreLoading"
-      :amount-to-display="6"
-      :has-add-button="true"
-      :has-delete-button="true"
-      :has-edit-button="true"
+      :amount-to-display="amountToDisplay"
+      :has-add-button="hasAddButton"
+      :has-delete-button="hasDeleteButton"
+      :has-edit-button="hasEditButton"
       :table-data="products"
       :has-search-bar="true"
       @edit="showEditModal"
@@ -59,7 +59,7 @@ export default {
     ModalComponent,
     TableComponent,
   },
-  inject: ["productService"],
+  inject: ["productService", "sessionService"],
   data() {
     return {
       products: [
@@ -89,6 +89,14 @@ export default {
       showToast: false,
       toastTitle: "",
       toastMessage: "",
+      amountToDisplay: 10,
+      userTypes: Object.freeze({
+        ADMIN: "ADMIN",
+        VIEWER: "VIEWER",
+      }),
+      hasAddButton: true,
+      hasDeleteButton: true,
+      hasEditButton: true,
     };
   },
   methods: {
@@ -254,6 +262,15 @@ export default {
   },
 
   async created() {
+    // Get the current active user type.
+    const user = await this.sessionService.currentUser;
+
+    if (user.type === this.userTypes.VIEWER) {
+      this.hasAddButton = false;
+      this.hasDeleteButton = false;
+      this.hasEditButton = false;
+    }
+
     //clear the product so that the native check is deleted.
     this.products = [];
     const data = await this.productService.findAll();
@@ -267,6 +284,11 @@ export default {
     }
 
     this.products = data;
+
+    if (this.products.length < this.amountToDisplay) {
+      this.amountToDisplay = this.products.length;
+    }
+
     this.productsAreLoading = false;
   },
 };
