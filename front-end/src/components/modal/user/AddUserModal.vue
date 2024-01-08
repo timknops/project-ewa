@@ -8,6 +8,7 @@
              class="form-control"
              :class="{'border-danger': nameEmpty}"
              v-model.lazy.trim="modalItem.name"
+             placeholder="name"
              @blur="validateName">
       <p v-if="nameEmpty" class="text-danger"> The name can't be empty!</p>
     </div>
@@ -36,6 +37,7 @@
              class="form-control"
              :class="{'border-danger': emailValid}"
              v-model.lazy.trim="modalItem.email"
+             placeholder="example@domain.com"
              @blur="validateEmail">
       <p v-if="emailEmpty" class="text-danger"> The e-mail can't be empty!</p>
       <p v-else-if="emailValid" class="text-danger"> The e-mail isn't valid!</p>
@@ -48,6 +50,7 @@
              class="form-control"
              :class="{'border-danger': passwordEmpty}"
              v-model.lazy.trim="modalItem.password"
+             placeholder="password"
              @blur="validatePassword">
       <p v-if="passwordEmpty" class="text-danger"> The password can't be empty!</p>
     </div>

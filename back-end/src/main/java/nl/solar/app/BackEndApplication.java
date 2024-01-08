@@ -171,21 +171,19 @@ public class BackEndApplication implements CommandLineRunner {
             throw new ResourceNotFoundException("No teams were found");
         }
 
-        for (User staticUser : User.createStaticAdmin()) {
+        teams.get(0).setTeam("Static Users");
+        for (User staticUser : User.createStaticAdmin(teams.get(0))) {
             userRepo.save(staticUser);
         }
 
-        System.out.println(teams);
-
-        User newUser = User.createStaticUser();
-        newUser.setTeam(teams.get(0));
-        teams.get(0).getUsers().add(newUser);
-        userRepo.save(newUser);
+        userRepo.save(User.createStaticUser(teams.get(0)));
 
         if (!users.isEmpty())
             return;
         for (int i = 0; i < 11; i++) {
-            Team team = teams.get((int) (Math.random() * teams.size()));
+            // get a random team, except for the first team since that one is reserved for
+            // static user
+            Team team = teams.get((int) Math.floor(Math.random() * (teams.size() - 1)) + 1);
             User user = User.creatyDummyUser(i, team);
             team.getUsers().add(user);
 

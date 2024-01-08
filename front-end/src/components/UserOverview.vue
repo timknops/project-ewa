@@ -7,6 +7,7 @@
       :has-delete-button="true"
       :has-edit-button="true"
       :table-data="userList"
+      :has-search-bar="true"
       @edit="showEditModal"
       @delete="showDeleteModal"
       @add="showAddModal"
@@ -54,7 +55,7 @@ export default {
     SpinnerComponent,
     ToastComponent,
   },
-  inject: ["userService"],
+  inject: ["userService", "sessionService"],
   data() {
     return {
       userList: {
@@ -77,9 +78,11 @@ export default {
       showToast: false,
       toastTitle: "",
       toastMessage: "",
+      activeUser: {},
     };
   },
   async created() {
+    this.activeUser = this.sessionService.currentUser;
     const data = await this.userService.asyncFindAll();
 
     this.userList = data.map((user) => {
@@ -92,17 +95,28 @@ export default {
      * @param user that's being selected for deletion
      */
     showDeleteModal(user) {
-      this.modalTitle = "Delete user";
-      this.modalBodyComponent = this.MODAL_TYPES.DELETE;
-      this.modalUser = user;
-      this.okBtnText = "Delete";
-      this.showModal = true;
+      if (
+        user.id === this.activeUser.id &&
+        user.name === this.activeUser.name
+      ) {
+        this.showTimedToast(
+          "Can't delete user",
+          "You can't delete your own account"
+        );
+      } else {
+        this.modalTitle = "Delete user";
+        this.modalBodyComponent = this.MODAL_TYPES.DELETE;
+        this.modalUser = user;
+        this.okBtnText = "Delete";
+        this.showModal = true;
+      }
     },
     /**
      * When clicked on the edit button in the table, it will show the modal for editing an existing user
      * @param user that's being selected for editing
      */
     async showEditModal(user) {
+      console.log(user);
       this.modalTitle = "Update user";
       this.modalBodyComponent = this.MODAL_TYPES.UPDATE;
       this.modalUser = await this.userService.asyncFindById(user.id);

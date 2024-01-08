@@ -84,17 +84,17 @@ public class User {
         return new User(userId, team, fullRandomName, randomEmail, randomPassword, randomUserType.toString());
     }
 
-    public static List<User> createStaticAdmin() {
+    public static List<User> createStaticAdmin(Team team) {
         List<User> userList = new ArrayList<>();
-        User user1 = new User(1, null, "Julian", "nashonwoldai@gmail.com", "password", "ADMIN");
-        User user2 = new User(2, null, "admin", "admin@admin.com", "admin", "ADMIN");
+        User user1 = new User(1, team, "Julian", "greefnhva@gmail.com", "password", "ADMIN");
+        User user2 = new User(2, team, "admin", "admin@admin.com", "admin", "ADMIN");
         userList.add(user1);
         userList.add(user2);
         return userList;
     }
 
-    public static User createStaticUser() {
-        return new User(3, null, "user", "user@user.com", "user", "VIEWER");
+    public static User createStaticUser(Team team) {
+        return new User(3, team, "user", "user@user.com", "user", "VIEWER");
     }
 
     /**

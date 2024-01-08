@@ -84,7 +84,7 @@ export class UserAdaptor {
                 method: "DELETE"
             })
         } catch (e) {
-            Promise.reject(e)
+            return Promise.reject(e)
         }
     }
 }
