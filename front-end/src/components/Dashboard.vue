@@ -90,15 +90,13 @@ export default {
   computed: {
     tableDatas() {
       const data = this.inventoryQuantitiesData.map(({productName, inventoryQuantity}) => {
-        // const lastDataPoint = this.getLastDataPoint(productName);
-        const lastDataPoint = this.lastDataPoints.find(item => item.productName === productName);
+        const expected = this.lastDataPoints.find(item => item.productName === productName);
        const tableDataItem = {
           productName,
           inventoryQuantity,
-         lastDataPoint: lastDataPoint ? lastDataPoint.lastDataPoint : null,
+         expected: expected ? expected.expected : null,
         };
-        // console.log(`Last data point for ${productName}: `, lastDataPoint);
-        // console.log('hello tableDaty', tableDataItem)
+
         return tableDataItem;
       });
       // console.log('hello data', data)
@@ -457,10 +455,10 @@ export default {
             y: dataset.data[0].y,
           });
         }
-        const lastDataPoint = dataset.data[dataset.data.length - 1];
+        const expected = dataset.data[dataset.data.length - 1];
         this.lastDataPoints.push({
           productName: dataset.label,
-          lastDataPoint: lastDataPoint.y,
+          expected: expected.y,
         });
       });
       const chartData = {
