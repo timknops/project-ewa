@@ -110,10 +110,10 @@ export default {
       inventoryQuantities: [],
     };
   },
-  mounted() {
-    this.fetchInventoryData();
-    this.fetchOrderData();
-  },
+  // mounted() {
+  //   this.fetchInventoryData();
+  //   this.fetchOrderData();
+  // },
   watch: {
     selectedWarehouse: {
       handler: 'updateChartOnWarehouseChange',
@@ -221,7 +221,11 @@ export default {
     async handleConfirm() {
       try {
         await this.orderService.updateStatusOnly(this.selectedOrder.id)
+        await this.fetchInventoryData();
         await this.fetchOrderData();
+        await this.fetchProjectData();
+        await this.fetchInventoryQuantity();
+        this.updateChart();
         this.showModal = false;
       } catch (e){
         console.error(e)
