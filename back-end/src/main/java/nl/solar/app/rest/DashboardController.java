@@ -118,7 +118,7 @@ public class DashboardController {
     /**
      * Method that creates a single String with all the shortages in it
      * @param shortages Map with product for a specific warehouse and the date the stock would be insufficient
-     * @return a String that shows all shortages
+     * @return a String that shows all shortage
      */
     private String formatShortagesString(Map<String, LocalDate> shortages) {
         StringBuilder body = new StringBuilder();
