@@ -28,14 +28,14 @@ public class User {
     private long id;
     @ManyToOne
     @JoinColumn(name = "team_id")
-    @JsonIncludeProperties({ "id", "team" })
+    @JsonIncludeProperties({ "id", "team", "warehouse" })
     @JsonView(UserView.userAdmin.class)
     private Team team;
     @JsonView(UserView.userAdmin.class)
     private String name;
     @JsonView(UserView.userAdmin.class)
     private String email;
-    @JsonView(UserView.userFull.class)
+
     private String password;
 
     private enum userType {
