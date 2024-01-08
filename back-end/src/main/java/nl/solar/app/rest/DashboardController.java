@@ -1,15 +1,14 @@
 package nl.solar.app.rest;
 
-import jakarta.annotation.PostConstruct;
 import nl.solar.app.DTO.DashboardDTO;
-import nl.solar.app.DTO.InventoryDTO;
 import nl.solar.app.models.Email;
 import nl.solar.app.models.Inventory;
+import nl.solar.app.models.User;
+import nl.solar.app.repositories.EntityRepository;
 import nl.solar.app.repositories.InventoryRepository;
 import nl.solar.app.repositories.jpaRepositories.DashboardRepositoryJpa;
 import nl.solar.app.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/dashboard-items")
@@ -49,6 +48,9 @@ public class DashboardController {
     InventoryRepository inventoryRepo;
 
     @Autowired
+    EntityRepository<User> userRepo;
+
+    @Autowired
     private EmailService emailService;
 
     // quantity = the amount added by an order
@@ -78,23 +80,29 @@ public class DashboardController {
         // method to get any shortages
         Map<String, LocalDate> shortages = getStockShortages(currentStockValues, minimumStockValues, mergedList);
 
-        if (!shortages.isEmpty()){
+        // method to get users
+        List<User> users = userRepo.findAll().stream()
+                .filter(user -> "ADMIN".equals(user.getType()))
+                .collect(Collectors.toList());
+
+        if (!shortages.isEmpty() && !users.isEmpty()){
             // method to send email
-            sendEmailNotification(shortages);
+            sendEmailNotification(shortages, users);
         }
     }
 
     // method to send an email
-    private void sendEmailNotification(Map<String, LocalDate> shortages) {
+    private void sendEmailNotification(Map<String, LocalDate> shortages, List<User> users) {
         Email email = new Email();
 
         String body = formatShortagesString(shortages);
-
-        email.setReceiver("wilcovdpol1999@gmail.com"); // correct email
-        email.setEmailBody(body);
         email.setSubject("Stock shortage notification");
+        email.setEmailBody(body);
 
-        emailService.sendMail(email);
+        for (User user : users){
+            email.setReceiver(user.getEmail()); // correct email
+            emailService.sendMail(email);
+        }
     }
 
     // method to format the Map into a String
