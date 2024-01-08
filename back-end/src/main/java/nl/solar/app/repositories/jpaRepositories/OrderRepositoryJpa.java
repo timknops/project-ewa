@@ -69,6 +69,17 @@ public class OrderRepositoryJpa implements OrderRepository {
     }
 
     /**
+     * Find all orders for all warehouses
+     * @return a list of orders
+     */
+    @Override
+    public List<Order> findAllPendingOrders() {
+        return entityManager.createQuery("SELECT o FROM Order o WHERE o.status = ?1", Order.class)
+                .setParameter(1, OrderStatus.PENDING)
+                .getResultList();
+    }
+
+    /**
      * delete an order
      * @param id the ID of the entity to delete
      * @return the deleted order

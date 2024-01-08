@@ -12,6 +12,7 @@ import nl.solar.app.models.Order;
 import nl.solar.app.models.Product;
 import nl.solar.app.repositories.EntityRepository;
 import nl.solar.app.repositories.ItemRepository;
+import nl.solar.app.repositories.OrderRepository;
 import nl.solar.app.service.InventoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -37,9 +38,10 @@ public class OrderController {
     private ItemRepository itemRepo;
     @Autowired
     private EntityRepository<Order> orderRepo;
-
     @Autowired
     private InventoryService inventoryService;
+    @Autowired
+    private OrderRepository orderRepository;
 
     /**
      * Get a list of all orders found
@@ -48,6 +50,15 @@ public class OrderController {
     @GetMapping(produces = "application/json")
     public List<Order> getAll() {
         return this.orderRepo.findAll();
+    }
+
+    /**
+     * Get a list of all pending orders found
+     * @return list of orders
+     */
+    @GetMapping(path = "pending")
+    public List<Order> getAllPending() {
+        return this.orderRepository.findAllPendingOrders();
     }
 
     /**

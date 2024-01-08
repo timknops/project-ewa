@@ -49,6 +49,10 @@ export class OrderAdaptor {
     }
   }
 
+  async findAllPending(){
+    return await this.fetchJSON(`${this.resourceUrl}/pending`);
+  }
+
   async updateStatusOnly(id) {
     try {
       return await this.fetchJSON(`${this.resourceUrl}/${id}/status`, {

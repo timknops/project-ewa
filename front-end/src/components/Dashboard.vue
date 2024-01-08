@@ -199,13 +199,12 @@ export default {
       }
     },
     async fetchOrderData() {
-      this.orders = await this.orderService.findAll()
+      this.orders = await this.orderService.findAllPending()
       this.orderData = this.getOrdersBySelectedWarehouse(this.orders)
     },
     getOrdersBySelectedWarehouse(data){
       return data
-          .filter(item => item.warehouse.name === this.selectedWarehouse
-              && item.status === 'PENDING')
+          .filter(item => item.warehouse.name === this.selectedWarehouse)
           .map(({ id, deliverDate, tag, status }) => ({
             id,
             deliverDate,
