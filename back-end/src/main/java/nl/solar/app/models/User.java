@@ -1,7 +1,6 @@
 package nl.solar.app.models;
 
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -55,27 +54,28 @@ public class User {
         this.type = Type;
     }
 
-    public boolean checkPassword(String password){
+    public boolean checkPassword(String password) {
         return password.equals(this.password);
     }
 
     /**
-     * Creates dummy users to populate the table. The data for the dummy users is random generated
+     * Creates dummy users to populate the table. The data for the dummy users is
+     * random generated
      *
      * @param userId id of the user
-     * @param team team that is going to be attached to the user
+     * @param team   team that is going to be attached to the user
      * @return a dummy user
      */
     public static User creatyDummyUser(long userId, Team team) {
-        final String[] FIRST_NAME_ARRAY = {"Paola", "Drew", "Adrianna", "Evan", "Henk", "Abel", "Muhammad",
-                "Mara", "Clair", "Amar", "Braden", "Anwar", "Amelia", "Dax", "Ayan", "Ava", "Kim"};
-        final String[] SURNAME_ARRAY = {"de Groot", "Smits", "Mulder", "Visser", "Pacheco", "Dalal", "Ahssini", "Imen",
-                "Ferguson", "Costa", "Herrera", "Dalal", "Case", "de Vries", "Santana", "Nguyen"};
+        final String[] FIRST_NAME_ARRAY = { "Paola", "Drew", "Adrianna", "Evan", "Henk", "Abel", "Muhammad",
+                "Mara", "Clair", "Amar", "Braden", "Anwar", "Amelia", "Dax", "Ayan", "Ava", "Kim" };
+        final String[] SURNAME_ARRAY = { "de Groot", "Smits", "Mulder", "Visser", "Pacheco", "Dalal", "Ahssini", "Imen",
+                "Ferguson", "Costa", "Herrera", "Dalal", "Case", "de Vries", "Santana", "Nguyen" };
         String randomFirstName = FIRST_NAME_ARRAY[(int) Math.floor(Math.random() * FIRST_NAME_ARRAY.length)];
         String randomSurname = SURNAME_ARRAY[(int) Math.floor(Math.random() * SURNAME_ARRAY.length)];
         String fullRandomName = randomFirstName + " " + randomSurname;
         String randomEmailPre = randomFirstName + randomSurname + userId + "@gmail.com";
-        //remove any whitespace in the random email
+        // remove any whitespace in the random email
         String randomEmail = randomEmailPre.replaceAll("\\s", "");
         String randomPassword = randomPasswordGen((int) (8 + Math.floor(Math.random() * 20)));
         final userType[] USER_TYPE_ARRAY = userType.values();
@@ -83,7 +83,8 @@ public class User {
 
         return new User(userId, team, fullRandomName, randomEmail, randomPassword, randomUserType.toString());
     }
-    public static List<User> createStaticAdmin(){
+
+    public static List<User> createStaticAdmin() {
         List<User> userList = new ArrayList<>();
         User user1 = new User(1, null, "Julian", "nashonwoldai@gmail.com", "password", "ADMIN");
         User user2 = new User(2, null, "admin", "admin@admin.com", "admin", "ADMIN");
@@ -92,7 +93,7 @@ public class User {
         return userList;
     }
 
-    public static User createStaticUser(){
+    public static User createStaticUser() {
         return new User(3, null, "user", "user@user.com", "user", "VIEWER");
     }
 
