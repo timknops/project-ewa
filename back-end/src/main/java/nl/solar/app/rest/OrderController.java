@@ -119,6 +119,7 @@ public class OrderController {
             Item newItem = new Item(item.getProduct(), newOrder, item.getQuantity());
             item.getProduct().getItems().add(newItem);
             newOrder.getItems().add(newItem);
+            this.itemRepo.save(newItem);
         }
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedOrder.getId()).toUri();

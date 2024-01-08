@@ -72,7 +72,6 @@ export default {
     "sidebar header"
     "sidebar component";
   grid-template-columns: var(--sidebar-width) 1fr;
-  grid-template-rows: var(--navbar-height) 1fr;
   display: grid;
 }
 
@@ -98,7 +97,6 @@ export default {
   --btn-secondary-shadow-color: 64, 29, 0; /*rgb because of the box-shadow*/
 
   --sidebar-width: 17rem;
-  --navbar-height: 10rem;
 
   --custom-box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05),
   0 4px 6px -4px rgb(0 0 0 / 0.05);

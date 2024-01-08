@@ -33,6 +33,9 @@ public class Team {
     @OneToMany(mappedBy = "team")
     private Set<Project> projects = new HashSet<>();
 
+    @OneToMany(mappedBy = "team")
+    private Set<User> users = new HashSet<>();
+
     public Team() {
 
     }
@@ -115,5 +118,13 @@ public class Team {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public Set<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
     }
 }
