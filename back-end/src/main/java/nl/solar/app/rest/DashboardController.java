@@ -137,6 +137,8 @@ public class DashboardController {
                     .append("\n");
         }
 
+        body.append("\n\nPlease proceed to the order page to place the needed orders!");
+
         return body.toString();
     }
 
