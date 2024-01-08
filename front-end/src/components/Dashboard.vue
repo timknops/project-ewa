@@ -164,9 +164,9 @@ export default {
       }).filter(project => project.warehouseName === this.selectedWarehouse);
     },
     filteredInventoryQuantity() {
-      const productsInTable = new Set(this.tableData.map(item => item.productName));
+      const productsInTable = this.tableData.map(item => item.productName);
       const filteredQuantities = this.inventoryQuantities.filter(item =>
-          !productsInTable.has(item.productName) && item.warehouseName === this.selectedWarehouse);
+          !productsInTable.includes(item) && item.warehouseName === this.selectedWarehouse);
       // console.log("Filtered Inventory Quantities:", filteredQuantities);
       return filteredQuantities;
     },
@@ -238,6 +238,8 @@ export default {
       const constInventoryQuantity = this.filteredInventoryQuantity;
       const testLine = this.inventoryQuantitiesData;
 
+      console.log('inventoryQuantity' + constInventoryQuantity)
+
       const currentInventoryMaps = {};
       // const currentInventoryMap = {};
       const amountOfProductMap = {};
@@ -265,37 +267,96 @@ export default {
       const datasets = nameLegend.map((name, index) => {
 
         let doubleOrderCounting = 0;
+        /**
+         * Get all the quantity changes for a product on a certain date
+         * @type {{x: *, y}[]}
+         */
         const quantityData = dataBasedOnTheMonth
             .filter(item => item.productName === name)
             .map(item => {
               doubleOrderCounting += item.quantity
-              const totalQuantity = doubleOrderCounting + item.inventoryQuantity;
               return {
-                x: item.deliverDate,
-                y: totalQuantity,
+                date: item.deliverDate,
+                itemChange: doubleOrderCounting,
+                type: 'order',
               };
             });
-
         const currentDateFormattedValue = currentDateFormattedValueTrimmed;
 
         /**
-         * Inventory for all the products
-         * @type {{}}
+         * Current inventory for this product
+         *
          */
-        const inventoryQuantityDataForItem = constInventoryQuantity
+        const currentInventoryQuantity = {
+          date: currentDateFormattedValue,
+          itemChange: totalInventoriesMap[name] || 0,
+          type: 'current',
+        };
+
+        // /**
+        //  * Inventory for all the products
+        //  * @type {{}}
+        //  */
+        // const inventoryQuantityDataForItem = constInventoryQuantity
+        //     .filter(item => item.productName === name)
+        //     .map(item => {
+        //       currentInventoryMaps[item.productName] = item.inventoryQuantity;
+        //       return {
+        //         date: currentDateFormattedValue,
+        //         itemChange: item.inventoryQuantity,
+        //         type: 'inventory',
+        //       };
+        //     });
+        // console.log('inventoryQuantityDataForItem', inventoryQuantityDataForItem)
+
+
+        let doubleProjectCounting = 0;
+        /**
+         * Get all the quantity changes for a product on a certain date
+         * @type {{x: *, y}[]}
+         */
+        const projectQuantityUsedForProduct = dataProject
             .filter(item => item.productName === name)
             .map(item => {
-              currentInventoryMaps[item.productName] = item.inventoryQuantity;
+              doubleProjectCounting += item.amountOfProduct;
               return {
-                x: currentDateFormattedValue,
-                y: item.inventoryQuantity,
+                date: item.dueDate,
+                itemChange: doubleProjectCounting,
+                type: 'project',
               };
             });
 
-        /**
-         * Checks the project from the inventory
-         * @type {{x: *, y}[]}
-         */
+        //sort all stock interactions for a product by date
+        const allStockInteractionsForProduct = [...quantityData, currentInventoryQuantity, ...projectQuantityUsedForProduct];
+        allStockInteractionsForProduct.sort((a, b) => {
+          const dateA = new Date(a.date);
+          const dateB = new Date(b.date);
+          return dateA - dateB;
+        });
+
+        //create the chart points for the product
+        let stockAtThisMoment = 0;
+        const createChartPoints = allStockInteractionsForProduct.map((item) => {
+          if (item.type === 'order') {
+            // a order adds to the stock
+            stockAtThisMoment += item.itemChange;
+          } else if (item.type === 'current') {
+            // current stock should be the first point
+            stockAtThisMoment = item.itemChange;
+          } else if (item.type === 'project') {
+            // a project removes from the stock
+            stockAtThisMoment -= item.itemChange;
+          }
+          return {
+            x: item.date,
+            y: stockAtThisMoment,
+          };
+        })
+
+        // /**
+        //  * Checks the project from the inventory
+        //  * @type {{x: *, y}[]}
+        //  */
         //   const amountOfProductOnDueDate = dataProject
         //       .filter(item => item.productName === name)
         //       .map(item => {
@@ -314,49 +375,42 @@ export default {
         //         };
         // });
 
-        /**
-         * first point
-         * @type {{x: string, y: (*|number)}}
-         */
-        const currentInventoryQuantity = {
-          x: currentDateFormattedValue,
-          y: currentInventoryMaps[name] || 0,
-        };
+
         /**
          * third point, current , to deliver minus the amountOfProduct
          * or current to the amountOfProduct
          */
-        const projectMinusQuanity = dataProject
-            .filter(item => item.productName === name)
-            .map(item => {
-              const quantitySum = dataBasedOnTheMonth
-                  .filter(monthItem => monthItem.productName === name)
-                  .reduce((sum, monthItem) => sum + monthItem.quantity + monthItem.inventoryQuantity, 0);
-              console.log('1', quantitySum)
-              const testtest = testLine
-                  .filter(monthItem => monthItem.productName === name)
-                  .reduce((sum, monthItem) => sum + monthItem.inventoryQuantity, 0);
-              console.log('1.5', testtest)
+        // const projectMinusQuanity = dataProject
+        //     .filter(item => item.productName === name)
+        //     .map(item => {
+        //       const quantitySum = dataBasedOnTheMonth
+        //           .filter(monthItem => monthItem.productName === name)
+        //           .reduce((sum, monthItem) => sum + monthItem.quantity + monthItem.inventoryQuantity, 0);
+        //       console.log('1', quantitySum)
+        //       const testtest = testLine
+        //           .filter(monthItem => monthItem.productName === name)
+        //           .reduce((sum, monthItem) => sum + monthItem.inventoryQuantity, 0);
+        //       console.log('1.5', testtest)
+        //
+        //       const amountOfProductSum = dataProject
+        //           .filter(projectItem => projectItem.productName === name)
+        //           .reduce((sum, projectItem) => sum + projectItem.amountOfProduct, 0);
+        //       console.log('2', amountOfProductSum)
+        //
+        //       // const calculatedValue = quantitySum - amountOfProductSum;
+        //       const calculatedValuesInventory = testtest - amountOfProductSum;
+        //
+        //       // const calculatedValue = [quantitySum, testtest].map(value => value - amountOfProductSum);
+        //       return{
+        //         x: item.dueDate,
+        //         y: calculatedValuesInventory || 0,
+        //       }
+        //
+        //     });
 
-              const amountOfProductSum = dataProject
-                  .filter(projectItem => projectItem.productName === name)
-                  .reduce((sum, projectItem) => sum + projectItem.amountOfProduct, 0);
-              console.log('2', amountOfProductSum)
-
-              // const calculatedValue = quantitySum - amountOfProductSum;
-              const calculatedValuesInventory = testtest - amountOfProductSum;
-
-              // const calculatedValue = [quantitySum, testtest].map(value => value - amountOfProductSum);
-              return{
-                x: item.dueDate,
-                y: calculatedValuesInventory || 0,
-              }
-
-            });
 
 
-
-        const allDataPoints = [currentInventoryQuantity, ...quantityData, ...inventoryQuantityDataForItem, ...projectMinusQuanity];
+        const allDataPoints = [...createChartPoints];
 
         return {
           label: name,
@@ -366,6 +420,8 @@ export default {
           fill: false,
         };
       });
+
+
 
       const dateLabels = Array.from({length: 60}, (_, index) => {
         const nextDate = new Date(currentDateFormattedValueTrimmed);
@@ -383,11 +439,14 @@ export default {
        * Makes the line continue straight from it's last point
        * @type {string}
        */
-      const lastDate = dateLabels[dateLabels.length - 1];
+      dateLabels.sort((a, b) => {
+        const dateA = new Date(a);
+        const dateB = new Date(b);
+        return dateA - dateB;
+      });
 
       datasets.forEach(dataset => {
         const lastDataPoint = dataset.data[dataset.data.length - 1];
-        dataset.data.push({x: lastDate, y: lastDataPoint.y});
         this.lastDataPoints.push({
           productName: dataset.label,
           lastDataPoint: lastDataPoint.y,
