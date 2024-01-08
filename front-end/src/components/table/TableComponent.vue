@@ -265,8 +265,14 @@ export default {
     subTitle: String,
     hasEditButton: Boolean,
     hasDeleteButton: Boolean,
-    hasAddButton: Boolean,
-    hasSpecificButton: Boolean,
+    hasAddButton: {
+      type: Boolean,
+      default: false,
+    },
+    hasSpecificButton: {
+      type: Boolean,
+      default: false,
+    },
     hideIdColumn: Boolean,
     hasSearchBar: {
       type: Boolean,
@@ -424,11 +430,29 @@ export default {
 
     /** Whenever the mouse enters a row, the edit and delete buttons are displayed. */
     mouseEnter(e) {
+      // If the table does not have edit, delete, or specific buttons, do not show the buttons.
+      if (
+        !this.hasEditButton &&
+        !this.hasDeleteButton &&
+        !this.hasSpecificButton
+      ) {
+        return;
+      }
+
       e.target.lastElementChild.classList.add("d-md-block");
     },
 
     /** Whenever the mouse leaves a row, the edit and delete buttons are hidden. */
     mouseLeave(e) {
+      // If the table does not have edit, delete, or specific buttons, do not hide the buttons.
+      if (
+        !this.hasEditButton &&
+        !this.hasDeleteButton &&
+        !this.hasSpecificButton
+      ) {
+        return;
+      }
+
       e.target.lastElementChild.classList.remove("d-md-block");
     },
 

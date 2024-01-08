@@ -126,9 +126,13 @@ export default {
     }
 
     // Modify the data so that it is displayed correctly in the table.
-    this.projects = data.map((project) => {
-      return this.formatProjectForTable(project);
-    });
+    if (data.id !== undefined) {
+      this.projects = [this.formatProjectForTable(data)];
+    } else {
+      this.projects = data.map((project) => {
+        return this.formatProjectForTable(project);
+      });
+    }
 
     // If there are less projects than the amount to display, set the amount to display to the amount of projects.
     if (this.projects.length < this.amountToDisplay) {

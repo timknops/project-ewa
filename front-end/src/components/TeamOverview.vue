@@ -227,8 +227,6 @@ export default {
     // Get the current active user.
     const user = await this.sessionService.currentUser;
 
-    console.log(user);
-
     let data;
     // If the user is a viewer, show only the teams that are assigned to the user.
     if (user.type === this.userTypes.VIEWER && user.team !== null) {
@@ -241,8 +239,6 @@ export default {
       // If the user is an admin, show all teams.
       data = await this.teamsService.findAll();
     }
-
-    console.log(data.id);
 
     // If there are no teams, show an empty table.
     if (data === undefined || data.length === 0) {

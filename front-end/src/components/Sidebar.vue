@@ -45,40 +45,20 @@
       </li>
       <li class="nav-item">
         <router-link to="/projects" class="nav-link" active-class="active">
-          <font-awesome-icon
-            icon="fa-solid fa-diagram-project"
-            class="sidebar-icons"
-          />Projects
+          <span v-if="isActiveUserAdmin"
+            ><font-awesome-icon
+              icon="fa-solid fa-diagram-project"
+              class="sidebar-icons"
+            />Projects</span
+          >
+          <span v-else>
+            <font-awesome-icon
+              icon="fa-solid fa-diagram-project"
+              class="sidebar-icons"
+            />My Projects
+          </span>
         </router-link>
       </li>
-
-      <!-- TODO: Make use of submenu for projects when specific view is implemented.
-      <li
-        @click="submenuProjects = !submenuProjects"
-        href="#homeSubmenu"
-        data-toggle="collapse"
-        aria-expanded="false"
-        class="dropdown-toggle collapsed nav-item"
-        active-class="active"
-      >
-        Home
-      </li>
-      <ul
-        class="list-unstyled collapse"
-        id="homeSubmenu"
-        :class="submenuProjects ? 'show' : ''"
-      >
-        <li>
-          <a href="#">Home 1</a>
-        </li>
-        <li>
-          <a href="#">Home 2</a>
-        </li>
-        <li>
-          <a href="#">Home 3</a>
-        </li> -->
-      <!-- </ul> -->
-
       <li class="nav-item" v-if="isActiveUserAdmin">
         <router-link to="/warehouses" class="nav-link" active-class="active">
           <font-awesome-icon
@@ -89,10 +69,18 @@
       </li>
       <li class="nav-item">
         <router-link to="/team" class="nav-link" active-class="active">
-          <font-awesome-icon
-            icon="fa-solid fa-users"
-            class="sidebar-icons"
-          />Teams
+          <span v-if="isActiveUserAdmin"
+            ><font-awesome-icon
+              icon="fa-solid fa-users"
+              class="sidebar-icons"
+            />Teams</span
+          >
+          <span v-else
+            ><font-awesome-icon
+              icon="fa-solid fa-user"
+              class="sidebar-icons"
+            />My Team</span
+          >
         </router-link>
       </li>
       <!--      User list item only shows if the user is an admin-->
