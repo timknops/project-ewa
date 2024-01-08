@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.*;
 import nl.solar.app.models.views.ProjectView;
+import nl.solar.app.models.views.UserView;
 
 @Entity
 public class Team {
@@ -16,14 +17,15 @@ public class Team {
     @Id
     @SequenceGenerator(name = "team_id_generator")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "team_id_generator")
-    @JsonView(ProjectView.Overview.class)
+    @JsonView({ProjectView.Overview.class, UserView.userAdmin.class})
     private long id;
 
-    @JsonView(ProjectView.Overview.class)
+    @JsonView({ProjectView.Overview.class, UserView.userAdmin.class})
     private String team;
 
     @ManyToOne
     @JoinColumn(name = "warehouse_id")
+    @JsonView(UserView.userFull.class)
     @JsonIncludeProperties({"id", "name"})
     private Warehouse warehouse;
 
