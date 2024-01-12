@@ -100,6 +100,14 @@ export default {
      * @param warehouse
      */
     async setActiveWarehouse(warehouse) {
+      if (!this.sessionService.isAdmin()) {
+        this.activeWarehouse = this.activeUser.team.warehouse;
+        this.$router.push("/orders")
+        this.orders = await this.getOrdersForWarehouse(this.activeWarehouse.id)
+        this.ordersAreLoaded = true;
+        return;
+      }
+
       if (warehouse == null) {
         this.orders = [this.formatEmptyTableData()];
         this.ordersAreLoaded = true;
