@@ -17,6 +17,11 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 
+/**
+ * Controller for all endpoint affecting the warehouse entity
+ *
+ * @author Wilco van de Pol
+ */
 @RestController
 @RequestMapping("/warehouses")
 public class WarehouseController {
@@ -26,11 +31,20 @@ public class WarehouseController {
     @Autowired
     OrderRepository orderRepo;
 
+    /**
+     * Get a list of all warehouses
+     * @return List of warehouses
+     */
     @GetMapping(produces = "application/json")
     public List<Warehouse> getAll() {
         return this.warehouseRepo.findAll();
     }
 
+    /**
+     * Get a warehouse by a specific id
+     * @param id The id of the warehouse
+     * @return A warehouse
+     */
     @GetMapping(path = "{id}", produces = "application/json")
     public ResponseEntity<Warehouse> getWarehouseById(@PathVariable Long id) throws ResourceNotFoundException {
         Warehouse warehouse = this.warehouseRepo.findById(id);
@@ -42,6 +56,11 @@ public class WarehouseController {
         return ResponseEntity.ok(warehouse);
     }
 
+    /**
+     * Get orders that are for a specific warehouse
+     * @param id The id of the warehouse
+     * @return List with orders for that specific warehouse
+     */
     @GetMapping(path = "{id}/orders", produces = "application/json")
     public List<Order> getOrdersForWarehouse(@PathVariable long id) {
         Warehouse warehouse = this.warehouseRepo.findById(id);
@@ -52,6 +71,11 @@ public class WarehouseController {
         return this.orderRepo.findOrdersWarehouse(id);
     }
 
+    /**
+     * Delete a warehouse
+     * @param id The id of the warehouse
+     * @return The deleted warehouse
+     */
     @Transactional
     @DeleteMapping(path = "{id}", produces = "application/json")
     public ResponseEntity<Warehouse> deleteWarehouseById(@PathVariable long id)
@@ -76,6 +100,11 @@ public class WarehouseController {
         return ResponseEntity.ok(deletedWarehouse);
     }
 
+    /**
+     * Create a new warehouse
+     * @param warehouse The warehouse to add
+     * @return The new warehouse
+     */
     @PostMapping(produces = "application/json")
     public ResponseEntity<Warehouse> addOneWarehouse(@RequestBody Warehouse warehouse) throws BadRequestException {
         if (warehouse.getName() == null || warehouse.getName().isBlank()) {
@@ -89,6 +118,12 @@ public class WarehouseController {
         return ResponseEntity.created(location).body(newWarehouse);
     }
 
+    /**
+     * Update the given warehouse
+     * @param id The id of the oder to update
+     * @param warehouse The warehouse changes to update
+     * @return The updated warehouse
+     */
     @PutMapping(path = "{id}", produces = "application/json")
     public ResponseEntity<Warehouse> updateWarehouse(@PathVariable long id, @RequestBody Warehouse warehouse)
             throws PreConditionFailedException, BadRequestException {

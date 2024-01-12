@@ -91,7 +91,7 @@ export default {
         this.errorMessage = "One of the fields is empty";
         this.correctLogin = false;
       } else if (user != null) {
-        this.$router.push("/team");
+        this.$router.push("/dashboard");
       } else {
         this.errorMessage = "Your login details are incorrect";
         this.correctLogin = false;
