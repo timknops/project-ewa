@@ -49,6 +49,21 @@ export class OrderAdaptor {
     }
   }
 
+  async findAllPending(){
+    return await this.fetchJSON(`${this.resourceUrl}/pending`);
+  }
+
+  async updateStatusOnly(id) {
+    try {
+      return await this.fetchJSON(`${this.resourceUrl}/${id}/status`, {
+        method: "PATCH",
+        headers: {"content-type": "application/json"}
+      })
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+
   async delete(id) {
     try {
       return await this.fetchJSON(`${this.resourceUrl}/${id}`, {
