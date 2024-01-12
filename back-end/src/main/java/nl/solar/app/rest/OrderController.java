@@ -163,7 +163,6 @@ public class OrderController {
 
         //If the new order is set to delivered update the Inventory
         if (existingOrder.getStatus() == OrderStatus.PENDING && order.getStatus() == OrderStatus.DELIVERED) {
-            System.out.println("Updating inventory");
             this.inventoryService.updateInventory(order.getItems(), order.getWarehouse());
         }
 
