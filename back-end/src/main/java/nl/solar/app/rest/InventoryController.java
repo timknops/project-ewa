@@ -18,7 +18,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -95,7 +94,7 @@ public class InventoryController {
             throw new ResourceNotFoundException("The combination of warehouse and product doesn't return a resource");
         }
 
-        return ResponseEntity.ok().body(formatProductObject(inventory));
+        return ResponseEntity.ok().body(inventory.formatInventoryToDTO());
     }
 
     /**
@@ -171,20 +170,5 @@ public class InventoryController {
         URI location = uriComponentsBuilder.path("/warehouses/{wId}/products/{pId}")
                 .buildAndExpand(newInventory.getWarehouse().getId(), newInventory.getProduct().getId()).toUri();
         return ResponseEntity.created(location).body(newInventory);
-    }
-
-    /**
-     * Format a resource to an product object. This contains the product and the
-     * quantity
-     * making sure this is seen by the front-end as one object
-     *
-     * @param inventory the resource being reformatted.
-     * @return return a Map (object) of a product containing the quantity
-     */
-    private InventoryProductDTO formatProductObject(Inventory inventory) {
-        return new InventoryProductDTO(inventory.getProduct().getId(),
-                inventory.getProduct().getProductName(),
-                inventory.getMinimum(),
-                inventory.getQuantity());
     }
 }

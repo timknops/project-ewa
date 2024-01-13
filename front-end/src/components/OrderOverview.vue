@@ -11,9 +11,10 @@
       class="rounded-top-0 mt-0"
       :table-data="orders"
       :amount-to-display="5"
-      :has-add-button="true"
-      :has-edit-button="true"
-      :has-delete-button="true"
+      :has-add-button="sessionService.isAdmin()"
+      :has-edit-button="sessionService.isAdmin()"
+      :has-delete-button="sessionService.isAdmin()"
+      :has-search-bar="true"
       @add="showAddModal"
       @edit="showEditModal"
       @delete="showDeleteModal"
@@ -63,25 +64,16 @@ export default {
     TableComponent,
     WarehouseHeaderDisplay,
   },
-  inject: ["orderService", "warehouseService"],
+  inject: ["orderService", "warehouseService", "sessionService"],
   data() {
     return {
       activeWarehouse: {},
 
-      // todo get from localstorage, with jwt
+
       activeUser: {
-        name: "Julian",
-        role: "admin",
-        team: {
-          name: "team1",
-          warehouse: {
-            id: 1003,
-            name: "Superzon",
-          },
-        },
+        ...this.sessionService.currentUser
       },
       orders: [],
-      totalOrders: [],
       ordersAreLoaded: false,
 
       //modal info
@@ -108,10 +100,27 @@ export default {
      * @param warehouse
      */
     async setActiveWarehouse(warehouse) {
-      this.activeWarehouse = warehouse;
-      this.$router.push("/orders/" + warehouse.name);
-      this.orders = await this.getOrdersForWarehouse(this.activeWarehouse.id);
-      this.ordersAreLoaded = true; //set to true, after first load. Thereafter, this will always be true.
+      if (!this.sessionService.isAdmin()) {
+        this.activeWarehouse = this.activeUser.team.warehouse;
+        this.$router.push("/orders")
+        this.orders = await this.getOrdersForWarehouse(this.activeWarehouse.id)
+        this.ordersAreLoaded = true;
+        return;
+      }
+
+      if (warehouse == null) {
+        this.orders = [this.formatEmptyTableData()];
+        this.ordersAreLoaded = true;
+        return
+      }
+      this.activeWarehouse = warehouse
+      this.$router.push("/orders/" + warehouse.name)
+      try {
+        this.orders = await this.getOrdersForWarehouse(this.activeWarehouse.id)
+      } catch (e) {
+        this.orders = [this.formatEmptyTableData()]
+      }
+      this.ordersAreLoaded = true //set to true, after first load. Thereafter, this will always be true.
     },
 
     /**

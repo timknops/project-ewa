@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.*;
 import nl.solar.app.models.views.ProjectView;
+import nl.solar.app.models.views.UserView;
 
 @Entity
 public class Team {
@@ -16,15 +17,16 @@ public class Team {
     @Id
     @SequenceGenerator(name = "team_id_generator")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "team_id_generator")
-    @JsonView(ProjectView.Overview.class)
+    @JsonView({ProjectView.Overview.class, UserView.userAdmin.class})
     private long id;
 
-    @JsonView(ProjectView.Overview.class)
+    @JsonView({ProjectView.Overview.class, UserView.userAdmin.class})
     private String team;
 
     @ManyToOne
-    @JoinColumn(name = "warehouse_id", nullable = false)
-    @JsonIncludeProperties
+    @JoinColumn(name = "warehouse_id")
+    @JsonView(UserView.userFull.class)
+    @JsonIncludeProperties({"id", "name"})
     private Warehouse warehouse;
 
     @Enumerated(EnumType.STRING)
@@ -33,6 +35,13 @@ public class Team {
     @OneToMany(mappedBy = "team")
     private Set<Project> projects = new HashSet<>();
 
+    @OneToMany(mappedBy = "team")
+    private Set<User> users = new HashSet<>();
+
+    public Team() {
+
+    }
+
     public Team(long id, String team, Warehouse warehouse, TeamType type) {
         this.id = id;
         this.team = team;
@@ -40,31 +49,16 @@ public class Team {
         this.type = type;
     }
 
-    public Team(long id) {
-        this.id = id;
-    }
-
-    public Team() {
-    }
-
-    public static Team createDummyTeam() {
+    public static Team createDummyTeam(Warehouse warehouse, String teamName, TeamType teamType) {
         Team team = new Team();
-
-        // Random team name.
-        team.setTeam("Team " + (int) (Math.random() * 1000));
-
-        // Team type internal.
-        team.setType(TeamType.Internal);
-
+        team.setWarehouse(warehouse);
+        team.setTeam(teamName);
+        team.setType(teamType);
         return team;
     }
 
-    public enum WarehouseNames {
-        SolarSedum, Superzon, Theswitch, Induct, EHES
-    }
-
     public enum TeamType {
-        Internal, External
+        INTERNAL, EXTERNAL
     }
 
     public long getId() {
@@ -83,11 +77,16 @@ public class Team {
         this.team = team;
     }
 
-    public nl.solar.app.models.Warehouse getWarehouse() {
+    public Warehouse getWarehouse() {
         return warehouse;
     }
 
     public void setWarehouse(Warehouse warehouse) {
+        if ("Solar Sedum".equals(warehouse.getName())) {
+            this.type = TeamType.INTERNAL;
+        } else {
+            this.type = TeamType.EXTERNAL;
+        }
         this.warehouse = warehouse;
     }
 
@@ -121,5 +120,13 @@ public class Team {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public Set<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
     }
 }

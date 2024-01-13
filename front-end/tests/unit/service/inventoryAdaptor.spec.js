@@ -1,5 +1,13 @@
 import {InventoryAdaptor} from "@/service/inventoryAdaptor";
 
+/**
+ * This is a unit test for the InventoryAdaptor class.
+ * It tests the findAll, findAllForWarehouse, findByIds, addInventory, getProductWithoutInventory and updateInventory methods.
+ * The fetchJSON method is mocked to return the expected data.
+ * The fetchJSON method is also tested to throw an error when the response is not ok.
+ *
+ * @Author Julian Kruithof
+ */
 describe('InventoryAdaptor', () => {
   let inventoryAdaptor;
 

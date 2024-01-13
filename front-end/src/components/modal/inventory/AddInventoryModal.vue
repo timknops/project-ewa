@@ -41,8 +41,8 @@
              v-model="modalItem.quantity"
              @blur="validateQuantity">
     </div>
-    <p v-if="decimalError" class="text-danger"> Quantity should be a whole number!</p>
-    <p v-if="emptyQuantityError" class="text-danger"> Quantity cant be empty!</p>
+    <p v-if="decimalError" class="text-danger"> Quantity should be a whole number</p>
+    <p v-if="emptyQuantityError" class="text-danger"> Quantity can not be empty</p>
   </form>
 </template>
 
@@ -86,7 +86,6 @@ export default {
       return this.noProductSelectedError || this.emptyQuantityError || this.decimalError || this.negativeMinimum
     }
   },
-  inject: ["inventoryService"],
   props : ["item"],
   methods: {
     /**

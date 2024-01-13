@@ -2,7 +2,7 @@
   <div>
     <table-component
       v-if="!wareHousesAreLoading"
-      :amount-to-display="5"
+      :amount-to-display="amountToDisplay"
       :has-add-button="true"
       :has-delete-button="true"
       :has-edit-button="true"
@@ -42,6 +42,11 @@ import ModalComponent from "@/components/modal/ModalComponent.vue";
 import SpinnerComponent from "@/components/util/SpinnerComponent.vue";
 import ToastComponent from "@/components/util/ToastComponent.vue";
 
+/**
+ * Overview for all warehouses
+ *
+ * @author Wilco van de Pol
+ */
 export default {
   name: "WarehouseOverview",
   components: {
@@ -79,9 +84,14 @@ export default {
       toastTitle: "",
       toastMessage: "",
       wareHousesAreLoading: true,
+      amountToDisplay: 10,
     };
   },
   methods: {
+    /**
+     * Open the edit modal to update a warehouse
+     * @param warehouse The warehouse to be updated
+     */
     showEditModal(warehouse) {
       this.modalTitle = "Update warehouse";
       this.modalBodyComponent = this.MODAL_TYPES.UPDATE;
@@ -89,6 +99,10 @@ export default {
       this.okBtnText = "Save";
       this.showModal = true;
     },
+    /**
+     * Show the delete modal with corresponding warehouse info
+     * @param warehouse Warehouse to be deleted
+     */
     showDeleteModal(warehouse) {
       this.modalTitle = "Delete warehouse";
       this.modalBodyComponent = this.MODAL_TYPES.DELETE;
@@ -96,12 +110,20 @@ export default {
       this.okBtnText = "Delete";
       this.showModal = true;
     },
+    /**
+     * Open the add modal to add a new warehouse and corresponding items
+     */
     showAddModal() {
       this.modalTitle = "Add warehouse";
       this.modalBodyComponent = this.MODAL_TYPES.ADD;
       this.okBtnText = "Add";
       this.showModal = true;
     },
+    /**
+     * Handle what happens when the ok button of the modal is clicked
+     * @param warehouse The warehouse that is used
+     * @param modal {String} The type of modal (delete, update, add).
+     */
     handleOk(warehouse, modal) {
       switch (modal) {
         case this.MODAL_TYPES.DELETE:
@@ -115,6 +137,10 @@ export default {
           break;
       }
     },
+    /**
+     * Delete a warehouse
+     * @param warehouse The warehouse to delete
+     */
     async deleteWarehouse(warehouse) {
       try {
         const warehouseToDelete = await this.warehouseService.delete(
@@ -146,6 +172,10 @@ export default {
         }
       }
     },
+    /**
+     * Update a warehouse
+     * @param warehouse The warehouse to be updated
+     */
     async updateWarehouse(warehouse) {
       try {
         const warehouseToUpdate = await this.warehouseService.update(warehouse);
@@ -168,6 +198,10 @@ export default {
       }
     },
 
+    /**
+     * Add a warehouse
+     * @param warehouse Warehouse to be added
+     */
     async addWarehouse(warehouse) {
       try {
         const warehouseToAdd = await this.warehouseService.add(warehouse);
@@ -187,6 +221,9 @@ export default {
       }
     },
 
+    /**
+     * Formats the warehouse data for when the data is empty
+     */
     formatEmptyWarehouseData() {
       return {
         id: "",
@@ -223,7 +260,25 @@ export default {
     }
 
     this.warehouses = data;
+
+    // Set the amount to display to the amount of warehouses if there are less than 10.
+    if (this.warehouses.length < this.amountToDisplay) {
+      this.amountToDisplay = this.warehouses.length;
+    }
+
     this.wareHousesAreLoading = false;
+  },
+  watch: {
+    warehouses: {
+      handler() {
+        // TODO: Fix this.
+        // Set the amount to display to the amount of warehouses if there are less than 10.
+        if (this.warehouses.length < this.amountToDisplay) {
+          this.amountToDisplay = this.warehouses.length;
+        }
+      },
+      deep: true,
+    },
   },
 };
 </script>

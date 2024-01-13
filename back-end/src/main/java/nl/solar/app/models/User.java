@@ -1,8 +1,14 @@
 package nl.solar.app.models;
 
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonView;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import nl.solar.app.models.views.UserView;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -10,16 +16,26 @@ import java.util.Objects;
  *
  * @author Noa de Greef
  */
+@Entity
+@Data
+@NoArgsConstructor
 public class User {
+
+    @Id
+    @SequenceGenerator(name = "user_id_generator", initialValue = 5000)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_id_generator")
     @JsonView(UserView.userAdmin.class)
     private long id;
+    @ManyToOne
+    @JoinColumn(name = "team_id")
+    @JsonIncludeProperties({ "id", "team", "warehouse" })
     @JsonView(UserView.userAdmin.class)
-    private long teamId;
+    private Team team;
     @JsonView(UserView.userAdmin.class)
     private String name;
     @JsonView(UserView.userAdmin.class)
     private String email;
-    @JsonView(UserView.userFull.class)
+
     private String password;
 
     private enum userType {
@@ -29,41 +45,56 @@ public class User {
     @JsonView(UserView.userAdmin.class)
     private String type;
 
-    public User(long id, long teamId, String name, String email, String password, String Type) {
+    public User(long id, Team team, String name, String email, String password, String Type) {
         this.id = id;
-        this.teamId = teamId;
+        this.team = team;
         this.name = name;
         this.email = email;
         this.password = password;
         this.type = Type;
     }
 
+    public boolean checkPassword(String password) {
+        return password.equals(this.password);
+    }
+
     /**
-     * Creates dummy users to populate the table. The data for the dummy users is random generated
+     * Creates dummy users to populate the table. The data for the dummy users is
+     * random generated
      *
      * @param userId id of the user
-     * @param teamId id of the team
+     * @param team   team that is going to be attached to the user
      * @return a dummy user
      */
-    public static User creatyDummyUser(long userId, long teamId) {
-        final String[] FIRST_NAME_ARRAY = {"Paola", "Drew", "Adrianna", "Evan", "Henk", "Abel", "Muhammad",
-                "Mara", "Clair", "Amar", "Braden", "Anwar", "Amelia", "Dax", "Ayan", "Ava", "Kim"};
-        final String[] SURNAME_ARRAY = {"de Groot", "Smits", "Mulder", "Visser", "Pacheco", "Dalal", "Ahssini", "Imen",
-                "Ferguson", "Costa", "Herrera", "Dalal", "Case", "de Vries", "Santana", "Nguyen"};
+    public static User creatyDummyUser(long userId, Team team) {
+        final String[] FIRST_NAME_ARRAY = { "Paola", "Drew", "Adrianna", "Evan", "Henk", "Abel", "Muhammad",
+                "Mara", "Clair", "Amar", "Braden", "Anwar", "Amelia", "Dax", "Ayan", "Ava", "Kim" };
+        final String[] SURNAME_ARRAY = { "de Groot", "Smits", "Mulder", "Visser", "Pacheco", "Dalal", "Ahssini", "Imen",
+                "Ferguson", "Costa", "Herrera", "Dalal", "Case", "de Vries", "Santana", "Nguyen" };
         String randomFirstName = FIRST_NAME_ARRAY[(int) Math.floor(Math.random() * FIRST_NAME_ARRAY.length)];
         String randomSurname = SURNAME_ARRAY[(int) Math.floor(Math.random() * SURNAME_ARRAY.length)];
         String fullRandomName = randomFirstName + " " + randomSurname;
         String randomEmailPre = randomFirstName + randomSurname + userId + "@gmail.com";
-        //remove any whitespace in the random email
+        // remove any whitespace in the random email
         String randomEmail = randomEmailPre.replaceAll("\\s", "");
         String randomPassword = randomPasswordGen((int) (8 + Math.floor(Math.random() * 20)));
         final userType[] USER_TYPE_ARRAY = userType.values();
         userType randomUserType = USER_TYPE_ARRAY[(int) Math.floor(Math.random() * USER_TYPE_ARRAY.length)];
 
-        return new User(userId, teamId, fullRandomName, randomEmail, randomPassword, randomUserType.toString());
+        return new User(userId, team, fullRandomName, randomEmail, randomPassword, randomUserType.toString());
     }
-    public static User createStaticAdmin(){
-        return new User(1, 1, "Julian", "nashonwoldai@gmail.com", "password", "ADMIN");
+
+    public static List<User> createStaticAdmin(Team team) {
+        List<User> userList = new ArrayList<>();
+        User user1 = new User(1, team, "Julian", "greefnhva@gmail.com", "password", "ADMIN");
+        User user2 = new User(2, team, "admin", "admin@admin.com", "admin", "ADMIN");
+        userList.add(user1);
+        userList.add(user2);
+        return userList;
+    }
+
+    public static User createStaticUser(Team team) {
+        return new User(3, team, "user", "user@user.com", "user", "VIEWER");
     }
 
     /**
@@ -98,51 +129,4 @@ public class User {
         return Objects.hashCode(id);
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public long getTeamId() {
-        return teamId;
-    }
-
-    public void setTeamId(long teamId) {
-        this.teamId = teamId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
 }

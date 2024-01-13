@@ -30,4 +30,12 @@ public interface ProjectRepository extends EntityRepository<Project> {
      * @return A list of all products.
      */
     List<Map<String, Object>> getProductsInfo();
+
+    /**
+     * Finds all projects by team id.
+     * 
+     * @param teamId The id of the team to find projects for.
+     * @return A list of all projects for the given team.
+     */
+    List<Project> findByTeamId(long teamId);
 }

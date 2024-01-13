@@ -19,6 +19,7 @@ import java.util.Set;
  * @author Julian Kruithof
  */
 @Entity
+@Table(name = "`order`")
 public class Order {
 
     @Id
@@ -55,8 +56,8 @@ public class Order {
      * @return a random order
      */
     public static Order createDummyOrder(Warehouse warehouse) {
-        final LocalDateTime MINIMUM_START = LocalDateTime.of(2023, 9, 12, 0, 0,0);
-        final LocalDateTime MAXIMUM_END = LocalDateTime.of(2024, 2, 1, 0, 0,0);
+        final LocalDateTime MINIMUM_START = LocalDateTime.now().minusMonths(2);
+        final LocalDateTime MAXIMUM_END = LocalDateTime.now().plusMonths(4);
 
         Order order = new Order();
         order.setId(0);

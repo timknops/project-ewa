@@ -3,11 +3,12 @@
     <TableComponent
       v-if="!projectsAreLoading"
       :table-data="projects"
-      :amount-to-display="10"
-      :has-delete-button="true"
-      :has-edit-button="true"
-      :has-add-button="true"
+      :amount-to-display="amountToDisplay"
+      :has-delete-button="hasDeleteButton"
+      :has-edit-button="hasEditButton"
+      :has-add-button="hasAddButton"
       :has-specific-button="true"
+      :has-search-bar="true"
       @edit="showEditModal"
       @delete="showDeleteModal"
       @add="showAddModal"
@@ -54,7 +55,7 @@ import { Transition } from "vue";
  */
 export default {
   name: "ProjectsOverview",
-  inject: ["projectService"],
+  inject: ["projectService", "sessionService"],
   components: {
     TableComponent,
     SpinnerComponent,
@@ -87,13 +88,37 @@ export default {
       showToast: false,
       toastTitle: "",
       toastMessage: "",
+      userTypes: Object.freeze({
+        ADMIN: "ADMIN",
+        VIEWER: "VIEWER",
+      }),
+      hasDeleteButton: true,
+      hasEditButton: true,
+      hasAddButton: true,
+      amountToDisplay: 10,
     };
   },
   async created() {
-    const data = await this.projectService.getAll();
+    // Get the current active user.
+    const user = await this.sessionService.currentUser;
+
+    let data;
+
+    // If the user is a viewer and has a team, get all projects for that team.
+    if (user.type === this.userTypes.VIEWER && user.team !== null) {
+      this.hasDeleteButton = false;
+      this.hasEditButton = false;
+      this.hasAddButton = false;
+      data = await this.projectService.getAllForTeam(user.team.id);
+    }
+
+    // If the user is an admin, get all projects.
+    else if (user.type === this.userTypes.ADMIN) {
+      data = await this.projectService.getAll();
+    }
 
     // If there are no projects, add only the table header row titles.
-    if (data.length === 0) {
+    if (data === undefined || data.length === 0) {
       this.projects = [this.formatEmptyTableData()];
 
       this.projectsAreLoading = false;
@@ -101,9 +126,18 @@ export default {
     }
 
     // Modify the data so that it is displayed correctly in the table.
-    this.projects = data.map((project) => {
-      return this.formatProjectForTable(project);
-    });
+    if (data.id !== undefined) {
+      this.projects = [this.formatProjectForTable(data)];
+    } else {
+      this.projects = data.map((project) => {
+        return this.formatProjectForTable(project);
+      });
+    }
+
+    // If there are less projects than the amount to display, set the amount to display to the amount of projects.
+    if (this.projects.length < this.amountToDisplay) {
+      this.amountToDisplay = this.projects.length;
+    }
 
     this.projectsAreLoading = false;
   },
