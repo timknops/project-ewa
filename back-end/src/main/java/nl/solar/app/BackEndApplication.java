@@ -1,6 +1,7 @@
 package nl.solar.app;
 
 import jakarta.transaction.Transactional;
+import nl.solar.app.exceptions.ResourceNotFoundException;
 import nl.solar.app.models.*;
 import nl.solar.app.repositories.EntityRepository;
 import nl.solar.app.repositories.InventoryRepository;
@@ -8,17 +9,23 @@ import nl.solar.app.repositories.ItemRepository;
 import nl.solar.app.repositories.ResourceRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.util.List;
 import java.util.Random;
 
 @SpringBootApplication
+@EnableScheduling
 public class BackEndApplication implements CommandLineRunner {
 
     // All repositories.
+    @Autowired
+    EntityRepository<User> userRepo;
+
     @Autowired
     EntityRepository<Warehouse> warehouseRepo;
 
@@ -43,6 +50,9 @@ public class BackEndApplication implements CommandLineRunner {
     @Autowired
     ItemRepository itemRepo;
 
+    @Value("${spring.jpa.hibernate.ddl-auto}")
+    private String ddlAuto;
+
     public static void main(String[] args) {
         SpringApplication.run(BackEndApplication.class, args);
     }
@@ -50,9 +60,16 @@ public class BackEndApplication implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
+
+        // Only create sample data if the database is empty.
+        if (!this.ddlAuto.matches("create-drop|create")) {
+            return;
+        }
+
         this.createSampleWarehouse();
         this.createSampleTeams();
         this.createSampleOrders();
+        this.createSampleUser();
         this.createSampleProjects();
         this.createSampleProducts();
         this.createSampleResources();
@@ -105,15 +122,21 @@ public class BackEndApplication implements CommandLineRunner {
             return;
         }
 
+        final String[] names = {
+                "Team 1",
+                "Team 2",
+                "Team 3",
+                "Team 4",
+                "Team 5",
+        };
+
         List<Warehouse> warehouses = warehouseRepo.findAll();
 
-        final int AMOUNT_OF_TEAMS = 6;
-        for (int i = 0; i < AMOUNT_OF_TEAMS; i++) {
-            Warehouse randomWarehouse = warehouses.get((int) (Math.random() * warehouses.size()));
-            Team team = Team.createDummyTeam();
+        for (Warehouse warehouse : warehouses) {
+            Team.TeamType teamType = (warehouse.getId() == 1000) ? Team.TeamType.INTERNAL : Team.TeamType.EXTERNAL;
 
-            // Set the warehouse for the team.
-            team.setWarehouse(randomWarehouse);
+            String teamName = names[(int) (warehouse.getId() % names.length)];
+            Team team = Team.createDummyTeam(warehouse, teamName, teamType);
 
             teamsRepo.save(team);
         }
@@ -143,6 +166,39 @@ public class BackEndApplication implements CommandLineRunner {
                 // bidirectional
                 warehouse.getOrders().add(order);
             }
+        }
+    }
+
+    /**
+     * Create sample data for user
+     *
+     * @author Noa de Greef
+     */
+    private void createSampleUser() throws ResourceNotFoundException {
+        List<User> users = userRepo.findAll();
+        List<Team> teams = teamsRepo.findAll();
+
+        if (teams == null) {
+            throw new ResourceNotFoundException("No teams were found");
+        }
+
+        teams.get(0).setTeam("Static Users");
+        for (User staticUser : User.createStaticAdmin(teams.get(0))) {
+            userRepo.save(staticUser);
+        }
+
+        userRepo.save(User.createStaticUser(teams.get(0)));
+
+        if (!users.isEmpty())
+            return;
+        for (int i = 0; i < 11; i++) {
+            // get a random team, except for the first team since that one is reserved for
+            // static user
+            Team team = teams.get((int) Math.floor(Math.random() * (teams.size() - 1)) + 1);
+            User user = User.creatyDummyUser(i, team);
+            team.getUsers().add(user);
+
+            userRepo.save(user);
         }
     }
 
@@ -219,7 +275,6 @@ public class BackEndApplication implements CommandLineRunner {
                 "Solar panel created with two glass layers for extra protection. It can produces op to 380W in energy"
         };
 
-
         for (int i = 0; i < PRODUCT_NAMES.length; i++) {
             Product product = Product.createDummyProducts(0, PRODUCT_NAMES[i], PRODUCT_DESCRIPTONS[i]);
             productsRepo.save(product);
@@ -276,7 +331,7 @@ public class BackEndApplication implements CommandLineRunner {
 
         for (Product product : productsRepo.findAll()) {
             for (Warehouse warehouse : warehouseRepo.findAll()) {
-                Inventory inventory = Inventory.createDummyResource(warehouse, product);
+                Inventory inventory = Inventory.createDummyInventory(warehouse, product);
 
                 product.getInventory().add(inventory);
                 warehouse.getInventory().add(inventory);

@@ -1,3 +1,8 @@
+/**
+ * The adaptor for communicating with the warehouse controller
+ *
+ * @author Wilco van de Pol
+ */
 export class WarehouseAdaptor{
     resourceURL;
 

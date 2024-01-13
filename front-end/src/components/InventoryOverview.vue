@@ -2,7 +2,6 @@
   <!--    display the current warehouse which the user is assigned to-->
   <div>
     <warehouse-header-display
-      :active-user="activeUser"
       :active-warehouse="activeWarehouse"
       total-text="Total Inventory"
       @setActiveWarehouse="setActiveWarehouse"
@@ -17,6 +16,7 @@
       :has-edit-button="activeWarehouse != null && activeWarehouse !== 'Total'"
       :has-add-button="activeWarehouse != null && activeWarehouse !== 'Total'"
       :hide-id-column="true"
+      :has-search-bar="true"
       @edit="showUpdateModal"
       @add="showAddModal"
     ></table-component>
@@ -111,22 +111,11 @@ export default {
     };
   },
 
-  inject: ["inventoryService"],
+  inject: ["inventoryService", "sessionService"],
 
   methods: {
-    // TODO should be available globally, and not stored directly in the component (comes with jwt)
     getUser() {
-      return {
-        name: "Julian",
-        role: "admin",
-        team: {
-          name: "team1",
-          warehouse: {
-            id: 1003,
-            name: "Superzon",
-          },
-        },
-      };
+      return this.sessionService.currentUser;
     },
 
     /**
@@ -134,7 +123,11 @@ export default {
      * @param warehouse a warehouse object
      */
     setActiveWarehouse(warehouse) {
-      // console.log(warehouse)
+      if (!this.sessionService.isAdmin()) {
+        this.$router.push("/inventory");
+        this.activeWarehouse = null;
+        return;
+      }
       this.activeWarehouse = warehouse;
       if (warehouse === "Total") {
         this.products = this.getTotalProductInfo();
@@ -343,6 +336,7 @@ export default {
           });
           this.products = [{ ...inventoryObj }];
         }
+
         this.showModal = false;
         this.showTimedToast(
           "Inventory added!",
@@ -399,9 +393,8 @@ export default {
 
   async created() {
     this.activeUser = this.getUser();
-
     //get list of products depending on the users role i.e. the total inventory or inventory of the warehouse of the user
-    if (this.activeUser.role === "admin") {
+    if (this.sessionService.isAdmin()) {
       this.totalProducts = await this.inventoryService.findAll();
       //set the products to the products for all warehouses, i.e. when admin choses total as view.
       this.products = this.getTotalProductInfo();

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
+import nl.solar.app.DTO.InventoryProductDTO;
 import nl.solar.app.models.compositeKeys.InventoryKey;
 import nl.solar.app.models.views.ResourceView;
 
@@ -21,14 +22,14 @@ public class Inventory {
     @JsonIgnore
     private InventoryKey id = new InventoryKey();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("warehouseId")
     @JoinColumn(name = "warehouse_id")
     @JsonIgnoreProperties({"location"})
     @JsonView(ResourceView.Complete.class)
     private Warehouse warehouse;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("productId")
     @JoinColumn(name = "product_id")
     @JsonView(ResourceView.Complete.class)
@@ -40,7 +41,7 @@ public class Inventory {
     @JsonView(ResourceView.Complete.class)
     private long quantity;
 
-    public static Inventory createDummyResource(Warehouse warehouse, Product product) {
+    public static Inventory createDummyInventory(Warehouse warehouse, Product product) {
         Inventory inventory = new Inventory();
 
         inventory.setProduct(product);
@@ -49,6 +50,15 @@ public class Inventory {
         inventory.setQuantity((int) (Math.floor(Math.random() * 40)));
 
         return inventory;
+    }
+
+    /**
+     * Formats the inventory to a DTO of type {@link InventoryProductDTO}
+     * the DTO contains the product id, product name, minimum and quantity of the inventory.
+     * @return The DTO representation of the inventory.
+     */
+    public InventoryProductDTO formatInventoryToDTO() {
+        return new InventoryProductDTO(this.getProduct().getId(), this.getProduct().getProductName(), this.getMinimum(), this.getQuantity());
     }
 
     public InventoryKey getId() {

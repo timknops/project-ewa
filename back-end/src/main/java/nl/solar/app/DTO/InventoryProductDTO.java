@@ -1,6 +1,9 @@
 package nl.solar.app.DTO;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import nl.solar.app.models.views.ResourceView;
 
 /**
@@ -9,6 +12,9 @@ import nl.solar.app.models.views.ResourceView;
  *
  * @author Julian Kruithof
  */
+@Getter
+@Setter
+@EqualsAndHashCode
 public class InventoryProductDTO {
 
     @JsonView(ResourceView.Complete.class)
@@ -28,8 +34,8 @@ public class InventoryProductDTO {
      *
      * @param id           The unique identifier of the product.
      * @param productName  The name of the product.
-     * @param description  The description of the product.
-     * @param quantity     The quantity of the product.
+     * @param minimum      The minimum of the inventory.
+     * @param quantity     The quantity of the inventory.
      */
     public InventoryProductDTO(Long id, String productName, Integer minimum, Long quantity) {
         this.id = id;

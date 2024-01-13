@@ -2,12 +2,12 @@
   <div>
     <TableComponent
       v-if="!teamsAreLoading"
-      :amount-to-display="4"
-      :has-add-button="true"
-      :has-delete-button="true"
-      :has-edit-button="true"
+      :amount-to-display="amountToDisplay"
+      :has-add-button="hasAddButton"
+      :has-delete-button="hasDeleteButton"
+      :has-edit-button="hasEditButton"
       :table-data="teams"
-      :has-search-bar="true"
+      :has-search-bar="hasSearchBar"
       @edit="showEditModal"
       @delete="showDeleteModal"
       @add="showAddModal"
@@ -25,7 +25,6 @@
         @ok-modal-btn="handleOk"
       />
     </Transition>
-
     <Transition>
       <ToastComponent
         v-if="showToast"
@@ -41,7 +40,7 @@
 import TableComponent from "@/components/table/TableComponent.vue";
 import ModalComponent from "@/components/modal/ModalComponent.vue";
 import SpinnerComponent from "@/components/util/SpinnerComponent.vue";
-import ToastComponent from "@/components/util/ToastComponent.vue";
+import ToastComponent from "@/components/util/ToastComponent";
 
 export default {
   name: "TeamOverview",
@@ -51,11 +50,18 @@ export default {
     SpinnerComponent,
     ToastComponent,
   },
-  inject: ["teamsService"],
+  inject: ["teamsService", "sessionService"],
 
   data() {
     return {
-      teams: [],
+      teams: [
+        {
+          id: Number,
+          teamName: String,
+          warehouse: String,
+          type: String,
+        },
+      ],
       showModal: false,
       modalTitle: "",
       modalBodyComponent: "",
@@ -75,12 +81,25 @@ export default {
       showToast: false,
       toastTitle: "",
       toastMessage: "",
+      userTypes: Object.freeze({
+        ADMIN: "ADMIN",
+        VIEWER: "VIEWER",
+      }),
+      hasAddButton: true,
+      hasDeleteButton: true,
+      hasEditButton: true,
+      hasSearchBar: true,
+      amountToDisplay: 10,
     };
   },
   methods: {
     showAddModal() {
       this.modalTitle = "Add team";
       this.modalBodyComponent = this.MODAL_TYPES.ADD;
+      this.modalTeam = {
+        team: "",
+        warehouse: "",
+      };
       this.okBtnText = "Add";
       this.showModal = true;
     },
@@ -97,7 +116,7 @@ export default {
       this.modalTitle = "Delete team";
       this.modalBodyComponent = this.MODAL_TYPES.DELETE;
       this.modalTeam = team;
-      this.okBtnText = "Ok";
+      this.okBtnText = "Delete";
       this.showModal = true;
     },
 
@@ -118,13 +137,11 @@ export default {
     async addTeam(team) {
       try {
         const added = await this.teamsService.add(team);
-        this.teams.push(added);
-
+        this.teams.push(this.formatTeamForTable(added));
         this.showModal = false;
-        this.showTimedToast("Success", "Team added successfully");
+        this.showTimedToast("Success", "Team added.");
       } catch (e) {
         this.showModal = false;
-
         if (e.code >= 400 && e.code < 500) {
           this.showTimedToast("Failed to add", e.reason, 8000);
         } else {
@@ -137,14 +154,12 @@ export default {
       try {
         const updated = await this.teamsService.update(team);
         this.teams = this.teams.map((team) =>
-          team.id === updated.id ? updated : team
+          team.id === updated.id ? this.formatTeamForTable(updated) : team
         );
-
         this.showModal = false;
-        this.showTimedToast("Success", "Team updated successfully");
+        this.showTimedToast("Updated successfully", "Team updated.");
       } catch (e) {
         this.showModal = false;
-
         if (e.code >= 400 && e.code < 500) {
           this.showTimedToast("Failed to update", e.reason, 8000);
         } else {
@@ -155,18 +170,25 @@ export default {
 
     async deleteTeam(team) {
       try {
-        const deleted = await this.teamsService.delete(team.id);
-        this.teams = this.teams.filter((team) => team.id !== deleted.id);
-
+        await this.teamsService.delete(team.id);
+        const index = this.teams.findIndex((t) => t.id === team.id);
+        if (index !== -1) {
+          this.teams.splice(index, 1);
+        }
         this.showModal = false;
-        this.showTimedToast("Success", "Team deleted successfully");
-      } catch (exception) {
+        this.showTimedToast("Deleted successfully", "Team deleted.");
+      } catch (e) {
         this.showModal = false;
-
-        if (exception.code >= 400 && exception.code < 500) {
-          this.showTimedToast("Failed to delete", exception.reason, 8000);
+        if (e.response && e.response.status === 412) {
+          this.showTimedToast(
+            "Failed to delete",
+            e.response.data.message,
+            8000
+          );
+        } else if (e.code >= 400 && e.code < 500) {
+          this.showTimedToast("Failed to delete", e.reason, 8000);
         } else {
-          this.showTimedToast("Failed to delete", exception.message, 8000);
+          this.showTimedToast("Failed to delete", e.message, 8000);
         }
       }
     },
@@ -174,9 +196,10 @@ export default {
     formatTeamForTable(team) {
       return {
         id: team.id,
-        teamName: team.team,
-        warehouse: team.warehouse.warehouse,
-        type: team.type,
+        team: team.team,
+        warehouse: team.warehouseName,
+        type:
+          team.type.charAt(0).toUpperCase() + team.type.slice(1).toLowerCase(),
       };
     },
 
@@ -189,13 +212,6 @@ export default {
       };
     },
 
-    /**
-     * Shows a toast for 4 seconds with the given title and message
-     * @param {String} title The title of the toast.
-     * @param {String} message The message of the toast.
-     * @param {Number} duration The duration of the toast in milliseconds. Default is 4000.
-     * @author Tim Knops
-     */
     showTimedToast(title, message, duration = 4000) {
       this.toastTitle = title;
       this.toastMessage = message;
@@ -208,18 +224,42 @@ export default {
   },
 
   async created() {
-    const data = await this.teamsService.findAll();
+    // Get the current active user.
+    const user = await this.sessionService.currentUser;
 
-    if (data.length === 0) {
+    let data;
+    // If the user is a viewer, show only the teams that are assigned to the user.
+    if (user.type === this.userTypes.VIEWER && user.team !== null) {
+      data = await this.teamsService.findById(user.team.id);
+      this.hasAddButton = false;
+      this.hasDeleteButton = false;
+      this.hasEditButton = false;
+      this.hasSearchBar = false;
+    } else if (user.type === this.userTypes.ADMIN) {
+      // If the user is an admin, show all teams.
+      data = await this.teamsService.findAll();
+    }
+
+    // If there are no teams, show an empty table.
+    if (data === undefined || data.length === 0) {
       this.teams = [this.formatEmptyTableData()];
 
       this.teamsAreLoading = false;
       return;
     }
 
-    this.teams = data.map((team) => {
-      return this.formatTeamForTable(team);
-    });
+    // If there is only one team, don't map the data, because it's not an array.
+    if (data.id !== undefined) {
+      this.teams = [this.formatTeamForTable(data)];
+    } else {
+      this.teams = data.map((team) => {
+        return this.formatTeamForTable(team);
+      });
+    }
+
+    if (this.teams.length < this.amountToDisplay) {
+      this.amountToDisplay = this.teams.length;
+    }
 
     this.teamsAreLoading = false;
   },

@@ -4,21 +4,22 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
 import nl.solar.app.models.views.ResourceView;
+import nl.solar.app.models.views.UserView;
 
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
 @Entity
+@Table(name = "warehouse")
 public class Warehouse {
 
     @Id
-    @JsonView(ResourceView.Complete.class)
+    @JsonView({ResourceView.Complete.class, UserView.userFull.class})
     @SequenceGenerator(name = "warehouse_id_generator", initialValue = 1000, allocationSize = 3)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "warehouse_id_generator")
     private long id;
-
-    @JsonView(ResourceView.Complete.class)
+    @JsonView({ResourceView.Complete.class, UserView.userFull.class})
     private String name;
 
     private String location;
@@ -31,7 +32,9 @@ public class Warehouse {
     @JsonIgnore
     Set<Order> orders = new HashSet<>();
 
+
     @OneToMany(mappedBy = "warehouse")
+    @JsonIgnore
     private Set<Team> teams;
 
     public Warehouse(long id, String name, String location) {
