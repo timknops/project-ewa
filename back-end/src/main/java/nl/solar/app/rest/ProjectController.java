@@ -170,6 +170,13 @@ public class ProjectController {
                     "Team with id: " + projectWrapper.getProject().getTeam().getId() + " was not found");
         }
 
+        // Check if the team id is valid.
+        Team team = this.teamRepo.findById(projectWrapper.getProject().getTeam().getId());
+        if (team == null) {
+            throw new ResourceNotFoundException(
+                    "Team with id: " + projectWrapper.getProject().getTeam().getId() + " was not found");
+        }
+
         // Save the project.
         Project createdProject = this.projectRepo.save(projectWrapper.getProject());
 
