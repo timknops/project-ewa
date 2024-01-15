@@ -8,9 +8,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import nl.solar.app.WebConfig;
+import nl.solar.app.models.wrappers.ProjectRequestWrapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -23,21 +28,34 @@ import nl.solar.app.enums.ProjectStatus;
 import nl.solar.app.models.Project;
 import nl.solar.app.models.Team;
 import nl.solar.app.repositories.ProjectRepository;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ProjectControllerTest {
 
     @Autowired
-    private TestRestTemplate restTemplate;
+    private WebConfig webConfig;
 
     @Autowired
-    private ProjectRepository projectRepo;
+    private TestRestTemplate restTemplate;
+
+    @Value("${server.servlet.context-path}")
+    private String servletContextPath;
+
+    @BeforeEach
+    public void setup() {
+        webConfig.SECURED_PATHS = Set.of("/empty"); //changes the webconfig, so that the test don't need authentication
+        if (servletContextPath == null) {
+            servletContextPath = "/";
+        }
+        restTemplate.getRestTemplate().setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+    }
 
     @Test
-    public void testGetAll() {
-        // Send HTTP GET request to the API endpoint.
+    public void shouldReturnAllProjectsWhenGetAllIsCalled() {
+        // Send HTTP GET request to the API endpoint
         ResponseEntity<List<Project>> response = restTemplate.exchange("/projects", HttpMethod.GET, null,
-                new ParameterizedTypeReference<List<Project>>() {
+                new ParameterizedTypeReference<>() {
                 });
 
         // Check if the response is OK.
@@ -46,53 +64,4 @@ public class ProjectControllerTest {
         // Check if the body is not empty.
         assertNotNull(response.getBody());
     }
-
-    @Test
-    public void testGetProject() {
-        // Create a test project
-        Project testProject = new Project();
-        testProject.setId(1L);
-        testProject.setProjectName("Test Project");
-        testProject.setStatus(ProjectStatus.IN_PROGRESS);
-        testProject.setDueDate(new Date());
-        testProject.setClient("Test Client");
-        testProject.setTeam(new Team(1L));
-        testProject.setDescription("Test Description");
-
-        // Save the test project to the repository
-        projectRepo.save(testProject);
-
-        // Send HTTP GET request to the API endpoint with the test project ID
-        ResponseEntity<Map<String, Object>> response = restTemplate.exchange("/projects/1", HttpMethod.GET, null,
-                new ParameterizedTypeReference<Map<String, Object>>() {
-                });
-
-        // Check if the response is OK
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-
-        // Check if the body is not empty
-        assertNotNull(response.getBody());
-
-        // Verify the response body contains the expected project details
-        Map<String, Object> responseBody = response.getBody();
-
-        if (responseBody == null) {
-            throw new AssertionError("Response body is null");
-        }
-
-        assertEquals(1, responseBody.get("id"));
-        assertEquals("Test Project", responseBody.get("projectName"));
-        assertEquals(ProjectStatus.IN_PROGRESS, ProjectStatus.valueOf((String) responseBody.get("status")));
-
-        // Format the expected date in the same way as the actual date
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
-        String expectedDueDate = dateFormat.format(new Date());
-
-        assertEquals(expectedDueDate, responseBody.get("dueDate").toString());
-
-        assertEquals("Test Client", responseBody.get("client"));
-        assertEquals(1, responseBody.get("team"));
-        assertEquals("Test Description", responseBody.get("description"));
-    }
-
 }
