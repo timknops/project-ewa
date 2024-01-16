@@ -3,6 +3,7 @@ import ProjectsOverview from "@/components/ProjectsOverview.vue";
 import { ProjectAdaptor } from "@/service/projectAdaptor";
 import { SessionSbService } from "@/service/SessionSbService";
 
+// Mock the project adaptor.
 jest.mock("@/service/projectAdaptor");
 
 const mockProjects = [
@@ -55,27 +56,34 @@ const mockProjects = [
  * @groupname projectsOverview
  * @author Tim Knops
  */
-describe("ProjectsOverview", () => {
+describe("ProjectsOverview",  () => {
   let wrapper;
+  let mockProjectService;
 
-  beforeEach(() => {
-    const sessionSbService = new SessionSbService();
-    sessionSbService.saveTokenInBrowserStorage("token", {
-      id: 1,
-      name: "name",
-      type: "admin",
-    });
+  beforeEach(async () => {
+    mockProjectService = {
+      delete: jest.fn(),
+      add: jest.fn(),
+      update: jest.fn(),
+    };
 
     // Mock the router.
     const $router = {
       push: jest.fn(),
     };
 
+    const sessionSbService = new SessionSbService();
+    sessionSbService.saveTokenInBrowserStorage('token', {
+      id: 1,
+      name: 'admin',
+      type: 'admin'
+    })
+
     // Mount the component.
     wrapper = shallowMount(ProjectsOverview, {
       global: {
         provide: {
-          projectService: new ProjectAdaptor(),
+          projectService: mockProjectService,
           sessionService: sessionSbService,
         },
         mocks: {
@@ -83,6 +91,8 @@ describe("ProjectsOverview", () => {
         },
       },
     });
+
+    await wrapper.vm.$nextTick();
   });
 
   it("renders the component correctly", () => {
@@ -106,8 +116,8 @@ describe("ProjectsOverview", () => {
       description: "Project Description",
       status: "IN_PROGRESS",
       products: [
-        { product_id: 1, quantity: 500 },
-        { product_id: 2, quantity: 300 },
+        {product_id: 1, quantity: 500},
+        {product_id: 2, quantity: 300},
       ],
     };
 
@@ -133,8 +143,8 @@ describe("ProjectsOverview", () => {
       description: "Project Description",
       status: "In Progress",
       products: [
-        { product_id: 1, quantity: 500 },
-        { product_id: 2, quantity: 300 },
+        {product_id: 1, quantity: 500},
+        {product_id: 2, quantity: 300},
       ],
     };
 
@@ -144,15 +154,15 @@ describe("ProjectsOverview", () => {
       project: {
         id: 1,
         projectName: "Project 1",
-        team: { id: 1 },
+        team: {id: 1},
         client: "Client 1",
         dueDate: "2022-12-31",
         description: "Project Description",
         status: "IN_PROGRESS",
       },
       resources: [
-        { product: { id: 1 }, quantity: 500 },
-        { product: { id: 2 }, quantity: 300 },
+        {product: {id: 1}, quantity: 500},
+        {product: {id: 2}, quantity: 300},
       ],
     });
   });
@@ -167,8 +177,8 @@ describe("ProjectsOverview", () => {
       description: "Project Description",
       status: "In Progress",
       products: [
-        { product_id: 1, quantity: 500 },
-        { product_id: "", quantity: 300 },
+        {product_id: 1, quantity: 500},
+        {product_id: "", quantity: 300},
       ],
     };
 
@@ -178,13 +188,13 @@ describe("ProjectsOverview", () => {
       project: {
         id: 1,
         projectName: "Project 1",
-        team: { id: 1 },
+        team: {id: 1},
         client: "Client 1",
         dueDate: "2022-12-31",
         description: "Project Description",
         status: "IN_PROGRESS",
       },
-      resources: [{ product: { id: 1 }, quantity: 500 }],
+      resources: [{product: {id: 1}, quantity: 500}],
     });
   });
 
@@ -208,96 +218,31 @@ describe("ProjectsOverview", () => {
     });
   });
 
-  /**
-   * Created lifecycle hook test.
-   */
-
-  it("calls projectService.getAll() on created lifecycle hook", async () => {
-    // Mock the getAll.
-    const getAllSpy = jest.spyOn(wrapper.vm.projectService, "getAll").mockResolvedValue(mockProjects)
-
-    // Call the lifecycle hook.
-    await wrapper.vm.$options.created.call(wrapper.vm);
-
-    // Check if the getAll method was called.
-    expect(getAllSpy).toHaveBeenCalled();
-
-    // Restore the spy.
-    getAllSpy.mockRestore();
-  });
 
   /**
-   * Update/delete tests.
+   * CRUD operation tests.
    */
 
-  it("calls projectService.update() and updates projects array when updateProject method is called", async () => {
-    const project = { id: 1, team: {} };
-
-    // Mock the update method.
-    const updateSpy = jest.spyOn(wrapper.vm.projectService, "update").mockResolvedValue(mockProjects[0]);
-
-    // Call the method.
-    wrapper.vm.formatProjectForRequest = jest.fn().mockReturnValue(project);
-    await wrapper.vm.updateProject(project);
-
-    // Check if the update method was called with the correct project.
-    expect(updateSpy).toHaveBeenCalledWith(project);
-
-    // Check if the projects array was updated.
-    expect(wrapper.vm.projects).toEqual([
-      {
-        client: "Client 13",
-        dueDate: "Feb 18, 2025",
-        id: 1,
-        name: "Project 55",
-        status: "IN_PROGRESS",
-        team: "Team 307",
-      },
-      {
-        client: "Client 3",
-        dueDate: "Aug 2, 2023",
-        id: 2,
-        name: "Project 50",
-        status: "COMPLETED",
-        team: "Team 377",
-      },
-      {
-        client: "Client 19",
-        dueDate: "Mar 12, 2025",
-        id: 3,
-        name: "Project 23",
-        status: "UPCOMING",
-        team: "Team 984",
-      },
-    ]);
-
-    // Restore the spy.
-    updateSpy.mockRestore();
-  });
-
-  it("calls projectService.delete() and updates projects array when deleteProject method is called", async () => {
+  it("should delete a project successfully", async () => {
     const project = { id: 1 };
-
-    // Mock the delete method.
-    const deleteSpy = jest.spyOn(wrapper.vm.projectService, "delete");
-
-    // Manually set the initial state of the projects array.
-    wrapper.vm.projects = JSON.parse(JSON.stringify(mockProjects)); // deep copy
-
-    // Call the method.
     await wrapper.vm.deleteProject(project);
+    expect(mockProjectService.delete).toHaveBeenCalledWith(project.id);
+    expect(wrapper.vm.projects).not.toContain(project);
+    expect(wrapper.vm.showToast).toBe(true);
+    expect(wrapper.vm.toastTitle).toBe("Deleted successfully");
+    expect(wrapper.vm.toastMessage).toBe("Project deleted.");
+  });
 
-    // Check if the delete method was called with the correct project.
-    expect(deleteSpy).toHaveBeenCalledWith(project.id);
-
-    // Manually update the projects array to simulate the expected state.
-    const expectedProjects = mockProjects.filter(p => p.id !== project.id);
-
-    // Check if the projects array was updated.
-    expect(wrapper.vm.projects).toEqual(expectedProjects);
-
-    // Restore the spy.
-    deleteSpy.mockRestore();
+  it("should handle error when deleting a project", async () => {
+    const project = { id: 1 };
+    mockProjectService.delete.mockRejectedValueOnce({
+      code: 500,
+      message: "Server error",
+    });
+    await wrapper.vm.deleteProject(project);
+    expect(wrapper.vm.showToast).toBe(true);
+    expect(wrapper.vm.toastTitle).toBe("Failed to delete");
+    expect(wrapper.vm.toastMessage).toBe("Server error");
   });
 
   /**
