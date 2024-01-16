@@ -58,10 +58,10 @@ public class ProjectControllerTest {
                 });
 
         // Check if the response is OK.
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Status code should be 'OK'");
 
         // Check if the body is not empty.
-        assertNotNull(response.getBody());
+        assertNotNull(response.getBody(), "Body should not be null");
     }
 
     @Test
@@ -70,8 +70,8 @@ public class ProjectControllerTest {
                 new ParameterizedTypeReference<>() {
                 });
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Status code should be 'OK'");
+        assertNotNull(response.getBody(), "Body should not be null");
     }
 
     @Test
@@ -81,10 +81,10 @@ public class ProjectControllerTest {
                 });
 
         // Response should be OK, because of front-end handling.
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Status code should be 'OK'");
 
         // Check if the body contains an error.
-        assertTrue(Objects.requireNonNull(response.getBody()).containsKey("error"));
+        assertTrue(Objects.requireNonNull(response.getBody()).containsKey("error"), "Body should contain an error");
     }
 
     @Test
@@ -94,10 +94,10 @@ public class ProjectControllerTest {
                 });
 
         // Check if the response is OK.
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.OK, response.getStatusCode(), "Status code should be 'OK'");
 
         // Check if the body is not empty.
-        assertNotNull(response.getBody());
+        assertNotNull(response.getBody(), "Body should not be null");
     }
 
     @Test
@@ -137,13 +137,13 @@ public class ProjectControllerTest {
         assert createdProject != null;
 
         // Assertions for the created project.
-        assertEquals("Test project", createdProject.getProjectName());
-        assertEquals("Test client", createdProject.getClient());
-        assertEquals(ProjectStatus.IN_PROGRESS, createdProject.getStatus());
-        assertEquals(teamResponse.getBody().get(0).getId(), createdProject.getTeam().getId());
+        assertEquals("Test project", createdProject.getProjectName(), "Project name should be 'Test project'");
+        assertEquals("Test client", createdProject.getClient(), "Client should be 'Test client'");
+        assertEquals(ProjectStatus.IN_PROGRESS, createdProject.getStatus(), "Status should be 'IN_PROGRESS'");
+        assertEquals(teamResponse.getBody().get(0).getId(), createdProject.getTeam().getId(), "Team id should be the same as the one given in the request");
 
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertNotNull(response.getBody());
+        assertEquals(HttpStatus.CREATED, response.getStatusCode(), "Status code should be 'CREATED'");
+        assertNotNull(response.getBody(), "Body should not be null");
     }
 
     @Test
@@ -168,9 +168,9 @@ public class ProjectControllerTest {
                 });
 
         // Check if the response is not found.
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode(), "Status code should be 'NOT_FOUND'");
 
         // Check if the body contains an error.
-        assertTrue(Objects.requireNonNull(response.getBody()).containsKey("error"));
+        assertTrue(Objects.requireNonNull(response.getBody()).containsKey("error"), "Body should contain an error");
     }
 }
