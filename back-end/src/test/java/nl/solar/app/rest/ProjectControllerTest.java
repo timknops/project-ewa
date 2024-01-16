@@ -82,8 +82,6 @@ public class ProjectControllerTest {
 
         // Response should be OK, because of front-end handling.
         assertEquals(HttpStatus.OK, response.getStatusCode(), "Status code should be 'OK'");
-
-        // Check if the body contains an error.
         assertTrue(Objects.requireNonNull(response.getBody()).containsKey("error"), "Body should contain an error");
     }
 
@@ -93,10 +91,7 @@ public class ProjectControllerTest {
                 new ParameterizedTypeReference<>() {
                 });
 
-        // Check if the response is OK.
         assertEquals(HttpStatus.OK, response.getStatusCode(), "Status code should be 'OK'");
-
-        // Check if the body is not empty.
         assertNotNull(response.getBody(), "Body should not be null");
     }
 
@@ -107,6 +102,7 @@ public class ProjectControllerTest {
                 new ParameterizedTypeReference<>() {
                 });
 
+        // If no teams are found, fail the test.
         if (Objects.requireNonNull(teamResponse.getBody()).isEmpty()) {
             fail("No teams found");
         }
@@ -130,7 +126,6 @@ public class ProjectControllerTest {
                 new ParameterizedTypeReference<>() {
                 });
 
-        // Check if the response is OK.
         Project createdProject = response.getBody();
 
         // Assert that the project is not null.
@@ -148,7 +143,6 @@ public class ProjectControllerTest {
 
     @Test
     public void shouldReturnErrorWhenCreateProjectIsCalledWithInvalidTeamId() {
-        // Create a project.
         Project project = new Project();
         project.setProjectName("Test project");
         project.setClient("Test client");
@@ -167,7 +161,7 @@ public class ProjectControllerTest {
                 new ParameterizedTypeReference<>() {
                 });
 
-        // Check if the response is not found.
+        // Check that the response is not found.
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode(), "Status code should be 'NOT_FOUND'");
 
         // Check if the body contains an error.

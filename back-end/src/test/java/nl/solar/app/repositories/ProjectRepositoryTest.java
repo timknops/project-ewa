@@ -67,7 +67,6 @@ public class ProjectRepositoryTest {
         assertNull(foundProject, "Project should be null after deletion");
     }
 
-
     @Test
     public void saveShouldAddProject() {
         Project project = new Project();
@@ -121,6 +120,30 @@ public class ProjectRepositoryTest {
         // Loop over all projects and check if the team id is the same as the one given.
         for (Project project : projects) {
             assertEquals(1, project.getTeam().getId(), "Team id should be the same as the one given");
+        }
+    }
+
+    @Test
+    public void findByTeamIdShouldReturnEmptyListWhenNoProjectsForTeam() {
+        List<Project> projects = projectRepository.findByTeamId(9999);
+        assertTrue(projects.isEmpty(), "Projects list should be empty when no projects for team");
+    }
+
+    @Test
+    public void getTeamsInfoShouldNotContainOtherKeys() {
+        List<?> teamsInfo = projectRepository.getTeamsInfo();
+        for (Object teamInfo : teamsInfo) {
+            Map<?, ?> teamInfoMap = (Map<?, ?>) teamInfo;
+            assertEquals(2, teamInfoMap.size(), "Map should only contain 'team' and 'id'");
+        }
+    }
+
+    @Test
+    public void getProductsInfoShouldNotContainOtherKeys() {
+        List<?> productsInfo = projectRepository.getProductsInfo();
+        for (Object productInfo : productsInfo) {
+            Map<?, ?> productInfoMap = (Map<?, ?>) productInfo;
+            assertEquals(2, productInfoMap.size(), "Map should only contain 'product_name' and 'id'");
         }
     }
 }
