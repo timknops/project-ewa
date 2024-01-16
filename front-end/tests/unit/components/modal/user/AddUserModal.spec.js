@@ -24,7 +24,6 @@ describe('AddUserModal.vue', () => {
             teams
         }])
 
-
     let wrapper;
     beforeEach(async () => {
         wrapper = shallowMount(AddUserModal, {
