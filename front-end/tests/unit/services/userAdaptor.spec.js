@@ -49,8 +49,6 @@ describe("UserAdaptor", () => {
 
     beforeEach(() => {
         mockAdaptor = new UserAdaptor();
-
-        mockAdaptor.fetchJson = jest.fn().mockResolvedValue(users)
     });
 
     it("resourceUrl used for getting information from back-end is setup correctly", function () {
@@ -58,6 +56,9 @@ describe("UserAdaptor", () => {
     })
 
     it("asyncFindAll gets all users", async function () {
+        //mock the back-end for all users
+        mockAdaptor.fetchJson = jest.fn().mockResolvedValue(users)
+
         const fetchResult = await mockAdaptor.asyncFindAll();
         expect(fetchResult, "findAll did not return any users").toBeDefined();
         expect(fetchResult, "asyncFindAll did not match the expected users").toEqual(users);
@@ -65,7 +66,7 @@ describe("UserAdaptor", () => {
 
     it("asyncFindAdmin gets all users from the admin JsonView", async function () {
 
-        //mock the back-end fetch results
+        //mock the back-end fetch results for the admin jsonview
         mockAdaptor.fetchJson = jest.fn().mockResolvedValue(usersAdmin)
 
         const fetchAdminResult = await mockAdaptor.asyncFindAdmin();
