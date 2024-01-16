@@ -1,6 +1,7 @@
 import { shallowMount } from "@vue/test-utils";
 import ProjectsOverview from "@/components/ProjectsOverview.vue";
 import { ProjectAdaptor } from "@/service/projectAdaptor";
+import { SessionSbService } from "@/service/SessionSbService";
 
 jest.mock("@/service/projectAdaptor");
 
@@ -58,13 +59,11 @@ describe("ProjectsOverview", () => {
   let wrapper;
 
   beforeEach(() => {
-    // Mock the project adaptor.
-    ProjectAdaptor.mockImplementation(() => {
-      return {
-        getAll: jest.fn().mockResolvedValue(mockProjects),
-        update: jest.fn().mockResolvedValue(mockProjects[0]),
-        delete: jest.fn().mockResolvedValue(mockProjects[0]),
-      };
+    const sessionSbService = new SessionSbService();
+    sessionSbService.saveTokenInBrowserStorage("token", {
+      id: 1,
+      name: "name",
+      type: "admin",
     });
 
     // Mock the router.
@@ -77,6 +76,7 @@ describe("ProjectsOverview", () => {
       global: {
         provide: {
           projectService: new ProjectAdaptor(),
+          sessionService: sessionSbService,
         },
         mocks: {
           $router,
@@ -213,8 +213,8 @@ describe("ProjectsOverview", () => {
    */
 
   it("calls projectService.getAll() on created lifecycle hook", async () => {
-    // Mock the getAll method.
-    const getAllSpy = jest.spyOn(wrapper.vm.projectService, "getAll");
+    // Mock the getAll.
+    const getAllSpy = jest.spyOn(wrapper.vm.projectService, "getAll").mockResolvedValue(mockProjects)
 
     // Call the lifecycle hook.
     await wrapper.vm.$options.created.call(wrapper.vm);
@@ -230,47 +230,11 @@ describe("ProjectsOverview", () => {
    * Update/delete tests.
    */
 
-  it("calls projectService.delete() and updates projects array when deleteProject method is called", async () => {
-    const project = { id: 1 };
-
-    // Mock the delete method.
-    const deleteSpy = jest.spyOn(wrapper.vm.projectService, "delete");
-
-    // Call the method.
-    await wrapper.vm.deleteProject(project);
-
-    // Check if the delete method was called with the correct project.
-    expect(deleteSpy).toHaveBeenCalledWith(project.id);
-
-    // Check if the projects array was updated.
-    expect(wrapper.vm.projects).toEqual([
-      {
-        client: "Client 3",
-        dueDate: "Aug 2, 2023",
-        id: 2,
-        name: "Project 50",
-        status: "COMPLETED",
-        team: "Team 377",
-      },
-      {
-        client: "Client 19",
-        dueDate: "Mar 12, 2025",
-        id: 3,
-        name: "Project 23",
-        status: "UPCOMING",
-        team: "Team 984",
-      },
-    ]);
-
-    // Restore the spy.
-    deleteSpy.mockRestore();
-  });
-
   it("calls projectService.update() and updates projects array when updateProject method is called", async () => {
     const project = { id: 1, team: {} };
 
     // Mock the update method.
-    const updateSpy = jest.spyOn(wrapper.vm.projectService, "update");
+    const updateSpy = jest.spyOn(wrapper.vm.projectService, "update").mockResolvedValue(mockProjects[0]);
 
     // Call the method.
     wrapper.vm.formatProjectForRequest = jest.fn().mockReturnValue(project);
@@ -309,6 +273,31 @@ describe("ProjectsOverview", () => {
 
     // Restore the spy.
     updateSpy.mockRestore();
+  });
+
+  it("calls projectService.delete() and updates projects array when deleteProject method is called", async () => {
+    const project = { id: 1 };
+
+    // Mock the delete method.
+    const deleteSpy = jest.spyOn(wrapper.vm.projectService, "delete");
+
+    // Manually set the initial state of the projects array.
+    wrapper.vm.projects = JSON.parse(JSON.stringify(mockProjects)); // deep copy
+
+    // Call the method.
+    await wrapper.vm.deleteProject(project);
+
+    // Check if the delete method was called with the correct project.
+    expect(deleteSpy).toHaveBeenCalledWith(project.id);
+
+    // Manually update the projects array to simulate the expected state.
+    const expectedProjects = mockProjects.filter(p => p.id !== project.id);
+
+    // Check if the projects array was updated.
+    expect(wrapper.vm.projects).toEqual(expectedProjects);
+
+    // Restore the spy.
+    deleteSpy.mockRestore();
   });
 
   /**
