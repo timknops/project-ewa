@@ -115,7 +115,7 @@ export default {
 
   methods: {
     getUser() {
-      return this.sessionService.currentUser
+      return this.sessionService.currentUser;
     },
 
     /**
@@ -125,16 +125,16 @@ export default {
     setActiveWarehouse(warehouse) {
       if (!this.sessionService.isAdmin()) {
         this.$router.push("/inventory");
-        this.activeWarehouse = null
+        this.activeWarehouse = null;
         return;
       }
       this.activeWarehouse = warehouse;
       if (warehouse === "Total") {
         this.products = this.getTotalProductInfo();
-        this.$router.push("/inventory");
+        this.$router.push(this.$route.matched[0].path);
       } else {
         this.products = this.getWarehouseProductInfo(warehouse);
-        this.$router.push("/inventory/" + warehouse.name);
+        this.$router.push(`${this.$route.matched[0].path}/${warehouse.name}`);
       }
     },
 
@@ -292,7 +292,7 @@ export default {
         this.showModal = false;
         this.showTimedToast(
           "Inventory updated!",
-          `Successfully updated inventory for Product: ${updated.product.productName} and warehouse: ${updated.warehouse.name}`
+          `Successfully updated inventory for Product: ${updated.product.productName} and warehouse: ${this.activeWarehouse.name}`
         );
       } catch (e) {
         this.showModal = false;
@@ -317,7 +317,6 @@ export default {
         const warehouseIndex = this.totalProducts.findIndex(
           (inventory) => inventory.warehouse.id === saved.warehouse.id
         );
-
         //reformat the saved inventory object to an object used in the products list of the inventory
         const inventoryObj = {
           id: saved.product.id,
@@ -337,9 +336,10 @@ export default {
           });
           this.products = [{ ...inventoryObj }];
         }
+
         this.showModal = false;
         this.showTimedToast(
-          "Inventory Added",
+          "Inventory added!",
           `Successfully added inventory for Product: ${inventoryObj.productName} and warehouse: ${this.activeWarehouse.name}`
         );
       } catch (e) {

@@ -153,7 +153,7 @@ public class OrderController {
         Order existingOrder = this.orderRepo.findById(id);
 
         if (existingOrder.getStatus() == OrderStatus.DELIVERED && order.getStatus() != OrderStatus.DELIVERED) {
-            throw new BadRequestException("You can't change the status of an order that is already delivered ");
+            throw new BadRequestException("You can't change the status of an order that is already delivered!");
         }
 
         if (order.getDeliverDate().isBefore(existingOrder.getOrderDate().toLocalDate())) {
@@ -208,7 +208,7 @@ public class OrderController {
         Order toBeDelete = this.orderRepo.delete(id);
 
         if (toBeDelete == null) {
-            throw new ResourceNotFoundException("Cannot delete order with id: " + id + "Order not found");
+            throw new ResourceNotFoundException("Cannot delete order with id: " + id + " Order not found");
         }
         return ResponseEntity.ok(toBeDelete);
     }
