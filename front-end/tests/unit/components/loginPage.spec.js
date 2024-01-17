@@ -82,6 +82,11 @@ const users = [
 const LOGIN_BUTTON = "Login";
 const FORGOT_PASSWORD = "Forgot password?";
 
+/**
+ * A unit test for the login page
+ *
+ * @author Noa de Greef
+ */
 describe('LoginPage.vue', () => {
     let wrapper;
 

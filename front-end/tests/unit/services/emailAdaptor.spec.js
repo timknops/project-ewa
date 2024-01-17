@@ -1,5 +1,10 @@
 import {EmailAdaptor} from "@/service/emailAdaptor";
 
+/**
+ * A unit test for the emailAdaptor
+ *
+ * @author Noa de Greef
+ */
 describe("emailAdaptor", () => {
     let mockEmailAdaptor;
     process.env.VUE_APP_API_URL = "http://localhost:8083"

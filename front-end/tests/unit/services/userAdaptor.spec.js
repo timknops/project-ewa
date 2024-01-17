@@ -43,6 +43,11 @@ const usersAdmin = [
     }
 ]
 
+/**
+ * A unit test for the userAdaptor
+ *
+ * @author Noa de Greef
+ */
 describe("UserAdaptor", () => {
     let mockAdaptor;
     process.env.VUE_APP_API_URL = "http://localhost:8083"
