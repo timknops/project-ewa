@@ -1,52 +1,9 @@
 import { shallowMount } from "@vue/test-utils";
 import ProjectsOverview from "@/components/ProjectsOverview.vue";
-import { ProjectAdaptor } from "@/service/projectAdaptor";
 import { SessionSbService } from "@/service/SessionSbService";
 
 // Mock the project adaptor.
 jest.mock("@/service/projectAdaptor");
-
-const mockProjects = [
-  {
-    id: 1,
-    projectName: "Project 55",
-    team: {
-      id: 1,
-      team: "Team 307",
-    },
-    client: "Client 13",
-    dueDate: "2025-02-18",
-    description:
-      "Solar Sedum is proud to announce the successful completion of Project GreenSky, where we transformed urban rooftops into vibrant, eco-friendly spaces.",
-    status: "IN_PROGRESS",
-  },
-  {
-    id: 2,
-    projectName: "Project 50",
-    team: {
-      id: 5,
-      team: "Team 377",
-    },
-    client: "Client 3",
-    dueDate: "2023-08-02",
-    description:
-      "Solar Sedum is proud to announce the successful completion of Project GreenSky, where we transformed urban rooftops into vibrant, eco-friendly spaces.",
-    status: "COMPLETED",
-  },
-  {
-    id: 3,
-    projectName: "Project 23",
-    team: {
-      id: 6,
-      team: "Team 984",
-    },
-    client: "Client 19",
-    dueDate: "2025-03-12",
-    description:
-      "Superzon is a project that aims to provide solar energy to the entire city of Amsterdam. We are proud to announce that we have successfully completed the first phase of this project.",
-    status: "UPCOMING",
-  },
-];
 
 /**
  * Unit tests for ProjectsOverview component.
@@ -56,7 +13,7 @@ const mockProjects = [
  * @groupname projectsOverview
  * @author Tim Knops
  */
-describe("ProjectsOverview",  () => {
+describe("ProjectsOverview", () => {
   let wrapper;
   let mockProjectService;
 
@@ -73,11 +30,11 @@ describe("ProjectsOverview",  () => {
     };
 
     const sessionSbService = new SessionSbService();
-    sessionSbService.saveTokenInBrowserStorage('token', {
+    sessionSbService.saveTokenInBrowserStorage("token", {
       id: 1,
-      name: 'admin',
-      type: 'admin'
-    })
+      name: "admin",
+      type: "admin",
+    });
 
     // Mount the component.
     wrapper = shallowMount(ProjectsOverview, {
@@ -116,8 +73,8 @@ describe("ProjectsOverview",  () => {
       description: "Project Description",
       status: "IN_PROGRESS",
       products: [
-        {product_id: 1, quantity: 500},
-        {product_id: 2, quantity: 300},
+        { product_id: 1, quantity: 500 },
+        { product_id: 2, quantity: 300 },
       ],
     };
 
@@ -143,8 +100,8 @@ describe("ProjectsOverview",  () => {
       description: "Project Description",
       status: "In Progress",
       products: [
-        {product_id: 1, quantity: 500},
-        {product_id: 2, quantity: 300},
+        { product_id: 1, quantity: 500 },
+        { product_id: 2, quantity: 300 },
       ],
     };
 
@@ -154,15 +111,15 @@ describe("ProjectsOverview",  () => {
       project: {
         id: 1,
         projectName: "Project 1",
-        team: {id: 1},
+        team: { id: 1 },
         client: "Client 1",
         dueDate: "2022-12-31",
         description: "Project Description",
         status: "IN_PROGRESS",
       },
       resources: [
-        {product: {id: 1}, quantity: 500},
-        {product: {id: 2}, quantity: 300},
+        { product: { id: 1 }, quantity: 500 },
+        { product: { id: 2 }, quantity: 300 },
       ],
     });
   });
@@ -177,8 +134,8 @@ describe("ProjectsOverview",  () => {
       description: "Project Description",
       status: "In Progress",
       products: [
-        {product_id: 1, quantity: 500},
-        {product_id: "", quantity: 300},
+        { product_id: 1, quantity: 500 },
+        { product_id: "", quantity: 300 },
       ],
     };
 
@@ -188,13 +145,13 @@ describe("ProjectsOverview",  () => {
       project: {
         id: 1,
         projectName: "Project 1",
-        team: {id: 1},
+        team: { id: 1 },
         client: "Client 1",
         dueDate: "2022-12-31",
         description: "Project Description",
         status: "IN_PROGRESS",
       },
-      resources: [{product: {id: 1}, quantity: 500}],
+      resources: [{ product: { id: 1 }, quantity: 500 }],
     });
   });
 
@@ -218,14 +175,15 @@ describe("ProjectsOverview",  () => {
     });
   });
 
-
   /**
-   * CRUD operation tests.
+   * Delete tests.
    */
 
   it("should delete a project successfully", async () => {
     const project = { id: 1 };
+
     await wrapper.vm.deleteProject(project);
+
     expect(mockProjectService.delete).toHaveBeenCalledWith(project.id);
     expect(wrapper.vm.projects).not.toContain(project);
     expect(wrapper.vm.showToast).toBe(true);
@@ -235,10 +193,12 @@ describe("ProjectsOverview",  () => {
 
   it("should handle error when deleting a project", async () => {
     const project = { id: 1 };
+
     mockProjectService.delete.mockRejectedValueOnce({
       code: 500,
       message: "Server error",
     });
+
     await wrapper.vm.deleteProject(project);
     expect(wrapper.vm.showToast).toBe(true);
     expect(wrapper.vm.toastTitle).toBe("Failed to delete");
