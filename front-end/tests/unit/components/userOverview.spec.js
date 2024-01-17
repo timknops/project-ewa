@@ -30,7 +30,11 @@ const users = [
         team: teams
     }
 ]
-
+/**
+ * A unit test for the UserOverview component
+ *
+ * @author Noa de Greef
+ */
 describe('UserOverview.vue', () => {
     let wrapper;
 
@@ -157,6 +161,5 @@ describe('UserOverview.vue', () => {
         //try to find the delete-modal which should not exist, because of the showDeleteModal method
         const deleteModal = wrapper.findComponent({name: "ModalComponent"})
         expect(deleteModal.exists(), "Delete modal is still rendered").toBeFalsy();
-
     })
 })
