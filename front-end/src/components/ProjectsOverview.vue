@@ -193,9 +193,11 @@ export default {
      */
     formatProjectForRequest(project) {
       // Loop through the products and remove those that have a product_id of "". Meaning that they do not have a product selected in the dropdown.
-      project.products = project.products.filter(
-        (product) => product.product_id !== ""
-      );
+      if (project.products !== undefined) {
+        project.products = project.products.filter(
+          (product) => product.product_id !== ""
+        );
+      }
 
       return {
         project: {
