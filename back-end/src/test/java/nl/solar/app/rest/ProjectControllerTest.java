@@ -1,12 +1,9 @@
-
 package nl.solar.app.rest;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
-
 import nl.solar.app.WebConfig;
-import nl.solar.app.exceptions.PreConditionFailedException;
-import nl.solar.app.exceptions.ResourceNotFoundException;
+import nl.solar.app.enums.ProjectStatus;
+import nl.solar.app.models.Project;
+import nl.solar.app.models.Team;
 import nl.solar.app.models.wrappers.ProjectRequestWrapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,13 +17,9 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import nl.solar.app.enums.ProjectStatus;
-import nl.solar.app.models.Project;
-import nl.solar.app.models.Team;
-import nl.solar.app.repositories.ProjectRepository;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.web.client.HttpClientErrorException;
+
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
