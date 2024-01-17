@@ -193,7 +193,7 @@ public class OrderControllerTest {
 
     @Test
     public void itemListUpdatesWithAnOrder() {
-        Order order = this.restTemplate.getForObject("/orders/1", Order.class);
+        Order order = this.restTemplate.getForObject("/orders/4", Order.class);
 
         Set<Item> itemSet = new HashSet<>();
         itemSet.add(new Item(this.restTemplate.getForObject("/products/1", Product.class), order, 10L));
@@ -209,9 +209,9 @@ public class OrderControllerTest {
                 itemSet
         );
 
-        this.restTemplate.put("/orders/1", orderUpdateTestDTO, Order.class);
+        this.restTemplate.put("/orders/4", orderUpdateTestDTO, Order.class);
 
-        Item[] updatedItems = this.restTemplate.getForObject("/orders/1/items", Item[].class);
+        Item[] updatedItems = this.restTemplate.getForObject("/orders/4/items", Item[].class);
         assertEquals(updatedItems.length, itemSet.size(), "The number of items should be the same");
         assertThat(Arrays.asList(updatedItems), containsInAnyOrder(itemSet.toArray())); //check if all items are also saved in the database
     }
