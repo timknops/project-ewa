@@ -3,8 +3,6 @@ package nl.solar.app.repositories;
 import jakarta.persistence.Entity;
 import nl.solar.app.enums.ProjectStatus;
 import nl.solar.app.models.Project;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -16,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-
 
 @DataJpaTest(includeFilters = @ComponentScan.Filter(type = FilterType.ANNOTATION,
         classes = { Repository.class, Entity.class }))
