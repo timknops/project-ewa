@@ -27,7 +27,7 @@ public class InventoryRepositoryMock implements InventoryRepository {
 
         for (Warehouse warehouse : warehouses) {
             for (Product product : products) {
-                Inventory inventory = Inventory.createDummyResource(warehouse, product);
+                Inventory inventory = Inventory.createDummyInventory(warehouse, product);
                 inventoryList.add(inventory);
             }
         }

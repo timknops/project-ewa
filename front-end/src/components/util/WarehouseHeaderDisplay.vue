@@ -81,11 +81,24 @@ export default {
    *
    */
   async created() {
+
     if (!this.sessionService.isAdmin()) {
       this.$emit('setActiveWarehouse', this.activeUser.team.warehouse);
       return;
     }
-    this.warehouses = await this.warehouseService.findAll();
+    try {
+      this.warehouses = await this.warehouseService.findAll();
+    } catch (error) {
+      this.warehouses = [];
+      if (!this.hasNoTotalOption) {
+        this.$emit("setActiveWarehouse", "Total");
+        return;
+      }
+      this.$emit("setActiveWarehouse", null)
+
+      return;
+    }
+
     if (this.$route.params.warehouse) {
       const warehouse = this.findWarehouseByName(this.$route.params.warehouse);
       //if a warehouse is found in the route, set is as the active warehouse

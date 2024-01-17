@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class BackEndApplicationTests {
 
     @Autowired
-    BackEndApplication backEndApplication;
+    BackEndApplication backEndApplication = null;
 
     @Test
     void contextLoads() {
