@@ -94,15 +94,26 @@ All classes and who made what.
 DTO:
 
 - ProjectResourceDTO: Tim
+- InventoryDTO: Julian
+- InventoryProductDTO: Julian
+- ItemDTO: Julian
+- OrderRequestDTO: Julian
+- OrderUpdateTestDTO: Julian
 
 models:
 
 - Project: Tim
 - Resource: Tim
+- Inventory: Julian
+- Product: Julian
+- Order: Julian
+- Item: Julian
 
 models/compositeKeys:
 
 - ResourceKey: Tim
+- InventoryKey: Julian
+- ItemKey: Julian
 
 models/wrappers:
 
@@ -112,15 +123,26 @@ repositories:
 
 - ProjectRepository: Tim
 - ResourceRepository: Tim
+- InventoryRepository: Julian
+- ItemRepository: Julian
+- OrderRepository: Julian
 
 repositories/jpaRepositories:
 
 - ResourceRepositoryJpa: Tim
 - ProjectRepositoryJpa: Tim
+- InventoryRepositoryJpa: Julian
+- ItemRepositoryJpa: Julian
+- OrderRepositoryJpa: Julian
+- ProductRepositoryJpa: Julian
+- ProductRepositoryJpa: Julian
 
 rest:
 
 - ProjectController: Tim
+- InventoryController: Julian
+- OrderController: Julian
+- ProductController: Julian
 
 java/nl/solar/app:
 
@@ -134,12 +156,17 @@ components:
 
 - ProjectsOverview: Tim
 - ProjectSpecific: Tim
+- ProductOverview: Julian
+- InventoryOverview: Julian
+- OrderOverview: Julian
 
 modal:
 
 - ModalComponent: Julian
 - modal/project: Tim
-- modal/inventory: ...
+- modal/inventory: Julian
+- modal/order: Julian
+- modal/product: Julian
 
 table:
 
@@ -152,10 +179,16 @@ table:
 utils:
 
 - ErrorMessage: Tim
+- SpinnerComponent: Julian
+- ToastComponent: Julian
+- WarehouseHeaderDisplay: Julian
 
 front-end/service:
 
 - projectAdaptor: Tim
+- orderAdaptor: Julian
+- productAdaptor: Julian
+- inventoryAdaptor: Julian
 
 front-end/models:
 
