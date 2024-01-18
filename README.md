@@ -112,6 +112,7 @@ models:
 - Item: Julian
 - User: Noa
 - Warehouse: Wilco
+- Team: Nashon
 
 models/compositeKeys:
 
@@ -134,6 +135,7 @@ repositories:
 repositories/inMemoryRepositories:
 
 - UserRepositoryMock: Noa
+- TeamRepositoryMock: Nashon
 
 repositories/jpaRepositories:
 
@@ -147,6 +149,7 @@ repositories/jpaRepositories:
 - UserRepositoryJpa: Noa
 - WarehouseRepositoryJpa: Wilco
 - DashboardRepositoryJpa: Hanan
+- TeamRepositoryJpa: Nashon
 
 rest:
 
@@ -159,6 +162,7 @@ rest:
 - UserController: Noa
 - WarehouseController: Wilco
 - DashboardController: Hanan & Wilco
+- TeamController: Nashon
 
 security:
 
@@ -192,6 +196,7 @@ components:
 - UserOverview: Noa, Nashon
 - WarehouseOverview: Wilco
 - Dashboard: Hanan
+- TeamOverview: Nashon
 
 modal:
 
@@ -202,6 +207,7 @@ modal:
 - modal/product: Julian
 - modal/warehouse: Wilco
 - modal/user: Noa
+- modal/team: Nashon
 
 table:
 
@@ -230,12 +236,14 @@ front-end/service:
 - userAdaptor: Noa
 - warehouseAdaptor: Wilco
 - DashboardAdaptor: Hanan
+- teamAdaptor: Nashon
 
 front-end/models:
 
 - project: Tim
 - warehouse: Wilco
 - userLogin: Noa
+- team: Nashon
 
 router:
 
