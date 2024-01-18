@@ -2,7 +2,7 @@ package nl.solar.app.repositories.jpaRepositories;
 
 import java.util.List;
 
-import nl.solar.app.repositories.TeamRepository;
+import nl.solar.app.repositories.EntityRepository;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
@@ -14,7 +14,7 @@ import nl.solar.app.models.Team;
 @Repository("TEAMS.JPA")
 @Transactional
 @Primary
-public class TeamRepositoryJpa implements TeamRepository {
+public class TeamRepositoryJpa implements EntityRepository<Team> {
 
     @PersistenceContext
     private EntityManager entityManager;
