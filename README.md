@@ -99,6 +99,7 @@ DTO:
 - ItemDTO: Julian
 - OrderRequestDTO: Julian
 - OrderUpdateTestDTO: Julian
+- DashboardDTO: Anonymized
 
 models:
 
@@ -138,6 +139,7 @@ repositories/jpaRepositories:
 - ProductRepositoryJpa: Julian
 - ProductRepositoryJpa: Julian
 - WarehouseRepositoryJpa: Wilco
+- DashboardRepositoryJpa: Anonymized
 
 rest:
 
@@ -146,7 +148,7 @@ rest:
 - OrderController: Julian
 - ProductController: Julian
 - WarehouseController: Wilco
-- DashboardController: Hannan & Wilco
+- DashboardController: Anonymized & Wilco
 
 java/nl/solar/app:
 
@@ -164,6 +166,7 @@ components:
 - InventoryOverview: Julian
 - OrderOverview: Julian
 - WarehouseOverview: Wilco
+- Dashboard: Anonymized
 
 modal:
 
@@ -196,6 +199,7 @@ front-end/service:
 - productAdaptor: Julian
 - inventoryAdaptor: Julian
 - warehouseAdaptor: Wilco
+- DashboardAdaptor: Anonymized
 
 front-end/models:
 
