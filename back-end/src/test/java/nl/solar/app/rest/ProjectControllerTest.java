@@ -23,6 +23,13 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Tests for the ProjectController.
+ * 
+ * @see ProjectController
+ * @see Project
+ * @author Tim Knops
+ */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ProjectControllerTest {
 
@@ -37,7 +44,7 @@ public class ProjectControllerTest {
 
     @BeforeEach
     public void setup() {
-        webConfig.SECURED_PATHS = Set.of("/empty"); //changes the webconfig, so that the test don't need authentication
+        webConfig.SECURED_PATHS = Set.of("/empty"); // changes the webconfig, so that the test don't need authentication
         if (servletContextPath == null) {
             servletContextPath = "/";
         }
@@ -128,7 +135,8 @@ public class ProjectControllerTest {
         assertEquals("Test project", createdProject.getProjectName(), "Project name should be 'Test project'");
         assertEquals("Test client", createdProject.getClient(), "Client should be 'Test client'");
         assertEquals(ProjectStatus.IN_PROGRESS, createdProject.getStatus(), "Status should be 'IN_PROGRESS'");
-        assertEquals(teamResponse.getBody().get(0).getId(), createdProject.getTeam().getId(), "Team id should be the same as the one given in the request");
+        assertEquals(teamResponse.getBody().get(0).getId(), createdProject.getTeam().getId(),
+                "Team id should be the same as the one given in the request");
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode(), "Status code should be 'CREATED'");
         assertNotNull(response.getBody(), "Body should not be null");

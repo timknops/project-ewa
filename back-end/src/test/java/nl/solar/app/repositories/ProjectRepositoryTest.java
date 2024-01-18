@@ -15,8 +15,15 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest(includeFilters = @ComponentScan.Filter(type = FilterType.ANNOTATION,
-        classes = { Repository.class, Entity.class }))
+/**
+ * Tests for the ProjectRepository.
+ * 
+ * @see ProjectRepository
+ * @see Project
+ * @author Tim Knops
+ */
+@DataJpaTest(includeFilters = @ComponentScan.Filter(type = FilterType.ANNOTATION, classes = { Repository.class,
+        Entity.class }))
 public class ProjectRepositoryTest {
 
     @Autowired
@@ -35,7 +42,8 @@ public class ProjectRepositoryTest {
         projectList = projectRepository.findAll();
         assertFalse(projectList.isEmpty(), "Project list should not be empty");
 
-        // Loop through all projects and check if the project found by id is the same as the one in the list.
+        // Loop through all projects and check if the project found by id is the same as
+        // the one in the list.
         for (Project project : projectList) {
             Project foundProject = projectRepository.findById(project.getId());
             assertEquals(project, foundProject, "Project should be the same as the one found by id");
@@ -51,7 +59,8 @@ public class ProjectRepositoryTest {
         project.setStatus(ProjectStatus.UPCOMING);
         project.setDescription("TestDescription");
 
-        // Save the project, find it by id, and check if it is the same as the one saved.
+        // Save the project, find it by id, and check if it is the same as the one
+        // saved.
         projectRepository.save(project);
         Project foundProject = projectRepository.findById(project.getId());
 
@@ -99,7 +108,8 @@ public class ProjectRepositoryTest {
         assertFalse(productsInfo.isEmpty(), "Products info list should not be empty");
         assertInstanceOf(Map.class, productsInfo.get(0), "Products info list should contain maps");
 
-        // Loop over all products, and check if each map contains a 'product_name' and 'id'.
+        // Loop over all products, and check if each map contains a 'product_name' and
+        // 'id'.
         for (Object productInfo : productsInfo) {
             Map<?, ?> productInfoMap = (Map<?, ?>) productInfo;
             assertTrue(productInfoMap.containsKey("product_name"), "Map should contain product_name");
