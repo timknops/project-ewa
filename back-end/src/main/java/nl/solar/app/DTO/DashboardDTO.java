@@ -1,8 +1,12 @@
 package nl.solar.app.DTO;
 
 import java.time.LocalDate;
-import java.util.Objects;
 
+/**
+ * The DTO represents all the dashboard information
+ *
+ * @author Anonymized
+ */
 public class DashboardDTO {
 
     private Long warehouseId;
@@ -18,6 +22,16 @@ public class DashboardDTO {
     private int amountOfProduct;
 
 
+    /**
+     * Constructor for DashboardDTO: for the info table in the dashboard.
+     *
+     * @param warehouseId
+     * @param warehouseName
+     * @param productName
+     * @param quantity
+     * @param inventoryQuantity
+     * @param deliverDate
+     */
     public DashboardDTO(Long warehouseId, String warehouseName, String productName, Integer quantity, Integer inventoryQuantity, LocalDate deliverDate) {
         this.warehouseId = warehouseId;
         this.warehouseName = warehouseName;
@@ -27,6 +41,15 @@ public class DashboardDTO {
         this.deliverDate = deliverDate;
     }
 
+    /**
+     * Constructor for DashboardDTO: for all the current inventorie quantity
+     *
+     * @param warehouseId
+     * @param warehouseName
+     * @param productName
+     * @param inventoryQuantity
+     * @param productId
+     */
     public DashboardDTO(Long warehouseId, String warehouseName, String productName, int inventoryQuantity, Long productId) {
         this.warehouseId = warehouseId;
         this.warehouseName = warehouseName;
@@ -35,10 +58,18 @@ public class DashboardDTO {
         this.productId = productId;
     }
 
-    public DashboardDTO(){
-
-    }
-
+    /**
+     * Constructor for DashboardDTO: for the projects that are used in the repo
+     *
+     * @param dueDate
+     * @param projectId
+     * @param projectName
+     * @param warehouseId
+     * @param warehouseName
+     * @param productId
+     * @param productName
+     * @param amountOfProduct
+     */
     public DashboardDTO(LocalDate dueDate, Long projectId, String projectName, Long warehouseId, String warehouseName, Long productId, String productName, int amountOfProduct) {
         this.dueDate = dueDate;
         this.projectId = projectId;
@@ -50,13 +81,9 @@ public class DashboardDTO {
         this.amountOfProduct = amountOfProduct;
     }
 
-    public Long getWarehouseId() {
-        return warehouseId;
-    }
 
-    public void setWarehouseId(Long warehouseId) {
-        this.warehouseId = warehouseId;
-    }
+
+
 
     public String getWarehouseName() {
         return warehouseName;
@@ -136,6 +163,14 @@ public class DashboardDTO {
 
     public void setAmountOfProduct(int amountOfProduct) {
         this.amountOfProduct = amountOfProduct;
+    }
+
+    public Long getWarehouseId() {
+        return warehouseId;
+    }
+
+    public void setWarehouseId(Long warehouseId) {
+        this.warehouseId = warehouseId;
     }
 
     @Override
