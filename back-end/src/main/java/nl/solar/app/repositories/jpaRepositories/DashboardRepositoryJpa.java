@@ -11,13 +11,25 @@ import org.springframework.stereotype.Repository;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * JPA repository for the dashboard data
+ * Retrieves the dashboard table items, project data and the current Inventory
+ *
+ * @author Hanan Ouardi
+ */
 @Repository
 @Primary
 @Transactional
 public class DashboardRepositoryJpa  {
 
     @PersistenceContext
-    private EntityManager entityManager;
+    private EntityManager entityManager; //jpa connectie
+
+    /**
+     * Retrieves a list of the items for the dashboard table from the invenotry
+     *
+     * @return List of DashboardDTO for the dashboard table items.
+     */
     public List<DashboardDTO> getDashboardItems() {
             List<Object[]> results = entityManager.createQuery(
                             "SELECT  w.id AS warehouseId, w.name AS warehouseName, p.productName AS productName, i.quantity AS itemQuantity, inv.quantity AS inventoryQuantity, " +
@@ -32,6 +44,11 @@ public class DashboardRepositoryJpa  {
                             , Object[].class)
                     .getResultList();
 
+
+        /**
+         * Takes the results fromt he query, each array will be changed into a DashboardDTO object
+         * Collects them into a list
+         */
     return results.stream()
                     .map(result -> new DashboardDTO(
                             (Long) result[0], //warehouseId
@@ -42,10 +59,13 @@ public class DashboardRepositoryJpa  {
                             ((java.sql.Date) result[5]).toLocalDate() // deliverDate
                     ))
                     .collect(Collectors.toList());
-
         }
 
-
+    /**
+     * Retrieves a list of the project items for the dashboard chart
+     *
+     * @return List of DashboardDTO for the project items.
+     */
     public List<DashboardDTO> getProjectDashboardItems() {
         List<Object[]> projectResults = entityManager.createQuery(
                         "SELECT CAST(p.dueDate AS DATE) AS dueDate, " +
@@ -65,6 +85,10 @@ public class DashboardRepositoryJpa  {
                         , Object[].class)
                 .getResultList();
 
+        /**
+         * Takes the results fromt he query, each array will be changed into a DashboardDTO object
+         * Collects them into a list
+         */
         return projectResults.stream()
                 .map(result -> new DashboardDTO(
                         ((java.sql.Date) result[0]).toLocalDate(), // dueDate
@@ -79,6 +103,11 @@ public class DashboardRepositoryJpa  {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves a list of the items for the chart table for the current inventory
+     *
+     * @return List of DashboardDTO for the current inventory items.
+     */
     public List<DashboardDTO> getInventoryQuantity() {
         List<Object[]> inventoryResults = entityManager.createQuery(
                         "SELECT " +
@@ -92,6 +121,10 @@ public class DashboardRepositoryJpa  {
                         , Object[].class)
                 .getResultList();
 
+        /**
+         * Takes the results fromt he query, each array will be changed into a DashboardDTO object
+         * Collects them into a list
+         */
         return inventoryResults.stream()
                 .map(result -> new DashboardDTO(
                         (Long) result[0], // warehouseId
@@ -99,7 +132,6 @@ public class DashboardRepositoryJpa  {
                         (String) result[3], // productName
                         ((Number) result[4]).intValue(), // inventoryQuantity
                         (Long) result[2] // productId
-
                 ))
                 .collect(Collectors.toList());
     }

@@ -18,27 +18,55 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
+
+/**
+ * Controller class for handling requests related to dashboard items.
+ * Manages operations such as retrieving dashboard data, forecasting stock shortages,
+ * Notifying administrators about low stock.
+ */
 @RestController
 @RequestMapping("/dashboard-items")
 public class DashboardController {
-
     private final DashboardRepositoryJpa dashboardRepo;
 
+    /**
+     * Constructor for the DashboardController, injects the DashboardRepo
+     *
+     * @param dashboardRepo
+     */
     @Autowired
     public DashboardController(DashboardRepositoryJpa dashboardRepo) {
         this.dashboardRepo = dashboardRepo;
     }
 
+    /**
+     * Retrieves a list of the dashboard items for the inventory of the dashboard table
+     *
+     * @return a list of DasboardDTO for the inventory dashboard table
+     * @author Hanan Ouardi
+     */
     @GetMapping("/inventory")
     public List<DashboardDTO> getDashboardItems() {
         return dashboardRepo.getDashboardItems();
     }
 
+    /**
+     * Retrieves a list of the dashboard items for the projects that are being used.
+     *
+     * @return a list of DasboardDTO of the project items
+     * @author Hanan Ouardi
+     */
     @GetMapping("/project")
     public List<DashboardDTO> getProjectDashboardItems() {
         return dashboardRepo.getProjectDashboardItems();
     }
 
+    /**
+     * Retrieves a list of the dashboard items for all the quantities of the current inventory
+     *
+     * @return a list of DasboardDTO of all the current inventories
+     * @author Hanan Ouardi
+     */
     @GetMapping("/inventory-quantity")
     public List<DashboardDTO> getInventoryQuantity() {
         return dashboardRepo.getInventoryQuantity();
