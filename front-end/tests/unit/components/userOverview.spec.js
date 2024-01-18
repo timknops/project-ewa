@@ -154,7 +154,7 @@ describe('UserOverview.vue', () => {
         //test the toast received to see if it indeed gives the right toast message
         expect(toastWrapped.exists(), "toast is not rendered").toBeTruthy();
         expect(toastWrapped.vm.toastTitle, " Toast title is not correct")
-            .toEqual("Can't delete user");
+            .toEqual("Can't delete this user");
         expect(toastWrapped.vm.toastMessage, "Toast message is not correct")
             .toEqual("You can't delete your own account")
 
