@@ -1,36 +1,36 @@
 <template>
   <div>
     <table-component
-      v-if="userList.length > 0"
-      :amount-to-display="10"
-      :has-add-button="true"
-      :has-delete-button="true"
-      :has-edit-button="true"
-      :table-data="userList"
-      :has-search-bar="true"
-      @edit="showEditModal"
-      @delete="showDeleteModal"
-      @add="showAddModal"
+        v-if="userList.length > 0"
+        :amount-to-display="10"
+        :has-add-button="true"
+        :has-delete-button="true"
+        :has-edit-button="true"
+        :table-data="userList"
+        :has-search-bar="true"
+        @edit="showEditModal"
+        @delete="showDeleteModal"
+        @add="showAddModal"
     />
-    <SpinnerComponent v-else />
+    <SpinnerComponent v-else/>
     <Transition>
       <modal-component
-        v-if="showModal"
-        :title="modalTitle"
-        :active-modal="modalBodyComponent"
-        :item="modalUser"
-        :ok-btn-text="okBtnText"
-        @cancel-modal-btn="this.showModal = false"
-        @corner-close-modal-btn="this.showModal = false"
-        @ok-modal-btn="handleOk"
+          v-if="showModal"
+          :title="modalTitle"
+          :active-modal="modalBodyComponent"
+          :item="modalUser"
+          :ok-btn-text="okBtnText"
+          @cancel-modal-btn="this.showModal = false"
+          @corner-close-modal-btn="this.showModal = false"
+          @ok-modal-btn="handleOk"
       />
     </Transition>
     <Transition>
       <ToastComponent
-        v-if="showToast"
-        :toast-title="toastTitle"
-        :toast-message="toastMessage"
-        @close-toast="showToast = false"
+          v-if="showToast"
+          :toast-title="toastTitle"
+          :toast-message="toastMessage"
+          @close-toast="showToast = false"
       />
     </Transition>
   </div>
@@ -82,7 +82,7 @@ export default {
     };
   },
   async created() {
-    this.activeUser = this.sessionService.currentUser;
+    this.activeUser = this.sessionService.currentUserWithId();
     const data = await this.userService.asyncFindAll();
 
     this.userList = data.map((user) => {
@@ -95,13 +95,10 @@ export default {
      * @param user that's being selected for deletion
      */
     showDeleteModal(user) {
-      if (
-        user.id === this.activeUser.id &&
-        user.name === this.activeUser.name
-      ) {
+      if (user.id === this.activeUser.id) {
         this.showTimedToast(
-          "Can't delete user",
-          "You can't delete your own account"
+            "Can't delete this user",
+            "You can't delete your own account"
         );
       } else {
         this.modalTitle = "Delete user";
@@ -112,16 +109,28 @@ export default {
       }
     },
     /**
-     * When clicked on the edit button in the table, it will show the modal for editing an existing user
+     * When clicked on the edit button in the table, it will show the modal for editing an existing user.
+     * If you try editing your own account or a static user account it will show a toast and not show the modal
      * @param user that's being selected for editing
      */
     async showEditModal(user) {
-      console.log(user);
-      this.modalTitle = "Update user";
-      this.modalBodyComponent = this.MODAL_TYPES.UPDATE;
-      this.modalUser = await this.userService.asyncFindById(user.id);
-      this.okBtnText = "Save";
-      this.showModal = true;
+      if ( user.id === this.activeUser.id ) {
+        this.showTimedToast(
+            "Can't edit this user",
+            "You can't edit your own account"
+        );
+      } else if(user.team === "Static Users") {
+        this.showTimedToast(
+            "Can't edit this user",
+            "You can't edit the static accounts"
+        );
+      } else {
+        this.modalTitle = "Update user";
+        this.modalBodyComponent = this.MODAL_TYPES.UPDATE;
+        this.modalUser = await this.userService.asyncFindById(user.id);
+        this.okBtnText = "Save";
+        this.showModal = true;
+      }
     },
     /**
      * When clicked on the add button in the table, it will show the modal for adding a new user
@@ -194,9 +203,9 @@ export default {
       try {
         const updatedUser = await this.userService.asyncSave(user);
         this.userList = this.userList.map((user) =>
-          user.id === updatedUser.id
-            ? this.formatUserForTable(updatedUser)
-            : user
+            user.id === updatedUser.id
+                ? this.formatUserForTable(updatedUser)
+                : user
         );
 
         this.showModal = false;
@@ -220,7 +229,7 @@ export default {
       try {
         const deletedUser = await this.userService.asyncDelete(user.id);
         this.userList = this.userList.filter(
-          (user) => user.id !== deletedUser.id
+            (user) => user.id !== deletedUser.id
         );
 
         this.showModal = false;

@@ -32,7 +32,7 @@ public class EmailController {
         String id = bodySplitter[2];
 
         //link for the password reset
-        String resetLink = "https://front-end-8cvv.onrender.com/#/loginReset/" + email + "_" + name + "_" + id;
+        String resetLink = "http://localhost:8080/#/loginReset/" + email + "_" + name + "_" + id;
 
         //set email properties
         fullEmail.setReceiver(email);
