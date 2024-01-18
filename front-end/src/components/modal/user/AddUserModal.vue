@@ -57,7 +57,7 @@
     <!--    type of user-->
     <div class="mb-3">
       <label for="userType" class="form-label fw-bold">Type</label>
-      <select class="form-select" v-model="modalItem.type">
+      <select id="user-type-select" class="form-select" v-model="modalItem.type">
         <option>{{ "ADMIN" }}</option>
         <option>{{ "VIEWER" }}</option>
       </select>

@@ -1,10 +1,27 @@
+/**
+ * DashboardAdaptor class is responsible for fetching data related to dashboard items
+ * from the API endpoints.
+ *
+ * @author Hanan Ouardi
+ */
 export class DashboardAdaptor {
     resourceURL;
 
+    /**
+     * Constructs a new DashboardAdaptor instance.
+     * Initializes the resource URL for the dashboard API based on the environment.
+     */
     constructor() {
         this.resourceURL = process.env.VUE_APP_API_URL + '/dashboard-items';
     }
 
+    /**
+     * Asynchronously fetches JSON data from the URL
+     *
+     * @param url
+     * @param options
+     * @returns {Promise<any>}
+     */
     async fetchJSON(url, options = null) {
         let response = await fetch(url, options);
         if (response.ok) {
@@ -15,8 +32,13 @@ export class DashboardAdaptor {
         }
     }
 
+    /**
+     * Asynchronously fetches inventory data from the dashboard API.
+     *
+     * @returns {Promise<*>}  A promise that resolves to an array of adapted project data.
+     */
     async findAll() {
-       const data = await this.fetchJSON(this.resourceURL + '/inventory');
+        const data = await this.fetchJSON(this.resourceURL + '/inventory');
         console.log('Fetched inventory data:', data);
         return data.map(item => ({
             warehouseName: item.warehouseName,
@@ -27,6 +49,11 @@ export class DashboardAdaptor {
         }));
     }
 
+    /**
+     * Asynchronously fetches project data from the dashboard API.
+     *
+     * @returns {Promise<*>}  A promise that resolves to an array of adapted project data.
+     */
     async findAllProjects() {
         const data = await this.fetchJSON(this.resourceURL + '/project');
         console.log('Fetched project data:', data);
@@ -39,7 +66,11 @@ export class DashboardAdaptor {
         }));
     }
 
-
+    /**
+     * Asynchronously fetches all inventory quantity data from the dashboard API.
+     *
+     * @returns {Promise<*>} A promise that resolves to an array of adapted project data.
+     */
     async findAllInventoryQuantity() {
         const data = await this.fetchJSON(this.resourceURL + '/inventory-quantity');
         console.log('Fetched all quantity data:', data);
@@ -49,14 +80,4 @@ export class DashboardAdaptor {
             inventoryQuantity: item.inventoryQuantity,
         }));
     }
-
-    async findAllWarehouses() {
-        const data = await this.fetchJSON(this.resourceURL);
-        const uniqueWarehouseNames = Array.from(new Set(data.map(item => item.warehouseName)));
-        return uniqueWarehouseNames.map(warehouseName => ({
-            warehouseName: warehouseName,
-        }));
-    }
-
-
 }
