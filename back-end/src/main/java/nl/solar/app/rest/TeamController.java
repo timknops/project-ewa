@@ -6,6 +6,7 @@ import nl.solar.app.exceptions.ResourceNotFoundException;
 import nl.solar.app.models.Team;
 import nl.solar.app.models.Warehouse;
 import nl.solar.app.repositories.EntityRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -16,9 +17,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/teams")
 public class TeamController {
-
+    @Autowired
     EntityRepository<Team> teamRepository;
-
+    @Autowired
     EntityRepository<Warehouse> warehouseEntityRepository;
 
     public TeamController(EntityRepository<Team> teamRepository, EntityRepository<Warehouse> warehouseEntityRepository) {
