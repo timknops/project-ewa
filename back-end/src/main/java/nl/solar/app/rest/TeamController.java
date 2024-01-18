@@ -1,6 +1,5 @@
 package nl.solar.app.rest;
 
-import nl.solar.app.DTO.TeamDTO;
 import nl.solar.app.exceptions.BadRequestException;
 import nl.solar.app.exceptions.PreConditionFailedException;
 import nl.solar.app.exceptions.ResourceNotFoundException;
@@ -13,7 +12,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/teams")
@@ -29,64 +27,53 @@ public class TeamController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TeamDTO>> getAllTeams() {
-        List<TeamDTO> teams = teamRepository.findAll().stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+    public ResponseEntity<List<Team>> getAllTeams() {
+        List<Team> teams = teamRepository.findAll();
         return ResponseEntity.ok(teams);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TeamDTO> getTeamById(@PathVariable long id) {
+    public ResponseEntity<Team> getTeamById(@PathVariable long id) {
         Team team = teamRepository.findById(id);
         if (team == null) {
             throw new ResourceNotFoundException("Team with id: '" + id + "' was not found");
         }
-
-        TeamDTO teamDTO = convertToDTO(team);
-        return ResponseEntity.ok(teamDTO);
+        return ResponseEntity.ok(team);
     }
 
     @PostMapping
-    public ResponseEntity<TeamDTO> createTeam(@RequestBody Team team) {
-        if (team.getTeam() == null || team.getTeam().isBlank())
-            throw new BadRequestException("Team name can't be empty");
+    public ResponseEntity<Team> createTeam(@RequestBody Team team) {
+        validateTeam(team);
+
         Warehouse warehouse = warehouseEntityRepository.findById(team.getWarehouse().getId());
         team.setWarehouse(warehouse);
 
         Team createdTeam = teamRepository.save(team);
-        TeamDTO createdTeamDTO = convertToDTO(createdTeam);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(createdTeamDTO.getId())
+                .buildAndExpand(createdTeam.getId())
                 .toUri();
 
-        return ResponseEntity.created(location).body(createdTeamDTO);
+        return ResponseEntity.created(location).body(createdTeam);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TeamDTO> updateTeam(@PathVariable long id, @RequestBody TeamDTO teamDTO) {
-        if (teamDTO.getTeam() == null || teamDTO.getTeam().isBlank())
-            throw new BadRequestException("Team name can't be empty");
+    public ResponseEntity<Team> updateTeam(@PathVariable long id, @RequestBody Team updatedTeam) {
         Team existingTeam = teamRepository.findById(id);
         if (existingTeam == null) {
             throw new ResourceNotFoundException("Team not found with id: " + id);
         }
 
-        existingTeam.setTeam(teamDTO.getTeam());
+        validateTeam(updatedTeam);
 
-        Warehouse warehouse = warehouseEntityRepository.findAll().stream()
-                .filter(w -> w.getName().equals(teamDTO.getWarehouseName()))
-                .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Warehouse not found with name: " + teamDTO.getWarehouseName()));
-
+        existingTeam.setTeam(updatedTeam.getTeam());
+        Warehouse warehouse = warehouseEntityRepository.findById(updatedTeam.getWarehouse().getId());
         existingTeam.setWarehouse(warehouse);
 
-        TeamDTO updatedTeamDTO = convertToDTO(teamRepository.save(existingTeam));
-        return ResponseEntity.ok(updatedTeamDTO);
+        Team updatedTeamEntity = teamRepository.save(existingTeam);
+        return ResponseEntity.ok(updatedTeamEntity);
     }
 
     @DeleteMapping("/{id}")
@@ -104,7 +91,9 @@ public class TeamController {
         return ResponseEntity.noContent().build();
     }
 
-    private TeamDTO convertToDTO(Team team) {
-        return new TeamDTO(team.getId(), team.getTeam(), team.getWarehouse().getName(), team.getType().name());
+    private void validateTeam(Team team) {
+        if (team.getTeam() == null || team.getTeam().isBlank()) {
+            throw new BadRequestException("Team name can't be empty");
+        }
     }
 }

@@ -197,7 +197,7 @@ export default {
       return {
         id: team.id,
         team: team.team,
-        warehouse: team.warehouseName,
+        warehouse: team.warehouse.name,
         type:
           team.type.charAt(0).toUpperCase() + team.type.slice(1).toLowerCase(),
       };
