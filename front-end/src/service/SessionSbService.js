@@ -100,4 +100,13 @@ export class SessionSbService {
       team: this._currentUser.team,
     };
   }
+
+  currentUserWithId(){
+    return {
+      id: this._currentUser.id,
+      name: this._currentUser.name,
+      type: this._currentUser.type,
+      team: this._currentUser.team,
+    }
+  }
 }
