@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
 import nl.solar.app.models.views.ResourceView;
+import nl.solar.app.models.views.TeamView;
 import nl.solar.app.models.views.UserView;
 
 import java.util.HashSet;
@@ -15,11 +16,11 @@ import java.util.Set;
 public class Warehouse {
 
     @Id
-    @JsonView({ResourceView.Complete.class, UserView.userFull.class})
+    @JsonView({ResourceView.Complete.class, UserView.userFull.class, TeamView.Full.class})
     @SequenceGenerator(name = "warehouse_id_generator", initialValue = 1000, allocationSize = 3)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "warehouse_id_generator")
     private long id;
-    @JsonView({ResourceView.Complete.class, UserView.userFull.class})
+    @JsonView({ResourceView.Complete.class, UserView.userFull.class, TeamView.Full.class})
     private String name;
 
     private String location;

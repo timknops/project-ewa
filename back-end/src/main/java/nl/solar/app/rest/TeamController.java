@@ -1,10 +1,12 @@
 package nl.solar.app.rest;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import nl.solar.app.exceptions.BadRequestException;
 import nl.solar.app.exceptions.PreConditionFailedException;
 import nl.solar.app.exceptions.ResourceNotFoundException;
 import nl.solar.app.models.Team;
 import nl.solar.app.models.Warehouse;
+import nl.solar.app.models.views.TeamView;
 import nl.solar.app.repositories.EntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,12 +30,14 @@ public class TeamController {
     }
 
     @GetMapping
+    @JsonView({TeamView.Full.class})
     public ResponseEntity<List<Team>> getAllTeams() {
         List<Team> teams = teamRepository.findAll();
         return ResponseEntity.ok(teams);
     }
 
     @GetMapping("/{id}")
+    @JsonView({TeamView.Full.class})
     public ResponseEntity<Team> getTeamById(@PathVariable long id) {
         Team team = teamRepository.findById(id);
         if (team == null) {
