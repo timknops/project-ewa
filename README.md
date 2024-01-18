@@ -138,9 +138,8 @@ components:
 modal:
 
 - ModalComponent: Julian
-
-modal/project: Tim
-modal/inventory: ...
+- modal/project: Tim
+- modal/inventory: ...
 
 table:
 
