@@ -2,7 +2,7 @@ export class EmailAdaptor{
     resourceUrl;
 
     constructor() {
-        this.resourceUrl = process.env.VUE_APP_API_URL;
+        this.resourceUrl = process.env.VUE_APP_API_URL + "/emails";
     }
 
     async fetchJson(url, options = null) {
@@ -18,7 +18,7 @@ export class EmailAdaptor{
     }
 
     async asyncSendMail(email){
-        return await this.fetchJson(this.resourceUrl, {
+        return await this.fetchJson(this.resourceUrl + "/loginReset", {
             method: "POST",
             body: (email)
         })
