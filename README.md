@@ -99,6 +99,7 @@ DTO:
 - ItemDTO: Julian
 - OrderRequestDTO: Julian
 - OrderUpdateTestDTO: Julian
+- DashboardDTO: Anonymized
 
 models:
 
@@ -145,6 +146,7 @@ repositories/jpaRepositories:
 - ProductRepositoryJpa: Julian
 - UserRepositoryJpa: Noa
 - WarehouseRepositoryJpa: Wilco
+- DashboardRepositoryJpa: Anonymized
 
 rest:
 
@@ -156,7 +158,7 @@ rest:
 - ProductController: Julian
 - UserController: Noa
 - WarehouseController: Wilco
-- DashboardController: Hannan & Wilco
+- DashboardController: Anonymized & Wilco
 
 security:
 
@@ -189,6 +191,7 @@ components:
 - OrderOverview: Julian
 - UserOverview: Noa, Nashon
 - WarehouseOverview: Wilco
+- Dashboard: Anonymized
 
 modal:
 
@@ -226,6 +229,7 @@ front-end/service:
 - SessionSbService: Noa
 - userAdaptor: Noa
 - warehouseAdaptor: Wilco
+- DashboardAdaptor: Anonymized
 
 front-end/models:
 
