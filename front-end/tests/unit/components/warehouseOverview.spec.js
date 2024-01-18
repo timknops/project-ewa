@@ -19,6 +19,35 @@ const routes = [
     }
 ]
 
+// Mock warehouses
+const mockWarehouses = [
+    {
+        "id": 1000,
+        "name": "Solar Sedum",
+        "location": "H.J.E. Wenckebachweg 47D, 1096AK Amsterdam"
+    },
+    {
+        "id": 1001,
+        "name": "Superzon",
+        "location": "Marconistraat 4A, 1704RG Heerhugowaard"
+    },
+    {
+        "id": 1002,
+        "name": "The switch",
+        "location": "Barndegat 8, 1505HN Zaandam"
+    },
+    {
+        "id": 1003,
+        "name": "Induct",
+        "location": "Philippusweg 2, 3125AS Schiedam"
+    },
+    {
+        "id": 1004,
+        "name": "EHES",
+        "location": "Bolwerk 5, 3905NH Veenendaal"
+    }
+]
+
 let wrapper;
 
 /**
