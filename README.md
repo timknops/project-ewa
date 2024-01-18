@@ -103,12 +103,14 @@ DTO:
 
 models:
 
+- Email: Noa
 - Project: Tim
 - Resource: Tim
 - Inventory: Julian
 - Product: Julian
 - Order: Julian
 - Item: Julian
+- User: Noa
 - Warehouse: Wilco
 
 models/compositeKeys:
@@ -129,6 +131,10 @@ repositories:
 - ItemRepository: Julian
 - OrderRepository: Julian
 
+repositories/inMemoryRepositories:
+
+- UserRepositoryMock: Noa
+
 repositories/jpaRepositories:
 
 - ResourceRepositoryJpa: Tim
@@ -138,21 +144,37 @@ repositories/jpaRepositories:
 - OrderRepositoryJpa: Julian
 - ProductRepositoryJpa: Julian
 - ProductRepositoryJpa: Julian
+- UserRepositoryJpa: Noa
 - WarehouseRepositoryJpa: Wilco
 - DashboardRepositoryJpa: Hanan
 
 rest:
 
+- AuthenticationController: Noa
+- EmailController: Noa
 - ProjectController: Tim
 - InventoryController: Julian
 - OrderController: Julian
 - ProductController: Julian
+- UserController: Noa
 - WarehouseController: Wilco
 - DashboardController: Hanan & Wilco
+
+security:
+
+- JWToken: Noa
+- JWTRequestFilter: Noa
+
+service:
+
+- EmailService: Noa
+- EmailLoginResetService: Noa
+
 
 java/nl/solar/app:
 
 - BackEndApplication: Tim, Julian, Noa
+- WebConfig: Julian, Noa, Nashon
 
 #### Front-end
 
@@ -164,7 +186,10 @@ components:
 - ProjectSpecific: Tim
 - ProductOverview: Julian
 - InventoryOverview: Julian
+- LoginPage: Noa
+- LoginResetComponent: Noa
 - OrderOverview: Julian
+- UserOverview: Noa, Nashon
 - WarehouseOverview: Wilco
 - Dashboard: Hanan
 
@@ -176,6 +201,7 @@ modal:
 - modal/order: Julian
 - modal/product: Julian
 - modal/warehouse: Wilco
+- modal/user: Noa
 
 table:
 
@@ -194,10 +220,14 @@ utils:
 
 front-end/service:
 
+- emailAdaptor: Noa
+- FetchInterceptor: Noa
 - projectAdaptor: Tim
 - orderAdaptor: Julian
 - productAdaptor: Julian
 - inventoryAdaptor: Julian
+- SessionSbService: Noa
+- userAdaptor: Noa
 - warehouseAdaptor: Wilco
 - DashboardAdaptor: Hanan
 
@@ -205,6 +235,11 @@ front-end/models:
 
 - project: Tim
 - warehouse: Wilco
+- userLogin: Noa
+
+router:
+
+- index: Noa
 
 ### Contacts
 
