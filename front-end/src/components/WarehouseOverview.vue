@@ -271,7 +271,6 @@ export default {
   watch: {
     warehouses: {
       handler() {
-        // TODO: Fix this.
         // Set the amount to display to the amount of warehouses if there are less than 10.
         if (this.warehouses.length < this.amountToDisplay) {
           this.amountToDisplay = this.warehouses.length;
