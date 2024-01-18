@@ -108,6 +108,7 @@ models:
 - Product: Julian
 - Order: Julian
 - Item: Julian
+- Warehouse: Wilco
 
 models/compositeKeys:
 
@@ -136,6 +137,7 @@ repositories/jpaRepositories:
 - OrderRepositoryJpa: Julian
 - ProductRepositoryJpa: Julian
 - ProductRepositoryJpa: Julian
+- WarehouseRepositoryJpa: Wilco
 
 rest:
 
@@ -143,6 +145,8 @@ rest:
 - InventoryController: Julian
 - OrderController: Julian
 - ProductController: Julian
+- WarehouseController: Wilco
+- DashboardController: Hannan & Wilco
 
 java/nl/solar/app:
 
@@ -159,6 +163,7 @@ components:
 - ProductOverview: Julian
 - InventoryOverview: Julian
 - OrderOverview: Julian
+- WarehouseOverview: Wilco
 
 modal:
 
@@ -167,6 +172,7 @@ modal:
 - modal/inventory: Julian
 - modal/order: Julian
 - modal/product: Julian
+- modal/warehouse: Wilco
 
 table:
 
@@ -189,10 +195,12 @@ front-end/service:
 - orderAdaptor: Julian
 - productAdaptor: Julian
 - inventoryAdaptor: Julian
+- warehouseAdaptor: Wilco
 
 front-end/models:
 
 - project: Tim
+- warehouse: Wilco
 
 ### Contacts
 
