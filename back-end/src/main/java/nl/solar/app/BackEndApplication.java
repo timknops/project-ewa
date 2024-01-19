@@ -371,7 +371,7 @@ public class BackEndApplication implements CommandLineRunner {
             item.setOrder(order);
             Product product = products.get(random.nextInt(products.size()));
             item.setProduct(product);
-            item.setQuantity(random.nextLong(50L));
+            item.setQuantity(random.nextLong(50L) + 1);
 
             order.getItems().add(item);
             product.getItems().add(item);
