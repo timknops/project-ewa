@@ -28,15 +28,21 @@ const mockedWarehouses = [
         "location": "Bolwerk 5, 3905NH Veenendaal"
     }
 ];
-
+/**
+ * @author Nashon Woldai
+ *
+ * Test the AddTeamModal component with a mock item.
+ */
 describe("AddTeamModal", () => {
     let wrapper;
 
     beforeEach(() => {
+        // Mocking the warehouseService for testing
         const warehouseService = {
             findAll: jest.fn().mockResolvedValue(mockedWarehouses),
         };
 
+        // Mounting the AddTeamModal component
         wrapper = mount(AddTeamModal, {
             global: {
                 provide: {
@@ -46,6 +52,7 @@ describe("AddTeamModal", () => {
         });
     });
 
+    // Test case to ensure the component initializes with the correct data
     it("initializes with correct data", () => {
         expect(wrapper.vm.modalItem.team).toBe("");
         expect(wrapper.vm.modalItem.warehouse.id).toBe("");
@@ -60,19 +67,22 @@ describe("AddTeamModal", () => {
         ]);
     });
 
+    // Test case to verify that warehouse options are fetched correctly
     it("fetches warehouse options correctly", async () => {
         wrapper.vm.warehouseService.findAll = jest.fn().mockResolvedValue(mockedWarehouses);
         await wrapper.vm.fetchWarehouseOptions();
-        console.log(wrapper.vm.warehouses);
         expect(wrapper.vm.warehouses).toEqual(mockedWarehouses);
     });
 
 
+    // Test case to validate team name correctly
     it("validates team name correctly", async () => {
+        // Test case where the team name is not empty
         wrapper.vm.modalItem.team = "Test Team";
         wrapper.vm.validateName();
         expect(wrapper.vm.teamEmpty).toBe(false);
 
+        // Test case where the team name is empty
         wrapper.vm.modalItem.team = "";
         wrapper.vm.validateName();
         expect(wrapper.vm.teamEmpty).toBe(true);
