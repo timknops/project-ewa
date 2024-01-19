@@ -39,7 +39,6 @@ export class DashboardAdaptor {
      */
     async findAll() {
         const data = await this.fetchJSON(this.resourceURL + '/inventory');
-        console.log('Fetched inventory data:', data);
         return data.map(item => ({
             warehouseName: item.warehouseName,
             productName: item.productName,
@@ -56,7 +55,6 @@ export class DashboardAdaptor {
      */
     async findAllProjects() {
         const data = await this.fetchJSON(this.resourceURL + '/project');
-        console.log('Fetched project data:', data);
         return data.map(item => ({
             dueDate: item.dueDate,
             projectName: item.projectName,
@@ -73,7 +71,6 @@ export class DashboardAdaptor {
      */
     async findAllInventoryQuantity() {
         const data = await this.fetchJSON(this.resourceURL + '/inventory-quantity');
-        console.log('Fetched all quantity data:', data);
         return data.map(item => ({
             warehouseName: item.warehouseName,
             productName: item.productName,
