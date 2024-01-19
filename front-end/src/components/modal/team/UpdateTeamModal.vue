@@ -17,9 +17,9 @@
       <select
           id="warehouse"
           class="form-select"
-          v-model.lazy.trim="modalItem.warehouseName">
+          v-model.lazy.trim="modalItem.warehouse.id">
         <option value="" disabled>Select a warehouse</option>
-        <option v-for="warehouse in warehouses" :key="warehouse.id" :value="warehouse.name">
+        <option v-for="warehouse in warehouses" :key="warehouse.id" :value="warehouse.id">
           {{ warehouse.name}}
         </option>
       </select>
@@ -36,7 +36,7 @@ export default {
     return {
       modalItem: {
         team: "",
-        warehouseName: "",
+        warehouse: "",
       },
       teamEmpty: false,
       warehouses: [],
