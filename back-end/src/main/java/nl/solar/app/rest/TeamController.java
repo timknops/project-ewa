@@ -16,6 +16,11 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 
+/**
+ * Controller for all endpoint
+ *
+ * @author Nashon Woldai
+ */
 @RestController
 @RequestMapping("/teams")
 public class TeamController {
@@ -29,14 +34,14 @@ public class TeamController {
         this.warehouseEntityRepository = warehouseEntityRepository;
     }
 
-    @GetMapping
+    @GetMapping(produces = "application/json")
     @JsonView({TeamView.Full.class})
     public ResponseEntity<List<Team>> getAllTeams() {
         List<Team> teams = teamRepository.findAll();
         return ResponseEntity.ok(teams);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(path = "{id}", produces = "application/json")
     @JsonView({TeamView.Full.class})
     public ResponseEntity<Team> getTeamById(@PathVariable long id) {
         Team team = teamRepository.findById(id);
@@ -46,7 +51,7 @@ public class TeamController {
         return ResponseEntity.ok(team);
     }
 
-    @PostMapping
+    @PostMapping(produces = "application/json")
     public ResponseEntity<Team> createTeam(@RequestBody Team team) {
         validateTeam(team);
 
@@ -64,7 +69,7 @@ public class TeamController {
         return ResponseEntity.created(location).body(createdTeam);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(path = "{id}", produces = "application/json")
     public ResponseEntity<Team> updateTeam(@PathVariable long id, @RequestBody Team updatedTeam) {
         Team existingTeam = teamRepository.findById(id);
         if (existingTeam == null) {
@@ -81,7 +86,7 @@ public class TeamController {
         return ResponseEntity.ok(updatedTeamEntity);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping(path = "{id}", produces = "application/json")
     public ResponseEntity<Void> deleteTeam(@PathVariable long id) {
         Team existingTeam = teamRepository.findById(id);
         if (existingTeam == null) {

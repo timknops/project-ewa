@@ -113,7 +113,7 @@ public class BackEndApplication implements CommandLineRunner {
     /**
      * Creates sample teams.
      *
-     * @author Tim Knops
+     * @author Nashon Woldai
      */
     private void createSampleTeams() {
         List<Team> teams = teamsRepo.findAll();
